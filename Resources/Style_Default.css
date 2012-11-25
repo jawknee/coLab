@@ -1,0 +1,18 @@
+<!--
+  CSS style sheet for the coLab Default view
+-->
+<style type="text/css">
+.body { background-color: #606060; background=image: ../../Resources/P1Gray.png text: black; } 
+
+<!-- Top banner div -->
+.banner { position: absolute; top: 4px; width: 1035; height: 50px;
+	font-family:Georgia; 
+	background-color: #209090; background-image: ../../Resources/P1CyanTex.png; color: c0b000 }
+.banner_bg { background-color: #209090; background-image: ../../Resources/P1CyanTex.png; }
+
+<!-- Left sidebar --
+.sidebar_l { width: 200px; position: absolute; top: 50; left: 20;  font-family: Helvetica; background-color: #606060; background=image: ../../Resources/P1Gray.png text: black; }
+
+<!-- Main Section -->
+.main { position: absolute; top: 4px; width: 1035; height: 50px;font-family:Georgia; background-color: #209090; background="../../Resources/P1CyanTex.png" }
+</style>

@@ -105,15 +105,15 @@ def main():
 		<center>	 
 		        <table width=80% height=30 border=0 cellpadding=10 class="banner_txt">
 		          <td align="center"><a href="../../index.shtml">Home</a></td>
-		          <td align="center"><a href="../../Common/new.shtml">What's&nbsp;New</a></td>
-		          <td align="center"><a href="../../Common/nav.shtml">Nav</a></td>
+		          <td align="center"><a href="../../Shared/new.shtml">What's&nbsp;New</a></td>
+		          <td align="center"><a href="../../Shared/nav.shtml">Nav</a></td>
 		          <td align="center"><a href="../../Help/">Help</a></td>
 		        </tr></table>
 		</center>
 		<br>
 		</div>	<! end of banner>
 
-		<!--#include virtual="../../Common/sidebar_l.html" -->
+		<!--#include virtual="../../Shared/sidebar_l.html" -->
 		<div id="Logo" class="logo"><img src="../../Resources/CoLab_Logo.png"></div>
 
 		
@@ -138,7 +138,7 @@ def main():
 	<center>
 	<form method=POST action="../../bin/postcomments.cgi">
 	<input type="hidden" name="site" value="<site>">
-	<textarea name="Text" rows=15 cols=80 style="background-color: b0b0b8; font-family: Georgia; font-size: 14pt;"></textarea>
+	<textarea name="Text" rows=15 cols=80 style="background-color: b0b0b8; font-family: Georgia; font-size: 12pt;"></textarea>
 	<br>
 	</center>
 	<input type="submit">

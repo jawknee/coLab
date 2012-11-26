@@ -22,7 +22,7 @@ def main():
 	desc_title="Beach, next phase"
 	fun_title="Ham and Eggs on the Beach"
 
-	hname = "../Sites/" + name + '/' + name + ".html"
+	hname = "../Sites/" + name + '/' + "index.shtml"
 
 	try:
 		os.system("rm -vf " + hname)
@@ -30,14 +30,19 @@ def main():
 		print "rm exceptinon"
 
 
-	description = """This is getting close to useful.   Here is Beach with
+	description = """This little tool is getting close to useful.   Here is Beach with
 	the piano doubled on a rhodes, and a few other rhythmical friends.  Also,
 	all five flutes are on board,   Pretty much to show what we've got, 
 	get a sense of what we can do, and...
 	<p>
 	a chance to see if this new tool can line up nicely with screen detail.
 	<p>
-	I expect to have comments, and an improved user look/feel soon.
+	It appears that I've got comments working as well - have at it.   (The 
+	backend is it still just debug, It will later route back to the page.)
+	<p>
+	Unseen is that large sections, like the left side bar and the back and forward links,
+	are including files that are easily contructed as needed.  So, it's coming along.
+
 	"""
 
 	date = str(datetime.datetime.now())
@@ -88,156 +93,69 @@ def main():
 
 	head = """<html>
 		<head><title>""" + fun_title + """</title>
+		<link rel="stylesheet" type="text/css" href="../../Resources/Style_Default.css">
 		""" + head_insert + "</head>"
 
 	body = """
-		<body background="../../Resources/P1Gray.png" text="black">
+		<body>
 		<!--   Menu Header -->
 		<div id="container">
 		
-		<div style="position: absolute; top: 4px; width: 1035; height: 50px;font-family:Georgia; background-color: #209090; background-image: ../../Resources/P1Gray.png; " >
-		<center>
-		<table width=80% height=40 background="../../Resources/P1CyanTex.png" cellpadding=0 border=0 ><tr><td>
-		<font   size=-1>
-		<center>
-		        <table width=80% height=30 border=0 cellpadding=10 style="color: c0b000"><tr>
-		          <td align="center">Home</td>
-		          <td align="center">What's&nbsp;New</td>
-		          <td align="center">Nav</td>
-		          <td align="center">Help</td>
+		<div class="banner" > <! start of banner>
+		<center>	 
+		        <table width=80% height=30 border=0 cellpadding=10 class="banner_txt">
+		          <td align="center"><a href="../../index.shtml">Home</a></td>
+		          <td align="center"><a href="../../Common/new.shtml">What's&nbsp;New</a></td>
+		          <td align="center"><a href="../../Common/nav.shtml">Nav</a></td>
+		          <td align="center"><a href="../../Help/">Help</a></td>
 		        </tr></table>
 		</center>
-		</td></tr></table>
-		</center>
 		<br>
-		</div>
+		</div>	<! end of banner>
+
+		<!--#include virtual="../../Common/sidebar_l.html" -->
+		<div id="Logo" class="logo"><img src="../../Resources/CoLab_Logo.png"></div>
+
 		
-		<div id="menu" style="width: 200px; position: absolute; top: 50; left: 20;  font-family: Helvetica;">
-		<font size=-1>
-		<h4>Unheard:</h4>
-		<ul>
-		<li>The Amazing Churango</li>
-		<li>Cat Sound Symphony</li>
-		</ul>
-		<h4>Recently Active:</h4>
-		<ul>
-		<li>JDJ-V Asembly 233b</li>
-		<li>The Pained Teddy Bear</li>
-		<li>Where Are My Slippers?</li>
-		</ul>
-		<h4>Pieces You Are Following:</h4>
-		<ul>
-		<li>Billion Flute Parade</li>
-		</ul>
-		<hr>
-		<h4>Projects:</h4>
-		<ul>
-		<li>JDJ</li>
-		<li>Distant Conversation</li>
-		<li>C-76 Fortieth Anniversary</li>
-		</ul>
-		<h4>Pieces:</h4>
-		<ul>
-		 <li>Must Have Been the Rain (V)
-		 <li>JDJ-3
-		 <li>50 Years (IV)
-		 <li>Rosemary's in Bloom
-		 <li>Water Moon
-		 <li>JDJ-2
-		 <li>JDJ-1
-		</ul>
-		
-		<h4>Settings:</h4>
-		<ul>
-		 <li>Mail: On
-		 <li>Remind: Off
-		 <li>Follow this: No
-		</ul>
-		</div>
-		
-		<!--
-		<div id="Content" style="width: 800px; float: left;">
-		-->
-		<div id="Content" style="position: absolute; top: 60; left: 240; backgound-image: ../../Resources/P1Black2.png;">
-		<table border=0 style="color: e8e8d8 "><tr><td>
-		</td></tr></table>
-		
-		<table background="../../Resources/P1Black2.png" width=800 cellpadding=30><tr><td>
-		<font color=e8e8d8>
+		<div id="Content" class="main">
 		<center>
-		<h1 style="font-family: cursive">
+		<h1 class=fundesc>
 	""" + fun_title + "</h1>"
 
 	content = """
-	</center>
-	<p> <hr> <p>
-	<font color="c0b0a0">
-	<h2>""" + desc_title + """</h2>
+	<table width=640 border=0><tr><td>
+
+	<h2 class=fundesc>""" + desc_title + """</h2>
 	<font color=a0b0c0>""" + description + "<p><i>" + date + """</i><p>
-	<b>Use this link to mail comments:</b> <a href="mailto:jawknee@sonic.net,mccluredc@gmail.com,jcdlansing@gmail.com?Subject=Second Turn w/DBeG">Comment Mail Link</a>
 	<p>"""
 
+	CommentLog="Comments.log" 
+
 	tail = """
-	<p><hr>
-	<div style="color: 905020; float: left; ">
-	&larr;Your Groundhog's Got Gout
-	</div>
-	<div style="color: 905020; float: right; ">
-	Why Not? &rarr;
-	</div>
+	<!--#include virtual="links.html" -->
 	<br>
-	<hr><p>
 	Enter your comments here:<br>
 	<center>
-	<form>
-	<textarea rows=15 cols=80 style="background-color: b0b0b8; font-family: Georgia;">
-	(doesn't work yet)
-	</textarea>
+	<form method=POST action="../../bin/postcomments.cgi">
+	<input type="hidden" name="site" value="<site>">
+	<textarea name="Text" rows=15 cols=80 style="background-color: b0b0b8; font-family: Georgia; font-size: 14pt;"></textarea>
 	<br>
+	</center>
 	<input type="submit">
 	</form>
-	</center>
 	<p><hr><p>
 	<h3>Comments:</h3>
-	<i>Dan / 2012.11.18 4:32 AM PST</i><br>
-	I like!  (tada-dada-dada)
+	<!--#include virtual="Comments.log" -->
 	<p>
-	<i>John / 2012.11.19 8:23 PM PST</i><br>
-	I agree, well done!
-	<p>
-	<i>Johnny / 2012.11.19 9:44 PM PST</i><br>
-	OK - I'll move forward then! Like I say, I hope to get the comments working first.   Tying all the
-	other bits together - like what bits have you seen, which ones are you following (presumably to
-	get mail if someone comments?) all has to be worked out.  I've recently gotten the OK to have
-	shell access to my ISP...   hopefully I can do some CGI programming - and may be use SQL - I get
-	to set up databases as part of my plan.  So - we'll see.  -jk
-	<p><hr><p>
-	</center>
-	</font>
-	</center>
-	<div style="color: 905020; float: left; ">
-	&larr;Your Groundhog's Got Gout
-	</div>
-	<div style="color: 905020; float: right; ">
-	Why Not? &rarr;
-	</div>
+	<!--#include virtual="links.html" -->
 	<br>
 	<p><hr><p>
 	<center>
 	&copy; Catharsis Studios West 2012
 	</center>
 	</td></tr></table>
-	<p>
-	<br>
-	
-	<p><hr><p>
-	<center>
-	&copy; Catharsis Studios West 2012
-	</center>
+
 	</td></tr></table>
-	<p>
-	<br>
-	<hr><p>
 	</div>
 	</div>
 	
@@ -257,7 +175,7 @@ def main():
 	write(body)
 	write(media_insert.replace("<name>", name))
 	write(content)
-	write(tail)
+	write(tail.replace("<site>", name))
 
 	outfile.close()
 	

@@ -54,9 +54,11 @@ def htmlgen(name):
 
 
 	try:
+		os.system("touch Comments.log")
+		os.system("touch links.html")
 		os.system("rm -vf " + hname)
 	except:
-		print "rm exception"
+		print "touch/rm Problem - continuing."
 
 	date = str(datetime.datetime.now())
 

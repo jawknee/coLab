@@ -76,7 +76,7 @@ do
 	#
 	# Now we should be ready to emit a list item link...
 	cat <<-EOF >>$leftside
-	<li><a href="../Sites/$piece/" title="$fun_title">$desc_title</a><br><i>$update</i></li>
+	<li><a href="../$piece/" title="$fun_title">$desc_title</a><br><i>$update</i></li>
 	EOF
 
 done
@@ -88,3 +88,56 @@ EOF
 cat <<-EOF >>$leftside
 </div>
 EOF
+#
+# Now we rebuild each of the link files - this can be smarter in the future...
+cd $home/Sites
+currName="Home"
+currTitle="Home"
+currFun="Home"
+currLink="../../index.shtml"
+
+
+for piece in $(grep -v "^#" Site.List) Archive
+do
+	if [ "$piece" = Archive ]
+	then
+		nextLink="../../Shared/Archive.shtml"
+		nextTitle="Archive"
+		nextFun="Archive"
+	else
+		source $piece/data
+	
+		nextName="$piece"
+		nextTitle="$desc_title"
+		nextFun="$fun_title"
+		nextLink="../$piece/"
+	fi
+	
+	if [ "$currName" != Home ]
+	then	# generate the new html file
+		link="$currName/links.html"
+		echo Creating $link
+		cat <<-EOF >$link
+		<p><hr>
+		<div class="links" style="float: left;">
+		<a href="$prevLink" title="$prevFun">&larr; $prevTitle</a>
+		</div>
+		<div class="links" style="float: right;">
+		<a href="$nextLink" title="$nextFun">$nextTitle &rarr;</a>
+		</div>
+		<br>
+		<hr><p>
+		EOF
+	fi
+	
+	prevName="$currName"
+	prevTitle="$currTitle"
+	prevFun="$currFun"
+	prevLink="$currLink"
+
+	currName="$nextName"
+	currTitle="$nextTitle"
+	currFun="$nextFun"
+	currLink="$nextLink"
+
+done

@@ -1,0 +1,98 @@
+#!/usr/bin/env sh
+#
+# coLabMailer
+# a script to send mail to folks with that certain bit of coLab fLair...
+#
+# Expects the following vars to be set in the env: (return can default...)
+#	$cLmail_subject
+#	$cLmail_addresses	# who to send to
+#	$cLmail_return		# the reply-to
+#	$cLmail_bodytext	# the message body, kinda of the point...
+#
+if [ -z "$cLmail_subject" -o \
+	-z "$cLmail_addresses" -o \
+	-z "$cLmail_bodytext" ]
+then
+	cat <<-EOF >&2
+	Not all vars set.
+	<pre>
+	cLmail_subject= $cLmail_subject
+	cLmail_addresses= $cLmail_addresses
+	cLmail_bodytext= $cLmail_bodytext
+	</pre>
+	EOF
+	exit 1
+fi
+
+if [ -z "$cLmail_return" ]
+then
+	cLmail_return="jawknee@sonic.net"
+fi
+
+MailBoundary="coLabMailBoundary"
+
+cat <<-EOF |
+$cLmail_bodytext
+EOF
+(
+	# build up an html message (optional attachments)
+	# and send it along, substituting as needed for vars...
+	cat <<-EOF
+	To: $cLmail_addresses
+	Reply-To: $cLmail_return
+	Content-type: multipart/mixed; boundary="$MailBoundary"
+	Subject: $cLmail_subject
+
+	This is a multi-part message in MIME format.
+	--$MailBoundary
+	Content-Type: text/html
+
+	<html>
+	<!-- Generated header: $0 --->
+	<head>
+	<style>
+	EOF
+
+	cat ../Resources/Style_Mailer.css
+
+	cat <<-EOF
+	</style>
+	</head>
+	<body>
+	<div class="main">
+	<center>
+	<table width=640 border=0>
+	<tr><td height=20> &nbsp; </td></tr> <! space down a bit..>
+	<tr><td>
+	EOF
+	
+	cat -
+
+	cat <<-EOF
+	<p><hr><p style="font-size: smaller; font-style: italic;">
+	Generated on $(date) by $0.<br>
+	Part of the coLab fLair neTwork.
+	</td></tr>
+	<tr height=20><td> &nbsp;
+	</td></tr></table>
+	</center>
+	</div>
+	<div id="Logo" class="logo"><img src="http://jawknee.com/coLab/Resources/CoLab_Logo.png"></div>
+
+	</body>
+	</html>
+	EOF
+
+
+	for a in $attachmentlist
+	do
+		cat - $a <<-EOF
+		--$MailBoundary
+		Content-Type: text/plain
+
+	EOF
+	done
+	cat <<-EOF
+	--$MailBoundary--
+	EOF
+) | /usr/bin/sendmail $cLmail_addresses

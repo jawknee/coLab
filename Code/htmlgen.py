@@ -13,37 +13,50 @@
 """
 
 import os
+import sys
 import datetime
+import imp	# to input the data file
 
-def main():
+def htmlgen(name):
 
 	# These will be passed in via opt parms or otherwise...
-	name = "Beach-FlChEgEtc"
-	desc_title="Beach, next phase"
-	fun_title="Ham and Eggs on the Beach"
 
-	hname = "../Sites/" + name + '/' + "index.shtml"
+	sitedir = "../Sites/" + name
+	hname = "index.shtml"
+
+
+	try:
+		os.chdir(sitedir)
+	except OSError, info:
+		print "Could not cd to $sitedir", info
+		exit(1)
 
 	try:
 		os.system("rm -vf " + hname)
 	except:
-		print "rm exceptinon"
+		print "rm exception"
+
+	try:
+		os.system("rm -vf " + hname)
+	except:
+		print "rm exception"
+
+	try:
+		f = open("data")
+		P = imp.load_source('data','', f)
+		f.close
+
+	except: 
+		print "Could not find data file: data"
+		print "Cannot continue."
+		print P.create
+		exit(1)
 
 
-	description = """This little tool is getting close to useful.   Here is Beach with
-	the piano doubled on a rhodes, and a few other rhythmical friends.  Also,
-	all five flutes are on board,   Pretty much to show what we've got, 
-	get a sense of what we can do, and...
-	<p>
-	a chance to see if this new tool can line up nicely with screen detail.
-	<p>
-	It appears that I've got comments working as well - have at it.   (The 
-	backend is it still just debug, It will later route back to the page.)
-	<p>
-	Unseen is that large sections, like the left side bar and the back and forward links,
-	are including files that are easily contructed as needed.  So, it's coming along.
-
-	"""
+	try:
+		os.system("rm -vf " + hname)
+	except:
+		print "rm exception"
 
 	date = str(datetime.datetime.now())
 
@@ -92,7 +105,7 @@ def main():
 	"""
 
 	head = """<html>
-		<head><title>""" + fun_title + """</title>
+		<head><title>""" + P.fun_title + """</title>
 		<link rel="stylesheet" type="text/css" href="../../Resources/Style_Default.css">
 		""" + head_insert + "</head>"
 
@@ -120,13 +133,13 @@ def main():
 		<div id="Content" class="main">
 		<center>
 		<h1 class=fundesc>
-	""" + fun_title + "</h1>"
+	""" + P.fun_title + "</h1>"
 
 	content = """
 	<table width=640 border=0><tr><td>
 
-	<h2 class=fundesc>""" + desc_title + """</h2>
-	<font color=a0b0c0>""" + description + "<p><i>" + date + """</i><p>
+	<h2 class=fundesc>""" + P.desc_title + """</h2>
+	<font color=a0b0c0>""" + P.description + "<p><i>" + P.create + """</i><p>
 	<p>"""
 
 	CommentLog="Comments.log" 
@@ -135,10 +148,12 @@ def main():
 	<!--#include virtual="links.html" -->
 	<br>
 	Enter your comments here:<br>
-	<center>
 	<form method=POST action="../../bin/postcomments.cgi">
-	<input type="hidden" name="site" value="<site>">
-	<textarea name="Text" rows=15 cols=80 style="background-color: b0b0b8; font-family: Georgia; font-size: 12pt;"></textarea>
+	Your name: <input type="text" name="Commenter" ><br>
+	<center>
+	<input type="hidden" name="site" value=""" + '"' + name + '"' + """>
+	<input type="hidden" name="desc_title" value=""" + '"' + P.desc_title + '"' + """>
+	<textarea name="Text" rows=15 cols=80></textarea>
 	<br>
 	</center>
 	<input type="submit">
@@ -175,7 +190,7 @@ def main():
 	write(body)
 	write(media_insert.replace("<name>", name))
 	write(content)
-	write(tail.replace("<site>", name))
+	write(tail)
 
 	outfile.close()
 	
@@ -183,6 +198,10 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+	if len(sys.argv) < 2:
+		print "Usage:", sys.argv[0], "<Sitename>"
+		exit(1)
+	name=sys.argv[1]
+	htmlgen(name)
 
 

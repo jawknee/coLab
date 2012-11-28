@@ -45,6 +45,7 @@ def htmlgen(name):
 		f = open("data")
 		P = imp.load_source('data','', f)
 		f.close
+		os.system("rm -f c")	# consequece of the import...
 
 	except: 
 		print "Could not find data file: data"

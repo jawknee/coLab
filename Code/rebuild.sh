@@ -46,18 +46,18 @@ fi
 #
 # return the 'n' most recent (non-comment) lines - last n lines
 # in the file, in reverse order
-n=5
-recentlist=$(grep -v "^#" $sitelist | tail -n $n -r )
-for piece in $recentlist
+n=10
+recentlist=$(grep -v "^#" $sitelist | tail -n $n  ) 	# use -r to reverse to newest first..
+for site in $recentlist
 do
-	data="$home/Sites/$piece/data"
+	data="$home/Sites/$site/data"
 	if [ ! -f "$data" ]
 	then
 		echo "$0: Warning: no such file: $data"
-		desc_title="$piece"
+		desc_title="$site"
+	else
+		source $data
 	fi
-
-	source $data
 
 	if [ -z "$fun_title" ]
 	then
@@ -76,7 +76,7 @@ do
 	#
 	# Now we should be ready to emit a list item link...
 	cat <<-EOF >>$leftside
-	<li><a href="../$piece/" title="$fun_title">$desc_title</a><br><i>$update</i></li>
+	<li><a href="../$site/" title="$fun_title">$desc_title</a><br><i>$update</i></li>
 	EOF
 
 done
@@ -97,20 +97,20 @@ currFun="Home"
 currLink="../../index.shtml"
 
 
-for piece in $(grep -v "^#" Site.List) Archive
+for site in $(grep -v "^#" Site.List) Archive
 do
-	if [ "$piece" = Archive ]
+	if [ "$site" = Archive ]
 	then
 		nextLink="../../Shared/Archive.shtml"
 		nextTitle="Archive"
 		nextFun="Archive"
 	else
-		source $piece/data
+		source $site/data
 	
-		nextName="$piece"
+		nextName="$site"
 		nextTitle="$desc_title"
 		nextFun="$fun_title"
-		nextLink="../$piece/"
+		nextLink="../$site/"
 	fi
 	
 	if [ "$currName" != Home ]

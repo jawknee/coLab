@@ -37,21 +37,24 @@ def htmlgen(name):
 		print "rm exception"
 
 	try:
-		os.system("rm -vf " + hname)
+		f = open("data")
 	except:
-		print "rm exception"
+		print "Could not open data file: data - ", sys.exc_info()[0]
+		exit(1)
 
 	try:
-		f = open("data")
-		P = imp.load_source('data','', f)
-		f.close
-		os.system("rm -f c")	# consequece of the import...
+		P = imp.load_source('','data')
 
 	except: 
-		print "Could not find data file: data"
+		print "Problem importing the data... ", sys.exc_info()[0]
 		print "Cannot continue."
-		print P.create
+		os.system("/bin/pwd")
+		os.system("cat data")
 		exit(1)
+
+	f.close
+
+	os.system("rm -f c")	# consequece of the import...
 
 
 	try:
@@ -110,6 +113,7 @@ def htmlgen(name):
 	head = """<html>
 		<head><title>""" + P.fun_title + """</title>
 		<link rel="stylesheet" type="text/css" href="../../Resources/Style_Default.css">
+		<link rel="shortcut icon" href="../../Resources/CoLab_Logo.png">
 		""" + head_insert + "</head>"
 
 	body = """
@@ -120,10 +124,10 @@ def htmlgen(name):
 		<div class="banner" > <! start of banner>
 		<center>	 
 		        <table width=80% height=30 border=0 cellpadding=10 class="banner_txt">
-		          <td align="center"><a href="../../index.shtml">Home</a></td>
-		          <td align="center"><a href="../../Shared/new.shtml">What's&nbsp;New</a></td>
-		          <td align="center"><a href="../../Shared/nav.shtml">Nav</a></td>
-		          <td align="center"><a href="../../Help/">Help</a></td>
+		          <td align="center"><a href="../../index.shtml" title="Always a nice place to go...">Home</a></td>
+		          <td align="center"><a href="../../Shared/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+		          <td align="center"><a href="../../Shared/nav.shtml" title="How to get to where you need go.">Nav</a></td>
+		          <td align="center"><a href="../../Help/" title="Hopefully, the help you need.">Help</a></td>
 		        </tr></table>
 		</center>
 		<br>
@@ -139,7 +143,8 @@ def htmlgen(name):
 	""" + P.fun_title + "</h1>"
 
 	content = """
-	<table width=640 border=0><tr><td>
+		</center>
+	<div class="maintext">
 
 	<h2 class=fundesc>""" + P.desc_title + """</h2>
 	<font color=a0b0c0>""" + P.description + "<p><i>" + P.create + """</i><p>
@@ -167,11 +172,10 @@ def htmlgen(name):
 	<p>
 	<!--#include virtual="links.html" -->
 	<br>
-	<p><hr><p>
 	<center>
 	&copy; Catharsis Studios West 2012
 	</center>
-	</td></tr></table>
+	</div>
 
 	</td></tr></table>
 	</div>

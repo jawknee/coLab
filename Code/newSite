@@ -1,0 +1,51 @@
+#!/usr/bin/env sh
+#
+# intial take a setting up a site - basically create the
+# dir, add it to Site.List and provide a template data file.
+# 
+name="$1"
+
+#set -x
+if [ -z "$name" ]
+then
+	echo "$0: usage: newSite <sitename>"
+	exit 1
+fi
+if [ -d "../Sites/$name" ]
+then
+	echo "$0: $name already exists..."
+	echo "OK?"
+	read ans
+	if [ "$ans" != y ]
+	then
+		echo I was looking for: y
+		exit 0
+	fi
+fi
+
+if grep $name "../Sites/Site.List"  >/dev/null
+then
+	echo "$0: $i is in Site.List file"
+fi
+
+echo $name >>../Sites/Site.List
+mkdir -pv "../Sites/$name"
+
+cat <<-EOF >../Sites/$name/data
+name="$name"
+desc_title=""	# descriptive / short
+fun_title=""	# have fun
+
+piece=""
+project=""
+
+duration=""	# duration in floating point seconds
+screenshot="ScreenShot.png"
+
+# free form description - html is allowed - I think
+description="""
+"""
+
+create="$(date "+%Y-%m-%d %H:%M:%S")"
+update="$(date "+%Y-%m-%d %H:%M:%S")"
+EOF

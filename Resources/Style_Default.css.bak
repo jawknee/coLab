@@ -1,0 +1,32 @@
+body { background-color: #006060; background-image: url('http://jawknee.com/coLab/Resources/P1Gray.png'); 
+	color: black }
+
+.banner { position: absolute; top: 4px; left: 4; width: 1035; height: 50px; 
+	font-family:Georgia; color: #c0b0a0; 
+	background-color: #209090; background-image: url('http://jawknee.com/coLab/Resources/P1CyanTex.png'); 
+	}
+.banner_txt { color: #c0b0a0 }
+.banner_txt a:link { color: #d8c8b8; text-decoration: none;}
+.banner_txt a:visited { color: #b8a898; text-decoration: none; }
+.banner_txt a:hover { color: #f0e0d0; }
+.banner_txt a:active { color: #ffffff; }
+
+.sidebar_l { position: absolute; top: 54px; left: 4px; width: 200px; 
+	font-family: Helvetica; font-size: smaller;
+	color: black; 
+	background-color: #606060; background-image: url('http://jawknee.com/coLab/Resources/P1Gray.png'); 
+	}
+
+.main { position: absolute; top: 54px; left: 204px;  width: 835px; 
+	font-family:Georgia; 
+	background-color: #209090; background-image: url('http://jawknee.com/coLab/Resources/P1Black2.png');
+	color: #c0b0a0 }
+
+.fundesc { font-family: cursive, 'Brush Script MT','Lucida Handwriting'; color: #c0b0a0 }
+
+.links a:link { color: #d8c8b8; text-decoration: none;}
+.links a:visited { color: #b8a898; text-decoration: none; }
+.links a:hover { color: #f0e0d0; text-decoration: none; }
+.links a:active { color: #ffffff; text-decoration: none; }
+
+.logo { position: absolute; top: 4px; right: 4px; }

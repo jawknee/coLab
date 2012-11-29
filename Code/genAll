@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+#
+# Rebuild everything...
+#
+for site in $(grep -v "^#" ../Sites/Site.List)
+do
+	echo Rebuilding $site...
+	./htmlgen.py $site
+done
+./rebuild.sh

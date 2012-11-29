@@ -1,4 +1,4 @@
-body { background-color: #006060;         background-image: url('http://jawknee.com/coLab/Resources/P1Gray.png');
+body { background-color: #006060;         background-image: url('http://jawknee.com/coLab/Resources/P1GraySm.png');
         color: black }
 
 a:link { color: #d8c8b8; text-decoration: none;}
@@ -25,7 +25,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .sidebar_l { position: absolute; top: 54px; left: 4px; width: 200px; 
 	font-family: Helvetica; font-size: smaller;
 	color: black; 
-	background-color: #606060; background-image: url('http://jawknee.com/coLab/Resources/P1Gray.png'); 
+	background-color: #606060; background-image: url('http://jawknee.com/coLab/Resources/P1GraySm.png'); 
 	}
 
 .sidebar_l a:link { color: #2030ff; text-decoration: none;}

@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#
+#	Copyright Johnny Klonaris 2012
+#	
+
+#
+# For now - hardcoded addresses...
+export cLmail_addresses="johnny@jawknee.com, jcdlansing@gmail.com, mccluredc@gmail.com"
+export cLmail_addresses="johnny@jawknee.com" 
+
+# so we put it all into vars, post the content to the and mail it to list.
+export cLmail_subject="Test mailer"
+# hardcoded for now - header should move to .coLab.conf
+desc_title="desc title"
+
+
+export cLmail_bodytext=$(cat <<-EOF
+	<h2>New Comment on $desc_title</h2>
+	At $(date),<br>
+	$Commenter commented on 
+	<a href="$HTTP_REFERER">$desc_title</a>:<P>
+	
+	$Text
+	<p><hr><p>
+	<h3>The full set of comments:</h3>
+	<p><hr><p>
+	<a href="$HTTP_REFERER">&larr; Back to the $desc_title page.</a>
+	<p>
+	EOF
+	)
+
+echo this far
+#
+# the necessary vars should be set/exported - let's just call the mailer...
+./coLabMailer 2>&1
+rc=$?
+if [ $rc = 0 ]
+then
+	echo "Mail sent."
+else
+	echo "Problem sending mail."
+fi
+

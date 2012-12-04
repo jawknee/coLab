@@ -9,6 +9,8 @@
 #	$cLmail_return		# the reply-to
 #	$cLmail_bodytext	# the message body, kinda of the point...
 #
+source ../.coLab.conf   # don't like this...
+
 if [ -z "$cLmail_subject" -o \
 	-z "$cLmail_addresses" -o \
 	-z "$cLmail_bodytext" ]
@@ -59,10 +61,9 @@ EOF
 	</style>
 	</head>
 	<body>
-	<div class="main">
+	<table border=0 cellpadding=30><tr><td valign=top>	<! two cells - body and logo>
 	<center>
-	<table width=640 border=0>
-	<tr><td height=20> &nbsp; </td></tr> <! space down a bit..>
+	<table width=640 border=0 cellpadding=30 class="main">
 	<tr><td>
 	EOF
 	
@@ -75,9 +76,12 @@ EOF
 	</td></tr>
 	<tr height=20><td> &nbsp;
 	</td></tr></table>
+	
 	</center>
-	</div>
-	<div id="Logo" class="logo"><img src="http://jawknee.com/coLab/Resources/CoLab_Logo.png"></div>
+	</td><td valign=top>
+	<img src="http://jawknee.com/coLab/Resources/CoLab_Logo.png">
+	</td></tr></table>
+
 
 	</body>
 	</html>

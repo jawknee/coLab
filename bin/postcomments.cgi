@@ -2,19 +2,36 @@
 #
 #	Copyright Johnny Klonaris 2012
 #	
-eval "$(./cgi-parse | tee ../logs/var.log | ./evalfix)"
+#eval "$(./cgi-parse.py | tee -a ../logs/var.log | ./evalfix)"
+eval "$(tee -a ~/dev/coLab/logs/var.log | ./cgi-parse |  tee -a ~/dev/coLab/logs/logs/var.log | ./evalfix.py )"
 
 #
 # For now - hardcoded addresses...
 export cLmail_addresses="johnny@jawknee.com, jcdlansing@gmail.com, mccluredc@gmail.com"
-#export cLmail_addresses="johnny@jawknee.com" 
+export cLmail_addresses="johnny@jawknee.com" 
+
+source ../.coLab.conf	# don't like this...
+
+
 
 cat <<EOF
 Content-type: text/html
 
 EOF
 
-logfile="../Sites/$site/Comments.log"
+if [ -z "$Text" ]
+then
+	cat <<-EOF
+	<html><body>
+	<h1>No Content / No Play</h1>
+	</body></html>
+	EOF
+	exit
+fi
+
+dest=${HTTP_REFERER%index.html}
+dirname=$coLab_home/${dest#$coLab_url_head}
+logfile="$dirname/Comments.log"
 
 if [ -z "$Commenter" ]
 then
@@ -27,7 +44,6 @@ cat <<-EOF >>$logfile
 $Text
 EOF
 
-dest=$(dirname $HTTP_REFERER)/index.shtml
 cat <<EOF
 <html>
 <head><title>form process</title>
@@ -66,10 +82,11 @@ export cLmail_bodytext=$(cat <<-EOF
 cat <<-EOF 
 $cLmail_bodytext
 <pre>
+
 EOF
 #
 # the necessary vars should be set/exported - let's just call the mailer...
-./coLabMailer 2>&1
+$coLab_home/bin/coLabMailer 2>&1
 rc=$?
 if [ $rc = 0 ]
 then

@@ -12,6 +12,9 @@ then
 	exit 1
 fi
 
+source ./.coLab.conf
+
+
 #
 # For now we just build the left menu
 #
@@ -35,22 +38,24 @@ cat <<-EOF >$leftside
 <ul>
 EOF
 
-sitelist="$home/Sites/Site.List"
-
-if  ! touch $sitelist
+domain_home="$home/Domains/Catharsis"
+piecelist="$domain_home/Pieces/Piece.List"
+if  [ ! -f  "$piecelist" ] 
 then
-	echo "$0: cannot access file: $sitelist" >&2
+	echo "$0: cannot access file: $piecelist" >&2
 	exit 1
 fi
 
+domain_head="$coLab_root/Domains/Catharsis"
+piece_dir="$domain_head/Pieces"
 #
 # return the 'n' most recent (non-comment) lines - last n lines
-# in the file, in reverse order
+# in the file, in reverse order (or not)
 n=10
-recentlist=$(grep -v "^#" $sitelist | tail -n $n  ) 	# use -r to reverse to newest first..
-for site in $recentlist
+recentlist=$(grep -v "^#" $piecelist | tail -n $n  ) 	# use -r to reverse to newest first..
+for piece in $recentlist
 do
-	data="$home/Sites/$site/data"
+	data="$domain_home/Pieces/$piece/data"
 	if [ ! -f "$data" ]
 	then
 		echo "$0: Warning: no such file: $data"
@@ -76,7 +81,7 @@ do
 	#
 	# Now we should be ready to emit a list item link...
 	cat <<-EOF >>$leftside
-	<li><a href="../$site/" title="$fun_title">$desc_title</a><br><i>$update</i></li>
+	<li><a href="$piece_dir/$piece/" title="$fun_title">$desc_title</a><br><i>$update</i></li>
 	EOF
 
 done
@@ -86,22 +91,23 @@ cat <<-EOF >>$leftside
 EOF
 
 cat <<-EOF >>$leftside
+(new)
 </div>
 EOF
 #
 # Now we rebuild each of the link files - this can be smarter in the future...
-cd $home/Sites
+cd $home/Domains/Catharsis/Pieces
 currName="Home"
 currTitle="Home"
 currFun="Home"
-currLink="../../index.shtml"
+currLink="$coLab_root/index.shtml"
 
 
-for site in $(grep -v "^#" Site.List) Archive
+for site in $(grep -v "^#" Piece.List) Archive
 do
 	if [ "$site" = Archive ]
 	then
-		nextLink="../../Shared/Archive.shtml"
+		nextLink="$coLab_root/Shared/Archive.shtml"
 		nextTitle="Archive"
 		nextFun="Archive"
 	else
@@ -118,7 +124,7 @@ do
 		link="$currName/links.html"
 		echo Creating $link
 		cat <<-EOF >$link
-		<p><hr>
+		<!p><!hr>
 		<div class="links" style="float: left;">
 		<a href="$prevLink" title="$prevFun">&larr; $prevTitle</a>
 		</div>
@@ -126,7 +132,7 @@ do
 		<a href="$nextLink" title="$nextFun">$nextTitle &rarr;</a>
 		</div>
 		<br>
-		<hr><p>
+		<!hr><!p>
 		EOF
 	fi
 	

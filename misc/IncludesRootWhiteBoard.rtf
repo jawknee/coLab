@@ -8,7 +8,7 @@
 \
 \
 /coLab		root - for now. all includes will reference from /coLab - \
-\
+	\
 breakdown(s)\
 \
 domain	e.g., Catharsis, Johnny\
@@ -29,6 +29,7 @@ Filestructure:\
 root:\
 \
 /coLab\
+	.coLab.conf		var assignments for site/URL heads, etc.   "site" specific\
 	bin/		cgi-bin, but I can't call that here\'85\
 	Code/ 	front end code - web generation	\
 	index.shtml	site/coLab home\
@@ -39,8 +40,15 @@ root:\
 	SecondTurn/	special, retain\
 	Shared/	sidebars, (banners?) \
 	Sites/		piece pages, deprecated\
-		Site.List	guess (implies order/inclusion, for now)\
+		Site.List	guess (implies order/inclusion, for now), commendable: #\
 	Domains/	(new) \
-		Domain.List	ditto\
+		Domain.List	ditto.\
+		<domain>/Pieces/	\
+		<domain>/PIeces/Piece.List\
+		<domain>/<piece>\
+			"piece content" - mov, html, comments, etc.\
+\
+\
+\
 \
 	}

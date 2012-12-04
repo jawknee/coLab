@@ -16,31 +16,55 @@ import os
 import sys
 import datetime
 import imp	# to input the data file
+import shutil
+import coLabUtils
 
 def htmlgen(name):
 
-	# These will be passed in via opt parms or otherwise...
-
-	sitedir = "../Sites/" + name
-	hname = "index.shtml"
 
 
 	try:
-		os.chdir(sitedir)
-	except OSError, info:
-		print "Could not cd to $sitedir", info
-		exit(1)
+		conf=coLabUtils.get_config()
+	except ImportError:
+		print "Cannot find config."
+		sys.exit(1)
+
+	domain_root = conf.coLab_home + "/Domains/Catharsis"
+	piece = domain_root + "/Pieces/" + name
 
 	try:
-		os.system("rm -vf " + hname)
-	except:
-		print "rm exception"
+		os.chdir(piece)
+	except OSError,info:
+		print "Cannot cd to ", piece, info
+		print "fatal."
+		sys.exit(1)
 
-	try:
-		f = open("data")
-	except:
-		print "Could not open data file: data - ", sys.exc_info()[0]
-		exit(1)
+
+	date = str(datetime.datetime.now())
+
+	if os.path.exists('data'):
+		print "Found data file"
+	else:
+		src=conf.coLab_home + "/Resources/domain_home_data.template"
+		try:
+			shutil.copy(src, 'data')
+			f=open('data','a')
+			dates="""\ncreate=\"""" + date + """\"\nupdate=\"""" + date + """\"\n"""
+			f.write(dates)
+			f.close
+		except OSError, info:
+			print "Failed to create data file", info
+			sys.exit(1)
+		print "Created new data file"
+
+	index='index.shtml'
+	if os.path.exists(index):
+		try:
+			shutil.move(index, index + ".prev")
+		except OSError, info:
+			print "Error moving", index, index
+			sys.exit(1)
+
 
 	try:
 		P = imp.load_source('','data')
@@ -52,24 +76,24 @@ def htmlgen(name):
 		os.system("cat data")
 		exit(1)
 
-	f.close
 
-	os.system("rm -f c")	# consequece of the import...
-
+	os.system("rm -f datac c")	# consequece of the import...
 
 	try:
-		os.system("touch Comments.log")
-		os.system("touch links.html")
-		os.system("rm -vf " + hname)
-	except:
-		print "touch/rm Problem - continuing."
+		for file in ("Comments.log", "links.html" ):
+			f=open(file,'w+')
+			f.close()
+	except IOError, info:
+		print "Touch problem", file, info
+
+
 
 	date = str(datetime.datetime.now())
 
 	try:
-		outfile = open(hname, 'wb')
-	except:
-		print "Failure opening ", hname
+		outfile = open(index, 'w+')
+	except IOError, info:
+		print "Failure opening ", index, info
 		exit(1)
 
 	#
@@ -112,29 +136,30 @@ def htmlgen(name):
 
 	head = """<html>
 		<head><title>""" + P.fun_title + """</title>
-		<link rel="stylesheet" type="text/css" href="../../Resources/Style_Default.css">
-		<link rel="shortcut icon" href="../../Resources/CoLab_Logo.png">
+		<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+		<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
 		""" + head_insert + "</head>"
 
+	# substitute !coLabRoot! with that...	
 	body = """
 		<body>
 		<!--   Menu Header -->
 		<div id="container">
 		
 		<div class="banner" > <! start of banner>
-		<center>	 
-		        <table width=80% height=30 border=0 cellpadding=10 class="banner_txt">
-		          <td align="center"><a href="../../index.shtml" title="Always a nice place to go...">Home</a></td>
-		          <td align="center"><a href="../../Shared/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
-		          <td align="center"><a href="../../Shared/nav.shtml" title="How to get to where you need go.">Nav</a></td>
-		          <td align="center"><a href="../../Help/" title="Hopefully, the help you need.">Help</a></td>
+		<!center>	 
+		        <table width=80% border=0 cellpadding=0 class="banner_txt">
+		          <td align="center" ><a href="!coLabRoot!/index.shtml" title="Always a nice place to go...">Home</a></td>
+		          <td align="center" ><a href="!coLabRoot!/Shared/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+		          <td align="center" ><a href="!coLabRoot!/Shared/nav.shtml" title="How to get to where you need go.">Nav</a></td>
+		          <td align="center" ><a href="!coLabRoot!/Help/" title="Hopefully, the help you need.">Help</a></td>
 		        </tr></table>
-		</center>
+		<!/center>
 		<br>
 		</div>	<! end of banner>
 
-		<!--#include virtual="../../Shared/sidebar_l.html" -->
-		<div id="Logo" class="logo"><img src="../../Resources/CoLab_Logo.png"></div>
+		<!--#include virtual="/coLab/Shared/oldsidebar_l.html" -->
+		<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
 
 		
 		<div id="Content" class="main">
@@ -142,10 +167,13 @@ def htmlgen(name):
 		<h1 class=fundesc>
 	""" + P.fun_title + "</h1>"
 
+	body = body.replace('!coLabRoot!', conf.coLab_root)
+
 	content = """
 		</center>
-	<div class="maintext">
 
+	<!--#include virtual="links.html" -->
+	<div class="maintext">
 	<h2 class=fundesc>""" + P.desc_title + """</h2>
 	<font color=a0b0c0>""" + P.description + "<p><i>" + P.create + """</i><p>
 	<p>"""
@@ -153,10 +181,10 @@ def htmlgen(name):
 	CommentLog="Comments.log" 
 
 	tail = """
-	<!--#include virtual="links.html" -->
-	<br>
+	<hr>
 	Enter your comments here:<br>
-	<form method=POST action="../../bin/postcomments.cgi">
+	
+	<form method=POST action="/coLab/bin/postcomments.cgi">
 	Your name: <input type="text" name="Commenter" ><br>
 	<center>
 	<input type="hidden" name="site" value=""" + '"' + name + '"' + """>
@@ -170,13 +198,14 @@ def htmlgen(name):
 	<h3>Comments:</h3>
 	<!--#include virtual="Comments.log" -->
 	<p>
-	<!--#include virtual="links.html" -->
 	<br>
 	<center>
 	&copy; Catharsis Studios West 2012
+	<p>
 	</center>
 	</div>
-
+	<!--#include virtual="links.html" -->
+	<p>&nbsp;<p>
 	</td></tr></table>
 	</div>
 	</div>

@@ -12,17 +12,18 @@ textarea { background-color: #b0b0b8; font-family: Georgia; width: 640px; font-s
 
 input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 
-.banner { position: absolute; top: 4px; left: 4; width: 1035; height: 50px; 
+.banner { position: absolute; top: 4px; left: 4;  height: 20px;  right: 4;
 	font-family:Georgia; color: #c0b0a0; 
 	background-color: #209090; background-image: url('http://jawknee.com/coLab/Resources/P1CyanTex.png'); 
 	}
+.banner table td { width: 20% }
 .banner_txt { color: #c0b0a0 }
 .banner_txt a:link { color: #d8c8b8; text-decoration: none;}
 .banner_txt a:visited { color: #b8a898; text-decoration: none; }
 .banner_txt a:hover { color: #f0e0d0; text-decoration: underline;}
 .banner_txt a:active { color: #ffffff; text-decoration: underline;}
 
-.sidebar_l { position: absolute; top: 54px; left: 4px; width: 200px; 
+.sidebar_l { position: absolute; top: 24px; left: 4px; width: 200px; 
 	font-family: Helvetica; font-size: smaller;
 	color: black; 
 	background-color: #606060; background-image: url('http://jawknee.com/coLab/Resources/P1GraySm.png'); 
@@ -33,7 +34,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .sidebar_l a:hover { color: #f0e0d0; text-decoration: underline;}
 .sidebar_l a:active { color: #ffffff; text-decoration: underline;}
 
-.main { position: absolute; top: 54px; left: 204px;  width: 835px; 
+.main { position: absolute; top: 24px; left: 204px;  width: 835px; 
 	font-family:Georgia; 
 	background-color: #209090; 
 	background-image: url('http://jawknee.com/coLab/Resources/P1Black2.png');
@@ -52,4 +53,4 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .links a:hover { color: #f0e0d0; text-decoration: underline; }
 .links a:active { color: #ffffff; text-decoration: underline; }
 
-.logo { position: absolute; top: 4px; right: 4px; }
+.logo { position: absolute; top: 24px; right: 4px; }

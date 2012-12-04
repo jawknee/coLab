@@ -2,7 +2,7 @@
 #
 # Rebuild everything...
 #
-for site in $(grep -v "^#" ../Sites/Site.List)
+for site in $(grep -v "^#" ~/coLab/Domains/Catharsis/Pieces/Piece.List)
 do
 	echo Rebuilding $site...
 	./htmlgen.py $site

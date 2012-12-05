@@ -100,7 +100,7 @@ cd $home/Domains/Catharsis/Pieces
 currName="Home"
 currTitle="Home"
 currFun="Home"
-currLink="$coLab_root/index.shtml"
+currLink="$coLab_root/Domains/Catharsis/index.shtml"
 
 
 for site in $(grep -v "^#" Piece.List) Archive

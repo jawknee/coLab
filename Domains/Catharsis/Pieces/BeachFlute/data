@@ -1,0 +1,33 @@
+name="BeachFlute"
+desc_title="Initial Flute Prune"	# descriptive / short
+fun_title="A Big, Heaping Bowl of Pruned Flutes!"
+
+piece="Rain"
+project="JDJ-5"
+
+description="""
+<i>(I know, not again - but this was fun!)</i>
+<p>
+In prepping for a new assembly test, 
+I decided to do a one-pass flute prune.  Still a bit 
+busy in spots, but ducking a few outliers - which you can 
+now track as you watch - made a vast improvement on the 
+flute-palatability. 
+<p>
+That reminds me - I need to look into a spell checker for the
+online text entry...
+<p>
+Shown are the five flute tracks and their respective volumes below each.
+It's a flute-for-all, no doubt - I added just enough piano to give some context.
+In the complete mix I notched the flute mix at usual 1k - really seems to help.
+removing the sharpness but leaving the deep and high end largely alone.  Then 
+I realized it was easy enough to just dump it again and the flutes sound much 
+better (a bit shrill in spots w/o the EQ).
+<p>
+I'm likely to have a new full test assembly tomorrow night.
+<p>
+<i>BTW: my quicktime player has a full screen mode - see if yours does.</i>
+"""
+
+create="2012-11-28 00:20:23"
+update="2012-11-28 00:20:23"

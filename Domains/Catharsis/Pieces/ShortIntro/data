@@ -1,0 +1,15 @@
+name="ShortIntro"
+desc_title="ShortIntro Test"
+fun_title="From before the beginning..."
+
+description="""This is mostly a test to see if my scripting can create
+	the html index file in place with a pre-existing web site.
+	<p>
+	This is the first half of the short intro with the second half 
+	ending spliced on. 
+	<p>
+	I think I like it this way.
+        """
+create="2012-11-14 02:03:11"
+update="2012-11-25 23:42:43"
+

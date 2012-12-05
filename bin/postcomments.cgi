@@ -2,8 +2,13 @@
 #
 #	Copyright Johnny Klonaris 2012
 #	
+source ../.coLab.conf
 #eval "$(./cgi-parse.py | tee -a ../logs/var.log | ./evalfix)"
-eval "$(tee -a ~/dev/coLab/logs/var.log | ./cgi-parse |  tee -a ~/dev/coLab/logs/logs/var.log | ./evalfix.py )"
+
+log="$coLab_home/logs/var.log"
+
+eval "$(tee -a $log | $coLab_home/bin/cgi-parse.py |  tee -a $log | $coLab_home/bin/evalfix.py )"
+
 
 #
 # For now - hardcoded addresses...
@@ -24,6 +29,9 @@ then
 	cat <<-EOF
 	<html><body>
 	<h1>No Content / No Play</h1>
+	<pre>
+	$(set)
+	</pre>
 	</body></html>
 	EOF
 	exit

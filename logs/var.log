@@ -1,17 +1,10 @@
-hello
-Commenter=adsfaf&site=Catharsis&title=Catharsis&Text=asdffdCommenter="adsfaf"
+Commenter=jk&site=Catharsis&desc_title=Catharsis&Text=Not+that+I+plan+daily+updates%2C+and+not+necessarily+as+%22coLab%22+emails...+but+it%27s+fun.++For+now.++For+me%2C+at+least.%0D%0A%0D%0ANo+changes+to+the+site+-+my+current+work+can+all+be+done+%22locally%22+on+my+Mac+-+now+that+I+have+apache+running.++But+I+managed+to+get+the+various+time+handling+bits+nailed+down+-+including+converting+the+internal+time+formats+from+PST+to+UTC%2C+converting+UTC+to+seconds+%28for+sorting%29%2C+and+creating+a+Songdata+class.++The+plan+for+tonight+-+depending+on+beer+saturation+status+-+is+to+%22walk%22+the+tree+of+songs+%28I+like+the+sound+of+that%29%2C+build+a+list+of+song+data+items%2C+sort+them+by+create+date+for+the+prev%2Fnext+links%2C+generated+those%2C+then+sort+by+update+and+use+that+for+the+%22What%27s+New%22%2C+noting+new+songs+vs.+songs+with+updated+comments.++%0D%0A%0D%0AThen+a+simple+%28heh%29+matter+of+creating+the+project+pages%2C+song+pages%2C+the+Archive+page+and+such.+++I+think+I%27m+about+80-90%25+done+with+the+underlying+infrastructure+to+get+this+next+phase+running+-+funny+how+you+%28I%29+can+spend+a+couple+of+hours+trying+to+make+sure+the+whole+date%2Ftime+thing+is+working+-+then+page+generation+just+falls+into+place.+++Maybe.+++OK+-+all+ten+target+boots+are+done+-+time+to+try+again+with+a+different+kernel.++%0D%0A%0D%0AOnward...Commenter=jk&site=Catharsis&desc_title=Catharsis&Text=Not+that+I+plan+daily+updates%2C+and+not+necessarily+as+%22coLab%22+emails...+but+it%27s+fun.++For+now.++For+me%2C+at+least.%0D%0A%0D%0ANo+changes+to+the+site+-+my+current+work+can+all+be+done+%22locally%22+on+my+Mac+-+now+that+I+have+apache+running.++But+I+managed+to+get+the+various+time+handling+bits+nailed+down+-+including+converting+the+internal+time+formats+from+PST+to+UTC%2C+converting+UTC+to+seconds+%28for+sorting%29%2C+and+creating+a+Songdata+class.++The+plan+for+tonight+-+depending+on+beer+saturation+status+-+is+to+%22walk%22+the+tree+of+songs+%28I+like+the+sound+of+that%29%2C+build+a+list+of+song+data+items%2C+sort+them+by+create+date+for+the+prev%2Fnext+links%2C+generated+those%2C+then+sort+by+update+and+use+that+for+the+%22What%27s+New%22%2C+noting+new+songs+vs.+songs+with+updated+comments.++%0D%0A%0D%0AThen+a+simple+%28heh%29+matter+of+creating+the+project+pages%2C+song+pages%2C+the+Archive+page+and+such.+++I+think+I%27m+about+80-90%25+done+with+the+underlying+infrastructure+to+get+this+next+phase+running+-+funny+how+you+%28I%29+can+spend+a+couple+of+hours+trying+to+make+sure+the+whole+date%2Ftime+thing+is+working+-+then+page+generation+just+falls+into+place.+++Maybe.+++OK+-+all+ten+target+boots+are+done+-+time+to+try+again+with+a+different+kernel.++%0D%0A%0D%0AOnward...Commenter="jk"
 site="Catharsis"
-title="Catharsis"
-Text="asdffd"
-Commenter=jk&site=Catharsis&title=Catharsis&Text=very+cool.%0D%0A%0D%0Akeep+it+up...Commenter="jk"
-site="Catharsis"
-title="Catharsis"
-Text="very cool.
+desc_title="Catharsis"
+Text="Not that I plan daily updates, and not necessarily as &#034;coLab&#034; emails... but it&#039;s fun.  For now.  For me, at least.
 
-keep it up..."
-Commenter=jk&site=Catharsis&title=Catharsis&Text=very+cool.%0D%0A%0D%0Akeep+it+up...Commenter="jk"
-site="Catharsis"
-title="Catharsis"
-Text="very cool.
+No changes to the site - my current work can all be done &#034;locally&#034; on my Mac - now that I have apache running.  But I managed to get the various time handling bits nailed down - including converting the internal time formats from PST to UTC, converting UTC to seconds (for sorting), and creating a Songdata class.  The plan for tonight - depending on beer saturation status - is to &#034;walk&#034; the tree of songs (I like the sound of that), build a list of song data items, sort them by create date for the prev/next links, generated those, then sort by update and use that for the &#034;What&#039;s New&#034;, noting new songs vs. songs with updated comments.  
 
-keep it up..."
+Then a simple (heh) matter of creating the project pages, song pages, the Archive page and such.   I think I&#039;m about 80-90% done with the underlying infrastructure to get this next phase running - funny how you (I) can spend a couple of hours trying to make sure the whole date/time thing is working - then page generation just falls into place.   Maybe.   OK - all ten target boots are done - time to try again with a different kernel.  
+
+Onward..."

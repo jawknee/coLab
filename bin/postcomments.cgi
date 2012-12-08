@@ -9,11 +9,10 @@ log="$coLab_home/logs/var.log"
 
 eval "$(tee -a $log | $coLab_home/bin/cgi-parse.py |  tee -a $log | $coLab_home/bin/evalfix.py )"
 
-
 #
 # For now - hardcoded addresses...
 export cLmail_addresses="johnny@jawknee.com, jcdlansing@gmail.com, mccluredc@gmail.com"
-export cLmail_addresses="johnny@jawknee.com" 
+#export cLmail_addresses="johnny@jawknee.com" 
 
 source ../.coLab.conf	# don't like this...
 
@@ -36,8 +35,10 @@ then
 	EOF
 	exit
 fi
+shopt -s extglob		# our old friend, extglob (pattern matching extension, next line)
+dest=${HTTP_REFERER%index.?(s)html}	# removes index.html or index.shtml
+shopt -u extglob
 
-dest=${HTTP_REFERER%index.html}
 dirname=$coLab_home/${dest#$coLab_url_head}
 logfile="$dirname/Comments.log"
 
@@ -54,7 +55,7 @@ EOF
 
 cat <<EOF
 <html>
-<head><title>form process</title>
+<head><title>coLab Comments: $desc_title</title>
 <!meta HTTP-EQUIV="REFRESH" content="5;URL="$HTTP_REFERER/index.shtml">
 <link rel="stylesheet" type="text/css" href="../Resources/Style_Default.css">
 </head>

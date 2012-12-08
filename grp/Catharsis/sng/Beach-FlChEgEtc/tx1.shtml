@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>Test</title>
+<link rel="stylesheet" type="text/css" href="../../Resources/Style_Default.css">
+<!link rel="stylesheet" type="text/css" href="http://jawknee.com/coLab/Resources/Style_Default.css">
+</head>
+
+<body class="banner">
+<h1> This should do something</h1>
+
+<!--#include virtual="test-inc.html"-->
+
+What? Now??
+
+<div class="body">
+Stuff in here...
+</div>
+
+
+<div class="h1" style="background-color: b0d0c0" >
+Main div outline
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+#
+# Domain.List
+# Currently a file that implies:
+#   inclusion in the web display
+#   order
+#
+# Both would likely, or at least possibly,
+# be replaced by an exhaustive search and local vars - but
+# who wants to get exhausted?
+#
+Catharsis

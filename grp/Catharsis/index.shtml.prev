@@ -1,0 +1,106 @@
+<html>
+		<head><title>Catharsis</title>
+		<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+		<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png"
+		</head>
+		
+		<body>
+		<!--   Menu Header -->
+		<div id="container">
+		
+		<div class="banner" > <! start of banner>
+		<!center>	 
+		        <table width=80%  border=0 cellpadding=0 class="banner_txt">
+		          <td align="center"><a href="/coLab/index.shtml" title="Always a nice place to go...">Home</a></td>
+		          <td align="center"><a href="/coLab/Shared/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+		          <td align="center"><a href="/coLab/Shared/nav.shtml" title="How to get to where you need go.">Nav</a></td>
+		          <td align="center"><a href="/coLab/Help/" title="Hopefully, the help you need.">Help</a></td>
+		        </tr></table>
+		<!/center>
+		<br>
+		</div>	<! end of banner>
+
+		<!--#include virtual="/coLab/Shared/sidebar_l.html" -->
+		<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png"></div>
+
+		
+		<div id="Content" class="main">
+		<center>
+		<h1 class=fundesc>
+	Catharsis Collaboration Zone</h1>
+		</center>
+	<div class="maintext">
+
+	<h2 class=fundesc>Catharsis</h2>
+	<font color=a0b0c0>
+This is barely more than a place-holder for the Catharsis "home" in this collaboration tool.
+<p>
+It is currently generated from a simple data file (including these comments) and should soon have, in
+addition to the most recent activity, on the left, a list of all relevant projects, related links
+(pictures?), etc.
+<p>
+Comments appear to be working - you can leave them below re: the interface, or on each
+of the specific song pages.
+<p>
+Specific planned enhancements / implementations:
+<ul>
+	<li>Projects (e.g., JDJ-3, Distant Converstations, etc. )<br>
+	Would list associated pieces, related projects.  There could be meta projects (JDJ comprises 
+	JDJ-1 through 5).   
+	<p>
+	<li>Pieces / Songs (e.g., Storm, Rosemary In Bloom)<br>
+	The distinction is not that strong lately for us between a project like JDJ-5 
+	and a Piece or Song like "It Must Have Been the Rain", but I
+	think normally a project would have a number of pcs/sngs.
+	<p>
+	Pieces can also have related Projects or Pieces (future tense of "can also have")
+	<p>
+	<li>Need to nail down the internal date format (to show most recent activity)
+	<p>
+	<li>Need to extend the generating code to go from a flat file system to more of a search/scan system
+	<p>
+	<li>Implement "What's New", "Archive", "Home" and "Help".
+	<p>
+	<li>Consider access feature: collaborators can agree on who sees what... (unanimous seems
+	reasonable), and eventually generate the pages on the fly so that people see an interface tailored
+	to their access. (Would require some form of login / id) - security concerns soon arise.
+	<p>
+	<li>Reevaluate things...
+	<p>
+	<li>Consider conversion to PHP and MySQL.
+</ul>
+
+<p><i>2012-11-29 23:37:22.601934</i><p>
+	<p>
+	<!--#include virtual="links.html" -->
+	<br>
+	Enter your comments here:<br>
+	<form method=POST action="/coLab/bin/postcomments.cgi">
+	Your name: <input type="text" name="Commenter" ><br>
+	<center>
+	<input type="hidden" name="site" value="Catharsis">
+	<input type="hidden" name="desc_title" value="Catharsis">
+	<textarea name="Text" rows=15 cols=80></textarea>
+	<br>
+	</center>
+	<input type="submit">
+	</form>
+	<p><hr><p>
+	<h3>Comments:</h3>
+	<!--#include virtual="Comments.log" -->
+	<p>
+	<!--#include virtual="links.html" -->
+	<br>
+	<center>
+	&copy; Catharsis Studios West 2012
+	</center>
+	</div>
+
+	</td></tr></table>
+	</div>
+	</div>
+	
+	</center
+	</body>
+	</html>
+	

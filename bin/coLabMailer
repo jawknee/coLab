@@ -28,7 +28,7 @@ fi
 
 if [ -z "$cLmail_return" ]
 then
-	cLmail_return="jawknee@sonic.net"
+	cLmail_return="catharsis@jawknee.com"
 fi
 
 MailBoundary="coLabMailBoundary"
@@ -61,9 +61,9 @@ EOF
 	</style>
 	</head>
 	<body>
-	<table border=0 cellpadding=30><tr><td valign=top>	<! two cells - body and logo>
+	<table border=0 cellpadding=30 width=100%><tr><td valign=top>	<! two cells - body and logo>
 	<center>
-	<table width=640 border=0 cellpadding=30 class="main">
+	<table border=0 cellpadding=30 class=main>
 	<tr><td>
 	EOF
 	
@@ -79,7 +79,9 @@ EOF
 	
 	</center>
 	</td><td valign=top>
-	<img src="http://jawknee.com/coLab/Resources/CoLab_Logo.png">
+	<center>
+	<img src="http://jawknee.com/coLab/Resources/CoLab_Logo.png" height=50 width=50>
+	</center>
 	</td></tr></table>
 
 

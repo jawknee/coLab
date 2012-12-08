@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+cd ../grp/Catharsis/sng
+
+here=$(/bin/pwd)
+
+for i in $(ls | grep -v -e Piece.List -e ShortIntro) 
+do   
+	echo $i 
+	cd $here/$i
+	cvdate.py
+done
+

@@ -19,6 +19,11 @@ def cgiparse():
 
 	while i < l:
 		c=s[i]
+		# first - convert any % hex characters...
+		if c == '%':	
+			c = chr(int(s[i+1:i+3],16))
+			i+=2
+
 		if c == '+':
 			out = ' '	# space
 		elif c == '=':
@@ -31,12 +36,15 @@ def cgiparse():
 			else:
 				out = '\n'
 			
+		elif c == "'":	# apostrophe
+			out='&#039;'
+		elif c == '\\':	# backslash
+			out='&#092;'
+		elif c == '"':	# quote
+			out='&#034;'
 		elif c == ff:
 			break
 
-		elif c == '%':	
-			out = chr(int(s[i+1:i+3],16))
-			i+=2
 		else:
 			out = c
 

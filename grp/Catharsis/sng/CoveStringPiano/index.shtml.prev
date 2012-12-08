@@ -1,0 +1,121 @@
+<html>
+		<head><title>Widening Cove, Distant Flute</title>
+		<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+		<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+		<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
+	<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
+	<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
+	</head><script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
+	<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
+	<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
+	
+		<body>
+		<!--   Menu Header -->
+		<div id="container">
+		
+		<div class="banner" > <! start of banner>
+		<!center>	 
+		        <table width=80% border=0 cellpadding=0 class="banner_txt">
+		          <td align="center" ><a href="/coLab/index.shtml" title="Always a nice place to go...">Home</a></td>
+		          <td align="center" ><a href="/coLab/Shared/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+		          <td align="center" ><a href="/coLab/Shared/nav.shtml" title="How to get to where you need go.">Nav</a></td>
+		          <td align="center" ><a href="/coLab/Help/" title="Hopefully, the help you need.">Help</a></td>
+		        </tr></table>
+		<!/center>
+		<br>
+		</div>	<! end of banner>
+
+		<!--#include virtual="/coLab/Shared/oldsidebar_l.html" -->
+		<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+
+		
+		<div id="Content" class="main">
+		<center>
+		<h1 class=fundesc>
+	Widening Cove, Distant Flute</h1>
+		<script type="text/javascript"><!--
+		        QT_WritePoster_XHTML('Click to Play', 'CoveStringPiano-poster.jpg',
+		                'CoveStringPiano.mov',
+		                '640', '496', '',
+		                'controller', 'true',
+		                'autoplay', 'true',
+		                'bgcolor', 'black',
+		                'scale', 'aspect');
+		//-->
+		</script>
+		<noscript>
+		<object width="640" height="496" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
+		        <param name="src" value="CoveStringPiano-poster.jpg" />
+		        <param name="href" value="CoveStringPiano.mov" />
+		        <param name="target" value="myself" />
+		        <param name="controller" value="false" />
+		        <param name="autoplay" value="false" />
+		        <param name="scale" value="aspect" />
+		        <embed width="640" height="496" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"
+		                src="CoveStringPiano-poster.jpg"
+		                href="CoveStringPiano.mov"
+		                target="myself"
+		                controller="false"
+		                autoplay="false"
+		                scale="aspect">
+		        </embed>
+		</object>
+		</noscript>
+	
+		</center>
+
+	<!--#include virtual="links.html" -->
+	<div class="maintext">
+	<h2 class=fundesc>Cove: String, Piano</h2>
+	<font color=a0b0c0>Here's the previous "string" version of Cove, with only 
+	the piano mics added.   The flute is just
+	audible, sometimes more than just,  but I actually like it in spots.   
+	We can add in more or less of the direct flute, but 
+	this is the minimal flute we can do and use the piano tracks.  (Yes, I know the strings
+	are too loud - fun for now - and helps with seeing how it will interact with the piano.)
+	<p>
+	That said, I think there are some nice possibilities here.  There are a couple of spots with
+	some potential pitch issues.   These could be fixed with pitch shifting, but it would be
+	audible with the "distant" flute on a slightly different pitch.   The key may be to go a
+	tiny bit crazy and (if it works) go to 4 or 5 slightly pitch / time shifted versions of
+	the same flute part as a chorus effect.  I'll play with that later.
+	<p>
+	As before the top is the piano audio track, below that the piano roll w/velocity spikes,
+	and below that the flute track, not included here.
+	<p>
+	This gives us an idea of some of what we can do with this.
+        <p><i>2012-11-27 01:32:56</i><p>
+	<p>
+	<hr>
+	Enter your comments here:<br>
+	
+	<form method=POST action="/coLab/bin/postcomments.cgi">
+	Your name: <input type="text" name="Commenter" ><br>
+	<center>
+	<input type="hidden" name="site" value="CoveStringPiano">
+	<input type="hidden" name="desc_title" value="Cove: String, Piano">
+	<textarea name="Text" rows=15 cols=80></textarea>
+	<br>
+	</center>
+	<input type="submit">
+	</form>
+	<p><hr><p>
+	<h3>Comments:</h3>
+	<!--#include virtual="Comments.log" -->
+	<p>
+	<br>
+	<center>
+	&copy; Catharsis Studios West 2012
+	<p>
+	</center>
+	</div>
+	<!--#include virtual="links.html" -->
+	<p>&nbsp;<p>
+	</td></tr></table>
+	</div>
+	</div>
+	
+	</center
+	</body>
+	</html>
+	

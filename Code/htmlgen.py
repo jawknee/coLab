@@ -108,10 +108,11 @@ def htmlgen(group, page):
 		<head><title>""" + page.fun_title + """</title>
 		<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
 		<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
-		""" + head_insert + "</head>"
+		""" 
 
 	# substitute !coLabRoot! with that...	
 	body = """
+		</head>
 		<body>
 		<!--   Menu Header -->
 		<div id="container">
@@ -134,14 +135,15 @@ def htmlgen(group, page):
 
 		
 		<div id="Content" class="main">
-		<center>
-		<h1 class=fundesc>
-	""" + page.fun_title + "</h1>"
+	"""
 
 	body = body.replace('!groupURL!', group.root)
 	body = body.replace('!coLabRoot!', group.coLab_root)
 
 	content = """
+		<center>
+		<h1 class=fundesc>
+		+ page.fun_title + "</h1>"
 		</center>
 
 	<!--#include virtual="links.html" -->

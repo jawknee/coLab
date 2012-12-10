@@ -3,3 +3,5 @@
 *.confc
 *.bak
 datac
+/Shared/mostrecent.html
+/.InterarchyMirrorCacheData/*

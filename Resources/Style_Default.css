@@ -1,4 +1,4 @@
-body { background-color: #006060;         background-image: url('http://jawknee.com/coLab/Resources/P1GraySm.png');
+body { background-color: #a0a0a0; background-image: url('http://jawknee.com/coLab/Resources/P1GraySm.png');
         color: black }
 
 a:link { color: #d8c8b8; text-decoration: none;}
@@ -36,12 +36,15 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 
 .main { position: absolute; top: 24px; left: 204px;  width: 835px; 
 	font-family:Georgia; 
-	background-color: #209090; 
+	background-color: #151515;
 	background-image: url('http://jawknee.com/coLab/Resources/P1Black2.png');
 	color: #a0b0c0; }
 
 .main h2 { color: #c0b0a0; }
-.main table { color: #a0b0c0; }
+.main table { color: #a0b0c0; 
+	background-color: #151515;
+	background-image: url('http://jawknee.com/coLab/Resources/P1Black2.png');
+	}
 .main table h2 { color: #c0b0a0; }
 
 .maintext { position: relative; left: 100px; width: 640px; }

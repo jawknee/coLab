@@ -104,6 +104,12 @@ else
 	echo "Problem sending mail."
 fi
 
+datestring=$(./isodate.py)
+cat <<-EOF >>$dirname/data
+update="$datestring"
+EOF
+
+
 cat <<-EOF 
 <!--
 <pre>
@@ -121,3 +127,5 @@ Generated/processed by $0 on $(date)
 </body>
 </html>
 EOF
+
+

@@ -1,5 +1,5 @@
 <html>
-			<head><title>Catharsis Collaboration Zone</title>
+			<head><title>What's new in Catharsis land</title>
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
 			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
 			
@@ -31,54 +31,17 @@
 		</center>
 
 	<div class="maintext">
-	<h2 class=fundesc>Catharsis</h2>
+	<h2 class=fundesc>What's new in Catharsis land</h2>
 	<font color=a0b0c0>
-This is barely more than a place-holder for the Catharsis "home" in this collaboration tool.
-<p>
-It is currently generated from a simple data file (including these comments) and should soon have, in
-addition to the most recent activity, on the left, a list of all relevant projects, related links
-(pictures?), etc.
-<p>
-Comments appear to be working - you can leave them below re: the interface, or on each
-of the specific song pages.
-<p>
-Specific planned enhancements / implementations:
-<ul>
-	<li>Projects (e.g., JDJ-3, Distant Converstations, etc. )<br>
-	Would list associated pieces, related projects.  There could be meta projects (JDJ comprises 
-	JDJ-1 through 5).   
-	<p>
-	<li>Pieces / Songs (e.g., Storm, Rosemary In Bloom)<br>
-	The distinction is not that strong lately for us between a project like JDJ-5 
-	and a Piece or Song like "It Must Have Been the Rain", but I
-	think normally a project would have a number of pcs/sngs.
-	<p>
-	Pieces can also have related Projects or Pieces (future tense of "can also have")
-	<p>
-	<li>Need to nail down the internal date format (to show most recent activity)
-	<p>
-	<li>Need to extend the generating code to go from a flat file system to more of a search/scan system
-	<p>
-	<li>Implement "What's New", "Archive", "Home" and "Help".
-	<p>
-	<li>Consider access feature: collaborators can agree on who sees what... (unanimous seems
-	reasonable), and eventually generate the pages on the fly so that people see an interface tailored
-	to their access. (Would require some form of login / id) - security concerns soon arise.
-	<p>
-	<li>Reevaluate things...
-	<p>
-	<li>Consider conversion to PHP and MySQL.
-</ul>
-
-<p>
-	<i>2012-12-10T23:49:37.258430</i><p>
+	For now, just a running comment log of what's new...
+	<p><i>2012-12-10T23:49:37.258638</i><p>
 		<hr>
 		Enter your comments here:<br>
 		
 		<form method=POST action="/coLab/bin/postcomments.cgi">
 		Your name: <input type="text" name="Commenter" ><br>
 		<center>
-		<input type="hidden" name="page" value="Catharsis">
+		<input type="hidden" name="page" value="WhatIsNew">
 		<input type="hidden" name="desc_title" value="<unset>">
 		<textarea name="Text" rows=15 cols=80></textarea>
 		<br>

@@ -1,6 +1,7 @@
 name="ScndTurnBDeG"
 desc_title="Second Turn with Drum, Bass, etc."
 fun_title="Second Try with Turn"
+screenshot="ScndTurnBDeG-poster.jpg"
 
 description="""This is my first attempt at automating a large portion of the web page generation.
 I'm typing these comments as the other script builds the couple thousand images.

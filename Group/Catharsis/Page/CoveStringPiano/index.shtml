@@ -1,68 +1,65 @@
 <html>
-		<head><title>Widening Cove, Distant Flute</title>
-		<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
-		<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
-		<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
-	<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
-	<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
-	</head><script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
-	<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
-	<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
-	
-		<body>
-		<!--   Menu Header -->
-		<div id="container">
+			<head><title>Widening Cove, Distant Flute</title>
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+			<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
+		<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
+		<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
 		
-		<div class="banner" > <! start of banner>
-		<!center>	 
-		        <table width=80% border=0 cellpadding=0 class="banner_txt">
-		          <td align="center" ><a href="/coLab/Group/Catharsis/index.shtml" title="Always a nice place to go...">Home</a></td>
-
-		          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
-		          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/nav.shtml" title="How to get to where you need go.">Nav</a></td>
-		          <td align="center" ><a href="/coLab/Help/" title="Hopefully, the help you need.">Help</a></td>
-		        </tr></table>
-		<!/center>
-		<br>
-		</div>	<! end of banner>
-
-		<!--#include virtual="/coLab/Shared/mostrecent.html" -->
-		<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
-
-		
-		<div id="Content" class="main">
-		<center>
-		<h1 class=fundesc>
-	Widening Cove, Distant Flute</h1>
-		<script type="text/javascript"><!--
-		        QT_WritePoster_XHTML('Click to Play', 'CoveStringPiano-poster.jpg',
-		                'CoveStringPiano.mov',
-		                '640', '496', '',
-		                'controller', 'true',
-		                'autoplay', 'true',
-		                'bgcolor', 'black',
-		                'scale', 'aspect');
-		//-->
-		</script>
-		<noscript>
-		<object width="640" height="496" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-		        <param name="src" value="CoveStringPiano-poster.jpg" />
-		        <param name="href" value="CoveStringPiano.mov" />
-		        <param name="target" value="myself" />
-		        <param name="controller" value="false" />
-		        <param name="autoplay" value="false" />
-		        <param name="scale" value="aspect" />
-		        <embed width="640" height="496" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"
-		                src="CoveStringPiano-poster.jpg"
-		                href="CoveStringPiano.mov"
-		                target="myself"
-		                controller="false"
-		                autoplay="false"
-		                scale="aspect">
-		        </embed>
-		</object>
-		</noscript>
+			</head>
+			<body>
+			<!--   Menu Header -->
+			<div id="container">
+			
+			<div class="banner" > <! start of banner>
+			<!center>	 
+			        <table width=80% border=0 cellpadding=0 class="banner_txt">
+			          <td align="center" ><a href="/coLab/Group/Catharsis/index.shtml" title="Always a nice place to go...">Home</a></td>
 	
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Whats/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Archive/index.html" title="What have we been up to...">Archive</a></td>
+			          <td align="center" ><a href="/coLab/Help/" title="Hopefully, the help you need.">Help</a></td>
+			        </tr></table>
+			<!/center>
+			<br>
+			</div>	<! end of banner>
+	
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+	
+			
+			<div id="Content" class="main">
+		<center><h1 class="fundesc">Widening Cove, Distant Flute</h1>
+			<script type="text/javascript"><!--
+			        QT_WritePoster_XHTML('Click to Play', 'CoveStringPiano-poster.jpg',
+			                'CoveStringPiano.mov',
+			                '640', '496', '',
+			                'controller', 'true',
+			                'autoplay', 'true',
+			                'bgcolor', 'black',
+			                'scale', 'aspect');
+			//-->
+			</script>
+			<noscript>
+			<object width="640" height="496" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
+			        <param name="src" value="CoveStringPiano-poster.jpg" />
+			        <param name="href" value="CoveStringPiano.mov" />
+			        <param name="target" value="myself" />
+			        <param name="controller" value="false" />
+			        <param name="autoplay" value="false" />
+			        <param name="scale" value="aspect" />
+			        <embed width="640" height="496" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"
+			                src="CoveStringPiano-poster.jpg"
+			                href="CoveStringPiano.mov"
+			                target="myself"
+			                controller="false"
+			                autoplay="false"
+			                scale="aspect">
+			        </embed>
+			</object>
+			</noscript>
+		</center>
 		</center>
 
 	<!--#include virtual="links.html" -->
@@ -87,36 +84,36 @@
 	This gives us an idea of some of what we can do with this.
         <p><i>2012-11-27 01:32:56 AM PST</i><p>
 	<p>
-	<hr>
-	Enter your comments here:<br>
-	
-	<form method=POST action="/coLab/bin/postcomments.cgi">
-	Your name: <input type="text" name="Commenter" ><br>
-	<center>
-	<input type="hidden" name="page" value="CoveStringPiano">
-	<input type="hidden" name="desc_title" value="Cove: String, Piano">
-	<textarea name="Text" rows=15 cols=80></textarea>
-	<br>
-	</center>
-	<input type="submit">
-	</form>
-	<p><hr><p>
-	<h3>Comments:</h3>
-	<!--#include virtual="Comments.log" -->
-	<p>
-	<br>
-	<center>
-	&copy; Catharsis Studios West 2012
-	<p>
-	</center>
-	</div>
-	<!--#include virtual="links.html" -->
-	<p>&nbsp;<p>
-	</td></tr></table>
-	</div>
-	</div>
-	
-	</center
-	</body>
-	</html>
-	
+		<hr>
+		Enter your comments here:<br>
+		
+		<form method=POST action="/coLab/bin/postcomments.cgi">
+		Your name: <input type="text" name="Commenter" ><br>
+		<center>
+		<input type="hidden" name="page" value="CoveStringPiano">
+		<input type="hidden" name="desc_title" value="Cove: String, Piano">
+		<textarea name="Text" rows=15 cols=80></textarea>
+		<br>
+		</center>
+		<input type="submit">
+		</form>
+		<p><hr><p>
+		<h3>Comments:</h3>
+		<!--#include virtual="Comments.log" -->
+		<p>
+		<br>
+		<center>
+		&copy; Catharsis Studios West 2012
+		<p>
+		</center>
+		</div>
+		<!--#include virtual="links.html" -->
+		<p>&nbsp;<p>
+		</td></tr></table>
+		</div>
+		</div>
+		
+		</center
+		</body>
+		</html>
+		

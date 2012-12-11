@@ -136,6 +136,7 @@ class Page:
 		self.name="<unset>"
 		self.desc_title="<unset>"
 		self.fun_title="<unset>"
+		self.screenshot="<unset>"
 		self.description="<unset>"
 
 		self.project="<unset>"
@@ -186,6 +187,7 @@ class Page:
 			self.name = P.name
 			self.desc_title = P.desc_title
 			self.fun_title = P.fun_title
+			self.screenshot = P.screenshot
 			self.description = P.description
 
 			self.project = P.project
@@ -211,6 +213,7 @@ class Page:
 		return( 'name="' + self.name + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
+			'screenshot="' + self.screenshot + EOL +
 			'\n' +
 			'project="' + self.project + EOL +
 			'assoc_projects="' + self.assoc_projects + EOL +

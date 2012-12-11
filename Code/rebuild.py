@@ -51,7 +51,7 @@ def rebuild(group, opt):
 	Build the most recent list, typically included on the left sidebar...
 	"""
 
-	recent = os.path.join(g.coLab_home, 'Shared', 'mostrecent.html')
+	recent = os.path.join(g.home, 'Shared', 'mostrecent.html')
 	try:
 		f_recent = open(recent, 'w+')
 	except IOError as info:
@@ -64,7 +64,6 @@ def rebuild(group, opt):
 		-->
 		<div class="sidebar_l">
 		<h4>Recent Updates</h4>
-		<span style="font-size: smallest;"><i>Most recent last</i></span>
 		<ul>
 		""")
 
@@ -107,7 +106,7 @@ def rebuild(group, opt):
 	# as needed, index.shtml (data file change)
 	for pg in g.pagelist:
 		
-		print pg.name, '-', cldate.utc2long(pg.create)
+		print pg.name
 		# 
 		# and rebuild the html in that case...
 		try:
@@ -143,12 +142,13 @@ def rebuild(group, opt):
 	# Generate the links from the list..
 	linkgen(g)	# build links for the group...
 
-	#
-	# Reverse the page list order
-	g.pagelist.reverse()
+	homegen(g)
+	
+	newgen(g)
 
-	for pg in g.pagelist:
-		print "rev:", pg.name
+	navgen(g)
+
+	archivegen(g)
 
 		
 	sys.exit(0)

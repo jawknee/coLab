@@ -1,0 +1,118 @@
+<html>
+			<head><title>Catharsis Archive</title>
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+			
+			</head>
+			<body>
+			<!--   Menu Header -->
+			<div id="container">
+			
+			<div class="banner" > <! start of banner>
+			<!center>	 
+			        <table width=80% border=0 cellpadding=0 class="banner_txt">
+			          <td align="center" ><a href="/coLab/Group/Catharsis/index.shtml" title="Always a nice place to go...">Home</a></td>
+	
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Whats/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
+			          <td align="center" ><a href="/coLab/Help/" title="Hopefully, the help you need.">Help</a></td>
+			        </tr></table>
+			<!/center>
+			<br>
+			</div>	<! end of banner>
+	
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+	
+			
+			<div id="Content" class="main">
+		
+		</center>
+
+	<div class="maintext">
+	<h2 class=fundesc>Catharsis Archive</h2>
+	<font color=a0b0c0>
+	Here are the submitted pages, in chronological order of creation.
+	<p><i>2012-12-10T23:49:37.259070</i><p><hr><p>
+	<center>
+	<table cellpadding=10 border=0 width=640>
+<tr><td colspan=2> <a href="/coLab/Group/Catharsis/Page/ShortIntro"><h3 style="display: inline;">ShortIntro Test</h3></a> ~ 2012-11-14 02:03:11 AM PST</td></tr><tr><td><a href="/coLab/Group/Catharsis/Page/ShortIntro"><img src="/coLab/Group/Catharsis/Page/ShortIntro/ShortIntro-poster.jpg" width=160 height=140></a></td><td>This is mostly a test to see if my scripting can create
+	the html index file in place with a pre-existing web site.
+	<p>
+	This is the first half of the short intro with the second half 
+	ending spliced on. 
+	<p>
+	I think I like it this way.
+        </td></tr>
+		<tr><td colspan=2><hr></td></tr><tr><td colspan=2> <a href="/coLab/Group/Catharsis/Page/ScndTurnBDeG"><h3 style="display: inline;">Second Turn with Drum, Bass, etc.</h3></a> ~ 2012-11-18 11:40:11 PM PST</td></tr><tr><td><a href="/coLab/Group/Catharsis/Page/ScndTurnBDeG"><img src="/coLab/Group/Catharsis/Page/ScndTurnBDeG/ScndTurnBDeG-poster.jpg" width=160 height=140></a></td><td>This is my first attempt at automating a large portion of the web page generation.
+I'm typing these comments as the other script builds the couple thousand images.
+This is the version of Second Turn (current title) that I did for Nola for her birthda</td></tr>
+		<tr><td colspan=2><hr></td></tr><tr><td colspan=2> <a href="/coLab/Group/Catharsis/Page/Beach-FlChEgEtc"><h3 style="display: inline;">Beach, next phase</h3></a> ~ 2012-11-25 01:34:11 AM PST</td></tr><tr><td><a href="/coLab/Group/Catharsis/Page/Beach-FlChEgEtc"><img src="/coLab/Group/Catharsis/Page/Beach-FlChEgEtc/Beach-FlChEgEtc-poster.jpg" width=160 height=140></a></td><td>This little tool is getting close to useful.   Here is Beach with
+        the piano doubled on a rhodes, and a few other rhythmical friends.  Also,
+        all five flutes are on board,   Pretty much to show what we've got, 
+        get a sense of wh</td></tr>
+		<tr><td colspan=2><hr></td></tr><tr><td colspan=2> <a href="/coLab/Group/Catharsis/Page/CoveStringPiano"><h3 style="display: inline;">Cove: String, Piano</h3></a> ~ 2012-11-27 01:32:56 AM PST</td></tr><tr><td><a href="/coLab/Group/Catharsis/Page/CoveStringPiano"><img src="/coLab/Group/Catharsis/Page/CoveStringPiano/ScreenShot.png" width=160 height=140></a></td><td>Here's the previous "string" version of Cove, with only 
+	the piano mics added.   The flute is just
+	audible, sometimes more than just,  but I actually like it in spots.   
+	We can add in more or less of the direct flute, but 
+	this is the minimal fl</td></tr>
+		<tr><td colspan=2><hr></td></tr><tr><td colspan=2> <a href="/coLab/Group/Catharsis/Page/CoveStringSolo"><h3 style="display: inline;">Cove String Solo</h3></a> ~ 2012-11-27 11:16:58 PM PST</td></tr><tr><td><a href="/coLab/Group/Catharsis/Page/CoveStringSolo"><img src="/coLab/Group/Catharsis/Page/CoveStringSolo/ScreenShot.png" width=160 height=140></a></td><td>In search of something "new" I could post, I revisited Cove and
+started looking for string sounds.   A dozen or so string patches in I 
+had several in mind,
+perhaps merged together carefully, they might work.  Then I found the Film
+Score patch.  (An </td></tr>
+		<tr><td colspan=2><hr></td></tr><tr><td colspan=2> <a href="/coLab/Group/Catharsis/Page/BeachFlute"><h3 style="display: inline;">Initial Flute Prune</h3></a> ~ 2012-11-28 12:20:23 AM PST</td></tr><tr><td><a href="/coLab/Group/Catharsis/Page/BeachFlute"><img src="/coLab/Group/Catharsis/Page/BeachFlute/ScreenShot.png" width=160 height=140></a></td><td>
+<i>(I know, not again - but this was fun!)</i>
+<p>
+In prepping for a new assembly test, 
+I decided to do a one-pass flute prune.  Still a bit 
+busy in spots, but ducking a few outliers - which you can 
+now track as you watch - made a vast improvemen</td></tr>
+		<tr><td colspan=2><hr></td></tr><tr><td colspan=2> <a href="/coLab/Group/Catharsis/Page/Assmbly4"><h3 style="display: inline;">JDJ-V Assmbly4</h3></a> ~ 2012-11-28 11:48:13 PM PST</td></tr><tr><td><a href="/coLab/Group/Catharsis/Page/Assmbly4"><img src="/coLab/Group/Catharsis/Page/Assmbly4/ScreenShot.png" width=160 height=140></a></td><td>
+About time for a new assembly...
+<p>
+From the upper left to the lower right, there are:
+<ul>
+ <li>Intro<br>
+ new EQ
+ <li>Walk on the Beach<br>
+ Pruned flutes reunited with the rest
+ <li>Secluded Cove<br>
+ Strings, Piano, <i>and</i> Flute
+ <li>Storm<</td></tr>
+		<tr><td colspan=2><hr></td></tr></table></center>
+
+		<hr>
+		Enter your comments here:<br>
+		
+		<form method=POST action="/coLab/bin/postcomments.cgi">
+		Your name: <input type="text" name="Commenter" ><br>
+		<center>
+		<input type="hidden" name="page" value="Archive">
+		<input type="hidden" name="desc_title" value="<unset>">
+		<textarea name="Text" rows=15 cols=80></textarea>
+		<br>
+		</center>
+		<input type="submit">
+		</form>
+		<p><hr><p>
+		<h3>Comments:</h3>
+		<!--#include virtual="Comments.log" -->
+		<p>
+		<br>
+		<center>
+		&copy; Catharsis Studios West 2012
+		<p>
+		</center>
+		</div>
+		<!--#include virtual="links.html" -->
+		<p>&nbsp;<p>
+		</td></tr></table>
+		</div>
+		</div>
+		
+		</center
+		</body>
+		</html>
+		

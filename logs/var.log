@@ -8,3 +8,41 @@ No changes to the site - my current work can all be done &#034;locally&#034; on 
 Then a simple (heh) matter of creating the project pages, song pages, the Archive page and such.   I think I&#039;m about 80-90% done with the underlying infrastructure to get this next phase running - funny how you (I) can spend a couple of hours trying to make sure the whole date/time thing is working - then page generation just falls into place.   Maybe.   OK - all ten target boots are done - time to try again with a different kernel.  
 
 Onward..."
+Commenter=jk&page=ShortIntro&desc_title=ShortIntro+Test&Text=test...Commenter="jk"
+page="ShortIntro"
+desc_title="ShortIntro Test"
+Text="test..."
+Commenter=jk&page=ShortIntro&desc_title=%21desc_title%21&Text=stffCommenter="jk"
+page="ShortIntro"
+desc_title="!desc_title!"
+Text="stff"
+Commenter=jk&page=Assmbly4&desc_title=%21desc_title%21&Text=beepCommenter="jk"
+page="Assmbly4"
+desc_title="!desc_title!"
+Text="beep"
+Commenter=jk&page=Assmbly4&desc_title=%21desc_title%21&Text=testCommenter="jk"
+page="Assmbly4"
+desc_title="!desc_title!"
+Text="test"
+Commenter=jk&page=Assmbly4&desc_title=%21desc_title%21&Text=testCommenter="jk"
+page="Assmbly4"
+desc_title="!desc_title!"
+Text="test"
+Commenter=jk&page=Assmbly4&desc_title=%21desc_title%21&Text=testCommenter="jk"
+page="Assmbly4"
+desc_title="!desc_title!"
+Text="test"
+Commenter=jk&page=Assmbly4&desc_title=JDJ-V+Assmbly4&Text=testCommenter="jk"
+page="Assmbly4"
+desc_title="JDJ-V Assmbly4"
+Text="test"
+Commenter=Johnny&page=Beach-FlChEgEtc&desc_title=Beach%2C+next+phase&Text=Thanks+for+your+patience+during+early+development+-+I+suspect+things+will+settle+down+a+bit.++%28%22Lost%22+a+few+comments%2C+but+got+them+back+-+a+couple+of+times.%29%0D%0A%0D%0AIn+any+case+-+I%27m+still+looking+for+feedback+on+this+one+-+specifically+the+rhythm+parts+-+I+know+the+rhythm+itself+is+a+bit+spastic%2C+but+I%27m+more+looking+for+whether+this+is+in+the+right+direction+and+more+generally%2C+how+it++sounds.++We+can+scale+the+flutes+as+much+as+we+care+to%2C+but+if+anyone+wants+to+hear+this+with+something+left+out+or+quieter%2C+or+something+else+featured+-+let+me+know.++%0D%0A%0D%0AI+might+have+time+to+do+one+more+round+on+this+before+Dan+comes+out.+%0D%0A%0D%0A-jkCommenter="Johnny"
+page="Beach-FlChEgEtc"
+desc_title="Beach, next phase"
+Text="Thanks for your patience during early development - I suspect things will settle down a bit.  (&#034;Lost&#034; a few comments, but got them back - a couple of times.)
+
+In any case - I&#039;m still looking for feedback on this one - specifically the rhythm parts - I know the rhythm itself is a bit spastic, but I&#039;m more looking for whether this is in the right direction and more generally, how it  sounds.  We can scale the flutes as much as we care to, but if anyone wants to hear this with something left out or quieter, or something else featured - let me know.  
+
+I might have time to do one more round on this before Dan comes out. 
+
+-jk"

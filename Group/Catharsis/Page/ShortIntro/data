@@ -1,6 +1,7 @@
 name="ShortIntro"
 desc_title="ShortIntro Test"
 fun_title="From before the beginning..."
+screenshot="ShortIntro-poster.jpg"
 
 project="JDJ-5"
 assoc_projects=""

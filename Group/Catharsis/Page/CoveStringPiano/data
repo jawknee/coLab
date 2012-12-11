@@ -1,6 +1,7 @@
 name="CoveStringPiano"
 desc_title="Cove: String, Piano"
 fun_title="Widening Cove, Distant Flute"
+screenshot="ScreenShot.png"
 
 description="""Here's the previous "string" version of Cove, with only 
 	the piano mics added.   The flute is just

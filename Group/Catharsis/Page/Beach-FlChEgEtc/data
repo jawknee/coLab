@@ -1,6 +1,7 @@
 name="Beach-FlChEgEtc"
 desc_title="Beach, next phase"
 fun_title="Ham and Eggs on the Beach"
+screenshot="Beach-FlChEgEtc-poster.jpg"
 
 description="""This little tool is getting close to useful.   Here is Beach with
         the piano doubled on a rhodes, and a few other rhythmical friends.  Also,
@@ -26,3 +27,4 @@ assoc_projects=""
 prevlink="<unset>"
 nextlink="<unset>"
 project="JDJ-5"
+update="2012-12-10T03:26:35"

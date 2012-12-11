@@ -20,15 +20,41 @@ import clutils
 import cldate
 from clclasses  import *
 
+from headers import *
+
+def check_comments(obj):
+	"""
+	Make sure there's a comments file, if not, seed it.
+	Also touch the links.html to prevent include errors
+
+	Obj can be a page or group - must have a .name 
+	"""
+	# if we don't yet have a comments file, seed it with enough helpful info (song, date)
+	#
+	file = 'Comments.log'
+	if not os.path.isfile(file):
+		try:
+			f=open(file,'w+')
+			f.write('<!-- Comments for ' + obj.name +
+				' created on ' + cldate.now() + '-->\n' )
+			f.close()
+		except:
+			print "Error creating", file
+		
+	file = 'links.html'
+	if not os.path.isfile(file):
+		try:
+			f = open(file, 'w+')	# just create a blank file for now
+			f.close()
+		except:
+			print "Error creating", file
+
+
 def htmlgen(group, page):
 	"""
 		Passed the name of the group and page, rebuilds
 		the index.shtml 
 	"""
-
-	# these go a way...
-	#domain_root = conf.coLab_home + "/Domains/Catharsis"
-	#piece = domain_root + "/Pieces/" + name
 
 	try:
 		os.chdir(page.home)
@@ -50,100 +76,24 @@ def htmlgen(group, page):
 			sys.exit(1)
 
 
-
-	try:
-		for file in ("Comments.log", "links.html" ):
-			f=open(file,'w+')
-			f.close()
-	except IOError, info:
-		print "Touch problem", file, info
-
+	# open the index file, dump the header, body, etc. into it...
 	try:
 		outfile = open(index, 'w+')
 	except IOError, info:
 		print "Failure opening ", index, info
 		exit(1)
 
+	html = Html()	# create an html object that contains the html strings...
+	# 
+	# output the pieces of the page...
 	#
-	# the html content for the head and body sections
-	head_insert="""<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
-	<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
-	<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
-	"""
+	outfile.write(html.emit_head(page, media=True))
 
-	media_insert="""
-		<script type="text/javascript"><!--
-		        QT_WritePoster_XHTML('Click to Play', '<name>-poster.jpg',
-		                '<name>.mov',
-		                '640', '496', '',
-		                'controller', 'true',
-		                'autoplay', 'true',
-		                'bgcolor', 'black',
-		                'scale', 'aspect');
-		//-->
-		</script>
-		<noscript>
-		<object width="640" height="496" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-		        <param name="src" value="<name>-poster.jpg" />
-		        <param name="href" value="<name>.mov" />
-		        <param name="target" value="myself" />
-		        <param name="controller" value="false" />
-		        <param name="autoplay" value="false" />
-		        <param name="scale" value="aspect" />
-		        <embed width="640" height="496" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"
-		                src="<name>-poster.jpg"
-		                href="<name>.mov"
-		                target="myself"
-		                controller="false"
-		                autoplay="false"
-		                scale="aspect">
-		        </embed>
-		</object>
-		</noscript>
-	"""
-	# Update the strings....
-	media_insert.replace("<name>", page.name)
+	outfile.write(html.emit_body(group, page, media=True))
 
-	head = """<html>
-		<head><title>""" + page.fun_title + """</title>
-		<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
-		<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
-		""" 
-
-	# substitute !coLabRoot! with that...	
-	body = """
-		</head>
-		<body>
-		<!--   Menu Header -->
-		<div id="container">
-		
-		<div class="banner" > <! start of banner>
-		<!center>	 
-		        <table width=80% border=0 cellpadding=0 class="banner_txt">
-		          <td align="center" ><a href="!groupURL!/index.shtml" title="Always a nice place to go...">Home</a></td>
-
-		          <td align="center" ><a href="!groupURL!/Shared/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
-		          <td align="center" ><a href="!groupURL!/Shared/nav.shtml" title="How to get to where you need go.">Nav</a></td>
-		          <td align="center" ><a href="!coLabRoot!/Help/" title="Hopefully, the help you need.">Help</a></td>
-		        </tr></table>
-		<!/center>
-		<br>
-		</div>	<! end of banner>
-
-		<!--#include virtual="/coLab/Shared/mostrecent.html" -->
-		<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
-
-		
-		<div id="Content" class="main">
-	"""
-
-	body = body.replace('!groupURL!', group.root)
-	body = body.replace('!coLabRoot!', group.coLab_root)
+	# The part specific to this page...
 
 	content = """
-		<center>
-		<h1 class=fundesc>
-		+ page.fun_title + "</h1>"
 		</center>
 
 	<!--#include virtual="links.html" -->
@@ -152,55 +102,9 @@ def htmlgen(group, page):
 	<font color=a0b0c0>""" + page.description + "<p><i>" + cldate.utc2long(page.create) + """</i><p>
 	<p>"""
 
-	CommentLog="Comments.log" 
+	outfile.write(content)
 
-	tail = """
-	<hr>
-	Enter your comments here:<br>
-	
-	<form method=POST action="/coLab/bin/postcomments.cgi">
-	Your name: <input type="text" name="Commenter" ><br>
-	<center>
-	<input type="hidden" name="page" value=""" + '"' + page.name + '"' + """>
-	<input type="hidden" name="desc_title" value=""" + '"' + page.desc_title + '"' + """>
-	<textarea name="Text" rows=15 cols=80></textarea>
-	<br>
-	</center>
-	<input type="submit">
-	</form>
-	<p><hr><p>
-	<h3>Comments:</h3>
-	<!--#include virtual="Comments.log" -->
-	<p>
-	<br>
-	<center>
-	&copy; Catharsis Studios West 2012
-	<p>
-	</center>
-	</div>
-	<!--#include virtual="links.html" -->
-	<p>&nbsp;<p>
-	</td></tr></table>
-	</div>
-	</div>
-	
-	</center
-	</body>
-	</html>
-	"""
-
-	"""
-		Write out the various pieces...
-	"""
-
-	write = outfile.write
-
-	write(head)
-	write(head_insert)
-	write(body)
-	write(media_insert.replace("<name>", page.name))
-	write(content)
-	write(tail)
+	outfile.write(html.emit_tail(page))
 
 	outfile.close()
 	
@@ -213,7 +117,7 @@ def linkgen(group):
 	# A bit tricky...   append the list with a fake page: "Archive"
 	p = Page()
 	p.name = "Archive"
-	p.home = os.path.join(group.coLab_root, 'Shared', 'Archive')
+	p.home = os.path.join(group.root, 'Shared', 'Archive')
 	group.pagelist.append(p)
 
 	# "dummy" current entry for the home...
@@ -225,8 +129,6 @@ def linkgen(group):
 	prevName = "not set yet"
 	# step through the pages in order
 	for p in group.pagelist:
-		print ' '
-		print 'lg:',p.name
 		if p.name == 'Archive':
 			nextName = 'Archive'
 			nextTitle = "Archive"
@@ -238,7 +140,6 @@ def linkgen(group):
 			nextFun = p.fun_title
 			nextLink = "../" + p.name	 # yeah, I know, cheating
 
-		print 'middle of loop lg:',p.name, 'prev', prevName, 'curr', currName, 'next', nextName
 		if currName != 'Home':
 			linkfile = os.path.join(currPath, 'links.html')
 			print "Creating linkfile", linkfile
@@ -270,9 +171,267 @@ def linkgen(group):
 		currTitle = nextTitle
 		currFun = nextFun
 		currLink = nextLink
-		print 'end of loop lg:',p.name, 'prev', prevName, 'curr', currName, 'next', nextName
 
-	group.pagelist.pop()
+	group.pagelist.pop()	# remove that fake "Archive" page
+
+
+def homegen(group):
+	"""
+	Generates the top group level home page...
+	"""
+
+
+	try:
+		os.chdir(group.home)
+	except OSError,info:
+		print "Cannot cd to ", group.home
+		return()
+
+
+	index='index.shtml'
+
+	page = Page()	# create a page structure - to pass in a title
+	page.fun_title = group.subtitle
+	page.name = group.name
+
+	
+	# open the index file, dump the header, body, etc. into it...
+	try:
+		outfile = open(index, 'w+')
+	except IOError, info:
+		print "Failure opening ", index, info
+		exit(1)
+
+
+	html = Html()	# create an html object that contains the html strings...
+	# 
+	# output the pieces of the page...
+	#
+	outfile.write(html.emit_head(page, media=False))
+
+	outfile.write(html.emit_body(group, page, media=False))
+
+	# The part specific to this page...
+
+	content = """
+		</center>
+
+	<div class="maintext">
+	<h2 class=fundesc>""" + group.title + """</h2>
+	<font color=a0b0c0>""" + group.description + """<p>
+	<i>""" + cldate.now() + """</i><p>"""
+
+	outfile.write(content)
+
+	outfile.write(html.emit_tail(page))
+
+	outfile.close()
+
+	check_comments(page)
+	
+	return()
+
+
+def newgen(group):
+	"""
+	Generate a simple "what's new" page
+	"""
+
+	shared = os.path.join(group.home, 'Shared', 'Whats')
+
+	try:
+		os.chdir(shared)
+	except OSError,info:
+		print "Cannot cd to ", shared
+		return()
+
+
+	new='new.shtml'
+
+	page = Page()	# create a page structure - to pass in a title
+	page.fun_title = "What's new in " + group.title + " land"
+	page.name = "WhatIsNew"
+
+	
+	# open the index file, dump the header, body, etc. into it...
+	try:
+		outfile = open(new, 'w+')
+	except IOError, info:
+		print "Failure opening ", new, info
+		exit(1)
+
+
+
+	html = Html()	# create an html object that contains the html strings...
+	# 
+	# output the pieces of the page...
+	#
+	outfile.write(html.emit_head(page, media=False))
+
+	outfile.write(html.emit_body(group, page, media=False))
+
+	# The part specific to this page...
+
+	content = """
+		</center>
+
+	<div class="maintext">
+	<h2 class=fundesc>""" + page.fun_title + """</h2>
+	<font color=a0b0c0>
+	For now, just a running comment log of what's new...
+	<p><i>""" + cldate.now() + """</i><p>"""
+
+	outfile.write(content)
+
+	outfile.write(html.emit_tail(page))
+
+	outfile.close()
+
+	check_comments(page)
+	
+	return()
+
+
+
+def navgen(group):
+	"""
+	Generate a simple "navigation" 
+	"""
+
+	nav = os.path.join(group.home, 'Shared', 'Nav')
+
+	try:
+		os.chdir(nav)
+	except OSError,info:
+		print "Cannot cd to ", nav
+		return()
+
+
+	index='index.shtml'
+
+	page = Page()	# create a page structure - to pass in a title
+	page.fun_title = "Navigation: " + group.title 
+	page.name = "Navigation"
+
+	
+	# open the index file, dump the header, body, etc. into it...
+	try:
+		outfile = open(index, 'w+')
+	except IOError, info:
+		print "Failure opening ", index, info
+		exit(1)
+
+
+
+	html = Html()	# create an html object that contains the html strings...
+	# 
+	# output the pieces of the page...
+	#
+	outfile.write(html.emit_head(page, media=False))
+
+	outfile.write(html.emit_body(group, page, media=False))
+
+	# The part specific to this page...
+
+	content = """
+		</center>
+
+	<div class="maintext">
+	<h2 class=fundesc>""" + page.fun_title + """</h2>
+	<font color=a0b0c0>
+	Nothing for now - but feel free to comment.
+	<p><i>""" + cldate.now() + """</i><p>"""
+
+	outfile.write(content)
+
+	outfile.write(html.emit_tail(page))
+
+	outfile.close()
+
+	check_comments(page)
+	
+	return()
+
+
+
+def archivegen(group):
+	"""
+	Generate an archive of the various pages...
+	"""
+
+	archive = os.path.join(group.home, 'Shared', 'Archive')
+
+	try:
+		os.chdir(archive)
+	except OSError,info:
+		print "Cannot cd to ", archive
+		return()
+
+
+	index='index.shtml'
+
+	page = Page()	# create a page structure - to pass in a title
+	page.fun_title = group.title + " Archive"
+	page.name = "Archive"
+
+	
+	# open the index file, dump the header, body, etc. into it...
+	try:
+		outfile = open(index, 'w+')
+	except IOError, info:
+		print "Failure opening ", index, info
+		exit(1)
+
+
+
+	html = Html()	# create an html object that contains the html strings...
+	# 
+	# output the pieces of the page...
+	#
+	outfile.write(html.emit_head(page, media=False))
+
+	outfile.write(html.emit_body(group, page, media=False))
+
+	# The part specific to this page...
+
+	content = """
+		</center>
+
+	<div class="maintext">
+	<h2 class=fundesc>""" + page.fun_title + """</h2>
+	<font color=a0b0c0>
+	Here are the submitted pages, in chronological order of creation.
+	<p><i>""" + cldate.now() + """</i><p><hr><p>
+	<center>
+	<table cellpadding=10 border=0 width=640>\n"""
+
+	outfile.write(content)
+
+
+	group.pagelist.sort(key=createkey)
+	#group.pagelist.reverse()	# uncomment for newest first
+	for pg in group.pagelist:
+		print "archive:", pg.name
+
+		screenshot = os.path.join(pg.root, pg.screenshot)
+		outfile.write( '<tr><td colspan=2> <a href="' + pg.root + '"><h3 style="display: inline;">' + pg.desc_title + '</h3></a>' +
+		' ~ ' + cldate.utc2long(pg.create) + '</td></tr>' +
+		'<tr><td><a href="' + pg.root + '"><img src="' + screenshot + '" width=160 height=140></a></td><td>' +
+		pg.description[:250] + """</td></tr>
+		<tr><td colspan=2><hr></td></tr>"""
+		)
+
+	outfile.write('</table></center>\n')
+
+	outfile.write(html.emit_tail(page))
+
+	outfile.close()
+
+	check_comments(page)
+	
+	return()
+
+
 
 				
 if __name__ == "__main__":

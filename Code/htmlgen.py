@@ -40,7 +40,8 @@ def check_comments(obj):
 			f.close()
 		except:
 			print "Error creating", file
-		
+	else:
+		print "Comments exist"
 	file = 'links.html'
 	if not os.path.isfile(file):
 		try:
@@ -107,6 +108,8 @@ def htmlgen(group, page):
 	outfile.write(html.emit_tail(page))
 
 	outfile.close()
+
+	check_comments(page)
 	
 	return()
 

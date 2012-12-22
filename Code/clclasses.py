@@ -5,6 +5,7 @@
 """
 
 import os
+import sys
 import imp
 import cldate
 import clutils
@@ -20,8 +21,8 @@ class Group:
 		self.collaborators = "<unset>"
 		self.description = "<unset>"
 		# arbitrary date just after the epoch
-		self.create=cldate.string2utc("1970-01-24T09:23:45")
-		self.update=cldate.string2utc("1970-01-24T09:23:45")
+		self.createtime=cldate.string2utc("1970-01-24T09:23:45")
+		self.updatetime=cldate.string2utc("1970-01-24T09:23:45")
 		
 		self.pagelist = []
 
@@ -72,8 +73,9 @@ class Group:
 		except (ImportError, IOError), info:
 			print "Group,load - cannot access:", data
 			print info
-			raise ImportError
-		
+			print "Tring an update..."
+			self.update(data)
+			
 
 		# populate the group data from the imported data file...
 		try:
@@ -115,17 +117,12 @@ class Group:
 
 			self.pagelist.append(page)
 
-
-
-
-
-
 # 
 # For sorting - return the appropriate time in seconds
 def updatekey(self):
-	return (self.update)	# return the update time as seconds for sorting
+	return (self.updatetime)	# return the update time as seconds for sorting
 def createkey(self):
-	return (self.create)	# ditto the create time
+	return (self.createtime)	# ditto the create time
 class Page:
 	"""
 	The data associated with a song, imported from 
@@ -136,7 +133,9 @@ class Page:
 		self.name="<unset>"
 		self.desc_title="<unset>"
 		self.fun_title="<unset>"
-		self.screenshot="<unset>"
+		self.duration = 0.0
+		self.screenshot=""
+		self.thumbnail=""
 		self.description="<unset>"
 
 		self.project="<unset>"
@@ -145,11 +144,40 @@ class Page:
 		self.prevlink="<unset>"
 		self.nextlink="<unset>"
 
-		# initial value close to the epoch
-		self.create=cldate.string2utc("1970-01-24T09:23:45")
-		self.update=cldate.string2utc("1970-01-24T09:23:45")
+		# initial value - now as a datetime object
+		self.createtime = cldate.utcnow()
+		self.updatetime = self.createtime
 
-	def load(self,path):
+	def xfer_import(self, file):
+		"""
+		 	Transfer the items from the file object into the 
+			page object.   Careful - ths is called from both 
+			load and update. 
+		"""
+		#
+		# Step through them...
+		try:
+			self.name = file.name
+			self.desc_title = file.desc_title
+			self.fun_title = file.fun_title
+			self.duration = float(file.duration)
+			self.screenshot = file.screenshot
+			self.description = file.description
+
+			self.project = file.project
+			self.assoc_projects = file.assoc_projects
+
+			self.prevlink = file.prevlink
+			self.nextlink = file.nextlink
+
+			self.createtime = cldate.string2utc(file.createtime)
+			self.updatetime = cldate.string2utc(file.updatetime)
+
+		except (NameError, AttributeError), info:
+			print "xfer_import: unset var in data file", info
+			raise NameError
+
+	def load(self,path='none'):
 		"""
 		This is a bit kludgy right now, 
 		we read the file, then populate
@@ -164,13 +192,14 @@ class Page:
 		"""
 
 		#
-		# if path is passed in, use it - otherwise
-		# look in the current dir...
-		try:
-			path
-		except:
-			path = '.'
-
+		if path == 'none':
+			try:
+				print "deferring to self path\n"
+				path = self.home
+			except:
+				print "No path passed or discernable."
+				sys.exit(1)
+				
 		dfile = os.path.join(path, 'data')
 		#print "dfile:",dfile
 
@@ -179,29 +208,13 @@ class Page:
 			P = imp.load_source('',dfile)
 			os.remove(dfile + 'c')
 		except IOError, info:
-			#print "Immport problem with", dfile, info
+			print "Import problem with", dfile, info
 			raise IOError
-		#
-		# Step through them...
 		try:
-			self.name = P.name
-			self.desc_title = P.desc_title
-			self.fun_title = P.fun_title
-			self.screenshot = P.screenshot
-			self.description = P.description
-
-			self.project = P.project
-			self.assoc_projects = P.assoc_projects
-
-			self.prevlink = P.prevlink
-			self.nextlink = P.nextlink
-
-			self.create = cldate.string2utc(P.create)
-			self.update = cldate.string2utc(P.update)
-
-		except (NameError, AttributeError), info:
-			print "Note: unset var in data file", info
-
+			self.xfer_import(P)
+		except NameError, info:
+			print "load: import problems:", info
+			self.update(path)
 
 
 	def dump(self):
@@ -213,7 +226,9 @@ class Page:
 		return( 'name="' + self.name + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
+			'duration="' + str(self.duration) + EOL +
 			'screenshot="' + self.screenshot + EOL +
+			'thumbnail="' + self.thumbnail + EOL +
 			'\n' +
 			'project="' + self.project + EOL +
 			'assoc_projects="' + self.assoc_projects + EOL +
@@ -223,13 +238,61 @@ class Page:
 			'prevlink="' + self.prevlink + EOL +
 			'nextlink="' + self.nextlink + EOL +
 			'\n' +
-			'create="' + cldate.utc2string(self.create) + EOL +
-			'update="' + cldate.utc2string(self.update) + EOL )
+			'createtime="' + cldate.utc2string(self.createtime) + EOL +
+			'updatetime="' + cldate.utc2string(self.updatetime) + EOL )
 
+	def update(self, path):
+		"""
+			A bit of a kluge to let me retain a python/shell/etc.
+			flat data file.  Dumps the passed object to a temp file,
+			concatenates the passed file to it, then imports that.
+			Can be from the exception in load.
+			then dumps the passed object to it, 
+		"""
+		print "page path", path
+		data = os.path.join(path, 'data')
+		tmp = data + '.temp'
+		print "data, tmp", data, tmp 
+		print "update path file:", tmp
+		try:
+			tfile = open(tmp, 'w+')		
+		except IOError, info:
+			print "update: Problem opening", tmp, info
+			sys.exit(1)
+
+		tfile.write(self.dump())
+
+		try: 
+			dfile = open(data, 'rw+')
+		except IOError, info:
+			print "update: Problem opening", data, info
+			raise
+
+		tfile.write(dfile.read())
+
+		tfile.close()
+		dfile.close()
+
+		try:
+			P = imp.load_source('',tmp)
+			os.remove(tmp + 'c')
+		except IOError, info:
+			print "Immport problem with", dfile, info
+			raise IOError
+
+		try:
+			self.xfer_import(P)
+		except NameError, info:
+			print "update: problems:", info
+			raise ImportError
+
+		dfile = open(data, 'w+')
+		dfile.write(self.dump())
+		dfile.close()
 
 
 def main():
-	print "Welcome to clases..."
+	print "Welcome to classes..."
 	
 	
 	g = Group()

@@ -1,0 +1,112 @@
+<html>
+			<head><title>Storm in E&#9837 meets Anti-Chipmunk in C</title>
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+			<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
+		<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
+		<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
+		
+			</head>
+			<body>
+			<!--   Menu Header -->
+			<div id="container">
+			
+			<div class="banner" > <! start of banner>
+			<!center>	 
+			        <table width=80% border=0 cellpadding=0 class="banner_txt">
+			          <td align="center" ><a href="/coLab/Group/Catharsis/index.shtml" title="Always a nice place to go...">Home</a></td>
+	
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
+			        </tr></table>
+			<!/center>
+			<br>
+			</div>	<! end of banner>
+	
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+	
+			
+			<div id="Content" class="main">
+		<center><h1 class="fundesc">Storm in E&#9837 meets Anti-Chipmunk in C</h1>
+			<script type="text/javascript"><!--
+			        QT_WritePoster_XHTML('Click to Play', 'PitchAssTest-poster.jpg',
+			                'PitchAssTest.mov',
+			                '640', '496', '',
+			                'controller', 'true',
+			                'autoplay', 'true',
+			                'bgcolor', 'black',
+			                'scale', 'aspect');
+			//-->
+			</script>
+			<noscript>
+			<object width="640" height="496" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
+			        <param name="src" value="PitchAssTest-poster.jpg" />
+			        <param name="href" value="PitchAssTest.mov" />
+			        <param name="target" value="myself" />
+			        <param name="controller" value="false" />
+			        <param name="autoplay" value="false" />
+			        <param name="scale" value="aspect" />
+			        <embed width="640" height="496" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"
+			                src="PitchAssTest-poster.jpg"
+			                href="PitchAssTest.mov"
+			                target="myself"
+			                controller="false"
+			                autoplay="false"
+			                scale="aspect">
+			        </embed>
+			</object>
+			</noscript>
+		</center>
+		</center>
+	<p>
+	<!--#include virtual="links.html" -->
+	<div class="maintext">
+	<h2 class=fundesc>Storm/Rain Pitch Test</h2>
+	<h4>Duration:3:9.51</h4>
+	<font color=a0b0c0>
+Pretty straight-forward, the pitch shifted "rain" (shifted down a minor third
+from E&#9837 to C) edited into the last section of Storm.   I also dropped the 
+BRT down about 4db.   
+<p>
+One thing about Storm that I've noticed: the graphic shows some obvious clipping.
+It could be in the original recording, or the output of the mix - I'll check this soon.
+<p>
+The line along the bottom is the BRT volume tracking.
+<p><i>2012-12-16 09:57:39 PM PST</i><p>
+	<p>
+		<hr>
+		Enter your comments here:<br>
+		
+		<form method=POST action="/coLab/bin/postcomments.cgi">
+		Your name: <input type="text" name="Commenter" ><br>
+		<center>
+		<input type="hidden" name="page" value="PitchAssTest">
+		<input type="hidden" name="desc_title" value="Storm/Rain Pitch Test">
+		<textarea name="Text" rows=15 cols=80></textarea>
+		<br>
+		</center>
+		<input type="submit">
+		</form>
+		<p><hr><p>
+		<h3>Comments:</h3>
+		<!--#include virtual="Comments.log" -->
+		<p>
+		<br>
+		<center>
+		&copy; Catharsis Studios West 2012
+		<p>
+		</center>
+		</div>
+		<!--#include virtual="links.html" -->
+		<p>&nbsp;<p>
+		</td></tr></table>
+		</div>
+		</div>
+		
+		</center
+		</body>
+		</html>
+		

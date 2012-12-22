@@ -1,0 +1,31 @@
+name="StormLevelCheck"
+desc_title="Storm Level Check"
+fun_title="Making Sure the Storm is Within Tolerances..."
+duration="147.012"
+screenshot="scaled.png"
+thumbnail="tn_scaled.png"
+
+start=10
+end=632
+
+project="JDJ-5"
+assoc_projects=""
+description="""
+I had to find out if there was a clipping problem with the piano part in 
+Storm.   I'm happy to report there is none - as you can see from above, the
+piano was recorded with decent headroom at a good level. The earlier clipping
+was from the mix of that recording and the PianoTeq "rhodes" being mixed too
+hot.   I've dropped it down a bit and generated the above.   
+<p>
+Interestingly, there is at least one missing note in the MIDI above.  It would
+be easy enough to add back in from the context.
+"""
+
+prevlink="<unset>"
+nextlink="<unset>"
+
+createtime="2012-12-17T08:39:06"
+updatetime="2012-12-17T08:39:06"
+updatetime="2012-12-19T04:14:23"
+updatetime="2012-12-19T04:14:48"
+updatetime="2012-12-19T04:58:09"

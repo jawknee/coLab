@@ -26,13 +26,14 @@ The content generation is still pretty manual, but not too bad.  The 977
 PNG images were built faster than I could type this description.
 <p>
 <i>Anyway,</i> let me know what you think.
-<p>
-(Note: I didn't quite get the cropping right so the scroll bar doesn't 
-match up well - looks to be a bit behind most of the way)
 """
 
 prevlink="<unset>"
 nextlink="<unset>"
 
-create="2012-12-12T06:18:51"
-update="2012-12-12T06:18:51"
+createtime="2012-12-12T06:18:51"
+updatetime="2012-12-12T06:18:51"
+updatetime="2012-24-14T02:12:37"
+updatetime="2012-05-14T08:12:54"
+updatetime="2012-43-14T08:12:00"
+updatetime="2012-12-14T08:45:36"

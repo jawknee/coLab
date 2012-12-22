@@ -16,10 +16,10 @@
 			        <table width=80% border=0 cellpadding=0 class="banner_txt">
 			          <td align="center" ><a href="/coLab/Group/Catharsis/index.shtml" title="Always a nice place to go...">Home</a></td>
 	
-			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Whats/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
 			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
-			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Archive/index.html" title="What have we been up to...">Archive</a></td>
-			          <td align="center" ><a href="/coLab/Help/" title="Hopefully, the help you need.">Help</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
 			        </tr></table>
 			<!/center>
 			<br>
@@ -60,50 +60,3 @@
 			</object>
 			</noscript>
 		</center>
-		</center>
-
-	<!--#include virtual="links.html" -->
-	<div class="maintext">
-	<h2 class=fundesc>ShortIntro Test</h2>
-	<font color=a0b0c0>This is mostly a test to see if my scripting can create
-	the html index file in place with a pre-existing web site.
-	<p>
-	This is the first half of the short intro with the second half 
-	ending spliced on. 
-	<p>
-	I think I like it this way.
-        <p><i>2012-11-14 02:03:11 AM PST</i><p>
-	<p>
-		<hr>
-		Enter your comments here:<br>
-		
-		<form method=POST action="/coLab/bin/postcomments.cgi">
-		Your name: <input type="text" name="Commenter" ><br>
-		<center>
-		<input type="hidden" name="page" value="ShortIntro">
-		<input type="hidden" name="desc_title" value="ShortIntro Test">
-		<textarea name="Text" rows=15 cols=80></textarea>
-		<br>
-		</center>
-		<input type="submit">
-		</form>
-		<p><hr><p>
-		<h3>Comments:</h3>
-		<!--#include virtual="Comments.log" -->
-		<p>
-		<br>
-		<center>
-		&copy; Catharsis Studios West 2012
-		<p>
-		</center>
-		</div>
-		<!--#include virtual="links.html" -->
-		<p>&nbsp;<p>
-		</td></tr></table>
-		</div>
-		</div>
-		
-		</center
-		</body>
-		</html>
-		

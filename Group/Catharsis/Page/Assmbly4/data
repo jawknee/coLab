@@ -47,10 +47,10 @@ I suspect it'll be around for a bit...
 
 """
 
-create="2012-11-28 23:48:13"
-update="2012-11-28 23:48:13"
-create="2012-11-29T07:48:13"
-update="2012-12-06T05:48:40"
+createtime="2012-11-28 23:48:13"
+updatetime="2012-11-28 23:48:13"
+createtime="2012-11-29T07:48:13"
+updatetime="2012-12-06T05:48:40"
 
 project="<unset>"
 assoc_projects=""	

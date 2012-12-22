@@ -2,6 +2,7 @@ name="CoveStringPiano"
 desc_title="Cove: String, Piano"
 fun_title="Widening Cove, Distant Flute"
 screenshot="ScreenShot.png"
+duration="152"
 
 description="""Here's the previous "string" version of Cove, with only 
 	the piano mics added.   The flute is just
@@ -21,13 +22,13 @@ description="""Here's the previous "string" version of Cove, with only
 	<p>
 	This gives us an idea of some of what we can do with this.
         """
-create="2012-11-27 01:32:56"
-update="2012-11-27 01:32:56"
+createtime="2012-11-27 01:32:56"
+updatetime="2012-11-27 01:32:56"
 
-create="2012-11-27T09:32:56"
-update="2012-11-27T09:32:56"
+createtime="2012-11-27T09:32:56"
+updatetime="2012-11-27T09:32:56"
 
-project="<unset>"
+projecttime="<unset>"
 assoc_projects=""	
 
 prevlink="<unset>"

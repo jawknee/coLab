@@ -41,6 +41,8 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	color: #a0b0c0; }
 
 .main h2 { color: #c0b0a0; }
+.main h3 { color: #c0b0a0; }
+.main h4 { color: #c0b0a0; }
 .main table { color: #a0b0c0; 
 	background-color: #151515;
 	background-image: url('http://jawknee.com/coLab/Resources/P1Black2.png');

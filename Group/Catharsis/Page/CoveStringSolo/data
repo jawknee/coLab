@@ -2,6 +2,7 @@ name="CoveStringSolo"
 desc_title="Cove String Solo"
 fun_title="Cove String Solo"
 screenshot="ScreenShot.png"
+duration="152"
 
 description="""In search of something "new" I could post, I revisited Cove and
 started looking for string sounds.   A dozen or so string patches in I 
@@ -29,11 +30,11 @@ This may have turned out to be a good thing - more on that in future drops.
 I've already listened with piano and flute and it works well.  I may have to
 rethink my idea of "improving" the string part later in the piece.
 """
-create="2012-11-26 23:16:58"
-update="2012-11-26 23:16:58"
+createtime="2012-11-26 23:16:58"
+updatetime="2012-11-26 23:16:58"
 
-create="2012-11-27T07:16:58"
-update="2012-11-27T07:16:58"
+createtime="2012-11-27T07:16:58"
+updatetime="2012-11-27T07:16:58"
 
 project="<unset>"
 assoc_projects=""	

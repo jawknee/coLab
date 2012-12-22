@@ -4,44 +4,18 @@ subtitle="Catharsis Collaboration Zone"
 collaborators="Johnny, John, Dan"
 
 description="""
-This is barely more than a place-holder for the Catharsis "home" in this collaboration tool.
+Welcome to the new Catharsis collaboration site.  
 <p>
-It is currently generated from a simple data file (including these comments) and should soon have, in
-addition to the most recent activity, on the left, a list of all relevant projects, related links
-(pictures?), etc.
+To the left are the most recent items in chronological
+order.   The Archive link above will take you to a list of 
+all pages.
 <p>
-Comments appear to be working - you can leave them below re: the interface, or on each
-of the specific song pages.
+Planned are Project and Song pages that will organize 
+the pages for easy reference.
 <p>
-Specific planned enhancements / implementations:
-<ul>
-	<li>Projects (e.g., JDJ-3, Distant Converstations, etc. )<br>
-	Would list associated pieces, related projects.  There could be meta projects (JDJ comprises 
-	JDJ-1 through 5).   
-	<p>
-	<li>Pieces / Songs (e.g., Storm, Rosemary In Bloom)<br>
-	The distinction is not that strong lately for us between a project like JDJ-5 
-	and a Piece or Song like "It Must Have Been the Rain", but I
-	think normally a project would have a number of pcs/sngs.
-	<p>
-	Pieces can also have related Projects or Pieces (future tense of "can also have")
-	<p>
-	<li>Need to nail down the internal date format (to show most recent activity)
-	<p>
-	<li>Need to extend the generating code to go from a flat file system to more of a search/scan system
-	<p>
-	<li>Implement "What's New", "Archive", "Home" and "Help".
-	<p>
-	<li>Consider access feature: collaborators can agree on who sees what... (unanimous seems
-	reasonable), and eventually generate the pages on the fly so that people see an interface tailored
-	to their access. (Would require some form of login / id) - security concerns soon arise.
-	<p>
-	<li>Reevaluate things...
-	<p>
-	<li>Consider conversion to PHP and MySQL.
-</ul>
+Comments are always welcome.
 
 """
 
-create="2012-11-29 23:37:22.601934"
-update="2012-11-29 23:37:22.601934"
+createtime="2012-11-29 23:37:22.601934"
+updatetime="2012-11-29 23:37:22.601934"

@@ -5,7 +5,7 @@
 import datetime
 
 def main():
-	print datetime.datetime.utcnow().strftime('%Y-%M-%dT%H:%m:%S')
+	print datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
 
 if __name__ == '__main__':
 	main()

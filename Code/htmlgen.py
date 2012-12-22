@@ -50,6 +50,15 @@ def check_comments(obj):
 		except:
 			print "Error creating", file
 
+def mk_dur_string(dur):
+	if dur != "":
+		mins = int(dur / 60)
+		secs = dur - (mins * 60)
+		timestr = "%d:%02.2f" % (mins, secs)
+	else:
+		timestr = "(?)"
+
+	return(timestr)
 
 def htmlgen(group, page):
 	"""
@@ -94,13 +103,15 @@ def htmlgen(group, page):
 
 	# The part specific to this page...
 
+	
 	content = """
 		</center>
-
+	<p>
 	<!--#include virtual="links.html" -->
 	<div class="maintext">
 	<h2 class=fundesc>""" + page.desc_title + """</h2>
-	<font color=a0b0c0>""" + page.description + "<p><i>" + cldate.utc2long(page.create) + """</i><p>
+	<h4>Duration:""" + mk_dur_string(page.duration) + """</h4>
+	<font color=a0b0c0>""" + page.description + "<p><i>" + cldate.utc2long(page.createtime) + """</i><p>
 	<p>"""
 
 	outfile.write(content)
@@ -194,6 +205,7 @@ def homegen(group):
 	index='index.shtml'
 
 	page = Page()	# create a page structure - to pass in a title
+	page.desc_title = group.title
 	page.fun_title = group.subtitle
 	page.name = group.name
 
@@ -221,8 +233,9 @@ def homegen(group):
 
 	<div class="maintext">
 	<h2 class=fundesc>""" + group.title + """</h2>
+	<img src="Shared/DSCF4212.png" width=320 height=240 align=right>
 	<font color=a0b0c0>""" + group.description + """<p>
-	<i>""" + cldate.now() + """</i><p>"""
+	<i>""" + cldate.now() + """</i><br clear=all><p>"""
 
 	outfile.write(content)
 
@@ -240,7 +253,7 @@ def newgen(group):
 	Generate a simple "what's new" page
 	"""
 
-	shared = os.path.join(group.home, 'Shared', 'Whats')
+	shared = os.path.join(group.home, 'Shared', 'WhatsNew')
 
 	try:
 		os.chdir(shared)
@@ -249,9 +262,10 @@ def newgen(group):
 		return()
 
 
-	new='new.shtml'
+	new='index.shtml'
 
 	page = Page()	# create a page structure - to pass in a title
+	page.desc_title = "What's New"
 	page.fun_title = "What's new in " + group.title + " land"
 	page.name = "WhatIsNew"
 
@@ -295,7 +309,6 @@ def newgen(group):
 	return()
 
 
-
 def navgen(group):
 	"""
 	Generate a simple "navigation" 
@@ -313,6 +326,7 @@ def navgen(group):
 	index='index.shtml'
 
 	page = Page()	# create a page structure - to pass in a title
+	page.desc_title = "Navigation"
 	page.fun_title = "Navigation: " + group.title 
 	page.name = "Navigation"
 
@@ -374,8 +388,99 @@ def archivegen(group):
 	index='index.shtml'
 
 	page = Page()	# create a page structure - to pass in a title
+	page.desc_title = group.title + " Archive"
 	page.fun_title = group.title + " Archive"
 	page.name = "Archive"
+
+	
+	# open the index file, dump the header, body, etc. into it...
+	try:
+		outfile = open(index, 'w+')
+	except IOError, info:
+		print "Failure opening ", index, info
+		exit(1)
+
+
+
+	html = Html()	# create an html object that contains the html strings...
+	# 
+	# output the pieces of the page...
+	#
+	outfile.write(html.emit_head(page, media=False))
+
+	outfile.write(html.emit_body(group, page, media=False))
+
+	# The part specific to this page...
+
+
+	content = """
+		</center>
+
+	<div class="maintext">
+	<h2 class=fundesc>""" + page.fun_title + """</h2>
+	<font color=a0b0c0>
+	Here are the submitted pages, in chronological order of creation.
+	<p><i>""" + cldate.now() + """</i><p><hr><p>
+	<center>
+	<table cellpadding=10 border=0 width=640>\n"""
+
+	outfile.write(content)
+
+
+	group.pagelist.sort(key=createkey)
+	group.pagelist.reverse()
+	#group.pagelist.reverse()	# uncomment for newest first
+	for pg in group.pagelist:
+		print "archive:", pg.name
+
+		if pg.thumbnail != '':
+			shot=pg.thumbnail
+			print "thumbnail"
+		else:
+			shot=pg.screenshot
+
+		screenshot = os.path.join(pg.root, shot)
+		timestr = mk_dur_string(pg.duration)
+
+		outfile.write( '<tr><td colspan=2> <a href="' + pg.root + '"><h3 style="display: inline;">' + pg.desc_title + '</h3></a>' +
+		' ~ ' + cldate.utc2long(pg.createtime) + ' / Duration: ' + timestr + '</td></tr>' +
+		'<tr><td><a href="' + pg.root + '"><img src="' + screenshot + '" width=160 height=140></a></td><td>' +
+		pg.description[:250] + """</td></tr>
+		<tr><td colspan=2><hr></td></tr>"""
+		)
+
+	outfile.write('</table></center>\n')
+
+	outfile.write(html.emit_tail(page))
+
+	outfile.close()
+
+	check_comments(page)
+	
+	return()
+
+
+
+def helpgen(group):
+	"""
+	Generate a simple help page place holder (for now)
+	"""
+
+	help = os.path.join(group.home, 'Shared', 'Help')
+
+	try:
+		os.chdir(help)
+	except OSError,info:
+		print "Cannot cd to ", help
+		return()
+
+
+	index='index.shtml'
+
+	page = Page()	# create a page structure - to pass in a title
+	page.desc_title = "Help"
+	page.fun_title = "Help"
+	page.name = "Help"
 
 	
 	# open the index file, dump the header, body, etc. into it...
@@ -403,28 +508,10 @@ def archivegen(group):
 	<div class="maintext">
 	<h2 class=fundesc>""" + page.fun_title + """</h2>
 	<font color=a0b0c0>
-	Here are the submitted pages, in chronological order of creation.
-	<p><i>""" + cldate.now() + """</i><p><hr><p>
-	<center>
-	<table cellpadding=10 border=0 width=640>\n"""
+	Nothing for now - but feel free to comment.
+	<p><i>""" + cldate.now() + """</i><p>"""
 
 	outfile.write(content)
-
-
-	group.pagelist.sort(key=createkey)
-	#group.pagelist.reverse()	# uncomment for newest first
-	for pg in group.pagelist:
-		print "archive:", pg.name
-
-		screenshot = os.path.join(pg.root, pg.screenshot)
-		outfile.write( '<tr><td colspan=2> <a href="' + pg.root + '"><h3 style="display: inline;">' + pg.desc_title + '</h3></a>' +
-		' ~ ' + cldate.utc2long(pg.create) + '</td></tr>' +
-		'<tr><td><a href="' + pg.root + '"><img src="' + screenshot + '" width=160 height=140></a></td><td>' +
-		pg.description[:250] + """</td></tr>
-		<tr><td colspan=2><hr></td></tr>"""
-		)
-
-	outfile.write('</table></center>\n')
 
 	outfile.write(html.emit_tail(page))
 
@@ -433,8 +520,6 @@ def archivegen(group):
 	check_comments(page)
 	
 	return()
-
-
 
 				
 if __name__ == "__main__":

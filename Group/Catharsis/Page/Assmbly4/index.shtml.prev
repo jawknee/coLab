@@ -16,10 +16,10 @@
 			        <table width=80% border=0 cellpadding=0 class="banner_txt">
 			          <td align="center" ><a href="/coLab/Group/Catharsis/index.shtml" title="Always a nice place to go...">Home</a></td>
 	
-			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Whats/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
 			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
 			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
-			          <td align="center" ><a href="/coLab/Help/" title="Hopefully, the help you need.">Help</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
 			        </tr></table>
 			<!/center>
 			<br>
@@ -61,7 +61,7 @@
 			</noscript>
 		</center>
 		</center>
-
+	<p>
 	<!--#include virtual="links.html" -->
 	<div class="maintext">
 	<h2 class=fundesc>JDJ-V Assmbly4</h2>

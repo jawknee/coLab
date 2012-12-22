@@ -106,19 +106,14 @@ fi
 
 datestring=$(./isodate.py)
 cat <<-EOF >>$dirname/data
-update="$datestring"
+updatetime="$datestring"
 EOF
 
 
-cat <<-EOF 
-<!--
-<pre>
-$(set)
-</pre>
--->
+cat <<-EOF
 <p><hr>
 <p style="font-size: smaller;">
-Generated/processed by $0 on $(date)
+Generated/processed by $0 on $(date)</p>
 </td></tr>
 <tr height=20><td> &nbsp; </td></tr>
 </table>

@@ -2,6 +2,7 @@ name="BeachFlute"
 desc_title="Initial Flute Prune"	# descriptive / short
 fun_title="A Big, Heaping Bowl of Pruned Flutes!"
 screenshot="ScreenShot.png"
+duration="154"
 
 piece="Rain"
 project="JDJ-5"
@@ -30,10 +31,10 @@ I'm likely to have a new full test assembly tomorrow night.
 <i>BTW: my quicktime player has a full screen mode - see if yours does.</i>
 """
 
-create="2012-11-28 00:20:23"
-update="2012-11-28 00:20:23"
-create="2012-11-28T08:20:23"
-update="2012-11-28T08:20:23"
+createtime="2012-11-28 00:20:23"
+updatetime="2012-11-28 00:20:23"
+createtime="2012-11-28T08:20:23"
+updatetime="2012-11-28T08:20:23"
 
 project="<unset>"
 assoc_projects=""	

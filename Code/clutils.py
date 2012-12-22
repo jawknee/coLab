@@ -4,6 +4,7 @@
 """
 
 import os
+import sys
 import imp
 
 def get_config(debug=False):
@@ -31,11 +32,13 @@ def get_config(debug=False):
 	if file.startswith(dnf):
 		raise(ImportError)
 
-	conf = imp.load_source('',file)
-	conf.file = file
-	return(conf)
-
-
+	try:
+		conf = imp.load_source('',file)
+		conf.file = file
+		return(conf)
+	except ImportError, info:
+		print "get_config: ImportError", info
+		sys.exit(1)	
 
 
 

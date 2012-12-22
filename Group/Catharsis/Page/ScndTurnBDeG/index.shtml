@@ -1,5 +1,5 @@
 <html>
-			<head><title>Second Try with Turn</title>
+			<head><title>Second Turn with Drum, Bass, Chaos, etc.</title>
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
 			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
 			<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
@@ -16,10 +16,10 @@
 			        <table width=80% border=0 cellpadding=0 class="banner_txt">
 			          <td align="center" ><a href="/coLab/Group/Catharsis/index.shtml" title="Always a nice place to go...">Home</a></td>
 	
-			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Whats/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
 			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
 			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
-			          <td align="center" ><a href="/coLab/Help/" title="Hopefully, the help you need.">Help</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
 			        </tr></table>
 			<!/center>
 			<br>
@@ -30,7 +30,7 @@
 	
 			
 			<div id="Content" class="main">
-		<center><h1 class="fundesc">Second Try with Turn</h1>
+		<center><h1 class="fundesc">Second Turn with Drum, Bass, Chaos, etc.</h1>
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'ScndTurnBDeG-poster.jpg',
 			                'ScndTurnBDeG.mov',
@@ -61,10 +61,11 @@
 			</noscript>
 		</center>
 		</center>
-
+	<p>
 	<!--#include virtual="links.html" -->
 	<div class="maintext">
-	<h2 class=fundesc>Second Turn with Drum, Bass, etc.</h2>
+	<h2 class=fundesc>Second Try with Turn</h2>
+	<h4>Duration:3:45.00</h4>
 	<font color=a0b0c0>This is my first attempt at automating a large portion of the web page generation.
 I'm typing these comments as the other script builds the couple thousand images.
 This is the version of Second Turn (current title) that I did for Nola for her birthday plus
@@ -83,7 +84,7 @@ Not a lot more to say about it at this point. I'll see about getting comments wo
 		Your name: <input type="text" name="Commenter" ><br>
 		<center>
 		<input type="hidden" name="page" value="ScndTurnBDeG">
-		<input type="hidden" name="desc_title" value="Second Turn with Drum, Bass, etc.">
+		<input type="hidden" name="desc_title" value="Second Try with Turn">
 		<textarea name="Text" rows=15 cols=80></textarea>
 		<br>
 		</center>

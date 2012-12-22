@@ -50,6 +50,12 @@ def now():
 	"""
 	return (datetime.now().isoformat())
 
+def utcnow():
+	"""
+	UTC as a datetime object
+	"""
+	return (datetime.utcnow())
+
 def main():
 	
 	now=datetime.utcnow()	 # naive utc time

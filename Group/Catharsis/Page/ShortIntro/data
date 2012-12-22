@@ -2,6 +2,7 @@ name="ShortIntro"
 desc_title="ShortIntro Test"
 fun_title="From before the beginning..."
 screenshot="ShortIntro-poster.jpg"
+duration="57"
 
 project="JDJ-5"
 assoc_projects=""
@@ -14,11 +15,11 @@ description="""This is mostly a test to see if my scripting can create
 	<p>
 	I think I like it this way.
         """
-create="2012-11-14 02:03:11"
-update="2012-11-25 23:42:43"
+createtime="2012-11-14 02:03:11"
+updatetime="2012-11-25 23:42:43"
 
-create="2012-11-14T10:03:11"
-update="2012-11-14T10:03:11"
+createtime="2012-11-14T10:03:11"
+updatetime="2012-11-14T10:03:11"
 
 project="<unset>"
 assoc_projects=""	

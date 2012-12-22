@@ -17,7 +17,7 @@ from htmlgen import *
 
 # 
 # put these somewhere....
-num_recent_entries = 10
+num_recent_entries = 5
 
 
 def rebuild(group, opt):
@@ -75,10 +75,10 @@ def rebuild(group, opt):
 
 	pageURLbase = os.path.join(g.root, 'Page')
 	for pg in g.pagelist[index:]:
-		print "times:", pg.create, pg.update
+		print "times:", pg.createtime, pg.updatetime
 
 		flag = '<span style="font-size: smaller;'	# first part
-		if pg.update == pg.create:
+		if pg.updatetime == pg.createtime:
 			flag = flag + ' color: red;"> New!'
 		else:
 			flag = flag + '"> (u)'
@@ -88,10 +88,10 @@ def rebuild(group, opt):
 		f_recent.write('<li><a href="' + localURL + '/" title="' + pg.fun_title +
 			'">' + pg.desc_title + '</a>' + 
 			flag +
-			'<br><i>' + cldate.utc2short(pg.update) + 
+			'<br><i>' + cldate.utc2short(pg.updatetime) + 
 			'</i></li>\n')
 
-		print pg.name, '-', cldate.utc2short(pg.update), flag
+		print pg.name, '-', cldate.utc2short(pg.updatetime), flag
 
 	f_recent.write('</ul></div>\n')
 	f_recent.close()
@@ -141,15 +141,11 @@ def rebuild(group, opt):
 	#
 	# Generate the links from the list..
 	linkgen(g)	# build links for the group...
-
 	homegen(g)
-	
 	newgen(g)
-
 	navgen(g)
-
 	archivegen(g)
-
+	helpgen(g)
 		
 	sys.exit(0)
 

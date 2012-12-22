@@ -13,10 +13,10 @@
 			        <table width=80% border=0 cellpadding=0 class="banner_txt">
 			          <td align="center" ><a href="/coLab/Group/Catharsis/index.shtml" title="Always a nice place to go...">Home</a></td>
 	
-			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Whats/new.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
 			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
 			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
-			          <td align="center" ><a href="/coLab/Help/" title="Hopefully, the help you need.">Help</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
 			        </tr></table>
 			<!/center>
 			<br>
@@ -34,7 +34,7 @@
 	<h2 class=fundesc>Navigation: Catharsis</h2>
 	<font color=a0b0c0>
 	Nothing for now - but feel free to comment.
-	<p><i>2012-12-11T23:36:26.636477</i><p>
+	<p><i>2012-12-21T16:29:24.997852</i><p>
 		<hr>
 		Enter your comments here:<br>
 		
@@ -42,7 +42,7 @@
 		Your name: <input type="text" name="Commenter" ><br>
 		<center>
 		<input type="hidden" name="page" value="Navigation">
-		<input type="hidden" name="desc_title" value="<unset>">
+		<input type="hidden" name="desc_title" value="Navigation">
 		<textarea name="Text" rows=15 cols=80></textarea>
 		<br>
 		</center>

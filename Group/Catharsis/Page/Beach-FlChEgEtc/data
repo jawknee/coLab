@@ -2,6 +2,7 @@ name="Beach-FlChEgEtc"
 desc_title="Beach, next phase"
 fun_title="Ham and Eggs on the Beach"
 screenshot="Beach-FlChEgEtc-poster.jpg"
+duration="167"
 
 description="""This little tool is getting close to useful.   Here is Beach with
         the piano doubled on a rhodes, and a few other rhythmical friends.  Also,
@@ -15,11 +16,11 @@ description="""This little tool is getting close to useful.   Here is Beach with
         Unseen is that large sections, like the left side bar and the back and forward links,
         are including files that are easily contructed as needed.  So, it's coming along.
         """
-create="2012-11-25 01:34:11"
-update="2012-11-25 22:33:11"
+createtime="2012-11-25 01:34:11"
+updatetime="2012-11-25 22:33:11"
 
-create="2012-11-25T09:34:11"
-update="2012-12-06T04:55:34"
+createtime="2012-11-25T09:34:11"
+updatetime="2012-12-06T04:55:34"
 
 project="<unset>"
 assoc_projects=""	
@@ -27,4 +28,4 @@ assoc_projects=""
 prevlink="<unset>"
 nextlink="<unset>"
 project="JDJ-5"
-update="2012-12-10T03:26:35"
+updatetime="2012-12-10T03:26:35"

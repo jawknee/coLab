@@ -1,7 +1,8 @@
 name="ScndTurnBDeG"
-desc_title="Second Turn with Drum, Bass, etc."
-fun_title="Second Try with Turn"
+desc_title="Second Try with Turn"
+fun_title="Second Turn with Drum, Bass, Chaos, etc."
 screenshot="ScndTurnBDeG-poster.jpg"
+duration="225"
 
 description="""This is my first attempt at automating a large portion of the web page generation.
 I'm typing these comments as the other script builds the couple thousand images.
@@ -13,11 +14,11 @@ was testing out my partial automation.
 
 Not a lot more to say about it at this point. I'll see about getting comments working soon.
         """
-create="2012-11-18 23:40:11"
-update="2012-11-26 22:30:00"
+createtime="2012-11-18 23:40:11"
+updatetime="2012-11-26 22:30:00"
 
-create="2012-11-19T07:40:11"
-update="2012-11-19T07:40:11"
+createtime="2012-11-19T07:40:11"
+updatetime="2012-11-19T07:40:11"
 
 project="<unset>"
 assoc_projects=""	

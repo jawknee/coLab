@@ -46,6 +46,6 @@ screenshot="ScreenShot.png"
 description="""
 """
 
-create="$(date "+%Y-%m-%d %H:%M:%S")"
-update="$(date "+%Y-%m-%d %H:%M:%S")"
+createtime="$(date "+%Y-%m-%dT%H:%M:%S")"
+updatetime="$(date "+%Y-%m-%dT%H:%M:%S")"
 EOF

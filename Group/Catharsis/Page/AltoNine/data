@@ -1,0 +1,41 @@
+name="AltoNine"
+group="Catharsis"
+desc_title="Nifty Nine and Friends"
+fun_title="An Herculeanly Restrained Flute Tide"
+duration="158.215"
+group="Catharsis"
+screenshot="ScreenShot.png"
+thumbnail=""
+
+project="JDJ-5"
+assoc_projects=""
+description="""
+I wanted to pump out another bit of listening to test out the
+improved methods for generating these pages - it's getting better.
+<p>
+In spite of the appearance - this is mostly the "Nine is Nifty"
+Alto Flute track.  That track is the dark-lighted one near the middle.
+<p>
+Above and below that are the other 24 Alto Flute tracks.  Below that are
+the submasters for the Solo Alto Flute (straight volume line) and the
+Accomp. Altos and C Flutes (mostly matching jagged lines).  And finally below
+that are the 5 C flutes.
+<p>
+And extra finally: at the top is the piano roll.
+<p>
+I mostly wanted to experiment with the idea I had of a large number
+of flutes, but only in spots.    I played a little loose in the later
+A sections, but just to hear what's there.
+<p>
+I think this has got some potential.  Let me know what you think.
+"""
+
+xStart=43
+xEnd=633
+
+prevlink="<unset>"
+nextlink="<unset>"
+
+createtime="2012-12-22T07:49:22"
+updatetime="2012-12-22T07:49:22"
+

@@ -1,0 +1,122 @@
+<html>
+			<head><title>An Herculeanly Restrained Flute Tide</title>
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+			<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
+		<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
+		<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
+		
+			</head>
+			<body>
+			<!--   Menu Header -->
+			<div id="container">
+			
+			<div class="banner" > <! start of banner>
+			<!center>	 
+			        <table width=80% border=0 cellpadding=0 class="banner_txt">
+			          <td align="center" ><a href="/coLab/Group/Catharsis/index.shtml" title="Always a nice place to go...">Home</a></td>
+	
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
+			          <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
+			        </tr></table>
+			<!/center>
+			<br>
+			</div>	<! end of banner>
+	
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+	
+			
+			<div id="Content" class="main">
+		<center><h1 class="fundesc">An Herculeanly Restrained Flute Tide</h1>
+			<script type="text/javascript"><!--
+			        QT_WritePoster_XHTML('Click to Play', 'AltoNine-poster.jpg',
+			                'AltoNine.mov',
+			                '640', '496', '',
+			                'controller', 'true',
+			                'autoplay', 'true',
+			                'bgcolor', 'black',
+			                'scale', 'aspect');
+			//-->
+			</script>
+			<noscript>
+			<object width="640" height="496" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
+			        <param name="src" value="AltoNine-poster.jpg" />
+			        <param name="href" value="AltoNine.mov" />
+			        <param name="target" value="myself" />
+			        <param name="controller" value="false" />
+			        <param name="autoplay" value="false" />
+			        <param name="scale" value="aspect" />
+			        <embed width="640" height="496" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"
+			                src="AltoNine-poster.jpg"
+			                href="AltoNine.mov"
+			                target="myself"
+			                controller="false"
+			                autoplay="false"
+			                scale="aspect">
+			        </embed>
+			</object>
+			</noscript>
+		</center>
+		</center>
+	<p>
+	<!--#include virtual="links.html" -->
+	<div class="maintext">
+	<h2 class=fundesc>Nifty Nine and Friends</h2>
+	<h4>Duration:2:38.22</h4>
+	<font color=a0b0c0>
+I wanted to pump out another bit of listening to test out the
+improved methods for generating these pages - it's getting better.
+<p>
+In spite of the appearance - this is mostly the "Nine is Nifty"
+Alto Flute track.  That track is the dark-lighted one near the middle.
+<p>
+Above and below that are the other 24 Alto Flute tracks.  Below that are
+the submasters for the Solo Alto Flute (straight volume line) and the
+Accomp. Altos and C Flutes (mostly matching jagged lines).  And finally below
+that are the 5 C flutes.
+<p>
+And extra finally: at the top is the piano roll.
+<p>
+I mostly wanted to experiment with the idea I had of a large number
+of flutes, but only in spots.    I played a little loose in the later
+A sections, but just to hear what's there.
+<p>
+I think this has got some potential.  Let me know what you think.
+<p><i>2012-12-21 11:49:22 PM PST</i><p>
+	<p>
+		<hr>
+		Enter your comments here:<br>
+		
+		<form method=POST action="/coLab/bin/postcomments.cgi">
+		Your name: <input type="text" name="Commenter" ><br>
+		<center>
+		<input type="hidden" name="page" value="AltoNine">
+		<input type="hidden" name="desc_title" value="Nifty Nine and Friends">
+		<textarea name="Text" rows=15 cols=80></textarea>
+		<br>
+		</center>
+		<input type="submit">
+		</form>
+		<p><hr><p>
+		<h3>Comments:</h3>
+		<!--#include virtual="Comments.log" -->
+		<p>
+		<br>
+		<center>
+		&copy; Catharsis Studios West 2012
+		<p>
+		</center>
+		</div>
+		<!--#include virtual="links.html" -->
+		<p>&nbsp;<p>
+		</td></tr></table>
+		</div>
+		</div>
+		
+		</center
+		</body>
+		</html>
+		

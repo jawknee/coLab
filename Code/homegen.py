@@ -62,9 +62,9 @@ def genHome(name):
 	index='index.shtml'
 	if os.path.exists(index):
 		try:
-			shutil.move(index, index + ".prev")
+			os.remove(index)
 		except OSError, info:
-			print "Error moving", index, index
+			print "Error removing", index, info
 			sys.exit(1)
 	#
 	# It's finally time to start creating that home page...

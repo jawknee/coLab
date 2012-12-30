@@ -8,6 +8,8 @@ import cldate
 import clutils
 import clclasses
 
+import imagemaker
+
 
 def get_input(var, preprompt):
 	"""
@@ -70,7 +72,7 @@ def newPage(name):
 	f.write(page.dump())
 	f.close()
 
-
+	imagemaker.make_images(page)	
 	
 
 

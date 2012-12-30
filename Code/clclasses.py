@@ -58,9 +58,10 @@ class Group:
 		self.coLab_root = conf.coLab_root
 		self.coLab_home = conf.coLab_home
 		# and the group specific locations
-		self.url_head = os.path.join(conf.coLab_url_head, 'Group', name)
-		self.root = os.path.join(conf.coLab_root, 'Group', name)
-		self.home = os.path.join(conf.coLab_home, 'Group', name)
+		grp_dir = os.path.join('Group', name)
+		self.url_head = os.path.join(conf.coLab_url_head, grp_dir)
+		self.root = os.path.join(conf.coLab_root, grp_dir)
+		self.home = os.path.join(conf.coLab_home, grp_dir)
 
 		#
 		# Load a generic object from the file, then transfer the items 
@@ -131,12 +132,16 @@ class Page:
 	
 	def __init__(self):
 		self.name="<unset>"
+		self.group="<unset>"
 		self.desc_title="<unset>"
 		self.fun_title="<unset>"
 		self.duration = 0.0
 		self.screenshot=""
 		self.thumbnail=""
 		self.description="<unset>"
+
+		self.xStart = 0
+		self.xEnd = 0
 
 		self.project="<unset>"
 		self.assoc_projects=''
@@ -163,6 +168,10 @@ class Page:
 			self.duration = float(file.duration)
 			self.screenshot = file.screenshot
 			self.description = file.description
+			self.group = file.group
+
+			self.xStart = file.xStart
+			self.xEnd = file.xEnd
 
 			self.project = file.project
 			self.assoc_projects = file.assoc_projects
@@ -173,11 +182,10 @@ class Page:
 			self.createtime = cldate.string2utc(file.createtime)
 			self.updatetime = cldate.string2utc(file.updatetime)
 
-		except (NameError, AttributeError), info:
+		except (NameError, AttributeError) as info:
 			print "xfer_import: unset var in data file", info
-			raise NameError
 
-	def load(self,path='none'):
+	def load(self, path='None'):
 		"""
 		This is a bit kludgy right now, 
 		we read the file, then populate
@@ -191,15 +199,26 @@ class Page:
 		For now, this is generic and flexible
 		"""
 
+
+		# load in the site data to get started...
+		# coLab_url_head        - head to the ext web site (e.g., http://...)
+		# coLab_root            - url to the local structure (e.g., /coLab )
+		# coLab_home            - local fs location of coLab home
 		#
-		if path == 'none':
+		try:
+			conf=clutils.get_config()
+		except ImportError:
+			print "Cannot find config."
+			sys.exit(1)
+		
+
+		if path == 'None':
 			try:
-				print "deferring to self path\n"
 				path = self.home
-			except:
-				print "No path passed or discernable."
+			except NameError as info:
+				print info
 				sys.exit(1)
-				
+		
 		dfile = os.path.join(path, 'data')
 		#print "dfile:",dfile
 
@@ -216,17 +235,30 @@ class Page:
 			print "load: import problems:", info
 			self.update(path)
 
+		# populate the group paths/locations
+		# first - the site wide values   - no need to config more than once..
+		self.coLab_url_head = conf.coLab_url_head
+		self.coLab_root = conf.coLab_root
+		self.coLab_home = conf.coLab_home
+		# and the group specific locations
+		page_dir = os.path.join('Group', self.group, 'Page',  self.name)
+		self.url_head = os.path.join(conf.coLab_url_head, page_dir)
+		self.root = os.path.join(conf.coLab_root, page_dir)
+		self.home = os.path.join(conf.coLab_home, page_dir)
 
 	def dump(self):
 		"""
-		Output in a format suitable for replacing the data file
+		Update the data file
 		"""
 		EOL = '"\n'
 
+		print "dump- self:", self.xStart, self.xEnd
 		return( 'name="' + self.name + EOL +
+			'group="' + self.group + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
 			'duration="' + str(self.duration) + EOL +
+			'group="Catharsis' + EOL +	# ******* RBF:  Hardcoded group ***
 			'screenshot="' + self.screenshot + EOL +
 			'thumbnail="' + self.thumbnail + EOL +
 			'\n' +
@@ -235,13 +267,18 @@ class Page:
 			'description="""' + self.description +
 			'"""\n' +
 			'\n' +
+			'xStart=' + str(self.xStart) + '\n' +
+			'xEnd=' + str(self.xEnd) + '\n' +
+			'\n' +
 			'prevlink="' + self.prevlink + EOL +
 			'nextlink="' + self.nextlink + EOL +
 			'\n' +
 			'createtime="' + cldate.utc2string(self.createtime) + EOL +
-			'updatetime="' + cldate.utc2string(self.updatetime) + EOL )
+			'updatetime="' + cldate.utc2string(self.updatetime) + EOL +
+			'\n'
+			)
 
-	def update(self, path):
+	def update(self):
 		"""
 			A bit of a kluge to let me retain a python/shell/etc.
 			flat data file.  Dumps the passed object to a temp file,
@@ -249,8 +286,8 @@ class Page:
 			Can be from the exception in load.
 			then dumps the passed object to it, 
 		"""
-		print "page path", path
-		data = os.path.join(path, 'data')
+		print "page path", self.home
+		data = os.path.join(self.home, 'data')
 		tmp = data + '.temp'
 		print "data, tmp", data, tmp 
 		print "update path file:", tmp

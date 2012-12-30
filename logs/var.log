@@ -120,3 +120,9 @@ Text="Hey - just a quick note - I like to run notes through the i/f to see what 
 The funny thing is, no, instead of reading and writing a bunch of files for each image, it now has everything in memory and does one read for the initial image, and one write for frame.   I figured it&#039;d be 10x faster - it&#039;s maybe 2-3x faster - but - it works *and* I&#039;ve got a lot more flexibility with the time counters.    We&#039;ll see if I get a chance to work up something - but with me flying out on Sunday...   Well...
 
 onward!"
+Commenter=jk&page=StormLevelCheck&desc_title=Storm+Level+Check&Text=I%27ve+updated+the+player+graphics+on+this+page+to+check+out+the+new+coding+I%27ve+done.+++The+major+differences+are+the+graphics+have+been+re-cropped+to+focus+on+the+actual+content+%28none+of+the+extra+ProTools+graphics%29+and+the+updated+time+boxes.%0D%0A%0D%0AAlso%3A+there+is+another...+Commenter="jk"
+page="StormLevelCheck"
+desc_title="Storm Level Check"
+Text="I&#039;ve updated the player graphics on this page to check out the new coding I&#039;ve done.   The major differences are the graphics have been re-cropped to focus on the actual content (none of the extra ProTools graphics) and the updated time boxes.
+
+Also: there is another... "

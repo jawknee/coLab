@@ -12,29 +12,32 @@ import ImageFont
 import sys
 import os
 
+import clclasses
 
-def make_image():
+
+def make_images(page):
 	"""
 	 for now - just create and display a time box...
 	"""
 
-	dir="/Users/Johnny/dev/ScrollLine/Overlays"
+	dir = os.path.join(page.home, 'local', 'Overlays' )
 	os.system('rm -rfv ' + dir + '/')
 	os.system('mkdir -pv ' + dir )
 
 	fps = 6
-	duration = 147.012
-	screenshot = "../Group/Catharsis/Page/StormLevelCheck/ScreenShot.png"
-	
+	try:
+		os.chdir(page.home)
+	except OSError, info:
+		print "Problem changing to :", page.home
+		print info
+		sys.exit(1)
+
 	width = 640
 	height = 480
 	size = (width, height)
 
 	tn_width = 160
 	tn_height = 120
-
-	xStart = 73
-	xEnd = 597
 
 	# Colors....
 	Xparent = (0,0,0,0)
@@ -61,42 +64,47 @@ def make_image():
 
 	# Set up the base image that will be copied and overlaid as needed...
 	#
-	orig_image = Image.open(screenshot)
+	orig_image = Image.open(page.screenshot)
 	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 
 
-	print "Current start/stop: ", xStart, xEnd
+	print "Current start/stop: ", page.xStart, page.xEnd
 	ans = raw_input("OK? (y/N)")
 	if [ ans == 'y' ]:
 		base_image.show()
-		print "Hit return for", xStart, xEnd
-		(nuxStart, nuxEnd) = input("Enter xStart, xEnd: (" + str(xStart) + ', ' + str(xEnd) + '): ' )
+		print "Hit return for", page.xStart, page.xEnd
+		(nuxStart, nuxEnd) = input("Enter xStart, xEnd: (" + str(page.xStart) + ', ' + str(page.xEnd) + '): ' )
 		print "nux:", nuxStart, nuxEnd
-		xStart = nuxStart
-		xEnd = nuxEnd
+		page.xStart = nuxStart
+		page.xEnd = nuxEnd
+		print "page:", page.xStart, page.xEnd
+		page.update()
 	else:
 		print ("I was looking for 'y'.")
 
 
+	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
+
 	#font = ImageFont.truetype('../Resources/Fonts/data-latin.ttf', 18)
-	font = ImageFont.truetype('../Resources/Fonts/DigitaldreamFatSkewNarrow.ttf', 12)
+	fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
+
+	font = ImageFont.truetype(fontpath, 12)
 
 	lefttime = -1	# force a bild of the left box
 	righttime = -1 	# ditto, right
 	lastx = -1	# x-pos - force draw of the cursor
 
-	xPos = xStart
+	xPos = page.xStart
 	prevLine = -1
 
 	# Now - loop through, generating images as we need...
-	frames = int(duration * fps)
-	xLen = xEnd - xStart
+	frames = int(page.duration * fps)
+	xLen = page.xEnd - page.xStart
 
 	frameIncr = float(xLen) / frames
 
-	#fr=1	# Frame number...
 	#while fr <= frames:
-	for fr in range(frames):
+	for fr_num in range(frames):
 		# create a new overlay
 		overlay = Image.new( 'RGBA', size, color=Xparent)
 		overlay_draw = ImageDraw.Draw(overlay)
@@ -111,11 +119,11 @@ def make_image():
 		# Build the left and right boxes...
 		lbox = box.copy()
 		lbox_draw = ImageDraw.Draw(lbox)	# draw object...
-		if fr == 0:	# add a highlight
+		if fr_num == 0:	# add a highlight
 			lbox_draw.rectangle(box_rect, outline=eBlue)
 			lbox_draw.rectangle(box_rect2, outline=eBlue)
 		
-		time = float(fr) / fps
+		time = float(fr_num) / fps
 		seconds = int(time)
 		tstring = "%01d:%02d" % divmod(seconds, 60)
 
@@ -127,12 +135,12 @@ def make_image():
 
 		rbox = box.copy()
 		rbox_draw = ImageDraw.Draw(rbox)
-		if fr == frames-1:	# Outline last frame time.
+		if fr_num == frames-1:	# Outline last frame time.
 			rbox_draw.rectangle(box_rect, outline=eBlue)
 			rbox_draw.rectangle(box_rect2, outline=eBlue)
 
 
-		seconds = int(duration - time)
+		seconds = int(page.duration - time)
 		tstring = "-%01d:%02d" % divmod(seconds, 60)
 
 		(twidth, theight) = rbox_draw.textsize(tstring, font=font)
@@ -148,8 +156,8 @@ def make_image():
 		frame_image = base_image.copy()		# new copy of the base...
 		frame_image.paste(overlay_rgb, (0,0), mask)
 
-		print "Frame", fr, "of", frames
-		frame_image.save( dir + '/' + 'Frame-%05d.png' % fr, 'PNG')
+		print "Frame", fr_num, "of", frames
+		frame_image.save( dir + '/' + 'Frame-%05d.png' % fr_num, 'PNG')
 
 		xPos += frameIncr
 

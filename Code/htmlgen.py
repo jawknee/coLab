@@ -80,9 +80,9 @@ def htmlgen(group, page):
 	# for now - shuffle the current one to a temp location...
 	if os.path.exists(index):
 		try:
-			shutil.move(index, index + ".prev")
+			os.remove(index)
 		except OSError, info:
-			print "Error moving", index, index
+			print "Error removing", index, info
 			sys.exit(1)
 
 

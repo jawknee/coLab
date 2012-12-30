@@ -3,5 +3,6 @@
 *.confc
 *.bak
 datac
+coLab_local
 /Shared/mostrecent.html
 /.InterarchyMirrorCacheData/*

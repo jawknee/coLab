@@ -156,19 +156,23 @@ class Page:
 	def xfer_import(self, file):
 		"""
 		 	Transfer the items from the file object into the 
-			page object.   Careful - ths is called from both 
+			page object.   Careful - this is called from both 
 			load and update. 
 		"""
 		#
 		# Step through them...
 		try:
+			# These first few should always happen and should be first.
+			# Needed to set up default path to the data file..
 			self.name = file.name
+			self.group = file.group
+			#
 			self.desc_title = file.desc_title
 			self.fun_title = file.fun_title
 			self.duration = float(file.duration)
 			self.screenshot = file.screenshot
+			self.thumbnail = file.thumbnail
 			self.description = file.description
-			self.group = file.group
 
 			self.xStart = file.xStart
 			self.xEnd = file.xEnd
@@ -184,6 +188,25 @@ class Page:
 
 		except (NameError, AttributeError) as info:
 			print "xfer_import: unset var in data file", info
+			raise NameError
+		else:
+			print "Xfer ok."
+
+	def set_paths(self, conf):
+		"""
+		populate the page paths/locations from the conf object. expects self.name
+		and self.group to set. Will return invalid paths if they are not.
+		"""
+		# first - the site wide values   - no need to config more than once..
+		self.coLab_url_head = conf.coLab_url_head
+		self.coLab_root = conf.coLab_root
+		self.coLab_home = conf.coLab_home
+		# and the group specific locations
+		page_dir = os.path.join('Group', self.group, 'Page',  self.name)
+		self.url_head = os.path.join(conf.coLab_url_head, page_dir)
+		self.root = os.path.join(conf.coLab_root, page_dir)
+		self.home = os.path.join(conf.coLab_home, page_dir)
+		return
 
 	def load(self, path='None'):
 		"""
@@ -229,22 +252,17 @@ class Page:
 		except IOError, info:
 			print "Import problem with", dfile, info
 			raise IOError
+
+		self.set_paths(conf)
+
 		try:
 			self.xfer_import(P)
 		except NameError, info:
+			self.set_paths(conf)
 			print "load: import problems:", info
-			self.update(path)
+			print "Calling self.update() with self.home, group, name  as:", self.home, self.group, self.name
+			self.update()
 
-		# populate the group paths/locations
-		# first - the site wide values   - no need to config more than once..
-		self.coLab_url_head = conf.coLab_url_head
-		self.coLab_root = conf.coLab_root
-		self.coLab_home = conf.coLab_home
-		# and the group specific locations
-		page_dir = os.path.join('Group', self.group, 'Page',  self.name)
-		self.url_head = os.path.join(conf.coLab_url_head, page_dir)
-		self.root = os.path.join(conf.coLab_root, page_dir)
-		self.home = os.path.join(conf.coLab_home, page_dir)
 
 	def dump(self):
 		"""
@@ -252,13 +270,13 @@ class Page:
 		"""
 		EOL = '"\n'
 
-		print "dump- self:", self.xStart, self.xEnd
+		print "dump- self: xStart, xEnd", self.xStart, self.xEnd
 		return( 'name="' + self.name + EOL +
 			'group="' + self.group + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
 			'duration="' + str(self.duration) + EOL +
-			'group="Catharsis' + EOL +	# ******* RBF:  Hardcoded group ***
+			"""'group="Catharsis' + EOL +	# ******* RBF:  Hardcoded group *** """
 			'screenshot="' + self.screenshot + EOL +
 			'thumbnail="' + self.thumbnail + EOL +
 			'\n' +
@@ -331,6 +349,9 @@ class Page:
 def main():
 	print "Welcome to classes..."
 	
+	p = Page()
+	p.load('/Users/Johnny/dev/coLab/Group/Catharsis/Page/BeachFlute')
+
 	
 	g = Group()
 	g.load('Catharsis')

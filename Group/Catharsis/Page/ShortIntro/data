@@ -1,12 +1,15 @@
 name="ShortIntro"
+group="Catharsis"
 desc_title="ShortIntro Test"
 fun_title="From before the beginning..."
+duration="57.0"
 screenshot="ShortIntro-poster.jpg"
-duration="57"
+thumbnail="ScreenShot_tn.png"
 
 project="JDJ-5"
 assoc_projects=""
-
+song="JDJ-5"
+part="Intro"
 description="""This is mostly a test to see if my scripting can create
 	the html index file in place with a pre-existing web site.
 	<p>
@@ -15,15 +18,13 @@ description="""This is mostly a test to see if my scripting can create
 	<p>
 	I think I like it this way.
         """
-createtime="2012-11-14 02:03:11"
-updatetime="2012-11-25 23:42:43"
+
+xStart=0
+xEnd=0
+
+prevlink="<unset>"
+nextlink="<unset>"
 
 createtime="2012-11-14T10:03:11"
 updatetime="2012-11-14T10:03:11"
 
-project="<unset>"
-assoc_projects=""	
-
-prevlink="<unset>"
-nextlink="<unset>"
-project="JDJ-5"

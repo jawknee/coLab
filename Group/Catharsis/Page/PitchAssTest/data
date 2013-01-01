@@ -1,12 +1,15 @@
 name="PitchAssTest"
+group="Catharsis"
 desc_title="Storm/Rain Pitch Test"
-fun_title="Storm in E&#9837 meets Anti-Chipmunk in C"
+fun_title="Storm in Eb meets Anti-Chipmunk in C"
 duration="189.515"
 screenshot="ScreenShot.png"
-thumbnail=""
+thumbnail="ScreenShot_tn.png"
 
 project="JDJ-5"
 assoc_projects=""
+song="JDJ-5"
+part="Rain"
 description="""
 Pretty straight-forward, the pitch shifted "rain" (shifted down a minor third
 from E&#9837 to C) edited into the last section of Storm.   I also dropped the 
@@ -18,11 +21,12 @@ It could be in the original recording, or the output of the mix - I'll check thi
 The line along the bottom is the BRT volume tracking.
 """
 
+xStart=0
+xEnd=0
+
 prevlink="<unset>"
 nextlink="<unset>"
 
 createtime="2012-12-17T05:57:39"
-updatetime="2012-12-17T05:57:39"
-updatetime="2012-12-19T04:09:08"
-updatetime="2012-12-19T05:08:28"
 updatetime="2012-12-19T05:11:31"
+

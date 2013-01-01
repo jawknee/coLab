@@ -22,7 +22,11 @@
 			<br>
 			</div>	<! end of banner>
 	
+			<div class="sidebar_l">
 			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
+			<p><hr><P>
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
+			</div>
 			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
 	
 			
@@ -46,7 +50,7 @@ the pages for easy reference.
 Comments are always welcome.
 
 <p>
-	<i>2012-12-29T17:23:10.601767</i><br clear=all><p>
+	<i>2012-12-31T23:37:04.162021</i><br clear=all><p>
 		<hr>
 		Enter your comments here:<br>
 		

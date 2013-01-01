@@ -41,8 +41,8 @@ class Html():
 		body = body.replace('!coLabRoot!', group.coLab_root)
 
 		if media:
-			body = body + '<center><h1 class="fundesc">' + page.fun_title + '</h1>'
-			body = body + self.media_insert.replace("!name!", page.name) + '</center>'
+			body += '<center><img src="Title.png" class="fundesc" alt="' + page.fun_title + '">'
+			body += self.media_insert.replace("!name!", page.name) + '</center>'
 
 		return(body)
 
@@ -120,7 +120,11 @@ class Html():
 			<br>
 			</div>	<! end of banner>
 	
+			<div class="sidebar_l">
 			<!--#include virtual="!groupURL!/Shared/mostrecent.html" -->
+			<p><hr><P>
+			<!--#include virtual="!groupURL!/Shared/projectlist.html" -->
+			</div>
 			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
 	
 			

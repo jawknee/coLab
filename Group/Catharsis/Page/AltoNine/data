@@ -3,12 +3,13 @@ group="Catharsis"
 desc_title="Nifty Nine and Friends"
 fun_title="An Herculeanly Restrained Flute Tide"
 duration="158.215"
-group="Catharsis"
 screenshot="ScreenShot.png"
-thumbnail=""
+thumbnail="ScreenShot_tn.png"
 
 project="JDJ-5"
 assoc_projects=""
+song="JDJ-5"
+part="Beach"
 description="""
 I wanted to pump out another bit of listening to test out the
 improved methods for generating these pages - it's getting better.

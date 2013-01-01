@@ -25,12 +25,16 @@
 			<br>
 			</div>	<! end of banner>
 	
+			<div class="sidebar_l">
 			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
+			<p><hr><P>
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
+			</div>
 			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
 	
 			
 			<div id="Content" class="main">
-		<center><h1 class="fundesc">Making Sure the Storm is Within Tolerances...</h1>
+		<center><img src="Title.png" class="fundesc" alt="Making Sure the Storm is Within Tolerances...">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'StormLevelCheck-poster.jpg',
 			                'StormLevelCheck.mov',
@@ -64,8 +68,11 @@
 	<p>
 	<!--#include virtual="links.html" -->
 	<div class="maintext">
-	<h2 class=fundesc>Storm Level Check</h2>
-	<h4>Duration:2:27.01</h4>
+	<br>
+	<!-- gittin' a little tricky w/alignment... -->
+	<table border=0 cellpadding=0 width=100%><tr>
+	<td valign=top><img src="Header.png" align=left alt="page.desc_title"></td>
+	<td valign=center align=right><b>Duration:2:27.01</b></td></tr></table>
 	<font color=a0b0c0>
 I had to find out if there was a clipping problem with the piano part in 
 Storm.   I'm happy to report there is none - as you can see from above, the

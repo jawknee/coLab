@@ -1,9 +1,15 @@
 name="CoveStringSolo"
+group="Catharsis"
 desc_title="Cove String Solo"
 fun_title="Cove String Solo"
+duration="152.0"
 screenshot="ScreenShot.png"
-duration="152"
+thumbnail="ScreenShot_tn.png"
 
+project="JDJ-5"
+assoc_projects=""
+song="JDJ-5"
+part="Cove"
 description="""In search of something "new" I could post, I revisited Cove and
 started looking for string sounds.   A dozen or so string patches in I 
 had several in mind,
@@ -30,15 +36,13 @@ This may have turned out to be a good thing - more on that in future drops.
 I've already listened with piano and flute and it works well.  I may have to
 rethink my idea of "improving" the string part later in the piece.
 """
-createtime="2012-11-26 23:16:58"
-updatetime="2012-11-26 23:16:58"
+
+xStart=0
+xEnd=0
+
+prevlink="<unset>"
+nextlink="<unset>"
 
 createtime="2012-11-27T07:16:58"
 updatetime="2012-11-27T07:16:58"
 
-project="<unset>"
-assoc_projects=""	
-
-prevlink="<unset>"
-nextlink="<unset>"
-project="JDJ-5"

@@ -1,9 +1,15 @@
 name="ScndTurnBDeG"
+group="Catharsis"
 desc_title="Second Try with Turn"
 fun_title="Second Turn with Drum, Bass, Chaos, etc."
+duration="225.0"
 screenshot="ScndTurnBDeG-poster.jpg"
-duration="225"
+thumbnail="ScreenShot_tn.png"
 
+project="JDJ-5"
+assoc_projects=""
+song="SecondTurn"
+part="All"
 description="""This is my first attempt at automating a large portion of the web page generation.
 I'm typing these comments as the other script builds the couple thousand images.
 This is the version of Second Turn (current title) that I did for Nola for her birthday plus
@@ -14,15 +20,13 @@ was testing out my partial automation.
 
 Not a lot more to say about it at this point. I'll see about getting comments working soon.
         """
-createtime="2012-11-18 23:40:11"
-updatetime="2012-11-26 22:30:00"
+
+xStart=0
+xEnd=0
+
+prevlink="<unset>"
+nextlink="<unset>"
 
 createtime="2012-11-19T07:40:11"
 updatetime="2012-11-19T07:40:11"
 
-project="<unset>"
-assoc_projects=""	
-
-prevlink="<unset>"
-nextlink="<unset>"
-project="JDJ-5"

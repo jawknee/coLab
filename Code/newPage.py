@@ -35,6 +35,7 @@ def newPage(name):
 
 	conf = clutils.get_config()
 	pagehome = os.path.join(conf.coLab_home, 'Group', 'Catharsis', 'Page', name)
+	local = 'coLab_local'
 
 	if os.path.isdir(pagehome):
 		print "Dir:", pagehome, "exists.   Update?"
@@ -42,14 +43,19 @@ def newPage(name):
 		# We want to implement an update option...
 	else:
 		try:
-			os.makedirs(pagehome)
+			# Create the local subdir - get it all at once...
+			localdir = os.path.join(pagehome, local)
+			os.makedirs(localdir)
 
 		except OSError, info:
-			print "Path:", pagehome, "problem:", info
+			print "Path:", localdir, "problem:", info
 			print "Try again."
 			sys.exit(1)
 
 	page = clclasses.Page()	# new page...
+	page.home = pagehome
+
+	# create a stub for the data file...
 	datafile = os.path.join(pagehome, 'data')
 	f = open(datafile, 'a+')
 	f.write('name="' + name + '"\n')
@@ -61,21 +67,31 @@ def newPage(name):
 
 	page.desc_title = get_input(page.desc_title, "Descriptive title")
 	page.fun_title = get_input(page.fun_title, "Fun title")
-	page.screenshot = "ScreenShot.png"
+	page.screenshot = os.path.join(local, "ScreenShot.png")
 	page.duration = float(get_input(str(page.duration), "Duration (secs)"))
+	
+	page.song = get_input(page.song, "Song")
+	page.project = page.song
+	page.part = get_input(page.part, "Part (All)")
 
-	page.project = get_input(page.project, "Project")
-
+	page.screenshot = os.path.join(local, "ScreenShot.png")
+	page.thumbnail = "ScreenShot_tn.png"
 	print page.dump()
 
-	f = open(datafile, 'w')
-	f.write(page.dump())
-	f.close()
+	page.post()	# put the data into file...
+
+	print "Screenshot", page.screenshot
+	print "newPage: page.name", page.name
+	print "newPage: page.home", page.home
+
+	screenpath = os.path.join(page.home, page.screenshot)
+	if not os.path.exists(screenpath):
+		print "Copy a screenshot to:"
+		print screenpath
+		a = raw_input("Hit return when ready...")
+
 
 	imagemaker.make_images(page)	
-	
-
-
 
 def main():
 	try:

@@ -20,7 +20,9 @@ def make_images(page):
 	 for now - just create and display a time box...
 	"""
 
-	dir = os.path.join(page.home, 'local', 'Overlays' )
+	print "make_images: page.home:", page.home
+
+	dir = os.path.join(page.home, 'coLab_local', 'Overlays' )
 	os.system('rm -rfv ' + dir + '/')
 	os.system('mkdir -pv ' + dir )
 
@@ -38,6 +40,7 @@ def make_images(page):
 
 	tn_width = 160
 	tn_height = 120
+	tn_size = (tn_width, tn_height)
 
 	# Colors....
 	Xparent = (0,0,0,0)
@@ -66,6 +69,10 @@ def make_images(page):
 	#
 	orig_image = Image.open(page.screenshot)
 	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
+	tn_image = orig_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
+
+	tn_file = os.path.join(page.home, page.thumbnail)
+	tn_image.save(tn_file, 'PNG')
 
 
 	print "Current start/stop: ", page.xStart, page.xEnd
@@ -78,7 +85,7 @@ def make_images(page):
 		page.xStart = nuxStart
 		page.xEnd = nuxEnd
 		print "page:", page.xStart, page.xEnd
-		page.update()
+		page.post()
 	else:
 		print ("I was looking for 'y'.")
 
@@ -98,7 +105,8 @@ def make_images(page):
 	prevLine = -1
 
 	# Now - loop through, generating images as we need...
-	frames = int(page.duration * fps)
+	#
+	frames = int(page.duration * fps) + 1
 	xLen = page.xEnd - page.xStart
 
 	frameIncr = float(xLen) / frames
@@ -162,6 +170,40 @@ def make_images(page):
 		xPos += frameIncr
 
 
+def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill=(196, 176, 160, 240) ):
+	"""
+	Since we're here with these imports - a simple enough 
+	routine to return a PNG image of the passed text.  
+	size is a (width, height) tuple.
+	The fontfile var is the full path to a truetype font file.
+	(for now, size=12)
+	"""
+	font = ImageFont.truetype(fontfile, fontsize)
+
+	# create a temp image - just long enough to get the size of the text
+	Xparent = (0,0,0,0)
+	size = (10,10)
+	box = Image.new('RGBA', size, color=Xparent)
+	box_draw = ImageDraw.Draw(box)
+
+	(w,h) = box_draw.textsize(string, font=font)
+
+	print "Size is:", w, h
+
+
+	pad = border * 2
+	size = (w+pad, h+pad)
+	offset = (border, border)
+	
+	box = Image.new('RGBA', size, color=Xparent)
+	box_draw = ImageDraw.Draw(box)
+	box_draw.text(offset, string, font=font, fill=fill)
+
+	box.save(output_file, 'PNG')
+
+	# start over with a new graphic the size of the
+
+	
 	
 
 def main():

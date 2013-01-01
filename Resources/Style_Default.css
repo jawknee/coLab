@@ -58,4 +58,10 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .links a:hover { color: #f0e0d0; text-decoration: underline; }
 .links a:active { color: #ffffff; text-decoration: underline; }
 
+.song a:link { color: #a0b0c0; text-decoration: none;}
+.song a:visited { color: #a0b0c0; text-decoration: none; }
+.song a:hover { color: #f0e0d0; text-decoration: underline; }
+.song a:active { color: #ffffff; text-decoration: underline; }
+
 .logo { position: absolute; top: 24px; right: 4px; }
+

@@ -22,7 +22,11 @@
 			<br>
 			</div>	<! end of banner>
 	
+			<div class="sidebar_l">
 			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
+			<p><hr><P>
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
+			</div>
 			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
 	
 			
@@ -34,7 +38,7 @@
 	<h2 class=fundesc>Navigation: Catharsis</h2>
 	<font color=a0b0c0>
 	Nothing for now - but feel free to comment.
-	<p><i>2012-12-29T17:23:10.602082</i><p>
+	<p><i>2012-12-31T23:37:04.162459</i><p>
 		<hr>
 		Enter your comments here:<br>
 		

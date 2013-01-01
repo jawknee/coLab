@@ -25,13 +25,13 @@ class Group:
 		self.updatetime=cldate.string2utc("1970-01-24T09:23:45")
 		
 		self.pagelist = []
-
+		self.songlist = []
 
 
 	def load(self,name):	
 		"""
 		Load the group data - starting at the local coLab root, 
-		and also load all the related data, e.g., pages.
+		and also load all associated pages
 		"""
 		try:
 			name
@@ -126,8 +126,14 @@ def createkey(self):
 	return (self.createtime)	# ditto the create time
 class Page:
 	"""
-	The data associated with a song, imported from 
-	a raw file - at this point.
+	A Page object contains the data associated with posted page.
+	Also contains methods for:
+		load	- load the data from a file 
+		update  - handle exceptions from older data files,
+			  adds any new vars to the data file. 
+		dump	- return the object's data in file format
+		post	- puts the output of dump into the data file
+
 	"""
 	
 	def __init__(self):
@@ -145,6 +151,8 @@ class Page:
 
 		self.project="<unset>"
 		self.assoc_projects=''
+		self.song="<unset>"
+		self.part="All"
 
 		self.prevlink="<unset>"
 		self.nextlink="<unset>"
@@ -165,7 +173,9 @@ class Page:
 			# These first few should always happen and should be first.
 			# Needed to set up default path to the data file..
 			self.name = file.name
+			print "xfer_import: self.name", self.name
 			self.group = file.group
+
 			#
 			self.desc_title = file.desc_title
 			self.fun_title = file.fun_title
@@ -179,6 +189,8 @@ class Page:
 
 			self.project = file.project
 			self.assoc_projects = file.assoc_projects
+			self.song = file.song
+			self.part = file.part
 
 			self.prevlink = file.prevlink
 			self.nextlink = file.nextlink
@@ -195,17 +207,33 @@ class Page:
 	def set_paths(self, conf):
 		"""
 		populate the page paths/locations from the conf object. expects self.name
-		and self.group to set. Will return invalid paths if they are not.
+		and self.group to be set. Will return invalid paths if they are not.
 		"""
+
+		#
+		# RBF: Remove Before Flight
+		# 	for debugging, we hard code the group  - needs to come out before
+		# 	"production"
+		try:
+			if self.group == "<unset>":
+				raise NameErrror	
+		except (NameError, TypeError), info:
+			self.group = "Catharsis" 
+			print "load: group Force:", self.group, info
+
+		if self.name == "<unset>":
+			raise NameError
+
 		# first - the site wide values   - no need to config more than once..
 		self.coLab_url_head = conf.coLab_url_head
 		self.coLab_root = conf.coLab_root
 		self.coLab_home = conf.coLab_home
-		# and the group specific locations
+		# and the page specific locations
 		page_dir = os.path.join('Group', self.group, 'Page',  self.name)
 		self.url_head = os.path.join(conf.coLab_url_head, page_dir)
 		self.root = os.path.join(conf.coLab_root, page_dir)
 		self.home = os.path.join(conf.coLab_home, page_dir)
+		print "set_paths: self.home:", self.home
 		return
 
 	def load(self, path='None'):
@@ -239,7 +267,7 @@ class Page:
 			try:
 				path = self.home
 			except NameError as info:
-				print info
+				print "load: NE", info
 				sys.exit(1)
 		
 		dfile = os.path.join(path, 'data')
@@ -253,7 +281,7 @@ class Page:
 			print "Import problem with", dfile, info
 			raise IOError
 
-		self.set_paths(conf)
+		#self.set_paths(conf)
 
 		try:
 			self.xfer_import(P)
@@ -263,6 +291,11 @@ class Page:
 			print "Calling self.update() with self.home, group, name  as:", self.home, self.group, self.name
 			self.update()
 
+		"""   Ugly - this is a kluge - need to tightent this up:   RBF
+		"""
+		self.set_paths(conf)
+		self.post()
+
 
 	def dump(self):
 		"""
@@ -270,18 +303,20 @@ class Page:
 		"""
 		EOL = '"\n'
 
+
 		print "dump- self: xStart, xEnd", self.xStart, self.xEnd
 		return( 'name="' + self.name + EOL +
 			'group="' + self.group + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
 			'duration="' + str(self.duration) + EOL +
-			"""'group="Catharsis' + EOL +	# ******* RBF:  Hardcoded group *** """
 			'screenshot="' + self.screenshot + EOL +
 			'thumbnail="' + self.thumbnail + EOL +
 			'\n' +
 			'project="' + self.project + EOL +
 			'assoc_projects="' + self.assoc_projects + EOL +
+			'song="' + self.song + EOL +
+			'part="' + self.part + EOL +
 			'description="""' + self.description +
 			'"""\n' +
 			'\n' +
@@ -296,13 +331,37 @@ class Page:
 			'\n'
 			)
 
+	def post(self):
+		"""
+			Post the object data into a 'data' file.  The path to it 
+			is in the object, and it simply opens the file and 
+			puts the output of dump() into it.
+
+			Object variables presist.
+		"""
+
+		print "post: page path", self.home
+		data = os.path.join(self.home, 'data')
+
+		try: 
+			dfile = open(data, 'w+')	
+		except IOError, info:
+			print "post: Problem opening", data, info
+			raise
+
+		dfile.write(self.dump())
+		dfile.close()
+
 	def update(self):
 		"""
 			A bit of a kluge to let me retain a python/shell/etc.
 			flat data file.  Dumps the passed object to a temp file,
 			concatenates the passed file to it, then imports that.
-			Can be from the exception in load.
-			then dumps the passed object to it, 
+			Can be called from the exception in load.
+
+			Object variables do NOT persist if already specified in the
+			data file.  Use post() in that case
+	
 		"""
 		print "page path", self.home
 		data = os.path.join(self.home, 'data')
@@ -328,12 +387,18 @@ class Page:
 		tfile.close()
 		dfile.close()
 
+
 		try:
 			P = imp.load_source('',tmp)
-			os.remove(tmp + 'c')
 		except IOError, info:
 			print "Immport problem with", dfile, info
 			raise IOError
+
+		try:
+			os.remove(tmp + 'c')
+			os.remove(tmp)
+		except:
+			print "Couldn't remove", tmp
 
 		try:
 			self.xfer_import(P)
@@ -341,16 +406,28 @@ class Page:
 			print "update: problems:", info
 			raise ImportError
 
-		dfile = open(data, 'w+')
-		dfile.write(self.dump())
-		dfile.close()
+		self.post()
 
+class Song:
+	"""
+	Information specific to a song
+	"""
+
+	def __init__(self,name):
+		self.name = name
+		self.list = []
+		self.part_dict = {}
+
+	""" May want a new __append__ to check the new item's 
+	    update time and if newer, make it ours
+	"""
 
 def main():
 	print "Welcome to classes..."
 	
 	p = Page()
 	p.load('/Users/Johnny/dev/coLab/Group/Catharsis/Page/BeachFlute')
+	print p.dump()
 
 	
 	g = Group()

@@ -1,12 +1,15 @@
 name="FluteEQtest1"
+group="Catharsis"
 desc_title="Flute EQ Test"
 fun_title="Four Flutes to Choose From"
 duration="167.12"
-screenshot="ScreenShot.png"
-thumbnail=""
+screenshot="coLab_local/ScreenShot.png"
+thumbnail="ScreenShot_tn.png"
 
 project="JDJ-5"
 assoc_projects=""
+song="JDJ-5"
+part="Other"
 description="""
 Here's the flute test Dan requested. Well, mostly.  Dan, I know you said this morning 
 that you were mostly interested in the sound from Cove, but there's a fair bit of piano
@@ -31,8 +34,12 @@ Certainly interested in what you think.
 <i>-jk</i>
 """
 
+xStart=110
+xEnd=638
+
 prevlink="<unset>"
 nextlink="<unset>"
 
 createtime="2012-12-17T06:59:37"
 updatetime="2012-12-17T06:59:37"
+

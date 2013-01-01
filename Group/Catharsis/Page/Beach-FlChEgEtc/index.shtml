@@ -25,12 +25,16 @@
 			<br>
 			</div>	<! end of banner>
 	
+			<div class="sidebar_l">
 			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
+			<p><hr><P>
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
+			</div>
 			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
 	
 			
 			<div id="Content" class="main">
-		<center><h1 class="fundesc">Ham and Eggs on the Beach</h1>
+		<center><img src="Title.png" class="fundesc" alt="Ham and Eggs on the Beach">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'Beach-FlChEgEtc-poster.jpg',
 			                'Beach-FlChEgEtc.mov',
@@ -64,8 +68,11 @@
 	<p>
 	<!--#include virtual="links.html" -->
 	<div class="maintext">
-	<h2 class=fundesc>Beach, next phase</h2>
-	<h4>Duration:2:47.00</h4>
+	<br>
+	<!-- gittin' a little tricky w/alignment... -->
+	<table border=0 cellpadding=0 width=100%><tr>
+	<td valign=top><img src="Header.png" align=left alt="page.desc_title"></td>
+	<td valign=center align=right><b>Duration:2:47.00</b></td></tr></table>
 	<font color=a0b0c0>This little tool is getting close to useful.   Here is Beach with
         the piano doubled on a rhodes, and a few other rhythmical friends.  Also,
         all five flutes are on board,   Pretty much to show what we've got, 

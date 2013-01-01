@@ -1,12 +1,15 @@
 name="Assmbly4"
-duration="631.918"
-desc_title="JDJ-V Assmbly4"	# descriptive / short
-fun_title="JDJ-V Assmbly 4 Yr Wel.cm"	# have fun
+group="Catharsis"
+desc_title="JDJ-V Assmbly4"
 fun_title="Rain Assembly #4"
+duration="631.918"
+screenshot="coLab_local/ScreenShot.png"
+thumbnail="ScreenShot_tn.png"
 
-screenshot="ScreenShot.png"
-
-# free form description - html is allowed - I think
+project="JDJ-5"
+assoc_projects=""
+song="JDJ-5"
+part="All"
 description="""
 About time for a new assembly...
 <p>
@@ -47,14 +50,12 @@ I suspect it'll be around for a bit...
 
 """
 
-createtime="2012-11-28 23:48:13"
-updatetime="2012-11-28 23:48:13"
-createtime="2012-11-29T07:48:13"
-updatetime="2012-12-06T05:48:40"
-
-project="<unset>"
-assoc_projects=""	
+xStart=43
+xEnd=633
 
 prevlink="<unset>"
 nextlink="<unset>"
-project="JDJ-5"
+
+createtime="2012-11-29T07:48:13"
+updatetime="2012-12-06T05:48:40"
+

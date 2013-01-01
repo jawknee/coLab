@@ -1,9 +1,15 @@
 name="CoveStringPiano"
+group="Catharsis"
 desc_title="Cove: String, Piano"
 fun_title="Widening Cove, Distant Flute"
+duration="152.0"
 screenshot="ScreenShot.png"
-duration="152"
+thumbnail="ScreenShot_tn.png"
 
+project="JDJ-5"
+assoc_projects=""
+song="JDJ-5"
+part="Cove"
 description="""Here's the previous "string" version of Cove, with only 
 	the piano mics added.   The flute is just
 	audible, sometimes more than just,  but I actually like it in spots.   
@@ -22,15 +28,13 @@ description="""Here's the previous "string" version of Cove, with only
 	<p>
 	This gives us an idea of some of what we can do with this.
         """
-createtime="2012-11-27 01:32:56"
-updatetime="2012-11-27 01:32:56"
+
+xStart=0
+xEnd=0
+
+prevlink="<unset>"
+nextlink="<unset>"
 
 createtime="2012-11-27T09:32:56"
 updatetime="2012-11-27T09:32:56"
 
-projecttime="<unset>"
-assoc_projects=""	
-
-prevlink="<unset>"
-nextlink="<unset>"
-project="JDJ-5"

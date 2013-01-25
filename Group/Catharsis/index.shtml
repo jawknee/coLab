@@ -1,7 +1,7 @@
 <html>
 			<head><title>Catharsis Collaboration Zone</title>
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
-			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			
 			</head>
 			<body>
@@ -27,16 +27,16 @@
 			<p><hr><P>
 			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
 			</div>
-			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div>
 	
 			
-			<div id="Content" class="main">
+			<div id="Content" class="main" style="height: 95%; overflow: auto;">
 		
 		</center>
 
 	<div class="maintext">
 	<h2 class=fundesc>Catharsis</h2>
-	<img src="Shared/DSCF4212.png" width=320 height=240 align=right>
+	<a href="Shared/DSCF4212.png"><img src="Shared/DSCF4212_tn.png" width=320 height=240 align=right></a>
 	<font color=a0b0c0>
 Welcome to the new Catharsis collaboration site.  
 <p>
@@ -50,7 +50,7 @@ the pages for easy reference.
 Comments are always welcome.
 
 <p>
-	<i>2012-12-31T23:37:04.162021</i><br clear=all><p>
+	<i>2013-01-24T23:00:48.209393</i><br clear=all><p>
 		<hr>
 		Enter your comments here:<br>
 		
@@ -62,7 +62,7 @@ Comments are always welcome.
 		<textarea name="Text" rows=15 cols=80></textarea>
 		<br>
 		</center>
-		<input type="submit">
+		<input type="submit" value="Add your comment">
 		</form>
 		<p><hr><p>
 		<h3>Comments:</h3>

@@ -60,7 +60,7 @@ class Html():
 		self.head = """<html>
 			<head><title>!fun_title!</title>
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
-			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			""" 
 
 		self.head_insert="""<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
@@ -125,10 +125,10 @@ class Html():
 			<p><hr><P>
 			<!--#include virtual="!groupURL!/Shared/projectlist.html" -->
 			</div>
-			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div>
 	
 			
-			<div id="Content" class="main">
+			<div id="Content" class="main" style="height: 95%; overflow: auto;">
 		"""
 	
 	
@@ -146,7 +146,7 @@ class Html():
 		<textarea name="Text" rows=15 cols=80></textarea>
 		<br>
 		</center>
-		<input type="submit">
+		<input type="submit" value="Add your comment">
 		</form>
 		<p><hr><p>
 		<h3>Comments:</h3>

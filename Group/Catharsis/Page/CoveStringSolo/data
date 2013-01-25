@@ -40,8 +40,8 @@ rethink my idea of "improving" the string part later in the piece.
 xStart=0
 xEnd=0
 
-prevlink="<unset>"
-nextlink="<unset>"
+prevlink="ScndTurnBDeG"
+nextlink="CoveStringSolo"
 
 createtime="2012-11-27T07:16:58"
 updatetime="2012-11-27T07:16:58"

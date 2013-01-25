@@ -24,8 +24,8 @@ Not a lot more to say about it at this point. I'll see about getting comments wo
 xStart=0
 xEnd=0
 
-prevlink="<unset>"
-nextlink="<unset>"
+prevlink="Home"
+nextlink="ScndTurnBDeG"
 
 createtime="2012-11-19T07:40:11"
 updatetime="2012-11-19T07:40:11"

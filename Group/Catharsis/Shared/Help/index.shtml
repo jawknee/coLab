@@ -1,7 +1,7 @@
 <html>
 			<head><title>Help</title>
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
-			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			
 			</head>
 			<body>
@@ -27,18 +27,49 @@
 			<p><hr><P>
 			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
 			</div>
-			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div>
 	
 			
-			<div id="Content" class="main">
+			<div id="Content" class="main" style="height: 95%; overflow: auto;">
 		
 		</center>
 
 	<div class="maintext">
 	<h2 class=fundesc>Help</h2>
 	<font color=a0b0c0>
-	Nothing for now - but feel free to comment.
-	<p><i>2012-12-31T23:37:04.164130</i><p>
+	Hopefully the interface is reasonbly intuitive.  If something
+	doesn't make sense, you have a question or a comment, feel
+	free to enter something below.
+	<p>
+	Some highlights:
+	<ul>
+		<li><b>Recent Updates</b><br>
+		The top of the left side bar shows the 
+		most recent activity.  The most recent
+		is at the bottom of the list.  
+		Pages marked <span style="color: ff2020; size: smaller;">New!</span>
+		have not been commented on.  Those marked <span style="size: smaller;">(u)</span>
+		have been recently commented on (updated).
+		<li><b>Current Projects</b><br>
+		Below that are the current projects - presently 
+		these are songs - project support is planned.
+		You can link directly to a song, or part of one
+		by clicking there.
+		<li><b>Links</b><br>
+		Each content page is linked in a chain to all the other
+		pages.   These are currently chronological by creation
+		date.
+		<li><b>Archive</b><br>
+		Beyond that - the most useful item is probably the 
+		Archve link in the top nav bar (interestingly 
+		or not - the "Nav" link in the nav bar is easily the
+		least useful feature).  The Archive page will show 
+		every page, in chronological order, most recent first.
+	</ul>
+	<p>
+	Hope that helps.
+	<p><hr>
+	<p><i>2013-01-24T23:00:48.211662</i><p>
 		<hr>
 		Enter your comments here:<br>
 		
@@ -50,7 +81,7 @@
 		<textarea name="Text" rows=15 cols=80></textarea>
 		<br>
 		</center>
-		<input type="submit">
+		<input type="submit" value="Add your comment">
 		</form>
 		<p><hr><p>
 		<h3>Comments:</h3>

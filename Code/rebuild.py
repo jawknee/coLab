@@ -157,7 +157,7 @@ def rebuild(group, opt):
 
 	index = len(g.pagelist)	
 	if num_recent_entries < index:
-		index = -num_recent_entries - 1
+		index = -num_recent_entries 
 	else:
 		index = -index	
 

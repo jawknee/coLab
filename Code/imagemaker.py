@@ -75,9 +75,9 @@ def make_images(page):
 	tn_image.save(tn_file, 'PNG')
 
 
-	print "Current start/stop: ", page.xStart, page.xEnd
+	print "Keep current start/stop: ", page.xStart, page.xEnd
 	ans = raw_input("OK? (y/N)")
-	if [ ans == 'y' ]:
+	if  ans != 'y':
 		base_image.show()
 		print "Hit return for", page.xStart, page.xEnd
 		(nuxStart, nuxEnd) = input("Enter xStart, xEnd: (" + str(page.xStart) + ', ' + str(page.xEnd) + '): ' )
@@ -87,7 +87,7 @@ def make_images(page):
 		print "page:", page.xStart, page.xEnd
 		page.post()
 	else:
-		print ("I was looking for 'y'.")
+		print "Keeping:", page.xStart, page.xEnd
 
 
 	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
@@ -107,6 +107,7 @@ def make_images(page):
 	# Now - loop through, generating images as we need...
 	#
 	frames = int(page.duration * fps) + 1
+	print "duration, fps, frames:", page.duration, fps, frames
 	xLen = page.xEnd - page.xStart
 
 	frameIncr = float(xLen) / frames
@@ -131,7 +132,15 @@ def make_images(page):
 			lbox_draw.rectangle(box_rect, outline=eBlue)
 			lbox_draw.rectangle(box_rect2, outline=eBlue)
 		
-		time = float(fr_num) / fps
+		#
+		# in the case of the last frame, with more than a second per frame, 
+		# (longer than ~10 minutes) the final frame can came up short.   
+		# force it...
+		if fr_num != frames-1:	# if not the last frame
+			time = float(fr_num) / fps	# normal...
+		else:
+			time = page.duration		# force to the end...
+			
 		seconds = int(time)
 		tstring = "%01d:%02d" % divmod(seconds, 60)
 
@@ -170,7 +179,7 @@ def make_images(page):
 		xPos += frameIncr
 
 
-def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill=(196, 176, 160, 240) ):
+def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill=(196, 176, 160, 240), maxsize=(670,100) ):
 	"""
 	Since we're here with these imports - a simple enough 
 	routine to return a PNG image of the passed text.  
@@ -189,9 +198,30 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	(w,h) = box_draw.textsize(string, font=font)
 
 	print "Size is:", w, h
-
-
+	# Let's see if we overflowed the size...
+	# (There may be a more python way of doing this, 
+	# but let's just return the largest of the returned
+	# size divided by the max size - if more than one, 
+	# rescale by that...
+	#
 	pad = border * 2
+
+	maxw, maxh = maxsize
+	print "maxsize, maxw, maxh", maxsize, maxw, maxh
+	maxw = float(maxw - pad)	# account for the border (included in max)
+	maxh = float(maxh - pad)	# and make a float for the division...
+	factor = max ( w / maxw, h / maxh )
+	if factor > 1.0:
+		newfontsize=int(fontsize/factor)
+		font = ImageFont.truetype(fontfile, newfontsize)
+		print "Scale font by 1 /", factor, " from/to:", fontsize, newfontsize
+		print "Factor = min( w/maxw, h/maxh):", factor, w, maxw, h, maxh
+		w = int(w/factor)
+		h = int(h/factor)
+		print "New w,h:", w,h
+
+
+		
 	size = (w+pad, h+pad)
 	offset = (border, border)
 	

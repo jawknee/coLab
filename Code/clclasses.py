@@ -19,7 +19,7 @@ class Group:
 		self.title = "<unset>"
 		self.subtitle = "<unset>"
 		self.collaborators = "<unset>"
-		self.description = "<unset>"
+		self.description = "\n<unset>\n"
 		# arbitrary date just after the epoch
 		self.createtime=cldate.string2utc("1970-01-24T09:23:45")
 		self.updatetime=cldate.string2utc("1970-01-24T09:23:45")
@@ -74,7 +74,7 @@ class Group:
 		except (ImportError, IOError), info:
 			print "Group,load - cannot access:", data
 			print info
-			print "Tring an update..."
+			print "Trying an update..."
 			self.update(data)
 			
 
@@ -173,7 +173,6 @@ class Page:
 			# These first few should always happen and should be first.
 			# Needed to set up default path to the data file..
 			self.name = file.name
-			print "xfer_import: self.name", self.name
 			self.group = file.group
 
 			#
@@ -201,8 +200,6 @@ class Page:
 		except (NameError, AttributeError) as info:
 			print "xfer_import: unset var in data file", info
 			raise NameError
-		else:
-			print "Xfer ok."
 
 	def set_paths(self, conf):
 		"""
@@ -291,10 +288,10 @@ class Page:
 			print "Calling self.update() with self.home, group, name  as:", self.home, self.group, self.name
 			self.update()
 
-		"""   Ugly - this is a kluge - need to tightent this up:   RBF
+		"""   Ugly - this is a kluge - need to tighten this up:   RBF
+		self.post()
 		"""
 		self.set_paths(conf)
-		self.post()
 
 
 	def dump(self):

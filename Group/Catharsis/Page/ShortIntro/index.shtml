@@ -1,7 +1,7 @@
 <html>
 			<head><title>From before the beginning...</title>
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
-			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
 		<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
 		<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
@@ -30,10 +30,10 @@
 			<p><hr><P>
 			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
 			</div>
-			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div>
 	
 			
-			<div id="Content" class="main">
+			<div id="Content" class="main" style="height: 95%; overflow: auto;">
 		<center><img src="Title.png" class="fundesc" alt="From before the beginning...">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'ShortIntro-poster.jpg',
@@ -71,17 +71,17 @@
 	<br>
 	<!-- gittin' a little tricky w/alignment... -->
 	<table border=0 cellpadding=0 width=100%><tr>
-	<td valign=top><img src="Header.png" align=left alt="page.desc_title"></td>
-	<td valign=center align=right><b>Duration:0:57.00</b></td></tr></table>
-	<font color=a0b0c0>This is mostly a test to see if my scripting can create
+	<td valign=top><img src="Header.png" align=left alt="page.desc_title"><br clear=all>
+	<i>Created: 2012-11-14 02:03:11 AM PST</i></td>
+	<td valign=center align=right><b>Duration: 0:57.00</b></td></tr></table>
+	<p><font color=a0b0c0>This is mostly a test to see if my scripting can create
 	the html index file in place with a pre-existing web site.
 	<p>
 	This is the first half of the short intro with the second half 
 	ending spliced on. 
 	<p>
 	I think I like it this way.
-        <p><i>2012-11-14 02:03:11 AM PST</i><p>
-	<p>
+        <p>
 		<hr>
 		Enter your comments here:<br>
 		
@@ -93,7 +93,7 @@
 		<textarea name="Text" rows=15 cols=80></textarea>
 		<br>
 		</center>
-		<input type="submit">
+		<input type="submit" value="Add your comment">
 		</form>
 		<p><hr><p>
 		<h3>Comments:</h3>

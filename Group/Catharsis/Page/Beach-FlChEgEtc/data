@@ -26,8 +26,8 @@ description="""This little tool is getting close to useful.   Here is Beach with
 xStart=43
 xEnd=633
 
-prevlink="<unset>"
-nextlink="<unset>"
+prevlink="ShortIntro"
+nextlink="Beach-FlChEgEtc"
 
 createtime="2012-11-25T09:34:11"
 updatetime="2012-12-10T03:26:35"

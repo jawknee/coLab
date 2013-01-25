@@ -14,7 +14,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 
 .banner { position: absolute; top: 4px; left: 4;  height: 20px;  right: 4;
 	font-family:Georgia; color: #c0b0a0; 
-	background-color: #209090; background-image: url('http://jawknee.com/coLab/Resources/P1CyanTex.png'); 
+	background-color: #000040; background-image: url('http://jawknee.com/coLab/Resources/BlueBlackBanner.png'); 
 	}
 .banner table td { width: 20% }
 .banner_txt { color: #c0b0a0 }
@@ -30,11 +30,11 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	}
 
 .sidebar_l a:link { color: #2030ff; text-decoration: none;}
-.sidebar_l a:visited { color: #6070b0; text-decoration: none; }
+.sidebar_l a:visited { color: #0000c0; text-decoration: none; }
 .sidebar_l a:hover { color: #f0e0d0; text-decoration: underline;}
 .sidebar_l a:active { color: #ffffff; text-decoration: underline;}
 
-.main { position: absolute; top: 24px; left: 204px;  width: 835px; 
+.main { position: absolute; top: 24px; left: 204px;  width: 700px; 
 	font-family:Georgia; 
 	background-color: #151515;
 	background-image: url('http://jawknee.com/coLab/Resources/P1Black2.png');
@@ -49,7 +49,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	}
 .main table h2 { color: #c0b0a0; }
 
-.maintext { position: relative; left: 100px; width: 640px; }
+.maintext { position: relative; left: 25px; width: 640px; }
 
 .fundesc { font-family: cursive, 'Brush Script MT','Lucida Handwriting'; color: #c0b0a0 }
 
@@ -63,5 +63,5 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .song a:hover { color: #f0e0d0; text-decoration: underline; }
 .song a:active { color: #ffffff; text-decoration: underline; }
 
-.logo { position: absolute; top: 24px; right: 4px; }
+.logo { position: absolute; top: 40px; right: 20px; }
 

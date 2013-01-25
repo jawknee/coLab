@@ -1,7 +1,7 @@
 <html>
 			<head><title>A Big, Heaping Bowl of Pruned Flutes!</title>
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
-			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
 		<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
 		<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
@@ -30,10 +30,10 @@
 			<p><hr><P>
 			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
 			</div>
-			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div>
 	
 			
-			<div id="Content" class="main">
+			<div id="Content" class="main" style="height: 95%; overflow: auto;">
 		<center><img src="Title.png" class="fundesc" alt="A Big, Heaping Bowl of Pruned Flutes!">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'BeachFlute-poster.jpg',
@@ -71,9 +71,10 @@
 	<br>
 	<!-- gittin' a little tricky w/alignment... -->
 	<table border=0 cellpadding=0 width=100%><tr>
-	<td valign=top><img src="Header.png" align=left alt="page.desc_title"></td>
-	<td valign=center align=right><b>Duration:2:34.00</b></td></tr></table>
-	<font color=a0b0c0>
+	<td valign=top><img src="Header.png" align=left alt="page.desc_title"><br clear=all>
+	<i>Created: 2012-11-28 12:20:23 AM PST</i></td>
+	<td valign=center align=right><b>Duration: 2:34.00</b></td></tr></table>
+	<p><font color=a0b0c0>
 <i>(I know, not again - but this was fun!)</i>
 <p>
 In prepping for a new assembly test, 
@@ -95,8 +96,7 @@ better (a bit shrill in spots w/o the EQ).
 I'm likely to have a new full test assembly tomorrow night.
 <p>
 <i>BTW: my quicktime player has a full screen mode - see if yours does.</i>
-<p><i>2012-11-28 12:20:23 AM PST</i><p>
-	<p>
+<p>
 		<hr>
 		Enter your comments here:<br>
 		
@@ -108,7 +108,7 @@ I'm likely to have a new full test assembly tomorrow night.
 		<textarea name="Text" rows=15 cols=80></textarea>
 		<br>
 		</center>
-		<input type="submit">
+		<input type="submit" value="Add your comment">
 		</form>
 		<p><hr><p>
 		<h3>Comments:</h3>

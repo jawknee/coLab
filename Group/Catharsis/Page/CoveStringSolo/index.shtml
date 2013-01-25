@@ -1,7 +1,7 @@
 <html>
 			<head><title>Cove String Solo</title>
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
-			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo.png">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
 		<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
 		<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
@@ -30,10 +30,10 @@
 			<p><hr><P>
 			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
 			</div>
-			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo.png" height=50 width=50></div>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div>
 	
 			
-			<div id="Content" class="main">
+			<div id="Content" class="main" style="height: 95%; overflow: auto;">
 		<center><img src="Title.png" class="fundesc" alt="Cove String Solo">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'CoveStringSolo-poster.jpg',
@@ -71,9 +71,10 @@
 	<br>
 	<!-- gittin' a little tricky w/alignment... -->
 	<table border=0 cellpadding=0 width=100%><tr>
-	<td valign=top><img src="Header.png" align=left alt="page.desc_title"></td>
-	<td valign=center align=right><b>Duration:2:32.00</b></td></tr></table>
-	<font color=a0b0c0>In search of something "new" I could post, I revisited Cove and
+	<td valign=top><img src="Header.png" align=left alt="page.desc_title"><br clear=all>
+	<i>Created: 2012-11-26 11:16:58 PM PST</i></td>
+	<td valign=center align=right><b>Duration: 2:32.00</b></td></tr></table>
+	<p><font color=a0b0c0>In search of something "new" I could post, I revisited Cove and
 started looking for string sounds.   A dozen or so string patches in I 
 had several in mind,
 perhaps merged together carefully, they might work.  Then I found the Film
@@ -98,8 +99,7 @@ This may have turned out to be a good thing - more on that in future drops.
 <p>
 I've already listened with piano and flute and it works well.  I may have to
 rethink my idea of "improving" the string part later in the piece.
-<p><i>2012-11-26 11:16:58 PM PST</i><p>
-	<p>
+<p>
 		<hr>
 		Enter your comments here:<br>
 		
@@ -111,7 +111,7 @@ rethink my idea of "improving" the string part later in the piece.
 		<textarea name="Text" rows=15 cols=80></textarea>
 		<br>
 		</center>
-		<input type="submit">
+		<input type="submit" value="Add your comment">
 		</form>
 		<p><hr><p>
 		<h3>Comments:</h3>

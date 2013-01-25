@@ -25,16 +25,31 @@ from imagemaker import make_text_graphic
 
 #
 # font for the title graphic	 - these need to be group specific (at least)
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/WorstveldSling/WorstveldSling.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/BaroqueScript.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/TantrumTongue.ttf'
 fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Neurochrome/neurochr.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DAEMONES.ttf'
 fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/TarantellaMF/Tarantella MF.ttf'
 fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Minus.ttf'
 fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Scretch.ttf'
 fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/RADAERN.ttf'
 fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/SF Foxboro Script v1.0/SF Foxboro Script Bold.ttf'
 fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/SF Foxboro Script v1.0/SF Foxboro Script Extended Bold.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/WorstveldSling/WorstveldSling.ttf'
 fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/maxine.ttf'
 fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/JohnnyMacScrawl/jmacscrl.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Blippo/BlippBlaD.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Rage/RageJoiD.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Metropolitaines/MetroD.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Diskus/DiskuDMed.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Coronet/CoronI.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Blacklight/BlackD.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Freebooter/FreebooterUpdated.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Gillies/GilliGotDLig.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Palette/PaletD.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Rage/RageD.ttf'
+fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/AenigmaScrawl/aescrawl.ttf'
 
 tan = (196, 176, 160, 255)
 fill = tan
@@ -67,15 +82,16 @@ def check_comments(obj):
 		except:
 			print "Error creating", file
 
-def tagstrip(string,subs='\n'):
+def tagstrip(string,subs='\n',tag=''):
 	"""
 	Remove html tags - and arbitrarily replace them with a
-	new line (default).
+	new line (default).  Suffix allows for specific tags
+	to be removed.  e.g. 'a'
 
 	Recursive - each call pulls out the next tag...
 	"""
 
-	i = string.find('<')	# is there a start tag?
+	i = string.find('<'+tag)	# is there a start tag?
 	if i == -1:
 		return(string)	# we're done
 	closetag = string[i:].find('>') 
@@ -136,8 +152,8 @@ def htmlgen(group, page):
 		sys.exit(1)
 
 	# make the title graphic...
-        make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=30, fill=fill )
-        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=32, border=2, fill=fill )
+        make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
 	now = cldate.now()
 
@@ -177,10 +193,10 @@ def htmlgen(group, page):
 	<br>
 	<!-- gittin' a little tricky w/alignment... -->
 	<table border=0 cellpadding=0 width=100%><tr>
-	<td valign=top><img src="Header.png" align=left alt="page.desc_title"></td>
-	<td valign=center align=right><b>Duration:""" + mk_dur_string(page.duration) + """</b></td></tr></table>
-	<font color=a0b0c0>""" + page.description + "<p><i>" + cldate.utc2long(page.createtime) + """</i><p>
-	<p>"""
+	<td valign=top><img src="Header.png" align=left alt="page.desc_title"><br clear=all>
+	<i>Created: """ + cldate.utc2long(page.createtime) + """</i></td>
+	<td valign=center align=right><b>Duration: """ + mk_dur_string(page.duration) + """</b></td></tr></table>
+	<p><font color=a0b0c0>"""  + page.description + '<p>'
 
 	outfile.write(content)
 
@@ -220,27 +236,38 @@ def linkgen(group):
 			nextName = p.name
 			nextTitle = p.desc_title
 			nextFun = p.fun_title
-			nextLink = "../" + p.name	 # yeah, I know, cheating
+			nextLink = p.name
 
 		if currName != 'Home':
-			linkfile = os.path.join(currPath, 'links.html')
-			print "Creating linkfile", linkfile
-			try:
-				l = open(linkfile, 'w+')
-			except IOError, info:
-				print "problem opening", linkfile, info
-				raise IOError
-
-			l.write( '<div class="links" style="float: left;">' + 
-				'<a href="' + prevLink + '" title="' + prevFun +
-					'">&larr; ' + prevTitle + '</a></div>' +
-				'<div class="links" style="float: right;">' +
-				'<a href="' + nextLink + '" title="' + nextFun +
-					'">' + nextTitle + ' &rarr;</a></div>' +
-				'<br>' )
-
-				
-			l.close()
+			#
+			# Are these the links we saw last time?
+			print "Links for", p.name, "correct", prevName, nextName, "stored:", p.prevlink, p.nextlink
+			if prevName == p.prevlink and nextName == p.nextlink:
+				print "No link change for",  p.name
+			else:
+				linkfile = os.path.join(currPath, 'links.html')
+				print "Creating linkfile", linkfile
+				try:
+					l = open(linkfile, 'w+')
+				except IOError, info:
+					print "problem opening", linkfile, info
+					raise IOError
+	
+				l.write( '<div class="links" style="float: left;">' + 
+					'<a href="../' + prevLink + '" title="' + prevFun +
+						'">&larr; ' + prevTitle + '</a></div>' +
+					'<div class="links" style="float: right;">' +
+					'<a href="../' + nextLink + '" title="' + nextFun +
+						'">' + nextTitle + ' &rarr;</a></div>' +
+					'<br>' )
+				l.close()
+				# 
+				# Update the pointers
+				if p.name != 'Archive':
+					print "Updating links in", p.name
+					p.prevlink = prevName
+					p.nextlink = nextName
+					p.post()
 			
 
 		prevName = currName
@@ -255,6 +282,56 @@ def linkgen(group):
 		currLink = nextLink
 
 	group.pagelist.pop()	# remove that fake "Archive" page
+
+def mk_page_synopsis(page, type='Default'):
+	"""
+	Create a short synopsis with the thumbnail, description, etc.)
+	Type can be used to alter the format a bit
+	"""
+	if page.thumbnail != '':
+		shot=page.thumbnail
+	else:
+		shot=page.screenshot
+		print "no thumbnail"
+
+	screenshot = os.path.join(page.root, shot)
+	header = os.path.join(page.root, 'Header.png')
+	timestr = mk_dur_string(page.duration)
+
+	# cut to length....
+	desc_text = tagstrip(smartsub(page.description, 350), tag='a', subs='')
+	#
+	# We need to link to a page...   derive the url from the page entry
+	group_root = os.path.dirname(os.path.dirname(page.root))	# strip the 'Page/<pagename>' off the dir
+	song_root = os.path.join(group_root, 'Song', page.song, '#' + page.part )	# song path, plus a part name
+
+	# Build up the html content for this entry....  
+	this_entry = '<table border=0 cellpadding=5 width=640>'		#  RBF: hard-coded width....
+	this_entry += '<tr><td colspan=2>'
+	this_entry += '<table border=0 cellpadding=5 width=100%><tr>'	# build another table inside these two cells..
+	this_entry += '<td><a href="' + page.root + '"><img src="' + header + '"><br>'
+	if page.createtime == page.updatetime or type == 'Archive':
+		this_entry += 'Created: ' + cldate.utc2short(page.createtime)
+	else:
+		this_entry += 'Updated: ' + cldate.utc2short(page.updatetime)
+
+	this_entry += '</a></td>'
+	if type == 'Archive':
+		this_entry += '<td align=center><a href="' + song_root + '">' +  page.song + '/' + page.part + '</a></td>\n'
+
+	this_entry += '<td align=right>Duration: ' + timestr + '</td></tr></table>\n'	# end the header table
+	this_entry += '</td></tr>\n'					# next row... (thumb, desc)
+	this_entry += '<tr><td><a href="' + page.root + '"><img src="' + screenshot + '" width=160 height=140></a></td><td>'
+	this_entry += '<span class="song">\n'
+	this_entry += '<a href="' + page.root + '">\n'
+	this_entry += desc_text 
+	this_entry += '</a>\n'
+	this_entry += '</span>\n'
+	this_entry += '</td></tr></table>\n'
+
+
+	return(this_entry)
+
 
 def songgen(group):
 	"""
@@ -348,17 +425,12 @@ def songgen(group):
 
 				# Build up the html content for this entry....	
 				content += hr	# set below - only shows up on 2+ entries...
-				content += '<a href="' + pg.root + '"><h3 style="display: inline;">' + pg.desc_title + '</h2></h3></a>'
-				content += ' ~ ' + cldate.utc2long(pg.createtime) + ' / Duration: ' + timestr + '<br>\n'
-				content += '<span class="song">\n'
-				content += '<a href="' + pg.root + '">' + desc_text + '</a>\n'
-				content += '</span>\n'
-				
+				content += mk_page_synopsis(pg, type='Song')
 				hr = "<hr width=50%>"
 		
 
-			content += "<p><hr><p>"	
-			
+			content += '<p><hr><p>'	
+
 		outfile.write(content)
 	
 		outfile.write(html.emit_tail(song))
@@ -413,7 +485,7 @@ def homegen(group):
 
 	<div class="maintext">
 	<h2 class=fundesc>""" + group.title + """</h2>
-	<img src="Shared/DSCF4212.png" width=320 height=240 align=right>
+	<a href="Shared/DSCF4212.png"><img src="Shared/DSCF4212_tn.png" width=320 height=240 align=right></a>
 	<font color=a0b0c0>""" + group.description + """<p>
 	<i>""" + cldate.now() + """</i><br clear=all><p>"""
 
@@ -599,40 +671,24 @@ def archivegen(group):
 	<div class="maintext">
 	<h2 class=fundesc>""" + page.fun_title + """</h2>
 	<font color=a0b0c0>
-	Here are the submitted pages, in chronological order of creation.
+	Here are the collected pages, listed chronologically by creation time,
+	most recent first.  Unless otherwise stated, all times are US/Pacific.
 	<p><i>""" + cldate.now() + """</i><p><hr><p>
 	<center>
-	<table cellpadding=10 border=0 width=640>\n"""
-
+	"""
 	outfile.write(content)
 
 
 	group.pagelist.sort(key=createkey)
 	group.pagelist.reverse()
+	hr = ''		# no horizontal rule on the first pass...
 	for pg in group.pagelist:
 		print "archive:", pg.name
 
-		if pg.thumbnail != '':
-			shot=pg.thumbnail
-		else:
-			shot=pg.screenshot
-			print "no thumbnail"
+		outfile.write(hr + mk_page_synopsis(pg, type='Archive'))
+		hr = '<hr>'
 
-		screenshot = os.path.join(pg.root, shot)
-		timestr = mk_dur_string(pg.duration)
-
-		# cut to length....
-		desc_text = (smartsub(pg.description, 250))
-
-		# Build up the html content for this entry....	
-		content = '<tr><td colspan=2> <a href="' + pg.root + '"><h3 style="display: inline;">' 
-		content += pg.desc_title + '</h3></a>' + ' ~ ' + cldate.utc2long(pg.createtime) + ' / Duration: ' + timestr + '</td></tr>' 
-		content += '<tr><td><a href="' + pg.root + '"><img src="' + screenshot + '" width=160 height=140></a></td><td>' 
-		content += desc_text + '</td></tr> <tr><td colspan=2><hr></td></tr>'
-
-		outfile.write(content)
-
-	outfile.write('</table></center>\n')
+	outfile.write('</center>\n')
 
 	outfile.write(html.emit_tail(page))
 
@@ -691,7 +747,38 @@ def helpgen(group):
 	<div class="maintext">
 	<h2 class=fundesc>""" + page.fun_title + """</h2>
 	<font color=a0b0c0>
-	Nothing for now - but feel free to comment.
+	Hopefully the interface is reasonbly intuitive.  If something
+	doesn't make sense, you have a question or a comment, feel
+	free to enter something below.
+	<p>
+	Some highlights:
+	<ul>
+		<li><b>Recent Updates</b><br>
+		The top of the left side bar shows the 
+		most recent activity.  The most recent
+		is at the bottom of the list.  
+		Pages marked <span style="color: ff2020; size: smaller;">New!</span>
+		have not been commented on.  Those marked <span style="size: smaller;">(u)</span>
+		have been recently commented on (updated).
+		<li><b>Current Projects</b><br>
+		Below that are the current projects - presently 
+		these are songs - project support is planned.
+		You can link directly to a song, or part of one
+		by clicking there.
+		<li><b>Links</b><br>
+		Each content page is linked in a chain to all the other
+		pages.   These are currently chronological by creation
+		date.
+		<li><b>Archive</b><br>
+		Beyond that - the most useful item is probably the 
+		Archve link in the top nav bar (interestingly 
+		or not - the "Nav" link in the nav bar is easily the
+		least useful feature).  The Archive page will show 
+		every page, in chronological order, most recent first.
+	</ul>
+	<p>
+	Hope that helps.
+	<p><hr>
 	<p><i>""" + cldate.now() + """</i><p>"""
 
 	outfile.write(content)

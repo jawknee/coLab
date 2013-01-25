@@ -1,8 +1,14 @@
 /Sites/*
 *.pyc
 *.confc
+*.png
 *.bak
 datac
 coLab_local
 /Shared/mostrecent.html
 /.InterarchyMirrorCacheData/*
+/Resources/Fonts
+Page
+Page/*
+Song
+Song/*

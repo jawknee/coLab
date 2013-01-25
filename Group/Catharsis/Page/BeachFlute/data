@@ -37,8 +37,8 @@ I'm likely to have a new full test assembly tomorrow night.
 xStart=0
 xEnd=0
 
-prevlink="<unset>"
-nextlink="<unset>"
+prevlink="CoveStringSolo"
+nextlink="BeachFlute"
 
 createtime="2012-11-28T08:20:23"
 updatetime="2012-11-28T08:20:23"

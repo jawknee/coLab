@@ -82,7 +82,7 @@ def rebuild(group, opt):
 			else:
 				print "File data is newer, need to regenerate the index.shtml file"
 
-			htmlgen(g, pg)
+			pagegen(g, pg)
 		else:
 			print "No need to regenerate."
 

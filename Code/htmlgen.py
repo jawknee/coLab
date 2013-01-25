@@ -138,7 +138,7 @@ def mk_dur_string(dur):
 
 	return(timestr)
 
-def htmlgen(group, page):
+def pagegen(group, page):
 	"""
 		Passed the name of the group and page, rebuilds
 		the index.shtml 
@@ -216,6 +216,9 @@ def linkgen(group):
 	p = Page()
 	p.name = "Archive"
 	p.home = os.path.join(group.root, 'Shared', 'Archive')
+	p.Title = 'Archive'
+	p.desc_title = "Archive"
+	p.fun_title = "Archive - a place for everything"
 	group.pagelist.append(p)
 
 	# "dummy" current entry for the home...
@@ -226,24 +229,19 @@ def linkgen(group):
 
 	prevName = "not set yet"
 	# step through the pages in order
+	# Because we don't can't build the links until we've read
+	# the next one, we loop through twice before we actually 
+	# write the first file.  We write the link file for the
+	# page in the previous iteration  (currPath, etc.)
+	# The "current" page is 'q'
 	for p in group.pagelist:
-		if p.name == 'Archive':
-			nextName = 'Archive'
-			nextTitle = "Archive"
-			nextFun = "Archive - a place for everything"
-			nextLink = p.home
-		else:
-			nextName = p.name
-			nextTitle = p.desc_title
-			nextFun = p.fun_title
-			nextLink = p.name
 
-		if currName != 'Home':
+		if currName != 'Home':  # for "Home" the key is to execute the code at the bottom to load the pipeline
 			#
 			# Are these the links we saw last time?
-			print "Links for", p.name, "correct", prevName, nextName, "stored:", p.prevlink, p.nextlink
-			if prevName == p.prevlink and nextName == p.nextlink:
-				print "No link change for",  p.name
+			print "Links for", q.name, "correct", prevName, p.name, "stored:", q.prevlink, q.nextlink
+			if prevName == q.prevlink and p.name == q.nextlink:
+				print "No link change for",  q.name
 			else:
 				linkfile = os.path.join(currPath, 'links.html')
 				print "Creating linkfile", linkfile
@@ -257,8 +255,8 @@ def linkgen(group):
 					'<a href="../' + prevLink + '" title="' + prevFun +
 						'">&larr; ' + prevTitle + '</a></div>' +
 					'<div class="links" style="float: right;">' +
-					'<a href="../' + nextLink + '" title="' + nextFun +
-						'">' + nextTitle + ' &rarr;</a></div>' +
+					'<a href="../' + p.name + '" title="' + p.fun_title +
+						'">' + p.desc_title + ' &rarr;</a></div>' +
 					'<br>' )
 				l.close()
 				# 
@@ -266,7 +264,7 @@ def linkgen(group):
 				if p.name != 'Archive':
 					print "Updating links in", p.name
 					p.prevlink = prevName
-					p.nextlink = nextName
+					p.nextlink = p.name
 					p.post()
 			
 
@@ -276,10 +274,11 @@ def linkgen(group):
 		prevLink = currLink
 
 		currPath = p.home
-		currName = nextName
-		currTitle = nextTitle
-		currFun = nextFun
-		currLink = nextLink
+		currName = p.name
+		currTitle = p.desc_title
+		currFun = p.fun_title
+		currLink = p.name
+		q = p		# save the page
 
 	group.pagelist.pop()	# remove that fake "Archive" page
 
@@ -663,13 +662,16 @@ def archivegen(group):
 	outfile.write(html.emit_body(group, page, media=False))
 
 	# The part specific to this page...
+	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Metropolitaines/MetroD.ttf'
+	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
 
 	content = """
 		</center>
 
 	<div class="maintext">
-	<h2 class=fundesc>""" + page.fun_title + """</h2>
+	<img src="Title.png"><br>
 	<font color=a0b0c0>
 	Here are the collected pages, listed chronologically by creation time,
 	most recent first.  Unless otherwise stated, all times are US/Pacific.
@@ -800,6 +802,6 @@ if __name__ == "__main__":
 
 	name=sys.argv[1]
 
-	htmlgen('Catharsis', name)
+	pagegen('Catharsis', name)
 
 

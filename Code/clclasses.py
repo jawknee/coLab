@@ -144,7 +144,7 @@ class Page:
 		self.duration = 0.0
 		self.screenshot=""
 		self.thumbnail=""
-		self.description="<unset>"
+		self.description="\n<unset>\n"
 
 		self.xStart = 0
 		self.xEnd = 0
@@ -314,7 +314,7 @@ class Page:
 			'assoc_projects="' + self.assoc_projects + EOL +
 			'song="' + self.song + EOL +
 			'part="' + self.part + EOL +
-			'description="""' + self.description +
+			'description="""' + self.description +	
 			'"""\n' +
 			'\n' +
 			'xStart=' + str(self.xStart) + '\n' +

@@ -23,34 +23,6 @@ from clclasses  import *
 from headers import *
 from imagemaker import make_text_graphic
 
-#
-# font for the title graphic	 - these need to be group specific (at least)
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/BaroqueScript.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/TantrumTongue.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Neurochrome/neurochr.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DAEMONES.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/TarantellaMF/Tarantella MF.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Minus.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Scretch.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/RADAERN.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/SF Foxboro Script v1.0/SF Foxboro Script Bold.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/SF Foxboro Script v1.0/SF Foxboro Script Extended Bold.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/WorstveldSling/WorstveldSling.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/maxine.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/JohnnyMacScrawl/jmacscrl.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Blippo/BlippBlaD.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Rage/RageJoiD.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Metropolitaines/MetroD.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Diskus/DiskuDMed.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Coronet/CoronI.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Blacklight/BlackD.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Freebooter/FreebooterUpdated.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Gillies/GilliGotDLig.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Palette/PaletD.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Rage/RageD.ttf'
-fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/AenigmaScrawl/aescrawl.ttf'
-
 tan = (196, 176, 160, 255)
 fill = tan
 
@@ -153,7 +125,7 @@ def pagegen(group, page):
 
 	# make the title graphic...
 	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('foxboroScriptBold')
+	fontpath = fonts.fontpath('AenigmaScrawl')
         make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
         make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
@@ -215,7 +187,7 @@ def linkgen(group):
 	# page to the end of the list named "Archive" 
 	#
 	# A bit tricky...   append the list with a fake page: "Archive"
-	p = Page()
+	p = Page('null')
 	p.name = "Archive"
 	p.home = os.path.join(group.root, 'Shared', 'Archive')
 	p.Title = 'Archive'
@@ -333,7 +305,6 @@ def mk_page_synopsis(page, type='Default'):
 
 	return(this_entry)
 
-
 def songgen(group):
 	"""
 	Using the song list in the passed group, rebuild those pages
@@ -354,8 +325,8 @@ def songgen(group):
 	
 		
 		# RBF: hard coding  values that will be ext soon...
-		song.desc_title = "Eventual title of: " + song.name
-		song.fun_title = "Something funny here about " + song.name
+		#song.desc_title = "Eventual title of: " + song.name
+		#song.fun_title = "Something funny here about " + song.name
 
 		# open the index file, dump the header, body, etc. into it...
 		try:
@@ -366,7 +337,7 @@ def songgen(group):
 	
 		# make the title graphics...
 		fonts = clutils.fontlib()	# maybe put this in the group?
-		fontpath = fonts.fontpath('foxboroScriptBold')
+		fontpath = fonts.fontpath('FoxboroScriptBold')
 		make_text_graphic(song.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 		make_text_graphic(song.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 	
@@ -392,7 +363,8 @@ def songgen(group):
 		if len(song.partlist) > 1:	# just "All", skip this...
 			content += "Part index:<ul>"
 			for part in song.partlist:
-				content += '<li><a href="#' + part + '">' + part + '</a>\n'
+				name = song.partname_dict[part]
+				content += '<li><a href="#' + part + '">' + name + '</a>\n'
 			content += '</ul><br><hr>\n'
 
 		fontpath = fonts.fontpath('Blacklight')
@@ -400,7 +372,8 @@ def songgen(group):
 			# make the title graphics...
 			# For now - just the part name - more when we datafy it....
 			partPng = 'Part' + part + '.png'
-			make_text_graphic(part, partPng, fontpath, fontsize=45, border=10, fill=fill )
+			partname = song.partname_dict[part]
+			make_text_graphic(partname, partPng, fontpath, fontsize=45, border=5, fill=fill )
 
 			content += '<a name="' + part + '">\n'
 			content += '<img src="' + partPng + '"></br>'
@@ -417,8 +390,7 @@ def songgen(group):
 				content += "(none)"
 				continue
 
-			song.part_dict[part].sort(key=updatekey)
-			song.part_dict[part].reverse()
+			song.part_dict[part].sort(key=updatekey, reverse=True)
 			hr = ''	# cute trick to only put an <hr> tag "between" entries
 			for pg in song.part_dict[part]:	#step though the pages
 
@@ -467,14 +439,14 @@ def homegen(group):
 
 	index='index.shtml'
 
-	page = Page()	# create a page structure - to pass in a title
+	page = Page('null')	# create a page structure - to pass in a title
 	page.desc_title = group.title
 	page.fun_title = group.subtitle
 	page.name = group.name
 
 	# make the title graphics...
 	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('foxboroScriptBold')
+	fontpath = fonts.fontpath('FoxboroScriptBold')
 	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
         make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 	
@@ -532,7 +504,7 @@ def newgen(group):
 
 	new='index.shtml'
 
-	page = Page()	# create a page structure - to pass in a title
+	page = Page('null')	# create a page structure - to pass in a title
 	page.desc_title = "What's New"
 	page.fun_title = "What's new in " + group.title + " land"
 	page.name = "WhatIsNew"
@@ -547,7 +519,7 @@ def newgen(group):
 
 	# make the title graphics...
 	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('foxboroScriptBold')
+	fontpath = fonts.fontpath('FoxboroScriptBold')
 	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
         make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
@@ -598,7 +570,7 @@ def navgen(group):
 
 	index='index.shtml'
 
-	page = Page()	# create a page structure - to pass in a title
+	page = Page('null')	# create a page structure - to pass in a title
 	page.desc_title = "Navigation"
 	page.fun_title = "Navigation: " + group.title 
 	page.name = "Navigation"
@@ -613,7 +585,7 @@ def navgen(group):
 
 	# make the title graphics...
 	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('foxboroScriptBold')
+	fontpath = fonts.fontpath('FoxboroScriptBold')
 	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
         make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
@@ -665,7 +637,7 @@ def archivegen(group):
 
 	index='index.shtml'
 
-	page = Page()	# create a page structure - to pass in a title
+	page = Page('null')	# create a page structure - to pass in a title
 	page.desc_title = group.title + " Archive"
 	page.fun_title = group.title + " Archive"
 	page.name = "Archive"
@@ -692,7 +664,7 @@ def archivegen(group):
 	
 	# make the title graphics...
 	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('foxboroScriptBold')
+	fontpath = fonts.fontpath('FoxboroScriptBold')
 	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
         make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
@@ -746,7 +718,7 @@ def helpgen(group):
 
 	index='index.shtml'
 
-	page = Page()	# create a page structure - to pass in a title
+	page = Page('null')	# create a page structure - to pass in a title
 	page.desc_title = "Help"
 	page.fun_title = "Help"
 	page.name = "Help"
@@ -761,7 +733,7 @@ def helpgen(group):
 
 	# make the title graphics...
 	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('foxboroScriptBold')
+	fontpath = fonts.fontpath('FoxboroScriptBold')
 	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
         make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 

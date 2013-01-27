@@ -26,10 +26,10 @@ def rebuild(group, opt):
 	in the scructure based on that.
 	"""
 	
-	g = clclasses.Group()	# instantiate the group object
+	g = clclasses.Group(group)	# instantiate the group object
 
 	try:
-		g.load(group)
+		g.load()
 	except IOError, info:
 		raise IOError
 
@@ -50,6 +50,7 @@ def rebuild(group, opt):
 
 	song_dict = {}	# a dictionary of songs we've created...
 
+
 	# step through the pages in creation order, rebuilding link files and, 
 	# as needed, index.shtml (data file change)
 	for pg in g.pagelist:
@@ -69,11 +70,11 @@ def rebuild(group, opt):
 		except KeyError:
 			print "new song:", pg.song
 			thissong = Song(pg.song)
+			thissong.group = g.name
+			thissong.load()
 			song_dict[pg.song] = thissong
 			g.songlist.append(thissong)
 
-			thissong.fun_title = thissong.name + " fun title"
-			thissong.desc_title = thissong.name
 
 		thissong.list.append(pg)
 
@@ -86,10 +87,6 @@ def rebuild(group, opt):
 
 		thissong.part_dict[pg.part].append(pg)
 		# RBF: hard coded part list.
-		if thissong.name == 'JDJ-5':
-			thissong.partlist=[ "All", "Intro", "Beach", "Cove", "Storm", "Rain", "Other" ]
-		else:
-			thissong.partlist=[ "All" ]
 
 
 
@@ -192,8 +189,9 @@ def rebuild(group, opt):
 			f_project.write('<br><span style="font-size: smaller;">')
 			dot = ''	# nothing for now...
 			for pt in sg.partlist:
+				title = sg.partname_dict[pt]
 				f_project.write(dot + '<a href="' + 
-					localURL + '/#' + pt + '" title="Something here">' +
+					localURL + '/#' + pt + '" title="' + title + '">' +
 					pt + '</a>')
 				dot = ' &middot; '	# prepend the rest with dots
 				

@@ -22,11 +22,9 @@ description="""This is mostly a test to see if my scripting can create
 xStart=0
 xEnd=0
 
-prevlink="<unset>"
-nextlink="<unset>"
+prevlink="Home"
+nextlink="ScndTurnBDeG"
 
 createtime="2012-11-14T10:03:11"
-updatetime="2012-11-14T10:03:11"
-
-updatetime="2013-01-06T17:29:58"
 updatetime="2013-01-06T18:02:35"
+

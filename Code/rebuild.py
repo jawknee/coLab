@@ -57,34 +57,8 @@ def rebuild(group, opt):
 		print pg.name
 		# 
 		# and rebuild the html in that case...
-		try:
-			os.chdir(pg.home)
-		except:
-			print "problem changing to", thispage
-			continue
-
-		try:
-			htime = os.path.getmtime('index.shtml')
-		except:
-			htime = 0	# force a rebuild
-
-		try:
-			dtime = os.path.getmtime('data')
-		except:
-			#
-			# Depending on 
-			print ("Trouble getting mtime on data time...skipping")
-			continue
-
-		if htime < dtime or opt == 'All':
-			if opt == 'All':
-				print "Option All - regenerating all"
-			else:
-				print "File data is newer, need to regenerate the index.shtml file"
-
+		if clutils.needs_update(pg.home, opt):
 			pagegen(g, pg)
-		else:
-			print "No need to regenerate."
 
 		#
 		# Do we know this song yet...?
@@ -240,7 +214,6 @@ def rebuild(group, opt):
 	navgen(g)
 	archivegen(g)
 	helpgen(g)
-		
 
 	sys.exit(0)
 

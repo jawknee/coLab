@@ -179,7 +179,7 @@ def make_images(page):
 		xPos += frameIncr
 
 
-def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill=(196, 176, 160, 240), maxsize=(670,100) ):
+def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill=(196, 176, 160, 55), maxsize=(670,100) ):
 	"""
 	Since we're here with these imports - a simple enough 
 	routine to return a PNG image of the passed text.  
@@ -214,8 +214,8 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	if factor > 1.0:
 		newfontsize=int(fontsize/factor)
 		font = ImageFont.truetype(fontfile, newfontsize)
-		print "Scale font by 1 /", factor, " from/to:", fontsize, newfontsize
-		print "Factor = min( w/maxw, h/maxh):", factor, w, maxw, h, maxh
+		#print "Scale font by 1 /", factor, " from/to:", fontsize, newfontsize
+		#print "Factor = min( w/maxw, h/maxh):", factor, w, maxw, h, maxh
 		w = int(w/factor)
 		h = int(h/factor)
 		print "New w,h:", w,h

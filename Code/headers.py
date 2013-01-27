@@ -99,13 +99,7 @@ class Html():
 			</noscript>
 		"""
 	
-		# substitute !coLabRoot! with that...	
-		self.body = """
-			</head>
-			<body>
-			<!--   Menu Header -->
-			<div id="container">
-			
+		self.banner = """	
 			<div class="banner" > <! start of banner>
 			<!center>	 
 			        <table width=80% border=0 cellpadding=0 class="banner_txt">
@@ -119,19 +113,24 @@ class Html():
 			<!/center>
 			<br>
 			</div>	<! end of banner>
+		"""	
 	
+		# substitute !coLabRoot! with that...	
+		self.body = """
+			</head>
+			<body>
+			<!--   Menu Header -->
+			<div id="container" style="height: 100%; width: 100%; overflow: hidden;">
 			<div class="sidebar_l">
 			<!--#include virtual="!groupURL!/Shared/mostrecent.html" -->
 			<p><hr><P>
 			<!--#include virtual="!groupURL!/Shared/projectlist.html" -->
-			</div>
-			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div>
-	
-			
-			<div id="Content" class="main" style="height: 95%; overflow: auto;">
+			</div> <! End sidebar>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> <! logo>
+			""" + self.banner + """	
+			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
 		"""
-	
-	
+
 	
 	
 		self.tail = """
@@ -157,14 +156,13 @@ class Html():
 		&copy; Catharsis Studios West 2012
 		<p>
 		</center>
-		</div>
 		<!--#include virtual="links.html" -->
 		<p>&nbsp;<p>
 		</td></tr></table>
-		</div>
-		</div>
-		
-		</center
+		</div>	<! middle content>
+		</div>	<! container >
+
+		</center>
 		</body>
 		</html>
 		"""

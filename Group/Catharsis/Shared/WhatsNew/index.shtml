@@ -6,8 +6,14 @@
 			</head>
 			<body>
 			<!--   Menu Header -->
-			<div id="container">
-			
+			<div id="container" style="height: 100%; width: 100%; overflow: hidden;">
+			<div class="sidebar_l">
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
+			<p><hr><P>
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
+			</div> <! End sidebar>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> <! logo>
+				
 			<div class="banner" > <! start of banner>
 			<!center>	 
 			        <table width=80% border=0 cellpadding=0 class="banner_txt">
@@ -21,24 +27,16 @@
 			<!/center>
 			<br>
 			</div>	<! end of banner>
-	
-			<div class="sidebar_l">
-			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
-			<p><hr><P>
-			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
-			</div>
-			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div>
-	
 			
-			<div id="Content" class="main" style="height: 95%; overflow: auto;">
+			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
 		
 		</center>
 
 	<div class="maintext">
-	<h2 class=fundesc>What's new in Catharsis land</h2>
+	<img src="Title.png"><br>
 	<font color=a0b0c0>
 	For now, just a running comment log of what's new...
-	<p><i>2013-01-24T23:59:36.452816</i><p>
+	<p><i>2013-01-26T19:54:24.778901</i><p>
 		<hr>
 		Enter your comments here:<br>
 		
@@ -61,14 +59,13 @@
 		&copy; Catharsis Studios West 2012
 		<p>
 		</center>
-		</div>
 		<!--#include virtual="links.html" -->
 		<p>&nbsp;<p>
 		</td></tr></table>
-		</div>
-		</div>
-		
-		</center
+		</div>	<! middle content>
+		</div>	<! container >
+
+		</center>
 		</body>
 		</html>
 		

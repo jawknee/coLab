@@ -10,6 +10,13 @@ import imp
 import cldate
 import clutils
 
+
+
+def import_data(obj, path):
+	"""
+	used by the various load routines to immport the data file
+	in the "path" dir.
+	"""
 class Group:
 	"""
 	Data associated with a group
@@ -157,9 +164,8 @@ class Page:
 		self.prevlink="<unset>"
 		self.nextlink="<unset>"
 
-		# initial value - now as a datetime object
-		self.createtime = cldate.utcnow()
-		self.updatetime = self.createtime
+		# initial value - as a datetime object
+		self.createtime = self.updatetime = cldate.utcnow()
 
 	def xfer_import(self, file):
 		"""

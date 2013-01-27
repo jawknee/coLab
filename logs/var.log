@@ -470,3 +470,11 @@ Commenter=jd&page=Assembly5&desc_title=Assembly+Five%28b%29&Text=This+is+excitin
 page="Assembly5"
 desc_title="Assembly Five(b)"
 Text="This is exciting. I like free form drums in storm.  BRTs worked much better for me than before. Lot&#039;s to like here.  More comments later...  I&#039;ve gotta get a sound system that&#039;s better than what I&#039;m listening on right now."
+Commenter=jk&page=WhatIsNew&desc_title=What%27s+New&Text=Fonts+A-Go-Go%21+++Yeah+-+well%2C+tonight%27s+progress+was+all+infrastructure.+++I+made+the+link+generator+smart+enough+to+only+build+the+various+pages%27+link+files+as+needed.+%28woo%29++And+I+changed+pretty+much+all+the+headers+to+graphics.++Thus...+the+Fonts+A-Go-Go.%0D%0A%0D%0AThey%27re+all+over+the+place+-+at+least+for+now+%28each+of+the+pages+in+the+top+bar+uses+a+different+font+-+woo%29.+++If+you+see+one+you+like%2C+let+me+know+what+page+it%27s+on.+++Otherwise+I%27ll+narrow+the+choices+down+to+one+or+two+and+move+forward.%0D%0A%0D%0ANext+up+is+the+Song+data+structure+addition+-+shouldn%27t+be+too+tough+-+we%27ll+see.Commenter="jk"
+page="WhatIsNew"
+desc_title="What&#039;s New"
+Text="Fonts A-Go-Go!   Yeah - well, tonight&#039;s progress was all infrastructure.   I made the link generator smart enough to only build the various pages&#039; link files as needed. (woo)  And I changed pretty much all the headers to graphics.  Thus... the Fonts A-Go-Go.
+
+They&#039;re all over the place - at least for now (each of the pages in the top bar uses a different font - woo).   If you see one you like, let me know what page it&#039;s on.   Otherwise I&#039;ll narrow the choices down to one or two and move forward.
+
+Next up is the Song data structure addition - shouldn&#039;t be too tough - we&#039;ll see."

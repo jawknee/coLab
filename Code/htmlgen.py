@@ -152,6 +152,8 @@ def pagegen(group, page):
 		sys.exit(1)
 
 	# make the title graphic...
+	fonts = clutils.fontlib()	# maybe put this in the group?
+	fontpath = fonts.fontpath('foxboroScriptBold')
         make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
         make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
@@ -261,11 +263,11 @@ def linkgen(group):
 				l.close()
 				# 
 				# Update the pointers
-				if p.name != 'Archive':
+				if q.name != 'Archive':
 					print "Updating links in", p.name
-					p.prevlink = prevName
-					p.nextlink = p.name
-					p.post()
+					q.prevlink = prevName
+					q.nextlink = p.name
+					q.post()
 			
 
 		prevName = currName
@@ -362,6 +364,11 @@ def songgen(group):
 			print "Failure opening ", index, info
 			exit(1)
 	
+		# make the title graphics...
+		fonts = clutils.fontlib()	# maybe put this in the group?
+		fontpath = fonts.fontpath('foxboroScriptBold')
+		make_text_graphic(song.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+		make_text_graphic(song.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 	
 		html = Html()	# create an html object that contains the html strings...
 		# 
@@ -377,7 +384,7 @@ def songgen(group):
 			</center>
 	
 		<div class="maintext">
-		<h2 class=fundesc>""" + song.desc_title + """</h2>
+		<img src="Title.png"><br>
 		Here are the current versions of """ + song.desc_title + """.
 		They are shown by part, if any, and most recently updated first.<p>
 		<i>""" + cldate.now() + """</i><br clear=all><p>"""
@@ -388,9 +395,15 @@ def songgen(group):
 				content += '<li><a href="#' + part + '">' + part + '</a>\n'
 			content += '</ul><br><hr>\n'
 
+		fontpath = fonts.fontpath('Blacklight')
 		for part in song.partlist:
+			# make the title graphics...
+			# For now - just the part name - more when we datafy it....
+			partPng = 'Part' + part + '.png'
+			make_text_graphic(part, partPng, fontpath, fontsize=45, border=10, fill=fill )
+
 			content += '<a name="' + part + '">\n'
-			content += '<h2>' + part + '</h2>\n' 
+			content += '<img src="' + partPng + '"></br>'
 			#
 			# The heart of it - create entries for each matching page
 			try:
@@ -414,7 +427,6 @@ def songgen(group):
 					shot=pg.thumbnail
 				else:
 					shot=pg.screenshot
-
 
 				screenshot = os.path.join(pg.root, shot)
 				timestr = mk_dur_string(pg.duration)
@@ -460,6 +472,11 @@ def homegen(group):
 	page.fun_title = group.subtitle
 	page.name = group.name
 
+	# make the title graphics...
+	fonts = clutils.fontlib()	# maybe put this in the group?
+	fontpath = fonts.fontpath('foxboroScriptBold')
+	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 	
 	# open the index file, dump the header, body, etc. into it...
 	try:
@@ -483,7 +500,7 @@ def homegen(group):
 		</center>
 
 	<div class="maintext">
-	<h2 class=fundesc>""" + group.title + """</h2>
+	<img src="Title.png"><br>
 	<a href="Shared/DSCF4212.png"><img src="Shared/DSCF4212_tn.png" width=320 height=240 align=right></a>
 	<font color=a0b0c0>""" + group.description + """<p>
 	<i>""" + cldate.now() + """</i><br clear=all><p>"""
@@ -528,6 +545,11 @@ def newgen(group):
 		print "Failure opening ", new, info
 		exit(1)
 
+	# make the title graphics...
+	fonts = clutils.fontlib()	# maybe put this in the group?
+	fontpath = fonts.fontpath('foxboroScriptBold')
+	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
 
 	html = Html()	# create an html object that contains the html strings...
@@ -544,7 +566,7 @@ def newgen(group):
 		</center>
 
 	<div class="maintext">
-	<h2 class=fundesc>""" + page.fun_title + """</h2>
+	<img src="Title.png"><br>
 	<font color=a0b0c0>
 	For now, just a running comment log of what's new...
 	<p><i>""" + cldate.now() + """</i><p>"""
@@ -589,6 +611,11 @@ def navgen(group):
 		print "Failure opening ", index, info
 		exit(1)
 
+	# make the title graphics...
+	fonts = clutils.fontlib()	# maybe put this in the group?
+	fontpath = fonts.fontpath('foxboroScriptBold')
+	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
 
 	html = Html()	# create an html object that contains the html strings...
@@ -605,7 +632,7 @@ def navgen(group):
 		</center>
 
 	<div class="maintext">
-	<h2 class=fundesc>""" + page.fun_title + """</h2>
+	<img src="Title.png"><br>
 	<font color=a0b0c0>
 	Nothing for now - but feel free to comment.
 	<p><i>""" + cldate.now() + """</i><p>"""
@@ -662,10 +689,12 @@ def archivegen(group):
 	outfile.write(html.emit_body(group, page, media=False))
 
 	# The part specific to this page...
-	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Metropolitaines/MetroD.ttf'
+	
+	# make the title graphics...
+	fonts = clutils.fontlib()	# maybe put this in the group?
+	fontpath = fonts.fontpath('foxboroScriptBold')
 	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
         make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
-
 
 	content = """
 		</center>
@@ -715,7 +744,6 @@ def helpgen(group):
 		print "Cannot cd to ", help
 		return()
 
-
 	index='index.shtml'
 
 	page = Page()	# create a page structure - to pass in a title
@@ -731,6 +759,11 @@ def helpgen(group):
 		print "Failure opening ", index, info
 		exit(1)
 
+	# make the title graphics...
+	fonts = clutils.fontlib()	# maybe put this in the group?
+	fontpath = fonts.fontpath('foxboroScriptBold')
+	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
 
 	html = Html()	# create an html object that contains the html strings...
@@ -747,7 +780,7 @@ def helpgen(group):
 		</center>
 
 	<div class="maintext">
-	<h2 class=fundesc>""" + page.fun_title + """</h2>
+	<img src="Title.png"><br>
 	<font color=a0b0c0>
 	Hopefully the interface is reasonbly intuitive.  If something
 	doesn't make sense, you have a question or a comment, feel

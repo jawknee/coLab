@@ -29,14 +29,16 @@
 			</div>	<! end of banner>
 			
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
 		
 		</center>
 
 	<div class="maintext">
 	<img src="Title.png"><br>
 	<font color=a0b0c0>
-	Nothing for now - but feel free to comment.
-	<p><i>2013-01-27T02:20:03.287645</i><p>
+	Not much for now - but feel free to comment.<p>
+	There is this: <a href="http://jawknee.com/coLab/Resources/FontIndex/">Font List</a>
+	<p><i>2013-03-22T22:39:10.363029</i><p>
 		<hr>
 		Enter your comments here:<br>
 		
@@ -45,7 +47,7 @@
 		<center>
 		<input type="hidden" name="page" value="Navigation">
 		<input type="hidden" name="desc_title" value="Navigation">
-		<textarea name="Text" rows=15 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
 		</center>
 		<input type="submit" value="Add your comment">
@@ -56,7 +58,7 @@
 		<p>
 		<br>
 		<center>
-		&copy; Catharsis Studios West 2012
+		&copy; Catharsis Studios West 2013
 		<p>
 		</center>
 		<!--#include virtual="links.html" -->

@@ -40,7 +40,7 @@ def get_config(debug=False):
 		print "get_config: ImportError", info
 		sys.exit(1)	
 
-def needs_update(path, opt='nope'):
+def needs_update(path, file="index.shtml", opt='nope'):
 	"""
 	return True of False if the current directory 
 	needs to be updated - e.g., the data file is
@@ -58,7 +58,7 @@ def needs_update(path, opt='nope'):
 		return False
 
 	try:
-		htime = os.path.getmtime('index.shtml')
+		htime = os.path.getmtime(file)
 	except:
 		htime = 0       # force a rebuild
 
@@ -74,7 +74,7 @@ def needs_update(path, opt='nope'):
 		if opt == 'All':
 			print "Option All - regenerating all"
 		else:
-			print "File data is newer, need to regenerate the index.shtml file"
+			print "File data is newer, need to regenerate the", file, "file"
 
 		return True
 	else:

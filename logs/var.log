@@ -1,4 +1,4 @@
-Commenter=jk&site=Catharsis&desc_title=Catharsis&Text=Not+that+I+plan+daily+updates%2C+and+not+necessarily+as+%22coLab%22+emails...+but+it%27s+fun.++For+now.++For+me%2C+at+least.%0D%0A%0D%0ANo+changes+to+the+site+-+my+current+work+can+all+be+done+%22locally%22+on+my+Mac+-+now+that+I+have+apache+running.++But+I+managed+to+get+the+various+time+handling+bits+nailed+down+-+including+converting+the+internal+time+formats+from+PST+to+UTC%2C+converting+UTC+to+seconds+%28for+sorting%29%2C+and+creating+a+Songdata+class.++The+plan+for+tonight+-+depending+on+beer+saturation+status+-+is+to+%22walk%22+the+tree+of+songs+%28I+like+the+sound+of+that%29%2C+build+a+list+of+song+data+items%2C+sort+them+by+create+date+for+the+prev%2Fnext+links%2C+generated+those%2C+then+sort+by+update+and+use+that+for+the+%22What%27s+New%22%2C+noting+new+songs+vs.+songs+with+updated+comments.++%0D%0A%0D%0AThen+a+simple+%28heh%29+matter+of+creating+the+project+pages%2C+song+pages%2C+the+Archive+page+and+such.+++I+think+I%27m+about+80-90%25+done+with+the+underlying+infrastructure+to+get+this+next+phase+running+-+funny+how+you+%28I%29+can+spend+a+couple+of+hours+trying+to+make+sure+the+whole+date%2Ftime+thing+is+working+-+then+page+generation+just+falls+into+place.+++Maybe.+++OK+-+all+ten+target+boots+are+done+-+time+to+try+again+with+a+different+kernel.++%0D%0A%0D%0AOnward...Commenter=jk&site=Catharsis&desc_title=Catharsis&Text=Not+that+I+plan+daily+updates%2C+and+not+necessarily+as+%22coLab%22+emails...+but+it%27s+fun.++For+now.++For+me%2C+at+least.%0D%0A%0D%0ANo+changes+to+the+site+-+my+current+work+can+all+be+done+%22locally%22+on+my+Mac+-+now+that+I+have+apache+running.++But+I+managed+to+get+the+various+time+handling+bits+nailed+down+-+including+converting+the+internal+time+formats+from+PST+to+UTC%2C+converting+UTC+to+seconds+%28for+sorting%29%2C+and+creating+a+Songdata+class.++The+plan+for+tonight+-+depending+on+beer+saturation+status+-+is+to+%22walk%22+the+tree+of+songs+%28I+like+the+sound+of+that%29%2C+build+a+list+of+song+data+items%2C+sort+them+by+create+date+for+the+prev%2Fnext+links%2C+generated+those%2C+then+sort+by+update+and+use+that+for+the+%22What%27s+New%22%2C+noting+new+songs+vs.+songs+with+updated+comments.++%0D%0A%0D%0AThen+a+simple+%28heh%29+matter+of+creating+the+project+pages%2C+song+pages%2C+the+Archive+page+and+such.+++I+think+I%27m+about+80-90%25+done+with+the+underlying+infrastructure+to+get+this+next+phase+running+-+funny+how+you+%28I%29+can+spend+a+couple+of+hours+trying+to+make+sure+the+whole+date%2Ftime+thing+is+working+-+then+page+generation+just+falls+into+place.+++Maybe.+++OK+-+all+ten+target+boots+are+done+-+time+to+try+again+with+a+different+kernel.++%0D%0A%0D%0AOnward...Commenter="jk"
+
 site="Catharsis"
 desc_title="Catharsis"
 Text="Not that I plan daily updates, and not necessarily as &#034;coLab&#034; emails... but it&#039;s fun.  For now.  For me, at least.
@@ -478,3 +478,69 @@ Text="Fonts A-Go-Go!   Yeah - well, tonight&#039;s progress was all infrastructu
 They&#039;re all over the place - at least for now (each of the pages in the top bar uses a different font - woo).   If you see one you like, let me know what page it&#039;s on.   Otherwise I&#039;ll narrow the choices down to one or two and move forward.
 
 Next up is the Song data structure addition - shouldn&#039;t be too tough - we&#039;ll see."
+Commenter=jk&page=Fall-2012-Test&desc_title=Fall+2012+Test&Text=test.%0D%0A++dcm%2Fjcd+sorry+if+you+got+this%0D%0ACommenter="jk"
+page="Fall-2012-Test"
+desc_title="Fall 2012 Test"
+Text="test.
+  dcm/jcd sorry if you got this
+"
+Commenter=&page=Fall-2012-Test&desc_title=Fall+2012+Test&Text=Commenter=""
+page="Fall-2012-Test"
+desc_title="Fall 2012 Test"
+Text=""
+Commenter=jk&page=JDJ-2-Jan2013&desc_title=JDJ-2%2C+January+2013+Mix&Text=Oops+-+sounds+like+my+%2B6dB+%22fix%22+was+a+bit+much+-+there%27s+a+bit+of+clipping+here.+++No+problem+-+the+source+material+is+still+clean.Commenter="jk"
+page="JDJ-2-Jan2013"
+desc_title="JDJ-2, January 2013 Mix"
+Text="Oops - sounds like my  6dB &#034;fix&#034; was a bit much - there&#039;s a bit of clipping here.   No problem - the source material is still clean."
+Commenter=Karl&page=Fall-2012-Test&desc_title=Fall+2012+Test&Text=Johnny%3A++I+played+this+directly+while+connected+to+the+site+without+any+problems.++I+think+the+Quintet+works+well.++I+suspect+you%27ll+need+to+adjust+volume+a+little%2C+but+otherwise+the+whole+thing+sounds+good+to+me%21++Thanks.Commenter="Karl"
+page="Fall-2012-Test"
+desc_title="Fall 2012 Test"
+Text="Johnny:  I played this directly while connected to the site without any problems.  I think the Quintet works well.  I suspect you&#039;ll need to adjust volume a little, but otherwise the whole thing sounds good to me!  Thanks."
+Commenter=Johnny&page=Fall-2012-Test&desc_title=Fall+2012+Test&Text=Karl+-+good+to+hear.+++Yes%2C+the+level+needs+to+come+down+a+bit+-+I%27ll+see+about+updating+the+recording+in+the+next+day+or+so.++-jkCommenter="Johnny"
+page="Fall-2012-Test"
+desc_title="Fall 2012 Test"
+Text="Karl - good to hear.   Yes, the level needs to come down a bit - I&#039;ll see about updating the recording in the next day or so.  -jk"
+Commenter=jd&page=NaturalBeachPiano&desc_title=Natural+Beach+Piano&Text=Pretty+consistent+%3A%29Commenter="jd"
+page="NaturalBeachPiano"
+desc_title="Natural Beach Piano"
+Text="Pretty consistent :)"
+Commenter=jd&page=NaturalBeachPiano&desc_title=Natural+Beach+Piano&Text=The+piano+sound+is+a+lot+nicer%2C+at+least+in+terms+of+sustain%2C+than+the+MIDI+version.Commenter="jd"
+page="NaturalBeachPiano"
+desc_title="Natural Beach Piano"
+Text="The piano sound is a lot nicer, at least in terms of sustain, than the MIDI version."
+Commenter=jk&page=NaturalBeachPiano&desc_title=Natural+Beach+Piano&Text=Agreed+on+all+fronts%2C+esp.+the+consistency%21Commenter="jk"
+page="NaturalBeachPiano"
+desc_title="Natural Beach Piano"
+Text="Agreed on all fronts, esp. the consistency!"
+Commenter=jk&page=RiB.Feb13&desc_title=Rosemary+Feb13&Text=While+this+mix+is+pretty+close+to+how+it+was+left+-+the+synth+sounds+are+still+done+%22live%22+which+means+it%27s+dependent+on+how+the+various+faders+are+set+on+the+synth+and+console+-+in+this+case%2C+the+string+notes+in+particular+are+a+bit+too+loud.+++Before+final+mix%2C+I%27ll+record+the+synth+sounds+and+mix+them+that+way+-+much+more+consistent.Commenter="jk"
+page="RiB.Feb13"
+desc_title="Rosemary Feb13"
+Text="While this mix is pretty close to how it was left - the synth sounds are still done &#034;live&#034; which means it&#039;s dependent on how the various faders are set on the synth and console - in this case, the string notes in particular are a bit too loud.   Before final mix, I&#039;ll record the synth sounds and mix them that way - much more consistent."
+Commenter=jk&page=JDJ-2-Jan2013&desc_title=JDJ-2%2C+January+2013+Mix&Text=Listening+at+higher+volume+-+and+it+seems+to+hold+up+nicely+when+I+do%2C+I+find+myself+wanting+a+bit+more+bass+in+a+couple+of+spots.++A+week+or+two+ago+I+had+the+idea+to+do+something+with+the+bass+in+the+last+few+seconds+of+%22B%22.++Around+2%3A50+or+so%2C+the+bass+track%2C+which+is+a+synth+doubling+of+the+pedal+note+in+the+piano%2C+could+play+more+of+the+notes+-+possibly+the+entire+piano+line+for+that+last+time+through.%0D%0A%0D%0AThe+other+spot+I+thought+might+be+good+is+in+part+%22C%22+around+4%3A50+but+esp.+at+5%3A10%2C+I%27m+thinking+electric+bass.++Might+want+to+include+it%2C+subtly%2C+earlier+so+that+it+fits+better+when+it+comes+in.%0D%0A%0D%0AThoughts%3F++I%27ll+try+to+fix+the+distortion+here+soon...Commenter="jk"
+page="JDJ-2-Jan2013"
+desc_title="JDJ-2, January 2013 Mix"
+Text="Listening at higher volume - and it seems to hold up nicely when I do, I find myself wanting a bit more bass in a couple of spots.  A week or two ago I had the idea to do something with the bass in the last few seconds of &#034;B&#034;.  Around 2:50 or so, the bass track, which is a synth doubling of the pedal note in the piano, could play more of the notes - possibly the entire piano line for that last time through.
+
+The other spot I thought might be good is in part &#034;C&#034; around 4:50 but esp. at 5:10, I&#039;m thinking electric bass.  Might want to include it, subtly, earlier so that it fits better when it comes in.
+
+Thoughts?  I&#039;ll try to fix the distortion here soon..."
+Commenter=Johnny&page=RainRedo&desc_title=Rough+Rain+Mix%2C+JDJ-5.1&Text=I+am+really+digging+this...+++I%27m+looking+forward+to+putting+more+e-horn+on+it+and+then+strings.++++Possibly+bass+and+drums+%28not+so+sure+about+the+latter%2C+or+the+former%29.++++I+really+like+the+sound+of+the+piano+bass+notes+with+the+PianoTeq+doubling+-+a+nice+bit+of+serendipity-do.+%0D%0A%0D%0AA+sweet%2C+little+nugget.++%0D%0A%0D%0AMight+need+a+transition+from+Storm+though...++Commenter="Johnny"
+page="RainRedo"
+desc_title="Rough Rain Mix, JDJ-5.1"
+Text="I am really digging this...   I&#039;m looking forward to putting more e-horn on it and then strings.    Possibly bass and drums (not so sure about the latter, or the former).    I really like the sound of the piano bass notes with the PianoTeq doubling - a nice bit of serendipity-do. 
+
+A sweet, little nugget.  
+
+Might need a transition from Storm though...  "
+Commenter=jd&page=RainRedo&desc_title=Rough+Rain+Mix%2C+JDJ-5.1&Text=I+like+this+song%21++Level+changes+are+the+biggest+thing+I+notice+as+needed.++I+agree+with+your+comments+JK.Commenter="jd"
+page="RainRedo"
+desc_title="Rough Rain Mix, JDJ-5.1"
+Text="I like this song!  Level changes are the biggest thing I notice as needed.  I agree with your comments JK."
+Commenter=jd&page=RainRedo&desc_title=Rough+Rain+Mix%2C+JDJ-5.1&Text=Read+your+10%3A54PDT+comments+JK%2C+which+I+hadn%27t+seen+before.++My+sense+is+to+keep+this+song+fairly+open+-+i.e.%2C+not+add+too+much.Commenter="jd"
+page="RainRedo"
+desc_title="Rough Rain Mix, JDJ-5.1"
+Text="Read your 10:54PDT comments JK, which I hadn&#039;t seen before.  My sense is to keep this song fairly open - i.e., not add too much."
+Commenter=jk&page=RainRedo&desc_title=Rough+Rain+Mix%2C+JDJ-5.1&Text=John+-+we+had+discussed+adding+strings+and+building+to+a+peak+and+a+release+at+D%2FE.++I+will+keep+%22open%22+in+mind+-+I+think+we+can+do+both.++Commenter="jk"
+page="RainRedo"
+desc_title="Rough Rain Mix, JDJ-5.1"
+Text="John - we had discussed adding strings and building to a peak and a release at D/E.  I will keep &#034;open&#034; in mind - I think we can do both.  "

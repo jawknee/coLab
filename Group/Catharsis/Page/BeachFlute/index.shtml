@@ -32,6 +32,7 @@
 			</div>	<! end of banner>
 			
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
 		<center><img src="Title.png" class="fundesc" alt="A Big, Heaping Bowl of Pruned Flutes!">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'BeachFlute-poster.jpg',
@@ -103,7 +104,7 @@ I'm likely to have a new full test assembly tomorrow night.
 		<center>
 		<input type="hidden" name="page" value="BeachFlute">
 		<input type="hidden" name="desc_title" value="Initial Flute Prune">
-		<textarea name="Text" rows=15 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
 		</center>
 		<input type="submit" value="Add your comment">
@@ -114,7 +115,7 @@ I'm likely to have a new full test assembly tomorrow night.
 		<p>
 		<br>
 		<center>
-		&copy; Catharsis Studios West 2012
+		&copy; Catharsis Studios West 2013
 		<p>
 		</center>
 		<!--#include virtual="links.html" -->

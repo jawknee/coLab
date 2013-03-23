@@ -32,6 +32,7 @@
 			</div>	<! end of banner>
 			
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
 		<center><img src="Title.png" class="fundesc" alt="An Herculeanly Restrained Flute Tide">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'AltoNine-poster.jpg',
@@ -100,7 +101,7 @@ I think this has got some potential.  Let me know what you think.
 		<center>
 		<input type="hidden" name="page" value="AltoNine">
 		<input type="hidden" name="desc_title" value="Nifty Nine and Friends">
-		<textarea name="Text" rows=15 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
 		</center>
 		<input type="submit" value="Add your comment">
@@ -111,7 +112,7 @@ I think this has got some potential.  Let me know what you think.
 		<p>
 		<br>
 		<center>
-		&copy; Catharsis Studios West 2012
+		&copy; Catharsis Studios West 2013
 		<p>
 		</center>
 		<!--#include virtual="links.html" -->

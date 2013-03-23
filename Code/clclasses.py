@@ -18,6 +18,8 @@ def set_init_vars(obj, initdata):
 	and put them into the object along with a varlist
 	"""
 	print "Entering set_init_vars..."
+	print "Object:", obj.name
+
 	obj.varlist = []
 	for (varname, value) in initdata:
 		x = value
@@ -25,10 +27,10 @@ def set_init_vars(obj, initdata):
 		exec(string)	# assign the value the var
 		obj.varlist.append(varname)
 
-	#for var in obj.varlist:
-	#	string= 'obj.' + var
-	#	value = eval(string)
-	#	print "init: var:", var, " is: ", value
+	for var in obj.varlist:
+		string= 'obj.' + var
+		value = eval(string)
+		print "init: var:", var, " is: ", value
 
 def set_paths(obj,sub_dir):
 
@@ -56,7 +58,7 @@ def set_paths(obj,sub_dir):
 
 def import_data(obj, path):
 	"""
-	used by the various load routines to immport the data file
+	used by the various load routines to import the data file
 	in the "path" dir.  Import the values found in the data file,
 	then, using the objects varlist, import them as found into the
 	object (group, song, page, etc.)
@@ -71,11 +73,10 @@ def import_data(obj, path):
 		os.remove(datafile + 'c')
 	except IOError, info:
 		print "Import problem with", datafile, info
-		raise IOError
+		#raise IOError
 
 	#self.set_paths(conf)
 
-	print "id: conversion check", obj.floatvars, obj.timevars
 	for var in obj.varlist:
 		string = 'p.' + var	# var name from the file...
 		try:
@@ -90,11 +91,13 @@ def import_data(obj, path):
 
 		conversion = ""	# set if we need to do a conversion....
 
+		# let's leave this out for now.   We'll just save
+		# floats w/o quotes
 		if var in obj.floatvars:
 			#print 'Floating', var
 			conversion = "float"
 		if var in obj.timevars:
-			#print "Converting", var
+			print "Converting", var
 			conversion = "cldate.string2utc"
 
 		if conversion:
@@ -130,6 +133,7 @@ class Group:
 		# vars that need to be converted to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = []
+		self.name = name
 		set_init_vars(self, initdata)
 		#
 		# These are not saved to the file - don't add to the varlist...
@@ -163,7 +167,6 @@ class Group:
 		# Now step through the dirs  (and files - rejecting them...).
 		
 		for nextpage in (os.listdir('.')):
-			print "dir is:", dir
 			
 			# this is a bit week - our criteria for a new page
 			# is a dir with a 'data' file in it...  ok for now...
@@ -222,8 +225,10 @@ class Page:
 		('thumbnail', ""),
 		('description', "\n<unset>\n"),
 		# start and end of the piece on the graphic
-		('xStart ',  0),
-		('xEnd ',  0),
+		('xStart',  0),
+		('xEnd',  0),
+		# Frames per second, generally calculated from xEnd-xStart and duration
+		('fps', 6),
 		
 		('project', "<unset>"),
 		('assoc_projects', ''),
@@ -238,6 +243,7 @@ class Page:
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = [ 'duration' ]
+		self.name = name
 
 		set_init_vars(self, initdata)
 
@@ -252,7 +258,7 @@ class Page:
 			'group="' + self.group + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
-			'duration="' + str(self.duration) + EOL +
+			'duration=' + str(self.duration) + '\n' +
 			'screenshot="' + self.screenshot + EOL +
 			'thumbnail="' + self.thumbnail + EOL +
 			'\n' +
@@ -265,6 +271,7 @@ class Page:
 			'\n' +
 			'xStart=' + str(self.xStart) + '\n' +
 			'xEnd=' + str(self.xEnd) + '\n' +
+			'fps=' + str(self.fps) + '\n' +
 			'\n' +
 			'prevlink="' + self.prevlink + EOL +
 			'nextlink="' + self.nextlink + EOL +
@@ -297,7 +304,13 @@ class Page:
 		
 		import_data(self, path)
 
-		#self.set_paths(conf)
+		if self.group == '<unset>':
+			self.group = "Catharsis"
+			#self.group = "SBP"
+			print "Note: override: group =", self.group
+
+		sub_dir = os.path.join('Group', self.group, 'Page', self.name)
+		set_paths(self, sub_dir)
 
 
 
@@ -343,6 +356,7 @@ class Song:
 		merge values from the data files
 		"""
 		
+		print "New init song - name:", name
 		timenow=cldate.utcnow()
 		# varname, value pairs...
 		initdata = [
@@ -351,14 +365,17 @@ class Song:
 		('desc_title', "<unset>"),
 		('fun_title', "<unset>"),
 		('duration',  0.0),
-		('description', "\n<unset>\n"),
-		
+
 		('project', "<unset>"),
 		('assoc_projects', ''),
 		('song', "<unset>"),
 		('partlist', ['All']),
 		('partnames', ['All']), 
+		('description', "\n<unset>\n"),
 
+		('prevlink', "<unset>"),
+		('nextlink', "<unset>"),
+		
 		# initial value - as a datetime object 
 		('createtime', timenow),
 		('updatetime', timenow),
@@ -366,17 +383,20 @@ class Song:
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = [ 'duration' ]
+		self.name = name
 
 		set_init_vars(self, initdata)
 		#
 		# items not stored in the data file
 		self.list = []
 		self.part_dict = {}
+
+		# RBF
+		print "******  init: name is:", self.name
 		#
 		# Create a dictionary of names of parts
 		self.partname_dict = {}
 		for i in range(len(self.partlist)):
-			print "Insertng name:", i, self.partlist[i]
 			print "Insertng name:", i, self.partlist[i], self.partnames[i]
 			self.partname_dict[self.partlist[i]] = self.partnames[i]
 	
@@ -388,7 +408,6 @@ class Song:
 		EOL = '"\n'
 
 
-		print "dump- self: xStart, xEnd", self.xStart, self.xEnd
 		return( 'name="' + self.name + EOL +
 			'group="' + self.group + EOL +
 			'desc_title="' + self.desc_title + EOL +
@@ -397,21 +416,17 @@ class Song:
 			'\n' +
 			'project="' + self.project + EOL +
 			'assoc_projects="' + self.assoc_projects + EOL +
-			'song="' + self.song + EOL +
-			'partorder="' + self.part + EOL +
+			'partlist=' + str(self.partlist) + '\n' +
+			'partnames=' + str(self.partnames) + '\n' +
 			'description="""' + self.description +	
 			'"""\n' +
-			'\n' +
-			'xStart=' + str(self.xStart) + '\n' +
-			'xEnd=' + str(self.xEnd) + '\n' +
-			'\n' +
+		
 			'prevlink="' + self.prevlink + EOL +
 			'nextlink="' + self.nextlink + EOL +
 			'\n' +
 			'createtime="' + cldate.utc2string(self.createtime) + EOL +
 			'updatetime="' + cldate.utc2string(self.updatetime) + EOL +
-			'\n'
-			)
+			'\n' )
 
 	def load(self, path='None'):
 		"""
@@ -427,6 +442,11 @@ class Song:
 		For now, this is generic and flexible
 		"""
 
+		if self.group == '<unset>':
+			self.group = "Catharsis"
+			#self.group = "SBP"
+			print "Note: override: group =", self.group
+
 		song_dir = os.path.join('Group', self.group, 'Song', self.name)
 		set_paths(self, song_dir)
 
@@ -438,12 +458,9 @@ class Song:
 				sys.exit(1)
 		
 		import_data(self, path)
-		print "partlist", self.partlist
-		self.partlist=self.partlist.split()	# convert to a list
-		print "partlist", self.partlist
+
 
 		for i in range(len(self.partlist)):
-			print "Insertng name:", i, self.partlist[i]
 			print "Insertng name:", i, self.partlist[i], self.partnames[i]
 			self.partname_dict[self.partlist[i]] = self.partnames[i]
 

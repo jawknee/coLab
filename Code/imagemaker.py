@@ -14,7 +14,47 @@ import os
 
 import clclasses
 
+def calculate_fps(page):
+	"""
+	Return a "legal" frames per second based on the number
+	of pixels covered by the cursor (xEnd - xStart) and the 
+	length of the song (duration)
 
+	Basically the philosophy is that we would like the cursor
+	line to never skip a pixel position, but not be any more 
+	often then necessary beyond that (i.e, an occassional 'no-move'
+	frame.)   We start at the slowest and work our way up until
+	we find the value we want and return it.
+	"""
+
+	# frames per second is represented as a tuple, literally
+	# (frames, seconds) to prevent any rounding error when fps < 1
+	# from slowest to fastest )
+	# spf:  10 5 4 3 2 1
+	# fps:  2 6 10 12 15 24 25 30 50 60 
+	# (we skip the fractional ones for now...)
+	fps_values = [ (1,10), (1,5), (1,4), (1,3), (1,2), (1,1),
+	      (2,1), (6,1), (10,1), (12,1), (15,1), (24,1), 
+	      (25,1), (30,1), (50,1), (60,1) ]
+	try:
+		secs_long = page.duration
+		start = page.xStart
+		end = page.xEnd
+	except NameError,info:
+		print "oops: must have vars!!", info
+		sys.exit(1)
+	pixels = end - start + 1 
+	# 
+	pps =  pixels / secs_long	# pixels per second required
+	print "calculate_fps, pps:", pps
+
+	for (frames, seconds) in fps_values:
+		fps = float(frames) / seconds
+		if fps >= pps:
+			break	# this is the one.
+	page.post()	# seems like I think you'd want to remember..
+	return(fps)	# should account for max fps being enough...
+		
 def make_images(page):
 	"""
 	 for now - just create and display a time box...
@@ -22,11 +62,10 @@ def make_images(page):
 
 	print "make_images: page.home:", page.home
 
-	dir = os.path.join(page.home, 'coLab_local', 'Overlays' )
-	os.system('rm -rfv ' + dir + '/')
-	os.system('mkdir -pv ' + dir )
+	directory = os.path.join(page.home, 'coLab_local', 'Overlays' )
+	os.system('rm -rfv ' + directory + '/')
+	os.system('mkdir -pv ' + directory )
 
-	fps = 6
 	try:
 		os.chdir(page.home)
 	except OSError, info:
@@ -89,6 +128,10 @@ def make_images(page):
 	else:
 		print "Keeping:", page.xStart, page.xEnd
 
+	# use the pixels and duration to determine frames per second...
+	#
+	fps = calculate_fps(page)
+	
 
 	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
 
@@ -113,10 +156,21 @@ def make_images(page):
 	frameIncr = float(xLen) / frames
 
 	#while fr <= frames:
+	last_fr_num = frames - 1
 	for fr_num in range(frames):
+		last_frame = fr_num == last_fr_num # Boolean
 		# create a new overlay
 		overlay = Image.new( 'RGBA', size, color=Xparent)
 		overlay_draw = ImageDraw.Draw(overlay)
+
+		#
+		# at slower frame rates the final frame can be short of the mark,
+		# make sure we're at the end if this is the final frame.
+		if last_frame:
+			xPos = page.xEnd
+			time = page.duration		# force to the end...
+		else:
+			time = float(fr_num) / fps	# normal...
 
 		# Put the cursor into the overlay
 		xLine = int(xPos)
@@ -132,14 +186,6 @@ def make_images(page):
 			lbox_draw.rectangle(box_rect, outline=eBlue)
 			lbox_draw.rectangle(box_rect2, outline=eBlue)
 		
-		#
-		# in the case of the last frame, with more than a second per frame, 
-		# (longer than ~10 minutes) the final frame can came up short.   
-		# force it...
-		if fr_num != frames-1:	# if not the last frame
-			time = float(fr_num) / fps	# normal...
-		else:
-			time = page.duration		# force to the end...
 			
 		seconds = int(time)
 		tstring = "%01d:%02d" % divmod(seconds, 60)
@@ -152,7 +198,7 @@ def make_images(page):
 
 		rbox = box.copy()
 		rbox_draw = ImageDraw.Draw(rbox)
-		if fr_num == frames-1:	# Outline last frame time.
+		if last_frame:		# Outline last frame time.
 			rbox_draw.rectangle(box_rect, outline=eBlue)
 			rbox_draw.rectangle(box_rect2, outline=eBlue)
 
@@ -173,11 +219,12 @@ def make_images(page):
 		frame_image = base_image.copy()		# new copy of the base...
 		frame_image.paste(overlay_rgb, (0,0), mask)
 
-		print "Frame", fr_num, "of", frames
-		frame_image.save( dir + '/' + 'Frame-%05d.png' % fr_num, 'PNG')
+		print "Frame", fr_num, "of", last_fr_num
+		frame_image.save( directory + '/' + 'Frame-%05d.png' % fr_num, 'PNG')
 
 		xPos += frameIncr
 
+	print "Done: Frames per second:", fps
 
 def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill=(196, 176, 160, 55), maxsize=(670,100) ):
 	"""
@@ -196,7 +243,6 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	box_draw = ImageDraw.Draw(box)
 
 	(w,h) = box_draw.textsize(string, font=font)
-
 	print "Size is:", w, h
 	# Let's see if we overflowed the size...
 	# (There may be a more python way of doing this, 
@@ -237,7 +283,19 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	
 
 def main():
-	make_image()
+
+	p = clclasses.Page('imagemakerTest')
+	p.xStart = 10
+	p.xEnd = 630
+
+
+	p.duration = .01	# start small (seconds) but get big fast...
+
+	print "xStart, xEnd:", p.xStart, p.xEnd
+	while p.duration < 100000:
+		fps = calculate_fps(p)
+		print "For duration:", p.duration, "- fps:", fps
+		p.duration += p.duration * 0.3	# funny boy
 
 
 if __name__ == '__main__':

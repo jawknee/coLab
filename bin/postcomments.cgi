@@ -16,8 +16,6 @@ export cLmail_addresses="johnny@jawknee.com, jcdlansing@gmail.com, mccluredc@gma
 
 source ../.coLab.conf	# don't like this...
 
-
-
 cat <<EOF
 Content-type: text/html
 
@@ -93,15 +91,21 @@ $cLmail_bodytext
 <pre>
 
 EOF
-#
-# the necessary vars should be set/exported - let's just call the mailer...
-$coLab_home/bin/coLabMailer 2>&1
-rc=$?
-if [ $rc = 0 ]
+
+if  echo $dirname | grep "/SBP/" >/dev/null
 then
-	echo "Mail sent."
+	echo No mail.
 else
-	echo "Problem sending mail."
+	#
+	# the necessary vars should be set/exported - let's just call the mailer...
+	$coLab_home/bin/coLabMailer 2>&1
+	rc=$?
+	if [ $rc = 0 ]
+	then
+		echo "Mail sent."
+	else
+		echo "Problem sending mail."
+	fi
 fi
 
 datestring=$(./isodate.py)

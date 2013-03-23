@@ -163,7 +163,7 @@ def genHome(name):
 	<!--#include virtual="links.html" -->
 	<br>
 	<center>
-	&copy; Catharsis Studios West 2012
+	&copy; Catharsis Studios West 2013
 	</center>
 	</div>
 

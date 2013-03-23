@@ -32,6 +32,7 @@
 			</div>	<! end of banner>
 			
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
 		<center><img src="Title.png" class="fundesc" alt="Storm in Eb meets Anti-Chipmunk in C">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'PitchAssTest-poster.jpg',
@@ -90,7 +91,7 @@ The line along the bottom is the BRT volume tracking.
 		<center>
 		<input type="hidden" name="page" value="PitchAssTest">
 		<input type="hidden" name="desc_title" value="Storm/Rain Pitch Test">
-		<textarea name="Text" rows=15 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
 		</center>
 		<input type="submit" value="Add your comment">
@@ -101,7 +102,7 @@ The line along the bottom is the BRT volume tracking.
 		<p>
 		<br>
 		<center>
-		&copy; Catharsis Studios West 2012
+		&copy; Catharsis Studios West 2013
 		<p>
 		</center>
 		<!--#include virtual="links.html" -->

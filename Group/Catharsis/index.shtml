@@ -29,12 +29,13 @@
 			</div>	<! end of banner>
 			
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
 		
 		</center>
 
 	<div class="maintext">
-	<img src="Title.png"><br>
-	<a href="Shared/DSCF4212.png"><img src="Shared/DSCF4212_tn.png" width=320 height=240 align=right></a>
+	<img src="Header.png"><br>
+	<a href="Shared/SnapShot.png"><img src="Shared/SnapShot_tn.png" width=320 height=240 align=right></a>
 	<font color=a0b0c0>
 Welcome to the new Catharsis collaboration site.  
 <p>
@@ -48,7 +49,7 @@ the pages for easy reference.
 Comments are always welcome.
 
 <p>
-	<i>2013-01-27T02:20:03.276630</i><br clear=all><p>
+	<i>2013-03-22T22:46:41.380699</i><br clear=all><p>
 		<hr>
 		Enter your comments here:<br>
 		
@@ -57,7 +58,7 @@ Comments are always welcome.
 		<center>
 		<input type="hidden" name="page" value="Catharsis">
 		<input type="hidden" name="desc_title" value="Catharsis">
-		<textarea name="Text" rows=15 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
 		</center>
 		<input type="submit" value="Add your comment">
@@ -68,7 +69,7 @@ Comments are always welcome.
 		<p>
 		<br>
 		<center>
-		&copy; Catharsis Studios West 2012
+		&copy; Catharsis Studios West 2013
 		<p>
 		</center>
 		<!--#include virtual="links.html" -->

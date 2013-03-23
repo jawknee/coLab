@@ -18,16 +18,18 @@ from htmlgen import *
 # 
 # put these somewhere....
 num_recent_entries = 5
-num_project_entries = 3
+num_project_entries = 10
 
 def rebuild(group, opt):
 	"""
-	Create and populate group object, then create various files
-	in the scructure based on that.
+	Create and populate group object, adding page and
+	song objects, then create link, graphic text ad
+	other related items.
 	"""
 	
 	g = clclasses.Group(group)	# instantiate the group object
 
+	# Load the group by traversing the file structure...
 	try:
 		g.load()
 	except IOError, info:
@@ -35,10 +37,10 @@ def rebuild(group, opt):
 
 	#
 	# At this point, we should have a populated group object, which includes
-	# the group specific items as well as a list of pages 
-	# (and eventually, probably projects and songs)
+	# the group specific items as well as a list of pages, a
+	# list of songs, (and eventually, probably projects)
 	#
-	
+	# debug - print them out...	
 	for s in g.pagelist:
 		print s.name
 
@@ -58,7 +60,7 @@ def rebuild(group, opt):
 		print pg.name
 		# 
 		# and rebuild the html in that case...
-		if clutils.needs_update(pg.home, opt):
+		if clutils.needs_update(pg.home, file='index.shtml', opt=opt):
 			pagegen(g, pg)
 
 		#
@@ -74,6 +76,7 @@ def rebuild(group, opt):
 			thissong.load()
 			song_dict[pg.song] = thissong
 			g.songlist.append(thissong)
+			print "----------------->Song name:", thissong.name
 
 
 		thissong.list.append(pg)
@@ -89,8 +92,6 @@ def rebuild(group, opt):
 		# RBF: hard coded part list.
 
 
-
-
 	print "Songs found:"
 	for songname in song_dict:
 		print "Song:", songname
@@ -104,7 +105,6 @@ def rebuild(group, opt):
 			print "Part:", part
 			for page in song.part_dict[part]:
 				print "Page:", page.name
-
 
 
 	# sort pages by update time... oldest to newest
@@ -172,7 +172,7 @@ def rebuild(group, opt):
 
 	index = len(g.songlist)	
 	if num_project_entries < index:
-		index = -num_project_entries - 1
+		index = -num_project_entries
 	else:
 		index = -index
 
@@ -180,7 +180,6 @@ def rebuild(group, opt):
 	print "index is", index, "song list is", g.songlist
 	for sg in g.songlist[index:]:
 		#print "times:", sg.createtime, sg.updatetime
-
 
 		localURL = os.path.join(songURLbase, sg.name)
 		f_project.write('<li><a href="' + localURL + '/" title="' + sg.fun_title +
@@ -205,6 +204,9 @@ def rebuild(group, opt):
 	# Generate the links from the list..
 	g.pagelist.sort(key=createkey)
 	linkgen(g)	# build the included links for the each page
+	for song in g.songlist:
+		print "precheck:", g.name, song.name
+
 	songgen(g)	# build the song pages
 
 	homegen(g)	# The pages associated with the banner links...

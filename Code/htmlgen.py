@@ -74,7 +74,7 @@ def tagstrip(string,subs='\n',tag=''):
 	
 def smartsub(string,length):
 	"""
-	Return a substring that is basedj on the passed length,
+	Return a substring that is based on the passed length,
 	but modified up to 10% to find either a space, or period.
 	"""
 
@@ -126,8 +126,14 @@ def pagegen(group, page):
 	# make the title graphic...
 	fonts = clutils.fontlib()	# maybe put this in the group?
 	fontpath = fonts.fontpath('AenigmaScrawl')
-        make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
-        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
+	if clutils.needs_update('.', file='Title.png'):
+		make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+	else:
+		print "Not updating Title.png"
+	if clutils.needs_update('.', file='Header.png'):
+		make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
+	else:
+		print "Not updating Header.png"
 
 	now = cldate.now()
 
@@ -189,7 +195,8 @@ def linkgen(group):
 	# A bit tricky...   append the list with a fake page: "Archive"
 	p = Page('null')
 	p.name = "Archive"
-	p.home = os.path.join(group.root, 'Shared', 'Archive')
+	p.root = os.path.join(group.root, 'Shared', 'Archive')
+	p.home = os.path.join(group.home, 'Shared', 'Archive')
 	p.Title = 'Archive'
 	p.desc_title = "Archive"
 	p.fun_title = "Archive - a place for everything"
@@ -199,6 +206,7 @@ def linkgen(group):
 	currName = "Home"
 	currTitle = "Home"
 	currFun = group.name + " Home"
+	currPath = group.home
 	currLink = group.root
 
 	prevName = "not set yet"
@@ -206,7 +214,7 @@ def linkgen(group):
 	# Because we don't can't build the links until we've read
 	# the next one, we loop through twice before we actually 
 	# write the first file.  We write the link file for the
-	# page in the previous iteration  (currPath, etc.)
+	# page in the previous iteration  (currLink, etc.)
 	# The "current" page is 'q'
 	for p in group.pagelist:
 
@@ -224,12 +232,15 @@ def linkgen(group):
 				except IOError, info:
 					print "problem opening", linkfile, info
 					raise IOError
-	
+
+				# a little kludgy - should consider full path URLs from
+				# the data structures
+
 				l.write( '<div class="links" style="float: left;">' + 
-					'<a href="../' + prevLink + '" title="' + prevFun +
+					'<a href="' + prevLink + '" title="' + prevFun +
 						'">&larr; ' + prevTitle + '</a></div>' +
 					'<div class="links" style="float: right;">' +
-					'<a href="../' + p.name + '" title="' + p.fun_title +
+					'<a href="' + p.root + '" title="' + p.fun_title +
 						'">' + p.desc_title + ' &rarr;</a></div>' +
 					'<br>' )
 				l.close()
@@ -245,13 +256,14 @@ def linkgen(group):
 		prevName = currName
 		prevTitle = currTitle
 		prevFun = currFun
+		prevPath = currPath
 		prevLink = currLink
 
-		currPath = p.home
 		currName = p.name
 		currTitle = p.desc_title
 		currFun = p.fun_title
-		currLink = p.name
+		currPath = p.home
+		currLink = p.root
 		q = p		# save the page
 
 	group.pagelist.pop()	# remove that fake "Archive" page
@@ -282,7 +294,7 @@ def mk_page_synopsis(page, type='Default'):
 	this_entry = '<table border=0 cellpadding=5 width=640>'		#  RBF: hard-coded width....
 	this_entry += '<tr><td colspan=2>'
 	this_entry += '<table border=0 cellpadding=5 width=100%><tr>'	# build another table inside these two cells..
-	this_entry += '<td><a href="' + page.root + '"><img src="' + header + '"><br>'
+	this_entry += '<td><a href="' + page.root + '" class="imglink"><img src="' + header + '"><br>'
 	if page.createtime == page.updatetime or type == 'Archive':
 		this_entry += 'Created: ' + cldate.utc2short(page.createtime)
 	else:
@@ -294,7 +306,7 @@ def mk_page_synopsis(page, type='Default'):
 
 	this_entry += '<td align=right>Duration: ' + timestr + '</td></tr></table>\n'	# end the header table
 	this_entry += '</td></tr>\n'					# next row... (thumb, desc)
-	this_entry += '<tr><td><a href="' + page.root + '"><img src="' + screenshot + '" width=160 height=140></a></td><td>'
+	this_entry += '<tr><td><a href="' + page.root + '" class="imglink"><img src="' + screenshot + '" width=160 height=140></a></td><td>'
 	this_entry += '<span class="song">\n'
 	this_entry += '<a href="' + page.root + '">\n'
 	this_entry += desc_text 
@@ -310,6 +322,9 @@ def songgen(group):
 	Using the song list in the passed group, rebuild those pages
 	"""
 	for song in group.songlist:
+		print "Song found in group:", group.name, song.name
+
+	for song in group.songlist:
 		print "Writing song page:", song.name
 		
 		song_dir = os.path.join(group.home, 'Song', song.name)	
@@ -323,7 +338,7 @@ def songgen(group):
 	
 		index='index.shtml'
 	
-		
+
 		# RBF: hard coding  values that will be ext soon...
 		#song.desc_title = "Eventual title of: " + song.name
 		#song.fun_title = "Something funny here about " + song.name
@@ -338,8 +353,10 @@ def songgen(group):
 		# make the title graphics...
 		fonts = clutils.fontlib()	# maybe put this in the group?
 		fontpath = fonts.fontpath('FoxboroScriptBold')
-		make_text_graphic(song.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
-		make_text_graphic(song.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
+		if clutils.needs_update('.', file='Title.png'):
+			make_text_graphic(song.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+		if clutils.needs_update('.', file='Header.png'):
+			make_text_graphic(song.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 	
 		html = Html()	# create an html object that contains the html strings...
 		# 
@@ -356,8 +373,8 @@ def songgen(group):
 	
 		<div class="maintext">
 		<img src="Title.png"><br>
-		Here are the current versions of """ + song.desc_title + """.
-		They are shown by part, if any, and most recently updated first.<p>
+		""" + song.description + """
+		<p>
 		<i>""" + cldate.now() + """</i><br clear=all><p>"""
 
 		if len(song.partlist) > 1:	# just "All", skip this...
@@ -372,8 +389,9 @@ def songgen(group):
 			# make the title graphics...
 			# For now - just the part name - more when we datafy it....
 			partPng = 'Part' + part + '.png'
-			partname = song.partname_dict[part]
-			make_text_graphic(partname, partPng, fontpath, fontsize=45, border=5, fill=fill )
+			if clutils.needs_update('.', file=partPng):
+				partname = song.partname_dict[part]
+				make_text_graphic(partname, partPng, fontpath, fontsize=45, border=5, fill=fill )
 
 			content += '<a name="' + part + '">\n'
 			content += '<img src="' + partPng + '"></br>'
@@ -387,7 +405,7 @@ def songgen(group):
 			print "for part", part, "num is", num_pages
 
 			if num_pages == 0:
-				content += "(none)"
+				content += "(none)<p>"
 				continue
 
 			song.part_dict[part].sort(key=updatekey, reverse=True)
@@ -448,7 +466,7 @@ def homegen(group):
 	fonts = clutils.fontlib()	# maybe put this in the group?
 	fontpath = fonts.fontpath('FoxboroScriptBold')
 	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
-        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
+        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=45, border=2, fill=fill )
 	
 	# open the index file, dump the header, body, etc. into it...
 	try:
@@ -472,8 +490,8 @@ def homegen(group):
 		</center>
 
 	<div class="maintext">
-	<img src="Title.png"><br>
-	<a href="Shared/DSCF4212.png"><img src="Shared/DSCF4212_tn.png" width=320 height=240 align=right></a>
+	<img src="Header.png"><br>
+	<a href="Shared/SnapShot.png"><img src="Shared/SnapShot_tn.png" width=320 height=240 align=right></a>
 	<font color=a0b0c0>""" + group.description + """<p>
 	<i>""" + cldate.now() + """</i><br clear=all><p>"""
 
@@ -502,7 +520,10 @@ def newgen(group):
 		return()
 
 
-	new='index.shtml'
+	index='index.shtml'
+	if not clutils.needs_update('.', file=index):
+		print "Skipping newgen..."
+		return
 
 	page = Page('null')	# create a page structure - to pass in a title
 	page.desc_title = "What's New"
@@ -512,9 +533,9 @@ def newgen(group):
 	
 	# open the index file, dump the header, body, etc. into it...
 	try:
-		outfile = open(new, 'w+')
+		outfile = open(index, 'w+')
 	except IOError, info:
-		print "Failure opening ", new, info
+		print "Failure opening ", index, info
 		exit(1)
 
 	# make the title graphics...
@@ -569,6 +590,9 @@ def navgen(group):
 
 
 	index='index.shtml'
+	if not clutils.needs_update('.', file=index):
+		print "Skipping nevgen..."
+		return
 
 	page = Page('null')	# create a page structure - to pass in a title
 	page.desc_title = "Navigation"
@@ -606,7 +630,8 @@ def navgen(group):
 	<div class="maintext">
 	<img src="Title.png"><br>
 	<font color=a0b0c0>
-	Nothing for now - but feel free to comment.
+	Not much for now - but feel free to comment.<p>
+	There is this: <a href="http://jawknee.com/coLab/Resources/FontIndex/">Font List</a>
 	<p><i>""" + cldate.now() + """</i><p>"""
 
 	outfile.write(content)
@@ -717,6 +742,9 @@ def helpgen(group):
 		return()
 
 	index='index.shtml'
+	if not clutils.needs_update('.', file=index):
+		print "Skipping helpgen..."
+		return
 
 	page = Page('null')	# create a page structure - to pass in a title
 	page.desc_title = "Help"
@@ -807,6 +835,5 @@ if __name__ == "__main__":
 
 	name=sys.argv[1]
 
-	pagegen('Catharsis', name)
 
 

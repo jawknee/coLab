@@ -35,6 +35,7 @@ def newPage(name):
 
 	conf = clutils.get_config()
 	pagehome = os.path.join(conf.coLab_home, 'Group', 'Catharsis', 'Page', name)
+	#pagehome = os.path.join(conf.coLab_home, 'Group', 'SBP', 'Page', name)
 	local = 'coLab_local'
 
 	if os.path.isdir(pagehome):
@@ -52,7 +53,7 @@ def newPage(name):
 			print "Try again."
 			sys.exit(1)
 
-	page = clclasses.Page()	# new page...
+	page = clclasses.Page(name)	# new page...
 	page.home = pagehome
 
 	# create a stub for the data file...
@@ -61,7 +62,7 @@ def newPage(name):
 	f.write('name="' + name + '"\n')
 	f.close()
 
-	page.load(pagehome)
+	page.load()
 	print "pagehome is ", pagehome
 	#page.update(pagehome)	# maybe someday...
 
@@ -92,6 +93,7 @@ def newPage(name):
 
 
 	imagemaker.make_images(page)	
+	print "Page home:", pagehome
 
 def main():
 	try:

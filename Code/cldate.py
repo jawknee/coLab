@@ -63,7 +63,7 @@ def main():
 	print "utc2long: ", utc2long(now)
 	print "epoch:    ", epochtime(now)
 	s = utc2string(now)
-	print "utc string", s
+	print "utc string", s + ' ' +  s
 	then = string2utc(s)
 	print "then utc  ", then
 	

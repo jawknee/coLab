@@ -32,6 +32,7 @@
 			</div>	<! end of banner>
 			
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
 		<center><img src="Title.png" class="fundesc" alt="The Day of the Anti-Chipmunk">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'PitchShiftRain-poster.jpg',
@@ -102,7 +103,7 @@ PNG images were built faster than I could type this description.
 		<center>
 		<input type="hidden" name="page" value="PitchShiftRain">
 		<input type="hidden" name="desc_title" value="Pitch Shifted Rain">
-		<textarea name="Text" rows=15 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
 		</center>
 		<input type="submit" value="Add your comment">
@@ -113,7 +114,7 @@ PNG images were built faster than I could type this description.
 		<p>
 		<br>
 		<center>
-		&copy; Catharsis Studios West 2012
+		&copy; Catharsis Studios West 2013
 		<p>
 		</center>
 		<!--#include virtual="links.html" -->

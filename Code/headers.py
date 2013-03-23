@@ -129,6 +129,7 @@ class Html():
 			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> <! logo>
 			""" + self.banner + """	
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
 		"""
 
 	
@@ -142,7 +143,7 @@ class Html():
 		<center>
 		<input type="hidden" name="page" value="!name!">
 		<input type="hidden" name="desc_title" value="!desc_title!">
-		<textarea name="Text" rows=15 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
 		</center>
 		<input type="submit" value="Add your comment">
@@ -153,7 +154,7 @@ class Html():
 		<p>
 		<br>
 		<center>
-		&copy; Catharsis Studios West 2012
+		&copy; Catharsis Studios West 2013
 		<p>
 		</center>
 		<!--#include virtual="links.html" -->

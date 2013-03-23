@@ -29,6 +29,7 @@
 			</div>	<! end of banner>
 			
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
 		
 		</center>
 
@@ -36,7 +37,7 @@
 	<img src="Title.png"><br>
 	<font color=a0b0c0>
 	For now, just a running comment log of what's new...
-	<p><i>2013-01-27T02:20:03.282562</i><p>
+	<p><i>2013-03-22T22:39:10.357853</i><p>
 		<hr>
 		Enter your comments here:<br>
 		
@@ -45,7 +46,7 @@
 		<center>
 		<input type="hidden" name="page" value="WhatIsNew">
 		<input type="hidden" name="desc_title" value="What's New">
-		<textarea name="Text" rows=15 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
 		</center>
 		<input type="submit" value="Add your comment">
@@ -56,7 +57,7 @@
 		<p>
 		<br>
 		<center>
-		&copy; Catharsis Studios West 2012
+		&copy; Catharsis Studios West 2013
 		<p>
 		</center>
 		<!--#include virtual="links.html" -->

@@ -32,6 +32,7 @@
 			</div>	<! end of banner>
 			
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
 		<center><img src="Title.png" class="fundesc" alt="Cove String Solo">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'CoveStringSolo-poster.jpg',
@@ -106,7 +107,7 @@ rethink my idea of "improving" the string part later in the piece.
 		<center>
 		<input type="hidden" name="page" value="CoveStringSolo">
 		<input type="hidden" name="desc_title" value="Cove String Solo">
-		<textarea name="Text" rows=15 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
 		</center>
 		<input type="submit" value="Add your comment">
@@ -117,7 +118,7 @@ rethink my idea of "improving" the string part later in the piece.
 		<p>
 		<br>
 		<center>
-		&copy; Catharsis Studios West 2012
+		&copy; Catharsis Studios West 2013
 		<p>
 		</center>
 		<!--#include virtual="links.html" -->

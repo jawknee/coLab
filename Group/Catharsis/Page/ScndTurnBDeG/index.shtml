@@ -32,6 +32,7 @@
 			</div>	<! end of banner>
 			
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
 		<center><img src="Title.png" class="fundesc" alt="Second Turn with Drum, Bass, Chaos, etc.">
 			<script type="text/javascript"><!--
 			        QT_WritePoster_XHTML('Click to Play', 'ScndTurnBDeG-poster.jpg',
@@ -90,7 +91,7 @@ Not a lot more to say about it at this point. I'll see about getting comments wo
 		<center>
 		<input type="hidden" name="page" value="ScndTurnBDeG">
 		<input type="hidden" name="desc_title" value="Second Try with Turn">
-		<textarea name="Text" rows=15 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
 		</center>
 		<input type="submit" value="Add your comment">
@@ -101,7 +102,7 @@ Not a lot more to say about it at this point. I'll see about getting comments wo
 		<p>
 		<br>
 		<center>
-		&copy; Catharsis Studios West 2012
+		&copy; Catharsis Studios West 2013
 		<p>
 		</center>
 		<!--#include virtual="links.html" -->

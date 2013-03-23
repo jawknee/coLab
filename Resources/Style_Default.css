@@ -55,6 +55,9 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 
 .fundesc { font-family: cursive, 'Brush Script MT','Lucida Handwriting'; color: #c0b0a0 }
 
+.imglink img { border: solid 2px transparent; }
+.imglink img:hover { border-color: #c0b0a0 ; }
+
 .links a:link { color: #d8c8b8; text-decoration: none;}
 .links a:visited { color: #b8a898; text-decoration: none; }
 .links a:hover { color: #f0e0d0; text-decoration: underline; }

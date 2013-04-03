@@ -80,6 +80,12 @@ def needs_update(path, file="index.shtml", opt='nope'):
 	else:
 		return False
 
+def touch(filename):
+	f = file(filename, 'a')
+	try:
+		os.utime(filename, None)
+	finally:
+		f.close()
 
 class fontlib:
 	"""

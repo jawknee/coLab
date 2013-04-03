@@ -60,7 +60,9 @@ def rebuild(group, opt):
 		print pg.name
 		# 
 		# and rebuild the html in that case...
-		if clutils.needs_update(pg.home, file='index.shtml', opt=opt):
+		newpage = clutils.needs_update(pg.home, file='index.shtml', opt=opt)
+		if newpage:
+			# Update this page
 			pagegen(g, pg)
 
 		#
@@ -78,6 +80,9 @@ def rebuild(group, opt):
 			g.songlist.append(thissong)
 			print "----------------->Song name:", thissong.name
 
+		datafile=os.path.join(thissong.home, 'data')
+		if newpage:
+			clutils.touch(datafile)		# touch the data file so we rebuild this song
 
 		thissong.list.append(pg)
 
@@ -118,7 +123,7 @@ def rebuild(group, opt):
 	recent = os.path.join(g.home, 'Shared', 'mostrecent.html')
 	try:
 		f_recent = open(recent, 'w+')
-	except IOError as info:
+	except IOError, info:
 		print "Error opening file:", recent, info
 
 	# a quick header...
@@ -162,7 +167,7 @@ def rebuild(group, opt):
 	project = os.path.join(g.home, 'Shared', 'projectlist.html')
 	try:
 		f_project = open(project, 'w+')
-	except IOError as info:
+	except IOError, info:
 		print "Error opening file:", project, info
 
 	# a quick header...

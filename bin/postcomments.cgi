@@ -26,7 +26,14 @@ then
 	cat <<-EOF
 	<html><body>
 	<h1>No Content / No Play</h1>
+	You <i>MUST</i> enter a name as well as comments.   Please go 
+	back and make sure you've entered something into each field, 
+	<p>
+	Thanks.
+	<p>
 	<pre>
+	(some possibly useful debug info):
+
 	$(set)
 	</pre>
 	</body></html>

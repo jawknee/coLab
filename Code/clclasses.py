@@ -298,7 +298,7 @@ class Page:
 		if path == 'None':
 			try:
 				path = self.home
-			except NameError as info:
+			except NameError, info:
 				print "load: NE", info
 				sys.exit(1)
 		
@@ -453,7 +453,7 @@ class Song:
 		if path == 'None':
 			try:
 				path = self.home
-			except NameError as info:
+			except NameError, info:
 				print "load: NE", info
 				sys.exit(1)
 		

@@ -3,8 +3,7 @@
 	Raw html clumps that are used in various places...
 
 """
-
-class Html():
+class Html:
 	"""
 	An html object contains the headers, with substitutions marked with '!', (e.g.,
 	!desc_title!).

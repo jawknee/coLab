@@ -127,11 +127,11 @@ def pagegen(group, page):
 	fonts = clutils.fontlib()	# maybe put this in the group?
 	fontpath = fonts.fontpath('AenigmaScrawl')
 	if clutils.needs_update('.', file='Title.png'):
-		make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+		make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=8, fill=fill, maxsize=(640,90) )
 	else:
 		print "Not updating Title.png"
 	if clutils.needs_update('.', file='Header.png'):
-		make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
+		make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill)#, maxsize=(400,90) )
 	else:
 		print "Not updating Header.png"
 
@@ -342,13 +342,6 @@ def songgen(group):
 		# RBF: hard coding  values that will be ext soon...
 		#song.desc_title = "Eventual title of: " + song.name
 		#song.fun_title = "Something funny here about " + song.name
-
-		# open the index file, dump the header, body, etc. into it...
-		try:
-			outfile = open(index, 'w+')
-		except IOError, info:
-			print "Failure opening ", index, info
-			exit(1)
 	
 		# make the title graphics...
 		fonts = clutils.fontlib()	# maybe put this in the group?
@@ -358,6 +351,18 @@ def songgen(group):
 		if clutils.needs_update('.', file='Header.png'):
 			make_text_graphic(song.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 	
+		if not clutils.needs_update('.', file='index.shtml'):
+			print "Song", song.name, "does not need update."
+			return
+
+		# open the index file, dump the header, body, etc. into it...
+		try:
+			outfile = open(index, 'w+')
+		except IOError, info:
+			print "Failure opening ", index, info
+			exit(1)
+
+		print "Updating", song.name, "index.shtml"
 		html = Html()	# create an html object that contains the html strings...
 		# 
 		# output the pieces of the page...

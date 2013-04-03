@@ -35,7 +35,7 @@ def calculate_fps(page):
 	# (we skip the fractional ones for now...)
 	fps_values = [ (1,10), (1,5), (1,4), (1,3), (1,2), (1,1),
 	      (2,1), (6,1), (10,1), (12,1), (15,1), (24,1), 
-	      (25,1), (30,1), (50,1), (60,1) ]
+	      (25,1), (30,1) ]  #  not using:   (50,1), (60,1) 
 	try:
 		secs_long = page.duration
 		start = page.xStart
@@ -253,31 +253,35 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	pad = border * 2
 
 	maxw, maxh = maxsize
-	print "maxsize, maxw, maxh", maxsize, maxw, maxh
 	maxw = float(maxw - pad)	# account for the border (included in max)
 	maxh = float(maxh - pad)	# and make a float for the division...
+	print "maxsize, maxw, maxh", maxsize, maxw, maxh
 	factor = max ( w / maxw, h / maxh )
 	if factor > 1.0:
+		factor = factor * 1.1	# kludge - but accounts for variability in actual font sizes...
 		newfontsize=int(fontsize/factor)
 		font = ImageFont.truetype(fontfile, newfontsize)
 		#print "Scale font by 1 /", factor, " from/to:", fontsize, newfontsize
 		#print "Factor = min( w/maxw, h/maxh):", factor, w, maxw, h, maxh
 		w = int(w/factor)
 		h = int(h/factor)
-		print "New w,h:", w,h
+		print "New w,h:", w,h, "font/new:", fontsize, newfontsize, " factor:", factor
+		(w,h) = box_draw.textsize(string, font=font)
+		print "New width/height:", w, h
 
-
-		
 	size = (w+pad, h+pad)
 	offset = (border, border)
 	
+	# start over with a new graphic, this time with the text at the corrected (if necessary) font size
 	box = Image.new('RGBA', size, color=Xparent)
 	box_draw = ImageDraw.Draw(box)
+
+	(fw,fh) = box_draw.textsize(string, font=font)	# how big is it really?
+	offset = ( (size[0] - fw) / 2, ( size[1] - fh) / 2 )
 	box_draw.text(offset, string, font=font, fill=fill)
 
 	box.save(output_file, 'PNG')
 
-	# start over with a new graphic the size of the
 
 	
 	

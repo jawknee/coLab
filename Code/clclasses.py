@@ -12,7 +12,6 @@ import clutils
 import cltkutils
 
 
-
 def set_init_vars(obj, initdata):
 	"""
 	Take the var/value pairs passed as a list in initdata

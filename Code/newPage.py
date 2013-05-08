@@ -37,8 +37,6 @@ def newPage(name):
 	conf = clutils.get_config()
 	group = cltkutils.getGroup()
 	pagehome = os.path.join(conf.coLab_home, 'Group', group, 'Page', name)
-	#pagehome = os.path.join(conf.coLab_home, 'Group', 'SBP', 'Page', name)
-	#pagehome = os.path.join(conf.coLab_home, 'Group', 'Johnny', 'Page', name)
 	local = 'coLab_local'
 
 	if os.path.isdir(pagehome):

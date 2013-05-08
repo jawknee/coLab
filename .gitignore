@@ -15,7 +15,7 @@ Song
 Song/*
 Group
 Group/*
-Resources
-Resources/*
+Resources/FontIndex
+Resources/*.png
 logs
 logs/*

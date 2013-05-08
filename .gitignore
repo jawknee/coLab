@@ -5,6 +5,7 @@
 *.bak
 datac
 coLab_local
+coLab_local/*
 /Shared/mostrecent.html
 /.InterarchyMirrorCacheData/*
 /Resources/Fonts
@@ -12,3 +13,9 @@ Page
 Page/*
 Song
 Song/*
+Group
+Group/*
+Resources
+Resources/*
+logs
+logs/*

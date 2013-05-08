@@ -16,6 +16,14 @@ def cgiparse():
 	ff = chr(12) 	# form feed
 	out = ''
 
+	xlatn_table = {			# a dictionary of conversions of special characters
+		"'":  '&#039;',		# apostrophe
+		'\\': '&#092;',		# backslash
+		'"':  '&#034;',		# quote
+		'#':  '&#035;',		# pound sign
+		'+':  ' ',		# plus sign
+		'=':  '&#061;'		# minus sign
+		}
 
 	while i < l:
 		c=s[i]
@@ -23,10 +31,15 @@ def cgiparse():
 		if c == '%':	
 			c = chr(int(s[i+1:i+3],16))
 			i+=2
+		# 
+		# Convert any special characters to their numeric equivalent...
+		try:
+			out = xlatn_table[c]
+		except KeyError:
+			out = c
 
-		if c == '+':
-			out = ' '	# space
-		elif c == '=':
+		# and some extras..., put quotes around vars
+		if c == '=' and not quoted:	# start of a variable assignment (unless quoted and we're inside of an assignment )
 			out = '="'
 			quoted=True
 		elif c == '&':
@@ -35,18 +48,10 @@ def cgiparse():
 				quoted = False
 			else:
 				out = '\n'
-			
-		elif c == "'":	# apostrophe
-			out='&#039;'
-		elif c == '\\':	# backslash
-			out='&#092;'
-		elif c == '"':	# quote
-			out='&#034;'
-		elif c == ff:
+
+		elif c == ff:	# form feed - EOF
 			break
 
-		else:
-			out = c
 
 		sys.stdout.write(out)			
 		i+=1

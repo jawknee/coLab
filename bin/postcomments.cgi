@@ -9,10 +9,6 @@ log="$coLab_home/logs/var.log"
 
 eval "$(tee -a $log | $coLab_home/bin/cgi-parse.py |  tee -a $log | $coLab_home/bin/evalfix.py )"
 
-#
-# For now - hardcoded addresses...
-export cLmail_addresses="johnny@jawknee.com, jcdlansing@gmail.com, mccluredc@gmail.com"
-#export cLmail_addresses="johnny@jawknee.com" 
 
 source ../.coLab.conf	# don't like this...
 
@@ -26,8 +22,13 @@ then
 	cat <<-EOF
 	<html><body>
 	<h1>No Content / No Play</h1>
-	You <i>MUST</i> enter a name as well as comments.   Please go 
-	back and make sure you've entered something into each field, 
+	You <i>MUST</i> at least enter comments (didn't get anything here). 
+	<p>
+	(Variable: "Text")
+	<p>
+	This is an uncharacerized bug at this point and intermittent.
+	If you think of anything unusual about you entered the comments,
+	please let me know.
 	<p>
 	Thanks.
 	<p>
@@ -99,20 +100,36 @@ $cLmail_bodytext
 
 EOF
 
-if  echo $dirname | grep "/SBP/" >/dev/null
+group=$(basename $dirname)
+
+#
+# For now - hardcoded addresses...
+case $group in
+Catharsis)
+	export cLmail_addresses="johnny@jawknee.com, jcdlansing@gmail.com, mccluredc@gmail.com"
+	#export cLmail_addresses="johnny@jawknee.com" 
+	;;
+SBP)
+	export cLmail_addresses="johnny@jawknee.com"
+	;;
+Johnny)
+	export cLmail_addresses="johnny@jawknee.com"
+	;;
+*)
+	cLmail_bodytext="$cLmail_bodytext NOTE: group is $group and dirname is $dirname"
+	export cLmail_addresses="johnny@jawknee.com"
+	
+esac
+
+#
+# the necessary vars should be set/exported - let's just call the mailer...
+$coLab_home/bin/coLabMailer 2>&1
+rc=$?
+if [ $rc = 0 ]
 then
-	echo No mail.
+	echo "Mail sent."
 else
-	#
-	# the necessary vars should be set/exported - let's just call the mailer...
-	$coLab_home/bin/coLabMailer 2>&1
-	rc=$?
-	if [ $rc = 0 ]
-	then
-		echo "Mail sent."
-	else
-		echo "Problem sending mail."
-	fi
+	echo "Problem sending mail."
 fi
 
 datestring=$(./isodate.py)

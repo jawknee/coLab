@@ -5,9 +5,12 @@
 	scrolling line...
 """
 
-import Image
-import ImageDraw
-import ImageFont
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
+#import Image
+#import ImageDraw
+#import ImageFont
 
 import sys
 import os
@@ -224,7 +227,11 @@ def make_images(page):
 
 		xPos += frameIncr
 
-	print "Done: Frames per second:", fps
+	print "Done: ",
+	if fps < 1:
+		print "Seconds per frame:", 1/fps
+	else:
+		print "Frames per second:", fps
 
 def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill=(196, 176, 160, 55), maxsize=(670,100) ):
 	"""

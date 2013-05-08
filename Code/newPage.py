@@ -7,6 +7,7 @@ import sys
 import cldate
 import clutils
 import clclasses
+import cltkutils
 
 import imagemaker
 
@@ -34,8 +35,10 @@ def newPage(name):
 	print "Creating page:", name
 
 	conf = clutils.get_config()
-	pagehome = os.path.join(conf.coLab_home, 'Group', 'Catharsis', 'Page', name)
+	group = cltkutils.getGroup()
+	pagehome = os.path.join(conf.coLab_home, 'Group', group, 'Page', name)
 	#pagehome = os.path.join(conf.coLab_home, 'Group', 'SBP', 'Page', name)
+	#pagehome = os.path.join(conf.coLab_home, 'Group', 'Johnny', 'Page', name)
 	local = 'coLab_local'
 
 	if os.path.isdir(pagehome):

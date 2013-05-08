@@ -39,9 +39,10 @@ EOF
 (
 	# build up an html message (optional attachments)
 	# and send it along, substituting as needed for vars...
+	#
+	# not used for now:   Reply-To: $cLmail_return
 	cat <<-EOF
 	To: $cLmail_addresses
-	Reply-To: $cLmail_return
 	Content-type: multipart/mixed; boundary="$MailBoundary"
 	Subject: $cLmail_subject
 

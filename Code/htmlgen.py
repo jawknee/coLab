@@ -333,15 +333,10 @@ def songgen(group):
 			os.chdir(song_dir)
 		except OSError,info:
 			print "Cannot cd to ", song_dir
-			return()
+			continue
 	
 	
 		index='index.shtml'
-	
-
-		# RBF: hard coding  values that will be ext soon...
-		#song.desc_title = "Eventual title of: " + song.name
-		#song.fun_title = "Something funny here about " + song.name
 	
 		# make the title graphics...
 		fonts = clutils.fontlib()	# maybe put this in the group?
@@ -353,7 +348,9 @@ def songgen(group):
 	
 		if not clutils.needs_update('.', file='index.shtml'):
 			print "Song", song.name, "does not need update."
-			return
+			continue
+
+		print "------Updating:", song_dir + '/' + index
 
 		# open the index file, dump the header, body, etc. into it...
 		try:

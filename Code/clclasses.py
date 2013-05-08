@@ -9,6 +9,7 @@ import sys
 import imp
 import cldate
 import clutils
+import cltkutils
 
 
 
@@ -305,8 +306,9 @@ class Page:
 		import_data(self, path)
 
 		if self.group == '<unset>':
-			self.group = "Catharsis"
+			self.group = cltkutils.getGroup()
 			#self.group = "SBP"
+			#self.group= "Johnny"
 			print "Note: override: group =", self.group
 
 		sub_dir = os.path.join('Group', self.group, 'Page', self.name)
@@ -443,8 +445,9 @@ class Song:
 		"""
 
 		if self.group == '<unset>':
-			self.group = "Catharsis"
+			self.group = cltkutils.getGroup()
 			#self.group = "SBP"
+			#self.group= "Johnny"
 			print "Note: override: group =", self.group
 
 		song_dir = os.path.join('Group', self.group, 'Song', self.name)
@@ -489,13 +492,15 @@ class Song:
 def main():
 	print "Welcome to classes..."
 	
+	group = cltkutils.getGroup()
+
 	p = Page()
-	p.load('/Users/Johnny/dev/coLab/Group/Catharsis/Page/BeachFlute')
+	p.load('/Users/Johnny/dev/coLab/Group/' + group + '/Page/BeachFlute')
 	print p.dump()
 
 	
 	g = Group()
-	g.load('Catharsis')
+	g.load(group)
 
 	for p in g.pagelist:
 		print "got page:", p.name, p.desc_title, p.fun_title

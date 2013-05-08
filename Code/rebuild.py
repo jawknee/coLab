@@ -64,7 +64,6 @@ def rebuild(group, opt):
 		if newpage:
 			# Update this page
 			pagegen(g, pg)
-
 		#
 		# Do we know this song yet...?
 		# Create a new song if we need one, in any case

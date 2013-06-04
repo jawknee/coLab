@@ -18,6 +18,8 @@ def task(obj,bar):
 
 	obj.after(50, task, obj,bar)
 
+
+# This one is likely going away soon...   still used in the scripted version
 def getGroup():
 	
 	a = tk.Tk()

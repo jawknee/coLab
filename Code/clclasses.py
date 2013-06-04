@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 """
-	classes for defining the various data file fomrats
+	classes for defining the various data file formats
 
 """
-
 import os
 import sys
 import imp
@@ -168,7 +167,7 @@ class Group:
 		
 		for nextpage in (os.listdir('.')):
 			
-			# this is a bit week - our criteria for a new page
+			# this is a bit weak - our criteria for a new page
 			# is a dir with a 'data' file in it...  ok for now...
 			pagehome = os.path.join(pagedir, nextpage)
 			datafile = os.path.join(pagehome, 'data')

@@ -9,6 +9,8 @@
 
 import os
 import sys
+import subprocess
+
 import clutils
 import cldate
 
@@ -26,7 +28,15 @@ def rebuild(group, opt):
 	song objects, then create link, graphic text ad
 	other related items.
 	"""
-	
+	config = clutils.get_config()
+	scriptpath = os.path.join(config.coLab_home, 'Code/Interarchy_coLab_mirror.scpt')
+	osascript = "/usr/bin/osascript"
+	print "Mirror:", osascript, scriptpath
+	try:
+		subprocess.call([osascript, scriptpath])
+	except:
+		print "Mirror error: cannot continue."
+		sys.exit(1)
 	g = clclasses.Group(group)	# instantiate the group object
 
 	# Load the group by traversing the file structure...
@@ -35,6 +45,9 @@ def rebuild(group, opt):
 	except IOError, info:
 		raise IOError
 
+	# Now that we have the paths, let's call the interarchy applescript
+	# to update the mirror
+	
 	#
 	# At this point, we should have a populated group object, which includes
 	# the group specific items as well as a list of pages, a
@@ -218,7 +231,9 @@ def rebuild(group, opt):
 	navgen(g)
 	archivegen(g)
 	helpgen(g)
-
+	print "Rebuild done."
+	subprocess.call([osascript, scriptpath])
+	print "Upload/Mirror done."
 	sys.exit(0)
 
 
@@ -237,6 +252,7 @@ def main():
 		opt = 'none'
 
 	rebuild(group, opt)
-
+	
+	
 if __name__ == '__main__':
 	main()

@@ -22,7 +22,7 @@ from htmlgen import *
 num_recent_entries = 5
 num_project_entries = 10
 
-def rebuild(group, opt):
+def rebuild(group, opt="nope"):
 	"""
 	Create and populate group object, adding page and
 	song objects, then create link, graphic text ad
@@ -234,7 +234,7 @@ def rebuild(group, opt):
 	print "Rebuild done."
 	subprocess.call([osascript, scriptpath])
 	print "Upload/Mirror done."
-	sys.exit(0)
+	#sys.exit(0)
 
 
 def main():

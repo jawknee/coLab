@@ -55,18 +55,24 @@ def set_paths(obj,sub_dir):
 	obj.root = os.path.join(conf.coLab_root, sub_dir)
 	obj.home = os.path.join(conf.coLab_home, sub_dir)
 
-def import_data(obj, path):
+def import_data(obj, path='Null'):
 	"""
 	used by the various load routines to import the data file
 	in the "path" dir.  Import the values found in the data file,
 	then, using the objects varlist, import them as found into the
 	object (group, song, page, etc.)
+	
+	By default, we load from the file 'data' in the current 
+	object's home var.  If path is set, we use that instead.
 	"""
 	#
-	datafile = os.path.join(path, 'data')
+	if path != 'Null':
+		datafile = os.path.join(path, 'data')
+	else:
+		datafile = os.path.join(obj.home, 'data')
 
 	p = ''
-	print "Enter import_data for:", obj.name
+	print "Enter import_data for:", obj.name, "path", datafile
 	try:
 		p = imp.load_source('',datafile)
 		os.remove(datafile + 'c')
@@ -74,6 +80,11 @@ def import_data(obj, path):
 		print "Import problem with", datafile, info
 		#raise IOError
 
+	try:
+		print "name from import:", p.name
+	except:
+		pass
+	
 	#self.set_paths(conf)
 
 	for var in obj.varlist:
@@ -120,7 +131,6 @@ class Group:
 		# varname, value pairs...
 		#
 		initdata = [
-		('name', name),
 		('title', "<unset>"),
 		('subtitle', "<unset>"),
 		('collaborators', "<unset>"),
@@ -132,8 +142,20 @@ class Group:
 		# vars that need to be converted to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = []
+		try:
+			print "name, self. ", name, self.name
+		except:
+			pass
 		self.name = name
+		try:
+			print "name, self. ", name, self.name
+		except:
+			pass
 		set_init_vars(self, initdata)
+		try:
+			print "name, self. ", name, self.name
+		except:
+			pass
 		#
 		# These are not saved to the file - don't add to the varlist...
 		self.pagelist = []
@@ -150,8 +172,9 @@ class Group:
 		#
 		# Load a generic object from the file, then transfer the items 
 		# to the current Group object
-
-		import_data(self, self.home)
+		print "self.name pre import", self.name
+		import_data(self)
+		print "self.name post import", self.name
 			
 		# Now, step into the pages dir and load up a list of pages
 		pagedir = os.path.join(self.home, 'Page')
@@ -173,16 +196,18 @@ class Group:
 			datafile = os.path.join(pagehome, 'data')
 			if not os.path.exists(datafile):
 				continue	# not a page...
-
 			page = Page(nextpage) # new page, current dir is the name
 			set_paths(page, pagehome)
 	
 			try:
 				page.load()
+				page.group_obj=self		# a pointer to the parent
 			except IOError:
 				#print "problem with", dir
 				continue
-	
+
+			#  RBF:   this appears that it should be replaced with sub_dir = os.path.join('Page', page.name) / set_paths(page, sub_dir)
+			# check it...
 			page.url_head = os.path.join(self.url_head, 'Page', page.name)
 			page.root = os.path.join(self.root, 'Page', page.name)
 			page.home = os.path.join(self.home, 'Page', page.name)
@@ -215,7 +240,6 @@ class Page:
 		timenow=cldate.utcnow()
 		# varname, value pairs...
 		initdata = [
-		('name', name),
 		('group', "<unset>"),
 		('desc_title', "<unset>"),
 		('fun_title', "<unset>"),
@@ -301,8 +325,9 @@ class Page:
 				print "load: NE", info
 				sys.exit(1)
 		
-		import_data(self, path)
+		import_data(self)
 
+		# ------- this next block must go once we're committed to the GUI
 		if self.group == '<unset>':
 			self.group = cltkutils.getGroup()
 			#self.group = "SBP"

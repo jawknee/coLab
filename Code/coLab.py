@@ -111,6 +111,7 @@ class Colab(tk.Frame):
         except:
             print "Fatal error: set_group called with no current_groupname set."
             sys.exit(1)
+        
         group_dir = self.grouplistdict[thisname]
         print "set_group: group_dir", group_dir, "group name", thisname
         # Do we know about this group yet - i.e., is it loaded?
@@ -125,17 +126,17 @@ class Colab(tk.Frame):
             self.current_group = self.group_list[thisname]
         except KeyError:
             print "Nope - don't know group", thisname, "loading now..."
-            try:
-                print "group_dir pre pre group inst", group_dir 
-                self.current_group = clclasses.Group(group_dir)
-                print "group_dir post group Inst.", group_dir, self.current_group.name
-                self.current_group.load()
-                print "group_dir post group load", group_dir, self.current_group.name
-                self.group_list[thisname] = self.current_group
-                print "This group name:", self.current_group.name
-            except:
-                print "Internal Failure: cannot load ", thisname
-                sys.exit(0)
+            #try:
+            print "group_dir pre pre group inst", group_dir 
+            self.current_group = clclasses.Group(group_dir)
+            print "group_dir post group Inst.", group_dir, self.current_group.name
+            self.current_group.load()                
+            print "group_dir post group load", group_dir, self.current_group.name
+            self.group_list[thisname] = self.current_group
+            print "This group name:", self.current_group.name
+            #except Exception as e:
+            #    print "Internal Failure: cannot load ", thisname, sys.exc_info()[0], e
+            #    sys.exit(0)
                  
         self.place_group_shot()
             
@@ -169,11 +170,11 @@ class Colab(tk.Frame):
         self.subMenu.add_command(label='About', command=self.__aboutHandler)
         
         # Just the word: "Group:"
-        tk.Label(self.main_frame, text="Group:", justify=tk.RIGHT).grid(row=2, column=0)
+        tk.Label(self.main_frame, text="Group:", justify=tk.RIGHT).grid(row=2, column=0, sticky=tk.E)
         
         self.subtitle_str = tk.StringVar()     # put text into self.subtitle.set("new string")
         self.subtitle_str.set("Not set yet")
-        self.subtitle=tk.Label(self.main_frame, textvariable=self.subtitle_str, anchor=tk.NE, justify=tk.CENTER).grid(row=1, column=1, columnspan=3)
+        self.subtitle=tk.Label(self.main_frame, textvariable=self.subtitle_str, anchor=tk.NE, justify=tk.CENTER).grid(row=1, column=1, columnspan=3, sticky=tk.E)
 
         # refresh button...
         self.refreshButton = tk.Button(self.main_frame, text="Refresh", command=self.refresh_group).grid(column=4, row=3)
@@ -239,7 +240,7 @@ class Colab(tk.Frame):
 
         self.groupOption = tk.OptionMenu(self.main_frame, self.gOpt, *groupTitles,command=self.set_group_from_menu)
 
-        self.groupOption.grid(column=1, row=2, columnspan=2)
+        self.groupOption.grid(column=1, row=2, columnspan=2, sticky=tk.W)
         
         
     

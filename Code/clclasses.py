@@ -116,7 +116,66 @@ def import_data(obj, path='Null'):
 				exec(string)
 			except:
 				print "import_data, problem with conversion:", conversion, var, val
+				
+def import_list(parent, type):
+	
+	# Now, step into the pages dir and load up a list of pages
+	thisdir = os.path.join(parent.home, type)
+	print "import list dir:", thisdir
+	try:
+		os.chdir(thisdir)
+	except:
+		print "Cannot get to dir:", thisdir
+		print "Fatal"
+		raise ImportError()
+		
+	# Now step through the dirs  (and files - rejecting them...).
+	print "Import list: parent, type", parent.name, type
+	
+	list = []
+	for item in (os.listdir('.')):
+		
+		# this is a bit weak - our criteria for a new page
+		# is a dir with a 'data' file in it...  ok for now...
+		nexthome = os.path.join(thisdir, item)
+		datafile = os.path.join(nexthome, 'data')
+		print "import_list nexthome,datafile", nexthome, datafile
+		
+		if not os.path.exists(datafile):
+			continue	# not a page...
+		
+		if type == 'Page':
+			obj = Page(item) # new page, current dir is the name
+		elif type == 'Song':
+			obj = Song(item)
+			
+		print "Import_list: set_paths, type, nexthome", type, nexthome, 
+		
+		obj.group = parent.name
+		obj.group_obj = parent		# a pointer to the parent
+		sub_dir = os.path.join('Group', parent.name, type, item)
+		print "Set_paths:", obj.name, sub_dir
+		set_paths(obj, sub_dir)	
 
+		try:
+			print "Loading: obj:",obj.name, obj.group_obj.name, obj.home
+			obj.load()
+			
+		except IOError:
+			print "problem with", dir
+			continue
+		if parent.name != obj.group:
+			print "WARNING:  loading parent's name:", parent.name, "current group var:", obj.group
+		list.append(obj)
+		#  RBF:   this appears that it should be replaced with sub_dir = os.path.join('Page', page.name) / set_paths(page, sub_dir)
+		# check it...
+		
+		#item.url_head = os.path.join(parent.url_head, type, item.name)
+		#item.root = os.path.join(parent.root, type, item.name)
+		#item.home = os.path.join(parent.home, type, item.name)
+	return(list)
+
+		
 class Group:
 	"""
 	Data associated with a group
@@ -176,43 +235,21 @@ class Group:
 		import_data(self)
 		print "self.name post import", self.name
 			
-		# Now, step into the pages dir and load up a list of pages
-		pagedir = os.path.join(self.home, 'Page')
-
-		try:
-			os.chdir(pagedir)
-		except:
-			print "Cannot get to dir:", pagedir
-			print "Fatal"
-			raise ImportError()
-			
-		# Now step through the dirs  (and files - rejecting them...).
-		
-		for nextpage in (os.listdir('.')):
-			
-			# this is a bit weak - our criteria for a new page
-			# is a dir with a 'data' file in it...  ok for now...
-			pagehome = os.path.join(pagedir, nextpage)
-			datafile = os.path.join(pagehome, 'data')
-			if not os.path.exists(datafile):
-				continue	# not a page...
-			page = Page(nextpage) # new page, current dir is the name
-			set_paths(page, pagehome)
+		self.pagelist = import_list(self, 'Page')
+		for i in self.pagelist:
+			print "I've got a page in my list:", i.name
+		self.songlist = import_list(self, 'Song')
+		for i in self.songlist:
+			print "I've got a song in my list:", i.name
 	
-			try:
-				page.load()
-				page.group_obj=self		# a pointer to the parent
-			except IOError:
-				#print "problem with", dir
-				continue
-
-			#  RBF:   this appears that it should be replaced with sub_dir = os.path.join('Page', page.name) / set_paths(page, sub_dir)
-			# check it...
-			page.url_head = os.path.join(self.url_head, 'Page', page.name)
-			page.root = os.path.join(self.root, 'Page', page.name)
-			page.home = os.path.join(self.home, 'Page', page.name)
-
-			self.pagelist.append(page)
+	def find_song(self, song_name=None):
+		"""
+		return the song object whose name matches
+		"""
+		for song in self.songlist:
+			if song.name == song_name:
+				return(song) 
+		return(None)	# none found...
 
 # 
 # For sorting - return the appropriate time in seconds
@@ -236,13 +273,16 @@ class Page:
 		This lets us also create a master variable list which we can use to 
 		merge values from the data files
 		"""
-		
+		if name is None:
+			self.name = "(Page: must be unique)"
+		else:
+			self.name = name
 		timenow=cldate.utcnow()
 		# varname, value pairs...
 		initdata = [
 		('group', "<unset>"),
-		('desc_title', "<unset>"),
-		('fun_title', "<unset>"),
+		('desc_title', "(Descriptive title - should be unique)"),
+		('fun_title', "(Fun title - whatever feels right)"),
 		('duration',  0.0),
 		('screenshot', ""),
 		('thumbnail', ""),
@@ -266,7 +306,7 @@ class Page:
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = [ 'duration' ]
-		self.name = name
+
 
 		set_init_vars(self, initdata)
 
@@ -334,8 +374,8 @@ class Page:
 			#self.group= "Johnny"
 			print "Note: override: group =", self.group
 
-		sub_dir = os.path.join('Group', self.group, 'Page', self.name)
-		set_paths(self, sub_dir)
+		#sub_dir = os.path.join('Group', self.group, 'Page', self.name)
+		#set_paths(self, sub_dir)
 
 
 
@@ -371,7 +411,7 @@ class Song:
 
 
 	""" May want a new __append__ to check the new item's 
-	    update time and if newer, make it ours
+		update time and if newer, make it ours
 	"""
 	
 	def __init__(self, name):
@@ -468,10 +508,11 @@ class Song:
 		"""
 
 		if self.group == '<unset>':
-			self.group = cltkutils.getGroup()
+			self.group_obj = cltkutils.getGroup()
+			self.group = self.group_obj.name
 			#self.group = "SBP"
 			#self.group= "Johnny"
-			print "Note: override: group =", self.group
+			print "Note: override: group =", self.group_obj, self.group
 
 		song_dir = os.path.join('Group', self.group, 'Song', self.name)
 		set_paths(self, song_dir)

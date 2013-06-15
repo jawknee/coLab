@@ -28,6 +28,7 @@ class graphic_element():
         self.rowspan = 1
         self.columnspan = 1
         self.filepath = "unset"
+        self.sticky = tk.W
         
     def post(self):
         """
@@ -40,7 +41,7 @@ class graphic_element():
             labelimage = ImageTk.PhotoImage(img)
             self.graphic = tk.Label(self.parent, image=labelimage)
             self.graphic.image = labelimage
-            self.graphic.grid(column=self.column, row=self.row, rowspan=self.rowspan, columnspan=self.columnspan)
+            self.graphic.grid(column=self.column, row=self.row, rowspan=self.rowspan, columnspan=self.columnspan, sticky=self.sticky)
         except Exception as e:
             print "Title creation exception", sys.exc_info()[0], e
             raise SystemError

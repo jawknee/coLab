@@ -22,31 +22,40 @@ from htmlgen import *
 num_recent_entries = 5
 num_project_entries = 10
 
-def rebuild(group, opt="nope"):
+def rebuild(g, opt="nope"):
 	"""
 	Create and populate group object, adding page and
 	song objects, then create link, graphic text ad
 	other related items.
+	
+	(Converting from rebuild_manual to no longer read the data -
+	it's all loaded up).
 	"""
-	config = clutils.get_config()
-	scriptpath = os.path.join(config.coLab_home, 'Code/Interarchy_coLab_mirror.scpt')
+	
+	# For now...
+	# Used to pass a group name - still do from the "Refresh" button.
+	# A bit kludgy, but if the passed item does not have a coLab_home, 
+	# let's assume we have a grup "name" and try to load it.
+	try:
+		g.coLab_home
+	except:
+		gname=g 
+		g = clclasses.Group(gname)
+		g.load()
+		
+	
+	# Now that we have the paths, let's call the interarchy applescript
+	# to update the mirror
+	scriptpath = os.path.join(g.coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
 	osascript = "/usr/bin/osascript"
+	"""
 	print "Mirror:", osascript, scriptpath
 	try:
 		subprocess.call([osascript, scriptpath])
 	except:
 		print "Mirror error: cannot continue."
 		sys.exit(1)
-	g = clclasses.Group(group)	# instantiate the group object
-
-	# Load the group by traversing the file structure...
-	try:
-		g.load()
-	except IOError, info:
-		raise IOError
-
-	# Now that we have the paths, let's call the interarchy applescript
-	# to update the mirror
+	#"""
 	
 	#
 	# At this point, we should have a populated group object, which includes
@@ -55,7 +64,7 @@ def rebuild(group, opt="nope"):
 	#
 	# debug - print them out...	
 	for s in g.pagelist:
-		print s.name
+		print "group->page", s.name
 
 	print "----------"
 	#  sort pages by creation date - old to new...
@@ -63,7 +72,7 @@ def rebuild(group, opt="nope"):
 
 	pagedir = os.path.join(g.coLab_home, 'Page')
 
-	song_dict = {}	# a dictionary of songs we've created...
+	song_dict = {}	# a dictionary of songs we've created:  song name -> song object
 
 
 	# step through the pages in creation order, rebuilding link files and, 
@@ -71,33 +80,20 @@ def rebuild(group, opt="nope"):
 	for pg in g.pagelist:
 		
 		print pg.name
+		thissong = g.songdict[pg.song]	# Song obj. for this page
 		# 
 		# and rebuild the html in that case...
 		newpage = clutils.needs_update(pg.home, file='index.shtml', opt=opt)
 		if newpage:
 			# Update this page
 			pagegen(g, pg)
-		#
-		# Do we know this song yet...?
-		# Create a new song if we need one, in any case
-		# Append this page to the list...
-		try:
-			thissong = song_dict[pg.song]
-		except KeyError:
-			print "new song:", pg.song
-			thissong = Song(pg.song)
-			thissong.group = g.name
-			thissong.load()
-			song_dict[pg.song] = thissong
-			g.songlist.append(thissong)
-			print "----------------->Song name:", thissong.name
+			
+			songdatafile=os.path.join(thissong.home, 'data')	# path to the song's data file
+			clutils.touch(songdatafile)		# touch the data file so we rebuild this song
 
-		datafile=os.path.join(thissong.home, 'data')
-		if newpage:
-			clutils.touch(datafile)		# touch the data file so we rebuild this song
-
-		thissong.list.append(pg)
-
+		
+		# Create a dictionary for each song - each part points to a list of songs
+		
 		# Do we know this part yet?
 		try:
 			thispart = thissong.part_dict[pg.part]
@@ -106,9 +102,8 @@ def rebuild(group, opt="nope"):
 			thissong.part_dict[pg.part] = []
 
 		thissong.part_dict[pg.part].append(pg)
-		# RBF: hard coded part list.
 
-
+	"""
 	print "Songs found:"
 	for songname in song_dict:
 		print "Song:", songname
@@ -122,7 +117,7 @@ def rebuild(group, opt="nope"):
 			print "Part:", part
 			for page in song.part_dict[part]:
 				print "Page:", page.name
-
+	#"""
 
 	# sort pages by update time... oldest to newest
 	
@@ -194,6 +189,7 @@ def rebuild(group, opt="nope"):
 		index = -index
 
 	songURLbase = os.path.join(g.root, 'Song')
+	g.songlist.sort(key=createkey)
 	print "index is", index, "song list is", g.songlist
 	for sg in g.songlist[index:]:
 		#print "times:", sg.createtime, sg.updatetime

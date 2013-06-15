@@ -40,9 +40,9 @@ def calculate_fps(page):
 	      (2,1), (6,1), (10,1), (12,1), (15,1), (24,1), 
 	      (25,1), (30,1) ]  #  not using:   (50,1), (60,1) 
 	try:
-		secs_long = page.duration
-		start = page.xStart
-		end = page.xEnd
+		secs_long = float(page.duration)
+		start = float(page.xStart)
+		end = float(page.xEnd)
 	except NameError,info:
 		print "oops: must have vars!!", info
 		sys.exit(1)
@@ -57,7 +57,32 @@ def calculate_fps(page):
 			break	# this is the one.
 	page.post()	# seems like I think you'd want to remember..
 	return(fps)	# should account for max fps being enough...
-		
+
+width = 640
+height = 480
+size = (width, height)
+
+tn_width = 160
+tn_height = 120
+tn_size = (tn_width, tn_height)		
+
+def make_sub_images(page):
+	"""
+	Create the main graphic and thumbnail for a page.
+	Could/should be generalized for other objects.
+	"""
+	
+	screenshot = os.path.join(page.home, page.screenshot)
+	graphic = os.path.join(page.home, page.graphic)
+	thumbnail = os.path.join(page.home, page.thumbnail)
+	#
+	orig_image = Image.open(screenshot)
+	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
+	tn_image = orig_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
+
+	base_image.save(graphic, 'PNG')
+	tn_image.save(thumbnail, 'PNG')
+	
 def make_images(page):
 	"""
 	 for now - just create and display a time box...
@@ -111,12 +136,14 @@ def make_images(page):
 	#
 	orig_image = Image.open(page.screenshot)
 	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
+	"""		RBF:should not be needed.
 	tn_image = orig_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
 
 	tn_file = os.path.join(page.home, page.thumbnail)
 	tn_image.save(tn_file, 'PNG')
-
-
+	#"""
+	
+	"""
 	print "Keep current start/stop: ", page.xStart, page.xEnd
 	ans = raw_input("OK? (y/N)")
 	if  ans != 'y':
@@ -130,10 +157,11 @@ def make_images(page):
 		page.post()
 	else:
 		print "Keeping:", page.xStart, page.xEnd
-
+	"""
+	
 	# use the pixels and duration to determine frames per second...
 	#
-	fps = calculate_fps(page)
+	page.fps = calculate_fps(page)
 	
 
 	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
@@ -152,8 +180,8 @@ def make_images(page):
 
 	# Now - loop through, generating images as we need...
 	#
-	frames = int(page.duration * fps) + 1
-	print "duration, fps, frames:", page.duration, fps, frames
+	frames = int(float(page.duration) * page.fps) + 1
+	print "duration, fps, frames:", page.duration, page.fps, frames
 	xLen = page.xEnd - page.xStart
 
 	frameIncr = float(xLen) / frames
@@ -173,7 +201,7 @@ def make_images(page):
 			xPos = page.xEnd
 			time = page.duration		# force to the end...
 		else:
-			time = float(fr_num) / fps	# normal...
+			time = float(fr_num) / page.fps	# normal...
 
 		# Put the cursor into the overlay
 		xLine = int(xPos)
@@ -228,10 +256,10 @@ def make_images(page):
 		xPos += frameIncr
 
 	print "Done: ",
-	if fps < 1:
-		print "Seconds per frame:", 1/fps
+	if page.fps < 1:
+		print "Seconds per frame:", 1/page.fps
 	else:
-		print "Frames per second:", fps
+		print "Frames per second:", page.fps
 
 def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill=(196, 176, 160, 55), maxsize=(670,100) ):
 	"""

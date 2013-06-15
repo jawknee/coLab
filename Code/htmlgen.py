@@ -321,6 +321,10 @@ def songgen(group):
 	"""
 	Using the song list in the passed group, rebuild those pages
 	"""
+	# html horizontal rules...
+	hr_half = '<hr width=50%>'
+	hr_full = '<p><hr><p>'
+	
 	for song in group.songlist:
 		print "Song found in group:", group.name, song.name
 
@@ -369,7 +373,6 @@ def songgen(group):
 		outfile.write(html.emit_body(group, song, media=False))
 	
 		# The part specific to this page...
-	
 		content = """
 			</center>
 	
@@ -429,10 +432,14 @@ def songgen(group):
 				# Build up the html content for this entry....	
 				content += hr	# set below - only shows up on 2+ entries...
 				content += mk_page_synopsis(pg, type='Song')
-				hr = "<hr width=50%>"
+				hr = hr_half
 		
 
-			content += '<p><hr><p>'	
+				content += hr_full
+				
+		if not content.endswith(hr_full):	# if a part has no songs, there won't be a horizontal rule
+			content += hr_full				# add one...
+		content += 'Song ' + song.desc_title + ', created: ' + cldate.utc2long(song.createtime) + '<p>'
 
 		outfile.write(content)
 	

@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+echo saving settings...
+/usr/bin/osascript <<-EOF
+tell app "QuickTime Player 7"
+    #activate
+    tell first movie
+	    save export settings for MPEG4 to "/Users/Johnny/Desktop/Content/iPhone-m4v.settings" replacing true
+	    play 
+	    delay 5
+	    stop 
+    end tell
+end tell
+EOF

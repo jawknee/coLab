@@ -29,7 +29,7 @@ def set_init_vars(obj, initdata):
 	for var in obj.varlist:
 		string= 'obj.' + var
 		value = eval(string)
-		print "init: var:", var, " is: ", value
+		#print "init: var:", var, " is: ", value
 
 def set_paths(obj,sub_dir):
 
@@ -98,7 +98,14 @@ def import_data(obj, path='Null'):
 		string = 'obj.' + var + ' = val'
 		exec(string)	# this assigns the file var
 		#print "updating value", var, val
-
+	convert_vars(obj)		# convert any floats, ints, etc...
+	
+def convert_vars(obj):
+	"""
+	When the vars are posted into a form, they get converted
+	to strings - convert them back.
+	"""
+	for var in obj.varlist:
 		conversion = ""	# set if we need to do a conversion....
 
 		# let's leave this out for now.   We'll just save
@@ -109,13 +116,15 @@ def import_data(obj, path='Null'):
 		if var in obj.timevars:
 			print "Converting", var
 			conversion = "cldate.string2utc"
+		if var in obj.intvars:
+			conversion = "int"
 
 		if conversion:
-			string = "obj." + var + " = " + conversion + "(p." + var + ')'
+			string = "obj." + var + " = " + conversion + "(obj." + var + ')'
 			try:
 				exec(string)
 			except:
-				print "import_data, problem with conversion:", conversion, var, val
+				print "import_data, problem with conversion:", conversion, var
 				
 def import_list(parent, type):
 	
@@ -133,6 +142,7 @@ def import_list(parent, type):
 	print "Import list: parent, type", parent.name, type
 	
 	list = []
+	dict = {}
 	for item in (os.listdir('.')):
 		
 		# this is a bit weak - our criteria for a new page
@@ -167,13 +177,14 @@ def import_list(parent, type):
 		if parent.name != obj.group:
 			print "WARNING:  loading parent's name:", parent.name, "current group var:", obj.group
 		list.append(obj)
+		dict[obj.name] = obj
 		#  RBF:   this appears that it should be replaced with sub_dir = os.path.join('Page', page.name) / set_paths(page, sub_dir)
 		# check it...
 		
 		#item.url_head = os.path.join(parent.url_head, type, item.name)
 		#item.root = os.path.join(parent.root, type, item.name)
 		#item.home = os.path.join(parent.home, type, item.name)
-	return(list)
+	return(list, dict)
 
 		
 class Group:
@@ -201,6 +212,7 @@ class Group:
 		# vars that need to be converted to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = []
+		self.intvars = []
 		try:
 			print "name, self. ", name, self.name
 		except:
@@ -235,10 +247,10 @@ class Group:
 		import_data(self)
 		print "self.name post import", self.name
 			
-		self.pagelist = import_list(self, 'Page')
+		(self.pagelist, self.pagedict) = import_list(self, 'Page')
 		for i in self.pagelist:
 			print "I've got a page in my list:", i.name
-		self.songlist = import_list(self, 'Song')
+		(self.songlist, self.songdict) = import_list(self, 'Song')
 		for i in self.songlist:
 			print "I've got a song in my list:", i.name
 	
@@ -285,13 +297,16 @@ class Page:
 		('fun_title', "(Fun title - whatever feels right)"),
 		('duration',  0.0),
 		('screenshot', ""),
-		('thumbnail', ""),
+		('graphic', "ScreenShot.png"),
+		('thumbnail', "ScreenShot_tn.png"),
+		('soundfile', ""),
+		('soundthumbnail', ""),
 		('description', "\n<unset>\n"),
 		# start and end of the piece on the graphic
 		('xStart',  0),
 		('xEnd',  0),
 		# Frames per second, generally calculated from xEnd-xStart and duration
-		('fps', 6),
+		('fps', 6.),
 		
 		('project', "<unset>"),
 		('assoc_projects', ''),
@@ -305,8 +320,8 @@ class Page:
 		]
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
-		self.floatvars = [ 'duration' ]
-
+		self.floatvars = [ 'duration', 'fps' ]
+		self.intvars = [ 'xStart', 'xEnd' ]
 
 		set_init_vars(self, initdata)
 
@@ -316,14 +331,17 @@ class Page:
 		"""
 		EOL = '"\n'
 
-
 		return( 'name="' + self.name + EOL +
 			'group="' + self.group + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
 			'duration=' + str(self.duration) + '\n' +
 			'screenshot="' + self.screenshot + EOL +
+			'graphic="' + self.graphic + EOL +
 			'thumbnail="' + self.thumbnail + EOL +
+			'\n' +
+			'soundfile="' + self.soundfile + EOL +
+			'soundthumbnail="' + self.soundthumbnail + EOL +
 			'\n' +
 			'project="' + self.project + EOL +
 			'assoc_projects="' + self.assoc_projects + EOL +
@@ -357,7 +375,13 @@ class Page:
 
 		For now, this is generic and flexible
 		"""
-
+		try:
+			page_dir = os.path.join('Group', self.group, 'Page', self.name)
+		except Exception as e:
+			print "Cannot build page paths"
+		
+		set_paths(self, page_dir)
+			
 		if path == 'None':
 			try:
 				path = self.home
@@ -385,7 +409,7 @@ class Page:
 			is in the object, and it simply opens the file and 
 			puts the output of dump() into it.
 
-			Object variables presist.
+			Object variables persist.
 		"""
 
 		print "post: page path", self.home
@@ -399,6 +423,31 @@ class Page:
 
 		dfile.write(self.dump())
 		dfile.close()
+		
+	def create(self):
+		"""
+		This could be part of post - but I want to 
+		restrict directory creation to when I'm specifically
+		creating a new page.
+		"""
+		local = 'coLab_local'
+	
+		if not os.path.isdir(self.home):
+			try:
+				# Create the local subdir - get it all at once...
+				localdir = os.path.join(self.home, local)
+				os.makedirs(localdir)
+	
+			except OSError, info:
+				print "Path:", localdir, "problem:", info
+				print "Try again."
+				sys.exit(1)
+	
+		# create a stub for the data file...
+		datafile = os.path.join(self.home, 'data')
+		f = open(datafile, 'a+')
+		f.write('name="' + self.name + '"\n')
+		f.close()
 
 class Song:
 	"""
@@ -448,6 +497,7 @@ class Song:
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = [ 'duration' ]
+		self.intvars = []
 		self.name = name
 
 		set_init_vars(self, initdata)
@@ -526,7 +576,7 @@ class Song:
 		
 		import_data(self, path)
 
-
+		# build a part dictionary   shortname ->  longer name...
 		for i in range(len(self.partlist)):
 			print "Insertng name:", i, self.partlist[i], self.partnames[i]
 			self.partname_dict[self.partlist[i]] = self.partnames[i]

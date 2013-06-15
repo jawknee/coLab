@@ -56,6 +56,7 @@ def newPage(name):
 
 	page = clclasses.Page(name)	# new page...
 	page.home = pagehome
+	page.coLab_home = conf.coLab_home
 
 	# create a stub for the data file...
 	datafile = os.path.join(pagehome, 'data')

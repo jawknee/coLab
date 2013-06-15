@@ -62,38 +62,53 @@ class Html:
 			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			""" 
 
-		self.head_insert="""<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
+		self.head_insert = ''
+		
+		self.old_head_insert="""<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
 		<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
 		<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
 		"""
 	
 		self.media_insert="""
+			<center>
+			<video  poster="ScreenShot.png" width="640" height="530" controls>
+			  <source src="!name!-desktop.mp4
+			  " type='video/mp4; codecs="avc1.42e01e, mp4a.40.2"'>
+			  <!source src="!name!-desktop.oggtheora.ogg" type='video/ogg; codecs="theora, vorbis"'>
+			  <p>
+			  Oops something went wrong...
+			  <br> Most likely your browser does not support html5
+			  <p>
+			</video>
+			</center>
+		"""
+		self.old_media_insert="""
 			<script type="text/javascript"><!--
-			        QT_WritePoster_XHTML('Click to Play', '!name!-poster.jpg',
-			                '!name!.mov',
-			                '640', '496', '',
-			                'controller', 'true',
-			                'autoplay', 'true',
-			                'bgcolor', 'black',
-			                'scale', 'aspect');
+					QT_WritePoster_XHTML('Click to Play', '!name!-poster.jpg',
+							'!name!.mov',
+							'640', '496', '',
+							'controller', 'true',
+							'autoplay', 'true',
+							'bgcolor', 'black',
+							'scale', 'aspect');
 			//-->
 			</script>
 			<noscript>
 			<object width="640" height="496" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-			        <param name="src" value="!name!-poster.jpg" />
-			        <param name="href" value="!name!.mov" />
-			        <param name="target" value="myself" />
-			        <param name="controller" value="false" />
-			        <param name="autoplay" value="false" />
-			        <param name="scale" value="aspect" />
-			        <embed width="640" height="496" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"
-			                src="!name!-poster.jpg"
-			                href="!name!.mov"
-			                target="myself"
-			                controller="false"
-			                autoplay="false"
-			                scale="aspect">
-			        </embed>
+					<param name="src" value="!name!-poster.jpg" />
+					<param name="href" value="!name!.mov" />
+					<param name="target" value="myself" />
+					<param name="controller" value="false" />
+					<param name="autoplay" value="false" />
+					<param name="scale" value="aspect" />
+					<embed width="640" height="496" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"
+							src="!name!-poster.jpg"
+							href="!name!.mov"
+							target="myself"
+							controller="false"
+							autoplay="false"
+							scale="aspect">
+					</embed>
 			</object>
 			</noscript>
 		"""
@@ -101,14 +116,14 @@ class Html:
 		self.banner = """	
 			<div class="banner" > <! start of banner>
 			<!center>	 
-			        <table width=80% border=0 cellpadding=0 class="banner_txt">
-			          <td align="center" ><a href="!groupURL!/index.shtml" title="Always a nice place to go...">Home</a></td>
+					<table width=80% border=0 cellpadding=0 class="banner_txt">
+					  <td align="center" ><a href="!groupURL!/index.shtml" title="Always a nice place to go...">Home</a></td>
 	
-			          <td align="center" ><a href="!groupURL!/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
-			          <td align="center" ><a href="!groupURL!/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
-			          <td align="center" ><a href="!groupURL!/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
-			          <td align="center" ><a href="!groupURL!/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
-			        </tr></table>
+					  <td align="center" ><a href="!groupURL!/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+					  <td align="center" ><a href="!groupURL!/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
+					  <td align="center" ><a href="!groupURL!/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
+					  <td align="center" ><a href="!groupURL!/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
+					</tr></table>
 			<!/center>
 			<br>
 			</div>	<! end of banner>

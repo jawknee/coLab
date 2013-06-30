@@ -15,8 +15,6 @@ import ttk
 
 from PIL import Image, ImageTk
 
-
-
 class graphic_element():
     """
     Used to place a generic image on the grid.
@@ -53,7 +51,14 @@ class graphic_element():
             print "self.graphic.grid_forget / destroy excepted...", e, sys.exc_info()[0]
            
 def task(obj,bar):
-    bar.step(1.0)
+    
+    val = raw_input('Next Spot')
+    
+    obj.value.set(val)
+
+    val = raw_input('Max val')
+    
+    bar.configure(maximum=val)
 
     obj.after(50, task, obj,bar)
 
@@ -87,11 +92,10 @@ def getGroup():
     
     
     
-    value = tk.IntVar()
+    a.value = tk.IntVar()
     
-    progBar = ttk.Progressbar(a, length=500, maximum=30, mode='determinate', variable=value)
+    progBar = ttk.Progressbar(a, length=500, maximum=800, mode='determinate', variable=a.value)
     
-    progBar["value"] = 20.0
     
     progBar.grid(column=1, columnspan=3, row=2)
     
@@ -104,7 +108,7 @@ def getGroup():
     
     #v.set(450)
     #progBar.start(10)
-    
+    a
     a.after(20, task, a, progBar)
     
     a.mainloop()
@@ -117,7 +121,8 @@ def getGroup():
 
     return(group)
     
-    
+if __name__ == '__main__':
+    getGroup()
     
     
     

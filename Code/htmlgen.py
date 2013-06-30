@@ -435,7 +435,7 @@ def songgen(group):
 				hr = hr_half
 		
 
-				content += hr_full
+			content += hr_full
 				
 		if not content.endswith(hr_full):	# if a part has no songs, there won't be a horizontal rule
 			content += hr_full				# add one...

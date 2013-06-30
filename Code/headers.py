@@ -18,12 +18,20 @@ class Html:
 		"""
 
 		# Build the web page as we go...
+
+		# Replace specific tags in the html...		
+		
 		head = self.head.replace("!fun_title!", page.fun_title)
 		head = head.replace("!desc_title!", page.desc_title)
 
-
+		# send the media content, if needed, also send the
+		# page_type specific content
 		if media:
-			head = head + self.head_insert
+			# slightly tricky - append the page_type to 
+			head_insert = eval('self.head_insert_' + page.page_type)
+				
+			head += head_insert
+			#head = head + self.head_insert
 
 		return(head)
 
@@ -41,48 +49,64 @@ class Html:
 
 		if media:
 			body += '<center><img src="Title.png" class="fundesc" alt="' + page.fun_title + '">'
-			body += self.media_insert.replace("!name!", page.name) + '</center>'
+			
+			# base the name of the media insert on the page type
+			media_insert = eval('self.media_insert_' + page.page_type)
+			
+			body += media_insert.replace("!name!", page.name) + '</center>'
 
 		return(body)
 
 	def emit_tail(self,page):
+		"""
+		Send out the last bit of the page...
+		"""
+		
+		# Replace tags...
 		tail = self.tail.replace('!name!', page.name)
 		tail = tail.replace('!fun_title!', page.fun_title)
 		tail = tail.replace('!desc_title!', page.desc_title)
-		return(tail)
+		return(tail)	# ...and done.
 
 
 	def __init__(self):
 		#
 		# the html content for the head and body sections
 	
-		self.head = """<html>
+		self.head = """<!DOCTYPE html>
+		    <html>
 			<head><title>!fun_title!</title>
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
 			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			""" 
 
-		self.head_insert = ''
+		self.head_insert_html5 = ''
 		
-		self.old_head_insert="""<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
+		self.head_insert_orig="""<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
 		<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
 		<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
 		"""
 	
-		self.media_insert="""
+		self.media_insert_html5="""
 			<center>
 			<video  poster="ScreenShot.png" width="640" height="530" controls>
-			  <source src="!name!-desktop.mp4
-			  " type='video/mp4; codecs="avc1.42e01e, mp4a.40.2"'>
-			  <!source src="!name!-desktop.oggtheora.ogg" type='video/ogg; codecs="theora, vorbis"'>
-			  <p>
-			  Oops something went wrong...
-			  <br> Most likely your browser does not support html5
+			  <source src="!name!-media.ogg" type='video/ogg; codecs="theora, vorbis"'>
+			  <source src="!name!-media.webm" type='video/webm; codecs="vp8.0, vorbis"'>
+			  <!--
+			  <source src="!name!-media.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+			  -->
+			  <source src="!name!-media.mp4" type='video/mp4'>
+			  <!-- Fall back for non-html5 browsers, (WinXP/IE8, e.g.) simple mp4 embed tag -->
+			  <br>
+			  <embed src="!name!-media.mp4" autostart="false" height="500" width="640" /><br>
+			  <font size=-2>
+			  <i>Your browser does not support html5 - using mp4 plug-in</i>
+			  </font>
 			  <p>
 			</video>
 			</center>
 		"""
-		self.old_media_insert="""
+		self.media_insert_orig="""
 			<script type="text/javascript"><!--
 					QT_WritePoster_XHTML('Click to Play', '!name!-poster.jpg',
 							'!name!.mov',

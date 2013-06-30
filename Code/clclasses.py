@@ -201,6 +201,7 @@ class Group:
 		# varname, value pairs...
 		#
 		initdata = [
+		('a_type', 'Group'),
 		('title', "<unset>"),
 		('subtitle', "<unset>"),
 		('collaborators', "<unset>"),
@@ -262,7 +263,14 @@ class Group:
 			if song.name == song_name:
 				return(song) 
 		return(None)	# none found...
-
+	def find_song_title(self, song_title=None):
+		"""
+		Find by title...
+		"""
+		for song in self.songlist:
+			if song.desc_title == song_title:
+				return(song) 
+		return(None)	# none found...
 # 
 # For sorting - return the appropriate time in seconds
 def updatekey(self):
@@ -292,6 +300,8 @@ class Page:
 		timenow=cldate.utcnow()
 		# varname, value pairs...
 		initdata = [
+		('a_type', 'Page'),
+		('page_type', 'orig'),
 		('group', "<unset>"),
 		('desc_title', "(Descriptive title - should be unique)"),
 		('fun_title', "(Fun title - whatever feels right)"),
@@ -300,8 +310,9 @@ class Page:
 		('graphic', "ScreenShot.png"),
 		('thumbnail', "ScreenShot_tn.png"),
 		('soundfile', ""),
-		('soundthumbnail', ""),
-		('description', "\n<unset>\n"),
+		('soundgraphic', os.path.join("coLab_local", "SoundGraphic.png")),
+		('soundthumbnail', "SoundGraphic_tn.png"),
+		('description', ""),
 		# start and end of the piece on the graphic
 		('xStart',  0),
 		('xEnd',  0),
@@ -332,6 +343,7 @@ class Page:
 		EOL = '"\n'
 
 		return( 'name="' + self.name + EOL +
+			'page_type="' + self.page_type + EOL +
 			'group="' + self.group + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
@@ -341,6 +353,7 @@ class Page:
 			'thumbnail="' + self.thumbnail + EOL +
 			'\n' +
 			'soundfile="' + self.soundfile + EOL +
+			'soundgraphic="' + self.soundgraphic + EOL +
 			'soundthumbnail="' + self.soundthumbnail + EOL +
 			'\n' +
 			'project="' + self.project + EOL +
@@ -475,6 +488,7 @@ class Song:
 		# varname, value pairs...
 		initdata = [
 		('name', name),
+		('a_type', 'Song'),
 		('group', "<unset>"),
 		('desc_title', "<unset>"),
 		('fun_title', "<unset>"),

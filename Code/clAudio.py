@@ -5,6 +5,9 @@
 
 import os
 import subprocess
+import fcntl
+import select
+import time
 import aifc
 
 def get_audio_len(file):
@@ -18,11 +21,14 @@ def get_audio_len(file):
     a.close
     return(seconds)
 
-def make_movie(page):
+def make_movie(page, prog_bar=None):
     """
     At the heart of it - passed a page, it builds a movie.
     This script basically writes a data file that is passed
     to the shell script that does the work.
+    
+    Most of the code is just to read the output of ffmpeg for
+    updating of the progress bar.
     """
     infofile = os.path.join(page.home, 'coLab_local', 'movie.info')
     outfile = open(infofile, 'w+')
@@ -35,13 +41,42 @@ def make_movie(page):
     outfile.write(content)
     outfile.close()
     
-    quicktimescript = os.path.join(page.coLab_home, 'Code', 'QuickTime_auto.scpt')
+    media_script = os.path.join(page.coLab_home, 'Code', 'ffmpeg.sh')
     
-    
-    print "running:", quicktimescript, "with:", infofile
+    print "running:", media_script, "with:", infofile
     try:
-        subprocess.call([quicktimescript, infofile])
+        ffmpeg = subprocess.Popen([media_script, infofile], stdout = subprocess.PIPE, close_fds=True)
     except:
-        print "Quicktime generation failed."
+        print "Video generation failed."
         sys.exit(1)
-    
+    # buffering info from Derrick Petzold: https://derrickpetzold.com/p/capturing-output-from-ffmpeg-python/
+    fcntl.fcntl(
+        ffmpeg.stdout.fileno(),
+        fcntl.F_SETFL,
+        fcntl.fcntl(ffmpeg.stdout.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK,
+    )
+    prog_bar.update(0)      # reset the start time...
+    read_delay = .01    # very fast until we see "frame=" then a bit slower...
+    while True:
+        readx = select.select([ffmpeg.stdout.fileno()], [], []), [0]
+        if readx:
+            try:
+                nextline = ffmpeg.stdout.readline()
+            except IOError:
+                pass
+            
+            print "nextline:", nextline
+            if nextline == '':
+                break       # all done - head back
+            
+            parms = nextline.split()
+            try:
+                if parms[0] == 'frame=':
+                      prog_bar.update(int(parms[1]))
+                      print" Frame", parms[1]
+                      read_delay=0.1      # a bit slower so we don't slow down the encoding...
+            except:
+                break
+        time.sleep(read_delay)   
+            
+        

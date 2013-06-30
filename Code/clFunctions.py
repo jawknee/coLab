@@ -16,6 +16,7 @@ import sys
 import shutil
 import subprocess
 
+import threading
 import time		# rbf: unless needed....
 
 import Tkinter as tk
@@ -30,12 +31,15 @@ import imagemaker
 import clAudio
 import rebuild
 
-def set_status(obj, ok = False):
+def set_status(obj, ok = None):
 	"""
 	Set the status of the widget - log the state, and update
 	the status column, should work for most/all row classes...
 	"""
 	obj.ok = ok
+	if ok is None:
+		color = '#a73'
+		txt = '-'
 	if ok:
 		color = '#2f2'	# bright green
 		txt = 'OK'
@@ -45,8 +49,99 @@ def set_status(obj, ok = False):
 		
 	obj.status.configure(fg=color)
 	obj.statusVar.set(txt)
+	
 
+class Progress_bar():
+	"""
+	Build a generic progress bar.   Various items can
+	be adjusted before calling post().  The update() 
+	method handles both the bar and the remaining time.
+	Creates a frame within the parent object, and grids
+	out the title and 
+	"""
+	
+	def __init__(self, parent, title, width=200, max=0, init=0):
+		self.parent = parent
+		self.title = title
+		self.width = width
+		self.max = max
+		if self.max == 0:
+			self.of_str = ' of ???'
+		else:
+			self.of_str = ' of ' + str(max)
+		# value used to set the progress bard
+		self.value = tk.DoubleVar()
+		self.value.set(init)
+		# string to show the progress status as text
+		self.v_string = tk.StringVar()
+		self.v_string.set(str(init) + self.of_str)
+		# string to show remaining time..
+		self.t_string = tk.StringVar()
+		self.t_string.set('?:??')
+		self.start_time = time.time()
+		self.what = 'Item'	# what it is....
+		self.mode = 'determinate'
+		
+		
+	def post(self):
+		"""
+		Build a small grid, # items of items (0,0), time remaining (0,1),
+		Progress bar, (1,0-1) (columnspan 2)
+		"""
+		self.start_time = time.time()
+		
+		self.frame = tk.Frame(self.parent)
+		self.frame.grid(sticky=tk.W)
+		
+		
+		tk.Label(self.frame, text=self.title).grid(row=0, column=0, columnspan=5, sticky=tk.W)
+		if self.mode == 'determinate':
+			tk.Label(self.frame, text=self.what + ':', justify= tk.LEFT).grid(row=1, column=0, sticky=tk.W)
+			self.which = tk.Label(self.frame, textvariable=self.v_string, justify= tk.LEFT)
+			self.which.grid(row=1, column=1, sticky=tk.W)
+			
+			tk.Label(self.frame, text='Time remaining: ', justify= tk.RIGHT).grid(row=1, column=3, sticky=tk.E)
+			tk.Label(self.frame, textvariable=self.t_string, justify= tk.RIGHT).grid(row=1, column=4, sticky=tk.E)
+		
+		self.progBar = ttk.Progressbar(self.frame, length=self.width, maximum=self.max, mode=self.mode, variable=self.value)
+		self.progBar.grid(row=2, column=0, columnspan=5, sticky=tk.W)
+		
+	def set_max(self, new_max):
+		self.max = new_max 
+		self.of_str = ' of ' + str(self.max)
+		self.progBar.configure(maximum=self.max)
+	
+			
+	def update(self, new_value):
+		"""
+		Update the bits and pieces with the new value...
+		"""
+		# for now...
+		self.value.set(new_value)
+		self.v_string.set(str(new_value) + self.of_str)
+		
+		# time remaining:
+		if new_value == 0:
+			self.start_time=time.time()
+			return
+		
+		elapsed = time.time() - self.start_time
+		rem = elapsed / new_value * (self.max - new_value)	# remaining time in seconds...
+		(minutes, seconds) = divmod(rem, 60)	# split (note: they are floats)
 
+		# doesn't seem this should be necessary - but the %02.2f conversion is
+		# not working as I expected...
+		(isecs, frac) = divmod(seconds, 1)
+		ifrac = int(frac*10)
+		
+		#rem_str =  ('%0d:%02d.%02d') % (minutes, isecs, frac)
+		rem_str =  '%0d:%02d.%01d' % (minutes, isecs, ifrac)
+		rem_str =  '%0d:%02d' % (minutes, isecs)
+		self.t_string.set(rem_str)
+		
+	
+	
+		
 class Entry_row():
 	"""
 	A class for an entry row in an edit panel.  Holds the info specific to
@@ -54,7 +149,6 @@ class Entry_row():
 	Allows for "new" and "editable" fields (non-editable are displayed as
 	labels).   Also handles validation based on the values put into the 
 	class. Also marks the status and matching fields.
-	
 	"""
 	def __init__(self, parent, text, member, width=15):
 		"""
@@ -107,7 +201,7 @@ class Entry_row():
 		print "vobj - editable:", self.editable
 		if not self.editable:
 			self.widget = tk.Label(self.parent.page_frame, textvariable=self.nameVar, justify=tk.LEFT)
-			self.widget.grid(row=self.row,column=self.column + 2, sticky=tk.W)
+			self.widget.grid(row=self.row,column=self.column + 2, columnspan=3, sticky=tk.W)
 			self.nameVar.set(self.value)
 			self.ok = True		# since we can't change it - it's good
 			print "non-edit _obj:", self.widget
@@ -133,9 +227,12 @@ class Entry_row():
 			self.nameVar.set(self.value)
 			
 			self.statusVar = tk.StringVar()
-			self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar, fg='#ca1')
+			self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
-			self.statusVar.set('-')
+			if self.new:
+				set_status(self,None)
+			else:
+				set_status(self,ok=True)
 			
 			self.matchVar = tk.StringVar()
 			self.match = tk.Label(self.parent.page_frame, textvariable=self.matchVar, justify=tk.LEFT)
@@ -274,10 +371,17 @@ class Text_row():
 		self.label = tk.Label(self.parent.page_frame, text=self.text+":", justify=tk.RIGHT)
 		self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 		
-		self.widget = tk.Text(self.parent.page_frame, height=10, width=40, relief=tk.GROOVE)
-		self.widget.grid(row=self.row,column=self.column+2, sticky=tk.W)
+		# need a "sub-frame" to hold the desc. and scroll bar.
+		self.subframe = tk.LabelFrame(self.parent.page_frame, relief=tk.GROOVE)
+		self.subframe.grid(row=self.row, column=self.column+2, columnspan=3, sticky=tk.W)
+		
+		self.widget = tk.Text(self.subframe, height=10, width=40, padx=5, pady=5, relief=tk.GROOVE, wrap=tk.WORD, undo=True)
+		self.widget.grid(row=0, column=0, sticky=tk.W)
 		self.widget.insert('1.0', self.content)
-		# add a scroll bar here...
+		# vertical scroll bar...
+		self.scrollY = tk.Scrollbar(self.subframe, orient=tk.VERTICAL, command=self.widget.yview)
+		self.scrollY.grid(row=0, column=1, sticky=tk.N+tk.S)
+		self.widget.configure(yscrollcommand=self.scrollY.set)
 		
 	def return_value(self):
 		"""
@@ -285,7 +389,7 @@ class Text_row():
 		"""
 		return(self.widget.get('1.0', 'end'), True)
 	
-class Entry_menu():
+class Menu_row():
 	"""
 	Just put up a OptionMenu from the provided list..)
 	"""
@@ -325,36 +429,39 @@ class Entry_menu():
 
 		self.widget = tk.OptionMenu(self.parent.page_frame, self.gOpt, *self.titles, command=self.handler)
 
-		self.widget.grid(column=self.column+2, row=self.row, sticky=tk.W)
+		self.widget.grid(column=self.column+2, row=self.row,  columnspan=3,sticky=tk.W)
 		
 		self.statusVar = tk.StringVar()
-		self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar, fg='#ca1')
+		self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
 		self.status.grid(row=self.row, column=self.column + 1)
-		self.statusVar.set('-')
+		if self.new:
+			set_status(self,None)
+		else:
+			set_status(self,ok=True)
+	
 		
-		
-	def handle_menu(self, name):
+	def handle_menu(self, value):
 		#new_name = self.gOpt.get()		# not needed here, name is what we want.
 		
 		# if the menu item starts with a "-", it is an unacceptable value
-		set_status(self, name[0] != '-')
+		set_status(self, value[0] != '-')
 		self.parent.changed = True	
 		
 		#time.sleep(4)
 		self.parent.read_page()
 		if self.member == 'song':
 			# Special case for a song:  reload the part list..
-			self.parent.obj.song = name
+			self.parent.obj.song = value
 			try:
 				group = self.parent.obj.group_obj
 			except Exception as e:
-				print "------- No such group found as part of", self.parent.obj.name
+				print "------- No such group found as part of", self.parent.obj.value
 				print "---- fix  - for now, returning"
 				return
 			
-			song_obj = group.find_song(name)
+			song_obj = group.find_song_title(value)
 			if song_obj == None:
-				print "No such song object found for:", name
+				print "No such song object found for:", value
 				
 			# build a part list...
 			self.parent.song_obj = song_obj
@@ -375,12 +482,12 @@ class Entry_menu():
 		Return the OptionMenu value...
 		"""
 		value = self.gOpt.get()
-		if self.member == 'part':
-			# special case - do the lookup conversion for the part.
-			try:
-				value = self.parent.part_lookup[value]
-			except IndexError:
-				value = '???'
+	
+		# if there's a dictionary - do a lookup...
+		try:
+			value = self.dict[value]
+		except:
+			pass
 		return(value, self.ok)
 	
 class Graphic_row():
@@ -430,12 +537,21 @@ class Graphic_row():
 		self.widget.filepath = self.graphic_path
 		self.widget.row = self.row
 		self.widget.column = self.column + 2
-		self.widget.columnspan = 1
+		self.widget.columnspan = 3
 		self.widget.sticky = tk.W
 		self.widget.post()	
-	
+		
 		self.changeButton = tk.Button(self.parent.page_frame, text="Change " + self.text, command=self.button_handler).grid(column=self.column + 2, row=self.row + 1, sticky=tk.W )
 		
+		self.statusVar = tk.StringVar()
+		self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
+		self.status.grid(row=self.row, column=self.column + 1)
+		if self.new:
+			set_status(self,None)
+			self.new = False
+		else:
+			set_status(self,True)
+			
 	def button_handler(self):
 		print "this is the button handler"
 			
@@ -451,46 +567,63 @@ class Graphic_row_screenshot(Graphic_row):
 		self.parent.needs_rebuild = True
 		initialPath = "/Users/Johnny/Desktop"
 		file_path = tkFileDialog.askopenfilename(initialdir=initialPath)
-		if file_path:
-			self.ok = True
-			filename = os.path.split(file_path)[1]
+		if not file_path:
+			return
+		
+		self.ok = True
+		set_status(self, True)
+		filename = os.path.split(file_path)[1]
+		
+		subdir = os.path.join('coLab_local', filename)
+		self.parent.obj.screenshot = subdir
+		dest = os.path.join(self.parent.obj.home, subdir)
+						
+		try:
+			shutil.copy(file_path, dest)
+		except Exception as e:
+			print "Failure copying", file_path, "to", dest
+			raise Exception
+		#
+		# Kludge alert - let's find a better way to do this...
+		try:
+			open = '/usr/bin/open'		#os.path.join(self.parent.obj.coLab_home, 'Code', 'PhotoShopElements.scpt')
+			options = '-a ' + dest
+			subprocess.call([open, '-a', 'Preview.app', dest])
+		except Exception as e:
+			print "Ooops - Exception", e, sys.exc_info()[0]
+			sys.exit(1)
 			
-			subdir = os.path.join('coLab_local', filename)
-			self.parent.obj.screenshot = subdir
-			dest = os.path.join(self.parent.obj.home, subdir)
-							
-			try:
-				shutil.copy(file_path, dest)
-			except Exception as e:
-				print "Failure copying", file_path, "to", dest
-				raise Exception
-			#
-			# Kludge alert - let's find a better way to do this...
-			try:
-				ps_script = os.path.join(self.parent.obj.coLab_home, 'Code', 'PhotoShopElements.scpt')
-				subprocess.call([ps_script, dest])
-			except Exception as e:
-				print "Ooops - Exception", e, sys.exc_info()[0]
-				sys.exit(1)
-				
-			message = 'Please crop the graphic and save in place.'
-			tkMessageBox.showinfo("Crop IT!", message, parent=self.parent.page_frame, icon=tkMessageBox.ERROR)
-			# 
-			# Let's create the various bits...
-			imagemaker.make_sub_images(self.parent.obj)
-			self.post()
-			
-			if tkMessageBox.askyesno('Select Limits',"Do you need to set the left and right limits?", icon=tkMessageBox.QUESTION):
-				# Now - post the display sized object to let us enter the xStart, xEnd
-				image_file = os.path.join(self.parent.obj.home, self.parent.obj.graphic)
-				image = Image.open(image_file)
-				image.show()
+		message = 'Please crop the graphic and save in place.'
+		tkMessageBox.showinfo("Crop IT!", message, parent=self.parent.page_frame, icon=tkMessageBox.ERROR)
+		# 
+		# Let's create the various bits...
+		imagemaker.make_sub_images(self.parent.obj)
+		#self.post()
+		
+		if tkMessageBox.askyesno('Select Limits',"Do you need to set the left and right limits?", icon=tkMessageBox.QUESTION):
+			# Now - post the display sized object to let us enter the xStart, xEnd
+			image_file = os.path.join(self.parent.obj.home, self.parent.obj.graphic)
+			image = Image.open(image_file)
+			image.show()
 	
+		self.post()
 			
 	def return_value(self):
 		return(self.parent.obj.screenshot, self.ok)	# I know, a bit redundant...
 	
-	
+	def sound_button(self):
+		"""
+		Put up a second button to allow using the sound graphic.
+		"""
+		self.changeButton = tk.Button(self.parent.page_frame, text="Use Sound Graphic", command=self.button2_handler).grid(column=self.column + 3, row=self.row + 1, sticky=tk.W )
+		
+	def button2_handler(self):
+		"""
+		Just use the sound graphic...
+		"""
+		self.parent.changed = True
+		self.parent.needs_rebuild = True
+		self.parent.obj.screenshot = self.parent.obj.soundgraphic
 class Graphic_row_soundfile(Graphic_row):
 	"""
 	Derived class - a button handler specific to the soundfile
@@ -501,26 +634,61 @@ class Graphic_row_soundfile(Graphic_row):
 		self.parent.needs_rebuild = True	
 		initialPath = "/Volumes/iMac 2TB/Music/JDJ"
 		file_path = tkFileDialog.askopenfilename(initialdir=initialPath)
-		if file_path:
-			self.ok = True
-			filename = os.path.split(file_path)[1]
-			
-			subdir = os.path.join('coLab_local', filename)
-			self.parent.obj.soundfile = subdir
-			dest = os.path.join(self.parent.obj.home, subdir)
-							
-			try:
-				shutil.copy(file_path, dest)
-			except Exception as e:
-				print "Failure copying", file_path, "to", dest
-				raise Exception
-			
-			self.parent.obj.duration = str(clAudio.get_audio_len(dest))
-			
-			self.parent.duration_obj.nameVar.set(self.parent.obj.duration)
-			
+		if not file_path:
+			return
+		
+		self.ok = True
+		set_status(self, True)
+		filename = os.path.split(file_path)[1]
+		
+		subdir = os.path.join('coLab_local', filename)
+		self.parent.obj.soundfile = subdir
+		sound_dest = os.path.join(self.parent.obj.home, subdir)
+						
+		try:
+			shutil.copy(file_path, sound_dest)
+		except Exception as e:
+			print "Failure copying", file_path, "to", sound_dest
+			raise Exception
+		
+		self.parent.obj.duration = str(clAudio.get_audio_len(sound_dest))
+		
+		self.parent.duration_obj.nameVar.set(self.parent.obj.duration)
+		
+		img_dest = os.path.join(self.parent.obj.home, self.parent.obj.soundgraphic)
+		#make_sound_image(self.parent.obj, sound_dest, img_dest)
+		
+		page_thread=threading.Thread(target=make_sound_image, args=(self.parent.obj, sound_dest, img_dest))
+		page_thread.start()
+		#rebuild_page_edit(self)
+
 	def return_value(self):
 		return(self.parent.obj.soundfile, self.ok)	# I know, a bit redundant...
+	
+def make_sound_image(obj, sound, image):
+	print "Creating image..."
+	obj.pageTop = tk.Toplevel()
+	#obj.pageTop.transient(obj)
+	obj.page_frame = tk.LabelFrame(master=obj.pageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
+	obj.page_frame.lift(aboveThis=None)
+	obj.page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+	
+	f1 = tk.Frame(obj.page_frame)
+	f1.grid(row=0, column=0, sticky=tk.W)
+	
+	img_gen_progbar = Progress_bar(f1, 'Image Generation')
+	img_gen_progbar.what = 'Line'
+	img_gen_progbar.width = 500
+	#img_gen_progbar.max = 600		# This needs to be calculated 
+	#img_gen_progbar.post()		# initial layout...   called in Sound_image.build()
+	
+	snd_image = imagemaker.Sound_image(sound, image, img_gen_progbar)
+	snd_image.build()	# separate - we may want to change a few things before the build...
+	obj.soundthumbnail = "SoundGraphic_tn.png"
+	
+	imagemaker.make_sub_images(obj)
+	obj.pageTop.destroy()
+		
 class Page_edit_screen():
 	"""
 	A way of posting a screen that lets us enter
@@ -552,6 +720,8 @@ class Page_edit_screen():
 		self.song_obj = None
 		self.changed = False
 		self.needs_rebuild = False
+		
+		page.page_type = 'html5'		# new pages use this..
 		
 		self.setup()
 				
@@ -619,9 +789,9 @@ class Page_edit_screen():
 		self.pageTop.transient(self.parent)
 		self.row=0
 		self.column=0
-		self.page_frame = tk.LabelFrame(master=self.pageTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', borderwidth=5)
+		self.page_frame = tk.LabelFrame(master=self.pageTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', bd=100, padx=10, pady=10, borderwidth=5)
 		self.page_frame.lift(aboveThis=None)
-		self.page_frame.grid(ipadx=10, ipady=10, padx=25, pady=15)
+		self.page_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
 		
 		
 		self.editlist = []	# becomes a list of edit pair objects
@@ -647,10 +817,10 @@ class Page_edit_screen():
 		row.post()
 		
 		#---- Sound file...
-		# (for now, the name - later: the derived image.
-		if self.obj.soundthumbnail:	
-			screenshot_path = os.path.join(self.obj.home, self.obj.soundthumbnail)
-		else:
+		# 
+		# is there such a file?
+		screenshot_path = os.path.join(self.obj.home, self.obj.soundthumbnail)
+		if not os.path.isfile(screenshot_path):		# we need a backup file...
 			screenshot_path = os.path.join(self.obj.coLab_home, 'Resources', 'coLab-NoPageImage_tn.png')
 			
 		row = Graphic_row_soundfile(self, "Soundfile", 'soundfile', screenshot_path)
@@ -678,6 +848,7 @@ class Page_edit_screen():
 		row = Graphic_row_screenshot(self, "Graphic", 'screenshot', screenshot_path)
 		self.editlist.append(row)
 		row.post()
+		row.sound_button()
 		
 		#----  x Start and Stop - eventually done with graphic input...
 		row = Entry_row(self, "xStart", "xStart", width=5)
@@ -698,29 +869,36 @@ class Page_edit_screen():
 		
 		#--- Song
 
-		self.obj.song_obj = None
-		menu = Entry_menu(self, "Songs", "song")
-		l = []
+		#self.obj.song_obj = None
+		menu = Menu_row(self, "Songs", "song")
+		l = []		# list of song titles (desc_title)
+		d = {}		# dictionary to convert desc_title to name
 		if self.new:
 			l = ['-select song-']		# build a list of song names...
 		for i in self.obj.group_obj.songlist:
-			l.append(i.name)
+			l.append(i.desc_title)
+			d[i.desc_title] = i.name
 			if i.name == self.obj.song:
 				self.song_obj = i		# remember this object
 		l.append('-New song-')
 			
 		menu.titles = tuple (l)		# Convert to a tuple...
 		
-		menu.default = self.obj.song
+		try:
+			menu.default = self.obj.song_obj.desc_title
+		except:
+			pass
 		self.editlist.append(menu)
+		menu.dict = d
 		menu.post()
 			
 		#  Part - depends on the song selected.
 		print "part time..."
-		menu = Entry_menu(self, "Part", "part")
+		menu = Menu_row(self, "Part", "part")
 		self.part_obj = menu		# save this for song changes (implying a new part list)
 		menu.titles = self.build_part_list()
 		self.editlist.append(menu)
+		menu.dict = self.part_lookup
 		
 		menu.post()
 		
@@ -811,7 +989,7 @@ class Page_edit_screen():
 				type = 'update'
 			message = "This will " + type + " the page: " + self.obj.name
 			message += "\n\nOK?"
-			if not tkMessageBox.askquestion('OK to save?', message, icon=tkMessageBox.QUESTION):
+			if not tkMessageBox.askquestion('OK to save?', message, parent=self.page_frame, icon=tkMessageBox.QUESTION):
 				print "return"
 	
 	
@@ -820,25 +998,87 @@ class Page_edit_screen():
 				self.obj.group_obj.pagelist.append(self.obj)		# add the page name
 				self.obj.group_obj.pagedict[self.obj.name] = self.obj	# name -> page obj
 				self.obj.create()				# build the page dir structure, base data page.
-				self.page_frame.destroy()
+				self.pageTop.destroy()
 				return							# just create the dir and 1-entry data file - we only have the name so far
 						
 			# We're good - let's post this...
 			clclasses.convert_vars(self.obj)
-			self.obj.post()	
-			if self.needs_rebuild:
-				imagemaker.make_images(self.obj)
-				clAudio.make_movie(self.obj)
-			rebuild.rebuild(self.obj.group_obj)		# currently the group name - change to the object...
+			self.obj.post()
+			page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
+			page_thread.start()
+			#rebuild_page_edit(self)
+			
 			self.pageTop.destroy()
 			
 	def my_quit(self):
 		if self.changed:
 			message = "You've made changes, quiting now will lose them.\n\nDo you still want to quit?"
-			if not tkMessageBox.askokcancel('OK to quit?', message, icon=tkMessageBox.QUESTION):
+			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.page_frame, icon=tkMessageBox.QUESTION):
 				return
 		self.pageTop.destroy()
 		
+
+def rebuild_page_edit(obj):
+		"""
+		This is called as the run method of a thread object.
+		The idea is to manage/monitor the creation of the web page
+		data, in a distracting and entertaining way...
+		
+		Yeah, right.
+		"""
+		obj.pageTop = tk.Toplevel()
+		obj.pageTop.transient(obj.parent)
+		obj.page_frame = tk.LabelFrame(master=obj.pageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
+		obj.page_frame.lift(aboveThis=None)
+		obj.page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+		#
+		
+		fps = imagemaker.calculate_fps(obj.obj)
+		frames = int(float(obj.obj.duration) * fps) + 1
+		if obj.needs_rebuild:
+			f1 = tk.Frame(obj.page_frame)
+			f1.grid(row=0, column=0, sticky=tk.W)
+			
+			img_gen_progbar = Progress_bar(f1, 'Image Generation', max=frames)
+			img_gen_progbar.what = 'Image'
+			img_gen_progbar.width = 500
+			img_gen_progbar.max = frames
+			img_gen_progbar.post()		# initial layout...
+			
+			f2 = tk.Frame(obj.page_frame)
+			f2.grid(row=1, column=0, sticky=tk.W)
+			
+			vid_gen_progbar = Progress_bar(f2, 'Video Generation', max=frames)
+			vid_gen_progbar.what = 'Frame'
+			vid_gen_progbar.width = 500
+			vid_gen_progbar.max = frames
+			vid_gen_progbar.post()
+		 
+		 	
+		f3 = tk.Frame(obj.page_frame)
+		f3.grid(row=2, column=0, sticky=tk.W)
+		ftp_progbar = Progress_bar(f3, 'ftp mirror...')
+		ftp_progbar.width = 500
+		ftp_progbar.mode = 'indeterminate'
+		ftp_progbar.post()
+		
+		f4 = tk.Frame(obj.page_frame)
+		f4.grid(row=3, column=0, sticky=tk.E)
+		quitButton = tk.Button(f4, text="Quit", command=obj.pageTop.quit)
+		quitButton.grid()
+		
+		
+		if obj.needs_rebuild:	
+			imagemaker.make_images(obj.obj, img_gen_progbar)
+			img_gen_progbar.progBar.stop()
+			clAudio.make_movie(obj.obj, vid_gen_progbar)
+		ftp_progbar.progBar.start()
+		rebuild.rebuild(obj.obj.group_obj)		# currently the group name - change to the object...
+		ftp_progbar.progBar.stop()
+				
+		obj.pageTop.destroy()
+
+
 		
 def create_new_page(parent):
 	"""
@@ -865,16 +1105,21 @@ def create_new_page(parent):
 def edit_page(parent):
 	print "edit Page"
 	pagename='NewPage'
-	pagename="AShortTest"
+	pagename="WaterMoonTomBass"
+	pagename="N-Drone"
+	#pagename="JDJ-2-Jan2013"
 	
 	new_page = clclasses.Page(pagename)
 	new_page.group_obj = parent.current_group
 	new_page.group = parent.current_group.name
 	
+	
 	# for now - build the path ...
 	pagehome = os.path.join(parent.current_group.home, 'Page', pagename)
 	new_page.home = pagehome
 	new_page.load()
+	
+	new_page.song_obj = new_page.group_obj.find_song(new_page.song)
 	
 	parent.page = Page_edit_screen(parent, new_page, new=False)
 def create_new_song(parent):

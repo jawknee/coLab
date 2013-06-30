@@ -1,0 +1,22 @@
+A list of known bugs...
+
+Major Enhancements:
+
+Rework top level to properly offer Project, Song and Page 
+functionality as needed.
+
+Rework structure to support a "post()" function at most levels.
+The function should be recallable as needed.
+
+
+Important:
+Fix long song video generation.
+
+Chunks:
+
+Add a set() function to clFunctions  row objects.
+
+Convert the row object list from a list to a dict.
+
+
+

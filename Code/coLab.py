@@ -62,6 +62,7 @@ class Colab(tk.Frame):
         # The "name" is what's returned from the menu - thus the need for translation
         self.load_group_list()
         self.edit_lock = False
+        self.winfo_toplevel().geometry('+80+80')
         
         # grid method - at least for now...
         
@@ -146,7 +147,7 @@ class Colab(tk.Frame):
         """
         self.master.title('coLab')
         self.master.lift(aboveThis=None)
-        self.main_frame=tk.Frame(self).grid(padx=20, pady=20, ipadx=10, ipady=10)
+        self.main_frame=tk.LabelFrame(self, text='coLab').grid(padx=20, pady=20, ipadx=10, ipady=10)
 
         try:
             self.display_group_list()

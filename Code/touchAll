@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+#
+# I'm just looking for some (data)  touch...
+#
+cd ~/coLab/Group/Catharsis
+for i in $(find . -name data)
+do 
+	touch $i
+	echo $i
+done

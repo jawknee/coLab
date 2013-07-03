@@ -163,6 +163,7 @@ class Colab(tk.Frame):
                 
         top = self.winfo_toplevel()
         self.menuBar = tk.Menu(top)
+        #self.configure(bg='#8cf')        #--- RBF - consider this as a background for everything...
         top['menu'] = self.menuBar
         
         # Menu bar...
@@ -355,7 +356,7 @@ class Colab(tk.Frame):
         Simple interface to the rebuild scripting...
         """
         print "Refresh: ", self.current_groupname
-        rebuild.rebuild(self.current_group.name)
+        rebuild.rebuild(self.current_group.name, mirror=True)
         print "Refresh complete."
         
         

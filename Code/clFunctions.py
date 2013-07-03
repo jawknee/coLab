@@ -115,6 +115,8 @@ class Progress_bar():
 	def update(self, new_value):
 		"""
 		Update the bits and pieces with the new value...
+		Move the progress bar, display the new value and
+		time remaining.
 		"""
 		# for now...
 		self.value.set(new_value)
@@ -159,6 +161,7 @@ class Entry_row():
 		self.member = member
 		self.width = width
 		
+		self.label = None				# have we been here before
 		self.exclude_list = []		# a list of items not allowed (e.g., current file names)
 		self.exclude_chars = '"'	# current implementation does not allow " n stored strings
 		self.ignore_case = False	# Set to true for file names, etc.
@@ -184,18 +187,30 @@ class Entry_row():
 		right (left justified).  An indicator sits in between (green check, orange ?, red X).
 		If an exclude list is given, it can be used by the validation routine.
 		"""
-		# write the base label...
-		self.label = tk.Label(self.parent.page_frame, text=self.text+":", justify=tk.RIGHT)
-		self.label.grid(row=self.row,column=self.column, sticky=tk.E)
-		
-		# Now we build a string that is the name of the associated variable.   Then we use eval and exec to
-		# deal with it.
-		print "self.member", self.member
-		self.value = eval("self.parent.obj." + self.member)	# convert the variable name to its value
-		print "value", self.value
-		#print "ept: new?:", self.new
-		print "post:  my new is:", self.member, self.new
-		self.nameVar = tk.StringVar()
+		if self.label is None:
+			# write the base label...
+			self.label = tk.Label(self.parent.page_frame, text=self.text+":", justify=tk.RIGHT)
+			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
+			self.nameVar = tk.StringVar()
+			# Now we build a string that is the name of the associated variable.   Then we use eval and exec to
+			# deal with it.
+			print "self.member", self.member
+			self.value = eval("self.parent.obj." + self.member)	# convert the variable name to its value
+			print "value", self.value
+			#print "ept: new?:", self.new
+			print "post:  my new is:", self.member, self.new
+			
+			# set up a small label between the title and the value to 
+			# display the status of the value...
+			self.statusVar = tk.StringVar()
+			self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
+			self.status.grid(row=self.row, column=self.column + 1)
+			if self.new:
+				set_status(self,None)
+			else:
+				set_status(self,ok=True)
+		else:
+			self.widget.destroy()
 		
 		# if not editable - just display as a label...
 		print "vobj - editable:", self.editable
@@ -203,7 +218,8 @@ class Entry_row():
 			self.widget = tk.Label(self.parent.page_frame, textvariable=self.nameVar, justify=tk.LEFT)
 			self.widget.grid(row=self.row,column=self.column + 2, columnspan=3, sticky=tk.W)
 			self.nameVar.set(self.value)
-			self.ok = True		# since we can't change it - it's good
+			#self.ok = True		# since we can't change it - it's good
+			set_status(self,ok=True)
 			print "non-edit _obj:", self.widget
 		else:
 			
@@ -226,18 +242,19 @@ class Entry_row():
 			self.widget.grid(row=self.row, column=self.column + 2, sticky=tk.W)
 			self.nameVar.set(self.value)
 			
-			self.statusVar = tk.StringVar()
-			self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
-			self.status.grid(row=self.row, column=self.column + 1)
-			if self.new:
-				set_status(self,None)
-			else:
-				set_status(self,ok=True)
+
 			
 			self.matchVar = tk.StringVar()
 			self.match = tk.Label(self.parent.page_frame, textvariable=self.matchVar, justify=tk.LEFT)
 			self.match.grid(row=self.row, column=self.column + 3, rowspan=6, columnspan=2, sticky=tk.NW)		
 	
+	def set(self, value):
+		self.value = value
+		
+		self.new = False
+		set_status(self,ok=True)
+		self.post()
+		
 	def validate_entry(self, why, what, would, how):
 		"""
 		Do the actual validation - the entry object in self.widget
@@ -367,6 +384,7 @@ class Text_row():
 		"""
 		Just post the text...
 		"""
+		
 		# write the base label...
 		self.label = tk.Label(self.parent.page_frame, text=self.text+":", justify=tk.RIGHT)
 		self.label.grid(row=self.row,column=self.column, sticky=tk.E)
@@ -375,7 +393,7 @@ class Text_row():
 		self.subframe = tk.LabelFrame(self.parent.page_frame, relief=tk.GROOVE)
 		self.subframe.grid(row=self.row, column=self.column+2, columnspan=3, sticky=tk.W)
 		
-		self.widget = tk.Text(self.subframe, height=10, width=40, padx=5, pady=5, relief=tk.GROOVE, wrap=tk.WORD, undo=True)
+		self.widget = tk.Text(self.subframe, height=25, width=80, padx=5, pady=5, relief=tk.GROOVE, wrap=tk.WORD, undo=True)
 		self.widget.grid(row=0, column=0, sticky=tk.W)
 		self.widget.insert('1.0', self.content)
 		# vertical scroll bar...
@@ -389,9 +407,13 @@ class Text_row():
 		"""
 		return(self.widget.get('1.0', 'end'), True)
 	
+	def set(self):
+		print "No 'set()' method for Text obj"
+		return()
+	
 class Menu_row():
 	"""
-	Just put up a OptionMenu from the provided list..)
+	Just put up an OptionMenu from the provided list..)
 	"""
 	
 	def __init__(self, parent, text, member):
@@ -489,7 +511,11 @@ class Menu_row():
 		except:
 			pass
 		return(value, self.ok)
-	
+	def set(self, value):
+		self.value = value
+		self.ok = True
+		self.post()
+		
 class Graphic_row():
 	"""
 	Post a row with a title and a graphic...
@@ -520,20 +546,26 @@ class Graphic_row():
 		print "Graphic post"
 		if self.label is None:
 		# write the base label...
-			self.label = tk.Label(self.parent.page_frame, text=self.text+":", justify=tk.RIGHT)
+			self.frame = self.parent.page_frame
+			self.label = tk.Label(self.frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 
 			self.gOpt = tk.StringVar()
-		#else:
-			#self.widget.graphic.image.destroy()
 			
-		try:
-			self.widget.graphic.clear()
-		except:
-			print "Widget.graphic.clear failed."
-			pass
+			self.changeButton = tk.Button(self.parent.page_frame, text="Change " + self.text, command=self.button_handler).grid(column=self.column + 2, row=self.row + 1, sticky=tk.W )
+			
+			self.statusVar = tk.StringVar()
+			self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
+			self.status.grid(row=self.row, column=self.column + 1)
+			
+		else:
+			try:
+				self.widget.graphic.destroy()
+			except:
+				print "Widget.graphic.destroy failed."
+				pass
 		
-		self.widget = cltkutils.graphic_element(self.parent.page_frame)
+		self.widget = cltkutils.graphic_element(self.frame)
 		self.widget.filepath = self.graphic_path
 		self.widget.row = self.row
 		self.widget.column = self.column + 2
@@ -541,22 +573,26 @@ class Graphic_row():
 		self.widget.sticky = tk.W
 		self.widget.post()	
 		
-		self.changeButton = tk.Button(self.parent.page_frame, text="Change " + self.text, command=self.button_handler).grid(column=self.column + 2, row=self.row + 1, sticky=tk.W )
-		
-		self.statusVar = tk.StringVar()
-		self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
-		self.status.grid(row=self.row, column=self.column + 1)
 		if self.new:
 			set_status(self,None)
 			self.new = False
 		else:
 			set_status(self,True)
-			
+	
+	def set(self, value):
+		self.value = value
+		self.new = False
+		set_status(self,ok=True)
+		self.post()
+	
+
+				
 	def button_handler(self):
 		print "this is the button handler"
 			
 	def return_value(self):
 		return("SomeScreenSht"), self.ok
+	
 class Graphic_row_screenshot(Graphic_row):
 	"""
 	Derived class - a button handler specific to the screenshot
@@ -566,7 +602,7 @@ class Graphic_row_screenshot(Graphic_row):
 		self.parent.changed = True
 		self.parent.needs_rebuild = True
 		initialPath = "/Users/Johnny/Desktop"
-		file_path = tkFileDialog.askopenfilename(initialdir=initialPath)
+		file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.png', title="Open screen shot...")
 		if not file_path:
 			return
 		
@@ -583,6 +619,7 @@ class Graphic_row_screenshot(Graphic_row):
 		except Exception as e:
 			print "Failure copying", file_path, "to", dest
 			raise Exception
+		self.graphic_path = dest
 		#
 		# Kludge alert - let's find a better way to do this...
 		try:
@@ -593,8 +630,8 @@ class Graphic_row_screenshot(Graphic_row):
 			print "Ooops - Exception", e, sys.exc_info()[0]
 			sys.exit(1)
 			
-		message = 'Please crop the graphic and save in place.'
-		tkMessageBox.showinfo("Crop IT!", message, parent=self.parent.page_frame, icon=tkMessageBox.ERROR)
+		#message = 'Please crop the graphic and save in place.'
+		#tkMessageBox.showinfo("Crop IT!", message, parent=self.parent.page_frame, icon=tkMessageBox.ERROR)
 		# 
 		# Let's create the various bits...
 		imagemaker.make_sub_images(self.parent.obj)
@@ -605,8 +642,9 @@ class Graphic_row_screenshot(Graphic_row):
 			image_file = os.path.join(self.parent.obj.home, self.parent.obj.graphic)
 			image = Image.open(image_file)
 			image.show()
-	
-		self.post()
+			
+		self.parent.post_member('screenshot')
+
 			
 	def return_value(self):
 		return(self.parent.obj.screenshot, self.ok)	# I know, a bit redundant...
@@ -624,6 +662,13 @@ class Graphic_row_screenshot(Graphic_row):
 		self.parent.changed = True
 		self.parent.needs_rebuild = True
 		self.parent.obj.screenshot = self.parent.obj.soundgraphic
+		self.parent.set_member('xStart', 30)	#   RBF:  these need to be set elsewhere...
+		self.parent.set_member('xEnd', 630)
+		self.parent.set_member('screenshot', self.parent.obj.soundgraphic)
+		imagemaker.make_sub_images(self.parent.obj)
+		self.graphic_path =  os.path.join(self.parent.obj.home, self.parent.obj.soundthumbnail)
+		self.parent.post_member('screenshot')
+		
 class Graphic_row_soundfile(Graphic_row):
 	"""
 	Derived class - a button handler specific to the soundfile
@@ -632,8 +677,8 @@ class Graphic_row_soundfile(Graphic_row):
 		print "this is the sound file button handler"
 		self.parent.changed = True
 		self.parent.needs_rebuild = True	
-		initialPath = "/Volumes/iMac 2TB/Music/JDJ"
-		file_path = tkFileDialog.askopenfilename(initialdir=initialPath)
+		initialPath = "/Volumes/iMac 2TB/Music/"
+		file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.aif', title="Open AIFF sound file...")
 		if not file_path:
 			return
 		
@@ -651,29 +696,29 @@ class Graphic_row_soundfile(Graphic_row):
 			print "Failure copying", file_path, "to", sound_dest
 			raise Exception
 		
-		self.parent.obj.duration = str(clAudio.get_audio_len(sound_dest))
-		
-		self.parent.duration_obj.nameVar.set(self.parent.obj.duration)
+		#self.parent.obj.duration = str(clAudio.get_audio_len(sound_dest))
+		self.parent.set_member('duration', str(clAudio.get_audio_len(sound_dest)))
+		#self.parent.duration_obj.nameVar.set(self.parent.obj.duration)
 		
 		img_dest = os.path.join(self.parent.obj.home, self.parent.obj.soundgraphic)
 		#make_sound_image(self.parent.obj, sound_dest, img_dest)
-		
-		page_thread=threading.Thread(target=make_sound_image, args=(self.parent.obj, sound_dest, img_dest))
+		self.graphic_path =  os.path.join(self.parent.obj.home, self.parent.obj.soundthumbnail)
+		page_thread=threading.Thread(target=make_sound_image, args=(self.parent, sound_dest, img_dest))
 		page_thread.start()
 		#rebuild_page_edit(self)
 
 	def return_value(self):
 		return(self.parent.obj.soundfile, self.ok)	# I know, a bit redundant...
 	
-def make_sound_image(obj, sound, image):
-	print "Creating image..."
-	obj.pageTop = tk.Toplevel()
-	#obj.pageTop.transient(obj)
-	obj.page_frame = tk.LabelFrame(master=obj.pageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
-	obj.page_frame.lift(aboveThis=None)
-	obj.page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+def make_sound_image(page_edit, sound, image):
+	print "Creating image...", image
+	pageTop = tk.Toplevel()
+	#pageTop.transient(page_edit)
+	page_frame = tk.LabelFrame(master=pageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
+	page_frame.lift(aboveThis=None)
+	page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 	
-	f1 = tk.Frame(obj.page_frame)
+	f1 = tk.Frame(page_frame)
 	f1.grid(row=0, column=0, sticky=tk.W)
 	
 	img_gen_progbar = Progress_bar(f1, 'Image Generation')
@@ -684,10 +729,11 @@ def make_sound_image(obj, sound, image):
 	
 	snd_image = imagemaker.Sound_image(sound, image, img_gen_progbar)
 	snd_image.build()	# separate - we may want to change a few things before the build...
-	obj.soundthumbnail = "SoundGraphic_tn.png"
+	page_edit.obj.soundthumbnail = "SoundGraphic_tn.png"
 	
-	imagemaker.make_sub_images(obj)
-	obj.pageTop.destroy()
+	imagemaker.make_sub_images(page_edit.obj)
+	page_edit.post_member('soundfile')
+	pageTop.destroy()
 		
 class Page_edit_screen():
 	"""
@@ -732,7 +778,10 @@ class Page_edit_screen():
 			print "---------------Destroy All Page Frames...---------"
 			self.page_frame.destroy()
 	
-		
+		# Set up a dictionary listing the row objects, etc. that have the 
+		# info we need.  By indexing by the "member" name - we can find the mas 
+		# needed - or step through the whole list.
+		self.editlist = dict()		
 		if self.new:
 			self.pageTop = tk.Toplevel()
 			self.pageTop.transient(self.parent)
@@ -771,7 +820,7 @@ class Page_edit_screen():
 			# cheat a little through u up quick descriptive label
 			# later...  columnspan 2
 			
-			self.editlist = [ row ]		# just process this one item...
+			self.editlist[row.member] =  row 		# just process this one item...
 			
 			self.row = 8		# push these buttons down out of the way...
 			self.saveButton = tk.Button(self.page_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
@@ -793,26 +842,23 @@ class Page_edit_screen():
 		self.page_frame.lift(aboveThis=None)
 		self.page_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
 		
-		
-		self.editlist = []	# becomes a list of edit pair objects
-		
 		#---- Descriptive title, "unique", but flexible with case, spaces, etc...
 		row = Entry_row(self, "Descriptive title", "desc_title", width=30)
 		# exclude existing titles...
 		for nextpage in self.obj.group_obj.pagelist:
 			row.exclude_list.append(nextpage.desc_title)
-		self.editlist.append(row)
+		self.editlist[row.member] =  row
 		row.post()
 		
 		#---- Fun title - just for fun...
 		
 		row = Entry_row(self, "Fun title", "fun_title", width=50)
-		self.editlist.append(row)
+		self.editlist[row.member] =  row
 		row.post()
 		
 		#---- Description: text object
 		row = Text_row(self, "Description", "description")
-		self.editlist.append(row)
+		self.editlist[row.member] =  row
 		row.content = self.obj.description
 		row.post()
 		
@@ -824,14 +870,14 @@ class Page_edit_screen():
 			screenshot_path = os.path.join(self.obj.coLab_home, 'Resources', 'coLab-NoPageImage_tn.png')
 			
 		row = Graphic_row_soundfile(self, "Soundfile", 'soundfile', screenshot_path)
-		self.editlist.append(row)
+		self.editlist[row.member] =  row
 		row.post()
 		
 		
 		#---- Duration - display only ...
 		row = Entry_row(self, "Duration", "duration", width=8)
 		row.editable = False
-		self.editlist.append(row)
+		self.editlist[row.member] =  row
 		row.post()
 		self.duration_obj = row
 		
@@ -846,23 +892,23 @@ class Page_edit_screen():
 			screenshot_path = os.path.join(self.obj.coLab_home, 'Resources', 'coLab-NoPageImage_tn.png')
 			
 		row = Graphic_row_screenshot(self, "Graphic", 'screenshot', screenshot_path)
-		self.editlist.append(row)
+		self.editlist[row.member] =  row
 		row.post()
 		row.sound_button()
 		
 		#----  x Start and Stop - eventually done with graphic input...
 		row = Entry_row(self, "xStart", "xStart", width=5)
-		self.editlist.append(row)
+		self.editlist[row.member] =  row
 		row.post()
 		
 		row = Entry_row(self, "xEnd", "xEnd", width=5)
-		self.editlist.append(row)
+		self.editlist[row.member] =  row
 		row.post()
 		
 		#"""
 		#----   fps: should be calculated...
 		row = Entry_row(self, "fps", "fps", width=5)
-		self.editlist.append(row)
+		self.editlist[row.member] =  row
 		row.editable = False
 		row.post()
 		#"""
@@ -888,7 +934,7 @@ class Page_edit_screen():
 			menu.default = self.obj.song_obj.desc_title
 		except:
 			pass
-		self.editlist.append(menu)
+		self.editlist[menu.member] =  menu
 		menu.dict = d
 		menu.post()
 			
@@ -897,7 +943,7 @@ class Page_edit_screen():
 		menu = Menu_row(self, "Part", "part")
 		self.part_obj = menu		# save this for song changes (implying a new part list)
 		menu.titles = self.build_part_list()
-		self.editlist.append(menu)
+		self.editlist[menu.member] =  menu
 		menu.dict = self.part_lookup
 		
 		menu.post()
@@ -909,7 +955,30 @@ class Page_edit_screen():
 		
 	def refresh(self):
 		for i in self.editlist:
-			i.post()
+			self.editlist[i].post()
+	
+	def get_member(self, member):
+		try:
+			return(self.editlist[member])
+		except Exception as e:
+			print "Initialization Failed", sys.exc_info()[0], e
+			print "member is:", member
+			raise SystemError
+				
+	def set_member(self, member, value):
+		"""
+		use the editlist to set a specific value.		
+		"""
+		self.get_member(member).set(value)
+			
+		
+	def post_member(self, member):
+		"""
+		Post the specified member...
+		"""
+		self.get_member(member).post()
+
+			
 	def build_part_list(self):
 		"""
 		Use the song object to build the part list
@@ -943,15 +1012,16 @@ class Page_edit_screen():
 		self.ok = True		# until we hear otherwise...
 		self.bad_list = []	# Keep trck of the names that are not set well..
 		for item in self.editlist:
-			print item.member, ":", item.return_value()
-			(value, ok) = item.return_value()
+			row_obj = self.editlist[item]
+			print "item.member:", row_obj.member
+			(value, ok) = row_obj.return_value()
 			if not ok:
 				self.ok = ok
-				self.bad_list.append(item.text)
+				self.bad_list.append(row_obj.text)
 			
 			# may not want to do this - but it likely doesn't matter as we 
 			# will either correct it, or toss it.
-			string = "self.obj." + item.member + ' = """' + str(value) + '"""'
+			string = "self.obj." + item + ' = """' + str(value) + '"""'
 			print "exec string:", string
 			exec(string)
 		
@@ -1026,17 +1096,17 @@ def rebuild_page_edit(obj):
 		
 		Yeah, right.
 		"""
-		obj.pageTop = tk.Toplevel()
-		obj.pageTop.transient(obj.parent)
-		obj.page_frame = tk.LabelFrame(master=obj.pageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
-		obj.page_frame.lift(aboveThis=None)
-		obj.page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+		pageTop = tk.Toplevel()
+		pageTop.transient(obj.parent)
+		page_frame = tk.LabelFrame(master=pageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
+		page_frame.lift(aboveThis=None)
+		page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 		#
 		
 		fps = imagemaker.calculate_fps(obj.obj)
 		frames = int(float(obj.obj.duration) * fps) + 1
 		if obj.needs_rebuild:
-			f1 = tk.Frame(obj.page_frame)
+			f1 = tk.Frame(page_frame)
 			f1.grid(row=0, column=0, sticky=tk.W)
 			
 			img_gen_progbar = Progress_bar(f1, 'Image Generation', max=frames)
@@ -1045,7 +1115,7 @@ def rebuild_page_edit(obj):
 			img_gen_progbar.max = frames
 			img_gen_progbar.post()		# initial layout...
 			
-			f2 = tk.Frame(obj.page_frame)
+			f2 = tk.Frame(page_frame)
 			f2.grid(row=1, column=0, sticky=tk.W)
 			
 			vid_gen_progbar = Progress_bar(f2, 'Video Generation', max=frames)
@@ -1055,16 +1125,16 @@ def rebuild_page_edit(obj):
 			vid_gen_progbar.post()
 		 
 		 	
-		f3 = tk.Frame(obj.page_frame)
+		f3 = tk.Frame(page_frame)
 		f3.grid(row=2, column=0, sticky=tk.W)
 		ftp_progbar = Progress_bar(f3, 'ftp mirror...')
 		ftp_progbar.width = 500
 		ftp_progbar.mode = 'indeterminate'
 		ftp_progbar.post()
 		
-		f4 = tk.Frame(obj.page_frame)
+		f4 = tk.Frame(page_frame)
 		f4.grid(row=3, column=0, sticky=tk.E)
-		quitButton = tk.Button(f4, text="Quit", command=obj.pageTop.quit)
+		quitButton = tk.Button(f4, text="Quit", command=pageTop.quit)
 		quitButton.grid()
 		
 		
@@ -1076,7 +1146,7 @@ def rebuild_page_edit(obj):
 		rebuild.rebuild(obj.obj.group_obj)		# currently the group name - change to the object...
 		ftp_progbar.progBar.stop()
 				
-		obj.pageTop.destroy()
+		pageTop.destroy()
 
 
 		
@@ -1104,9 +1174,10 @@ def create_new_page(parent):
 	
 def edit_page(parent):
 	print "edit Page"
-	pagename='NewPage'
-	pagename="WaterMoonTomBass"
-	pagename="N-Drone"
+	pagename='TestPage'
+	pagename="NolaShort"
+	#pagename="WaterMoonTomBass"
+	#pagename="N-Drone"
 	#pagename="JDJ-2-Jan2013"
 	
 	new_page = clclasses.Page(pagename)

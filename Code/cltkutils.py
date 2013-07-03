@@ -43,7 +43,7 @@ class graphic_element():
         except Exception as e:
             print "Title creation exception", sys.exc_info()[0], e
             raise SystemError
-    def clear(self):        
+    def destroy(self):        
         try:
             self.graphic.grid_forget()
             self.graphic.destroy()

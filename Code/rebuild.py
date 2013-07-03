@@ -22,7 +22,7 @@ from htmlgen import *
 num_recent_entries = 5
 num_project_entries = 10
 
-def rebuild(g, opt="nope"):
+def rebuild(g, mirror=False, opt="nope"):
 	"""
 	Create and populate group object, adding page and
 	song objects, then create link, graphic text ad
@@ -48,14 +48,14 @@ def rebuild(g, opt="nope"):
 	# to update the mirror
 	scriptpath = os.path.join(g.coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
 	osascript = "/usr/bin/osascript"
-	"""
-	print "Mirror:", osascript, scriptpath
-	try:
-		subprocess.call([osascript, scriptpath])
-	except:
-		print "Mirror error: cannot continue."
-		sys.exit(1)
-	#"""
+	if mirror:
+		print "Mirror:", osascript, scriptpath
+		try:
+			subprocess.call([osascript, scriptpath])
+		except:
+			print "Mirror error: cannot continue."
+			sys.exit(1)
+		
 	
 	#
 	# At this point, we should have a populated group object, which includes
@@ -228,8 +228,9 @@ def rebuild(g, opt="nope"):
 	archivegen(g)
 	helpgen(g)
 	print "Rebuild done."
-	subprocess.call([osascript, scriptpath])
-	print "Upload/Mirror done."
+	if mirror:
+		subprocess.call([osascript, scriptpath])
+		print "Upload/Mirror done."
 	#sys.exit(0)
 
 

@@ -15,6 +15,7 @@ import aifc
 import sys
 import os
 import math
+import time
 
 import clclasses
 
@@ -638,8 +639,20 @@ class Sound_image():
 			return(['L', 'R'])
 		else:
 			return([ str(x+1) for x in range(self.nchannels) ])
-		
+import coLab		
 def main():
+	"""
+	Some old, now obsolete tests are below - for now - just run the top level.
+	"""
+	#------ interface to main routine...
+
+
+	print "Colab Main"
+	w=coLab.Colab()
+	sys.exit(0)
+	
+	
+	
 	snd = '/Users/Johnny/dev/coLab/Group/Catharsis/Page/WaterMoonTomBass/coLab_local/TomGtrBassDemo2.aif'
 	snd = '/Volumes/iMac 2TB/Music/JDJ/JDJ-2 Oct 2008/Assembly Sessions/Audio Files/JDJ-2-Jan13Mix.aif'
 	#snd = '/Volumes/iMac 2TB/Music/JDJ/JDJ-5.1-Mar2013/Audio Files/E_07.aif'

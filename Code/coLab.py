@@ -20,6 +20,7 @@ import clutils
 import clFunctions
 import clclasses
 import cltkutils
+import clSchedule
 import rebuild
 
 class Colab(tk.Frame):
@@ -357,6 +358,7 @@ class Colab(tk.Frame):
         """
         print "Refresh: ", self.current_groupname
         rebuild.rebuild(self.current_group.name, mirror=True)
+        clSchedule.browse_url(self.current_group.url_head)
         print "Refresh complete."
         
         

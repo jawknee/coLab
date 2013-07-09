@@ -15,6 +15,7 @@ import clutils
 import cldate
 
 import clclasses
+
 from htmlgen import *
 
 # 
@@ -228,6 +229,8 @@ def rebuild(g, mirror=False, opt="nope"):
 	archivegen(g)
 	helpgen(g)
 	print "Rebuild done."
+	
+	
 	if mirror:
 		subprocess.call([osascript, scriptpath])
 		print "Upload/Mirror done."

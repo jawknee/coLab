@@ -27,6 +27,7 @@ from PIL import Image
 
 import clclasses
 import cltkutils
+import clSchedule
 import imagemaker
 import clAudio
 import rebuild
@@ -334,10 +335,10 @@ class Entry_row():
 			if f(item).find(f(would)) == 0:		# matches at the start
 				if f(item) == f(would):
 					print "BAD:  matches", item
-					self.match_text = item
+					self.match_text += item + '\n'
 					self.match_color = '#f11'
 					good = False
-					break
+					#break
 				else:
 					print "partial match:", item,  '/', would
 					self.match_color = '#666'
@@ -490,6 +491,12 @@ class Menu_row():
 			self.parent.obj.part = 'All'			# if a new song, use default part for now...
 			self.parent.part_obj.titles = self.parent.build_part_list()
 			
+			# Special case a song with only the default part as "OK"
+			print "testing the partlist..."
+			if song_obj.partlist == [ 'All'	]:
+				print "Partlist is just 'all'"
+				set_status(self.parent.part_obj, ok=True)
+				time.sleep(2)
 			self.parent.part_obj.post()
 			
 			#for i in song_obj.
@@ -1034,13 +1041,16 @@ class Page_edit_screen():
 		#print self.obj.dump()
 		print'---first home'
 		try:
-			sub_dir = os.path.join(self.obj.coLab_home, 'Group', self.obj.group, 'Page',  self.obj.name)
+			sub_dir = os.path.join('Group', self.obj.group, 'Page',  self.obj.name)
+			home_dir = os.path.join(self.obj.coLab_home, sub_dir)
 		except Exception as e:
 			print "Cannot build new page subdir", e, sys.exc_info()[0]
 			sys.exit(1)
 	
 		clclasses.set_paths(self.obj, sub_dir)		# Paths are now correct...
-		print self.obj.home
+		print "Pagehome:", self.obj.home
+		print "Pageroot:", self.obj.root
+		
 		if not self.ok:
 			print "Still something wrong - see above"
 			message = "There were problems with the following fields:\n\n"
@@ -1082,7 +1092,7 @@ class Page_edit_screen():
 			
 	def my_quit(self):
 		if self.changed:
-			message = "You've made changes, quiting now will lose them.\n\nDo you still want to quit?"
+			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
 			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.page_frame, icon=tkMessageBox.QUESTION):
 				return
 		self.pageTop.destroy()
@@ -1096,6 +1106,9 @@ def rebuild_page_edit(obj):
 		
 		Yeah, right.
 		"""
+		# let's make sure mamp is running...
+		
+		clSchedule.start_mamp()
 		pageTop = tk.Toplevel()
 		pageTop.transient(obj.parent)
 		page_frame = tk.LabelFrame(master=pageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
@@ -1124,13 +1137,14 @@ def rebuild_page_edit(obj):
 			vid_gen_progbar.max = frames
 			vid_gen_progbar.post()
 		 
-		 	
+		#""" 	
 		f3 = tk.Frame(page_frame)
 		f3.grid(row=2, column=0, sticky=tk.W)
 		ftp_progbar = Progress_bar(f3, 'ftp mirror...')
 		ftp_progbar.width = 500
 		ftp_progbar.mode = 'indeterminate'
 		ftp_progbar.post()
+		#"""
 		
 		f4 = tk.Frame(page_frame)
 		f4.grid(row=3, column=0, sticky=tk.E)
@@ -1147,6 +1161,8 @@ def rebuild_page_edit(obj):
 		ftp_progbar.progBar.stop()
 				
 		pageTop.destroy()
+		local_url = "http://localhost/" + obj.obj.root
+		clSchedule.browse_url(local_url)
 
 
 		
@@ -1166,7 +1182,7 @@ def create_new_page(parent):
 	new_page = clclasses.Page(None)
 	new_page.group_obj = this_group
 	new_page.group = this_group.name
-	new_page.coLab_home = this_group.coLab_home		# just enough path to get us stared...
+	new_page.coLab_home = this_group.coLab_home		# just enough path to get us stared..
 	
 	parent.page = Page_edit_screen(parent, new_page, new=True)
 	
@@ -1193,6 +1209,7 @@ def edit_page(parent):
 	new_page.song_obj = new_page.group_obj.find_song(new_page.song)
 	
 	parent.page = Page_edit_screen(parent, new_page, new=False)
+	
 def create_new_song(parent):
 	print "new song"
 def edit_song(parent):

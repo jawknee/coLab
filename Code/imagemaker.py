@@ -30,7 +30,7 @@ tn_size = (tn_width, tn_height)
 
 # Colors....
 Xparent = (0,0,0,0)
-Hilite = (255,255,255,100)	# mostly transparent white - to contrast black
+Hilite = (255,255,255,32)	# mostly transparent white - to contrast black
 black = (0,0,0,255)
 partBlack = (0, 0, 0, 180)	# partly transparent black
 Green = (20, 255, 20, 255)	# a bright, opaque green

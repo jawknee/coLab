@@ -381,8 +381,9 @@ def songgen(group):
 		""" + song.description + """
 		<p>
 		<i>""" + cldate.now() + """</i><br clear=all><p>"""
-
-		if len(song.partlist) > 1:	# just "All", skip this...
+		
+		multiparts = len(song.partlist) > 1	# do we have more than one part?
+		if multiparts:	# just "All", skip this...
 			content += "Part index:<ul>"
 			for part in song.partlist:
 				name = song.partname_dict[part]
@@ -399,7 +400,8 @@ def songgen(group):
 				make_text_graphic(partname, partPng, fontpath, fontsize=45, border=5, fill=fill )
 
 			content += '<a name="' + part + '">\n'
-			content += '<img src="' + partPng + '"></br>'
+			if multiparts:	# only include parts if there are 2 or more... (otherwise we get a separate "All")
+				content += '<img src="' + partPng + '"></br>'
 			#
 			# The heart of it - create entries for each matching page
 			try:
@@ -439,7 +441,7 @@ def songgen(group):
 				
 		if not content.endswith(hr_full):	# if a part has no songs, there won't be a horizontal rule
 			content += hr_full				# add one...
-		content += 'Song ' + song.desc_title + ', created: ' + cldate.utc2long(song.createtime) + '<p>'
+		content += 'Song <u><i>' + song.desc_title + '</i></u>, created: ' + cldate.utc2long(song.createtime) + '<p>'
 
 		outfile.write(content)
 	

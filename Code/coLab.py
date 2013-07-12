@@ -170,7 +170,7 @@ class Colab(tk.Frame):
         # Menu bar...
         self.subMenu = tk.Menu(self.menuBar)
         self.menuBar.add_cascade(label='Help', menu=self.subMenu)
-        self.subMenu.add_command(label='About', command=self.__aboutHandler)
+        self.subMenu.add_command(label='About coLab...', command=self.__aboutHandler)
         
         # Just the word: "Group:"
         tk.Label(self.main_frame, text="Group:", justify=tk.RIGHT).grid(row=2, column=0, sticky=tk.E)
@@ -198,7 +198,7 @@ class Colab(tk.Frame):
         try:
             os.chdir(group_dir)
         except:
-            print "Cannot get to dir:", pagedir
+            print "Cannot get to dir:", group_dir
             print "Fatal"
             raise IOError()
         # build a dictionary of names to directory names.
@@ -235,11 +235,8 @@ class Colab(tk.Frame):
         except:
             print "got no titles"
             
-        #print "GroupTitles: ", groupTitles
-        default = "Catharsis"       # this needs to be remembered from run to run...
-       
         self.gOpt = tk.StringVar()
-        self.gOpt.set(default)
+        self.gOpt.set(self.current_groupname)
 
         self.groupOption = tk.OptionMenu(self.main_frame, self.gOpt, *groupTitles,command=self.set_group_from_menu)
 
@@ -289,7 +286,7 @@ class Colab(tk.Frame):
             
         print "Image path:", imgpath
         try:
-            self.snapshot.clear()
+            self.snapshot.destroy()
         except:
             pass
         
@@ -303,7 +300,7 @@ class Colab(tk.Frame):
 
         # and again - for the header (Title)
         try:
-            self.header.clear()
+            self.header.destroy()
         except:
             pass
         

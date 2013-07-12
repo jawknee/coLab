@@ -55,9 +55,12 @@ class Colab(tk.Frame):
             print "Cannot find config."
             sys.exit(1)        # fatal...
         
+        # some constants that will laster be configurable 
+        self.bg='#66a'  
+        
         # call the parent class init - initializes ourselves
         tk.Frame.__init__(self, master)
-        
+        self.configure(bg=self.bg)
         # load the initial table of lists
         # a dictionary indexed by name, pointing dir name 
         # The "name" is what's returned from the menu - thus the need for translation
@@ -147,8 +150,9 @@ class Colab(tk.Frame):
         Put up the main, initial set of widgets
         """
         self.master.title('coLab')
+        self.master.configure(bg=self.bg)
         self.master.lift(aboveThis=None)
-        self.main_frame=tk.LabelFrame(self, text='coLab').grid(padx=20, pady=20, ipadx=10, ipady=10)
+        self.main_frame=tk.LabelFrame(self, text='coLab', bg=self.bg).grid(padx=20, pady=20, ipadx=10, ipady=10)
 
         try:
             self.display_group_list()
@@ -173,16 +177,16 @@ class Colab(tk.Frame):
         self.subMenu.add_command(label='About coLab...', command=self.__aboutHandler)
         
         # Just the word: "Group:"
-        tk.Label(self.main_frame, text="Group:", justify=tk.RIGHT).grid(row=2, column=0, sticky=tk.E)
+        tk.Label(self.main_frame, text="Group:", bg=self.bg, justify=tk.RIGHT).grid(row=2, column=0, sticky=tk.E)
         
         self.subtitle_str = tk.StringVar()     # put text into self.subtitle.set("new string")
         self.subtitle_str.set("Not set yet")
-        self.subtitle=tk.Label(self.main_frame, textvariable=self.subtitle_str, anchor=tk.NE, justify=tk.CENTER).grid(row=1, column=1, columnspan=3, sticky=tk.E)
+        self.subtitle=tk.Label(self.main_frame, textvariable=self.subtitle_str, bg=self.bg, anchor=tk.NE, justify=tk.CENTER).grid(row=1, column=1, columnspan=3, sticky=tk.E)
 
         # refresh button...
-        self.refreshButton = tk.Button(self.main_frame, text="Refresh", command=self.refresh_group).grid(column=4, row=3)
+        self.refreshButton = tk.Button(self.main_frame, text="Refresh", bg=self.bg, command=self.refresh_group).grid(column=4, row=3)
         # quit button...
-        self.quitButton = tk.Button(self.main_frame, text="Quit", command=self.my_quit).grid(column=9, row=9)
+        self.quitButton = tk.Button(self.main_frame, text="Quit", bg=self.bg, command=self.my_quit).grid(column=9, row=9)
         
     def __aboutHandler(self):
         """

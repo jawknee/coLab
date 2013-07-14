@@ -3,7 +3,7 @@
 *.confc
 *.png
 *.bak
-/.coLab.conf
+.coLab.conf*
 datac
 coLab_local
 coLab_local/*

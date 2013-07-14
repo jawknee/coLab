@@ -2,9 +2,16 @@
 #
 # I'm just looking for some (data)  touch...
 #
-cd ~/coLab/Group/Catharsis
-for i in $(find . -name data)
-do 
-	touch $i
-	echo $i
+cd ~/coLab/Group/
+for group in *
+do
+	(
+	cd $group
+	for i in $(find . -name data)
+	do 
+		echo $i
+		touch $i
+	done
+	)
+
 done

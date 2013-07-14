@@ -12,6 +12,7 @@ import time
 import Tkinter as tk
 import tkFileDialog
 import ttk
+import tkMessageBox
 import imp
 
 from PIL import Image, ImageTk
@@ -194,6 +195,10 @@ class Colab(tk.Frame):
         
         (eventually)
         """
+        msg = "Welcome to coLab\nThis is a music collaboration tool created by Johnny Klonaris.\n\n"
+        msg += "Note: 'coLab' is a trademark or other property of various entities.\n\n"
+        msg += "I'm just using it for now.   Stay tuned for MusiCoLab."
+        tkMessageBox.showinfo("About coLab...", msg)
         print "how's this?"
     
     def load_group_list(self):

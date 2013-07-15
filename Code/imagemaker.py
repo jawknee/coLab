@@ -17,6 +17,7 @@ import os
 import math
 import time
 
+#from coLab import main
 import clclasses
 
 
@@ -575,9 +576,9 @@ class Sound_image():
 			
 			
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
-		fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamFatSkewNarrow.ttf'
-		fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
-		
+		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamFatSkewNarrow.ttf'
+		#fontpath = '/Users/jklonaris/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
+		fontpath = '/Users/jklonaris/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
 		font = ImageFont.truetype(fontpath, 18)	
 	
 		# Build the text strings for the graphic
@@ -681,5 +682,5 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
+	coLab.main()
 

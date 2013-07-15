@@ -1,0 +1,5 @@
+*background: #88B
+*OptionMenu.background: black
+*Button*Background: red
+*activebackground: red
+*foreground: #cba

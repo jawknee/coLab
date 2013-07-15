@@ -394,7 +394,7 @@ class Text_row():
 		self.subframe = tk.LabelFrame(self.parent.page_frame, relief=tk.GROOVE)
 		self.subframe.grid(row=self.row, column=self.column+2, columnspan=3, sticky=tk.W)
 		
-		self.widget = tk.Text(self.subframe, height=25, width=80, padx=5, pady=5, relief=tk.GROOVE, wrap=tk.WORD, undo=True)
+		self.widget = tk.Text(self.subframe, height=15, width=80, padx=5, pady=5, relief=tk.GROOVE, wrap=tk.WORD, undo=True)
 		self.widget.grid(row=0, column=0, sticky=tk.W)
 		self.widget.insert('1.0', self.content)
 		# vertical scroll bar...
@@ -775,11 +775,11 @@ class Page_edit_screen():
 		self.needs_rebuild = False
 		
 		page.page_type = 'html5'		# new pages use this..
-		
+		"""
 		self.setup()
 				
 	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing now...
-		
+		#"""
 		print "-----------Setup called!"
 		if self.page_frame is not None:
 			print "---------------Destroy All Page Frames...---------"
@@ -791,7 +791,7 @@ class Page_edit_screen():
 		self.editlist = dict()		
 		if self.new:
 			self.pageTop = tk.Toplevel()
-			self.pageTop.transient(self.parent)
+			self.pageTop.transient(self.parent.top)
 			self.page_frame = tk.LabelFrame(master=self.pageTop, relief=tk.GROOVE, text="New Page (Group: " + self.parent.current_groupname + ')', borderwidth=5)
 			self.page_frame.lift(aboveThis=None)
 			self.page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
@@ -830,7 +830,7 @@ class Page_edit_screen():
 			self.editlist[row.member] =  row 		# just process this one item...
 			
 			self.row = 8		# push these buttons down out of the way...
-			self.saveButton = tk.Button(self.page_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
+			self.saveButton = tk.Button(self.page_frame, text="Save", bg='#345', command=self.save_page).grid(column=3, row=self.row)	# add  command=
 			self.quitButton = tk.Button(self.page_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
 			
 			# stop and wait for the above window to return...
@@ -842,7 +842,7 @@ class Page_edit_screen():
 		# Basically start over - this time with the name preset...
 		#time.sleep(1)		# Seems to be necessary for the window to die (is there a call for this?)
 		self.pageTop = tk.Toplevel()
-		self.pageTop.transient(self.parent)
+		self.pageTop.transient(self.parent.top)
 		self.row=0
 		self.column=0
 		self.page_frame = tk.LabelFrame(master=self.pageTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', bd=100, padx=10, pady=10, borderwidth=5)
@@ -1220,7 +1220,7 @@ def edit_song(parent):
 import coLab
 def main():
 	print "Colab Main"
-	w=coLab.Colab()
+	coLab.main()
 	
 if __name__ == '__main__':
 	main()

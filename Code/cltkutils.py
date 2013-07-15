@@ -19,9 +19,8 @@ class graphic_element():
     """
     Used to place a generic image on the grid.
     """
-    def __init__(self, parent, bg='#66a'):
+    def __init__(self, parent):
         self.parent = parent
-        self.bg = bg
         
         self.row = 0
         self.column = 0
@@ -39,7 +38,7 @@ class graphic_element():
         try:     # same thing, for the title
             img = Image.open(self.filepath)
             labelimage = ImageTk.PhotoImage(img)
-            self.graphic = tk.Label(self.parent, image=labelimage, bg=self.bg)
+            self.graphic = tk.Label(self.parent, image=labelimage)
             self.graphic.image = labelimage
             self.graphic.grid(column=self.column, row=self.row, rowspan=self.rowspan, columnspan=self.columnspan, sticky=self.sticky)
         except Exception as e:

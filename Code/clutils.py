@@ -47,6 +47,7 @@ def get_config(debug=False):
 	except ImportError, info:
 		print "get_config: ImportError", info
 		sys.exit(1)	
+	
 
 def needs_update(path, file="index.shtml", opt='nope'):
 	"""

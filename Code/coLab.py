@@ -1,8 +1,14 @@
 #!/usr/bin/env python
 """
-    A attempt at...
-    A initial GUI front-end interface to the various
-    tasks required for creating and managing coLab.
+    CoLab - a music collaboration tool.
+    
+    This tool is the front end used to create the coLab web site.
+    It take input of audio files (currently .aiff) and optionally
+    graphics (typically a screen shot) and builds the various pages
+    and links to allow for musical collaboration.
+    
+    Makes extensive use of the Tkinter and PIL (Python Imaging Library)
+    functions.
 """
 
 import os
@@ -24,7 +30,7 @@ import cltkutils
 import clSchedule
 import rebuild
 
-class Colab(tk.Frame):
+class Colab():
     """
     Basic class for the colab front end - holder of the main window and
     basic methods.
@@ -49,36 +55,45 @@ class Colab(tk.Frame):
         """
         # Get the system wide config - find the local config file and 
         # set the basic paths to content, code, etc.
+        self.master = master
+        
         try:
             self.conf=clutils.get_config()
             print "conf shows:", self.conf.coLab_home
         except ImportError:
             print "Cannot find config."
             sys.exit(1)        # fatal...
-        
-        # some constants that will laster be configurable 
-        self.bg='#66a'  
-        
+            
+        try:
+            option_file = os.path.join(self.conf.coLab_home, ".coLab_tkOptions")
+            #self.winfo_toplevel().option_readfile(option_file, 20)
+            self.master.option_readfile(option_file, 80)
+            #self.top.option_add('background', '#66a') 
+        except:
+            print "Error reading optionfile:", option_file
+            sys.exit(1)
+            
+            
         # call the parent class init - initializes ourselves
-        tk.Frame.__init__(self, master)
-        self.configure(bg=self.bg)
+        self.top = tk.Frame(self.master)
+ 
+        self.master.geometry('+80+80')
+        self.master.grid()    
+        self.top.grid()
+        
         # load the initial table of lists
         # a dictionary indexed by name, pointing dir name 
         # The "name" is what's returned from the menu - thus the need for translation
         self.load_group_list()
         self.edit_lock = False
-        self.winfo_toplevel().geometry('+80+80')
-        
-        # grid method - at least for now...
-        
-        self.grid()
+               
+       
         self.get_last_group()    # set the initial group, and load it...
         #self.set_group()        # update the internal group structure
         self.createMainWidgets()    # put the initial widgets up...
         self.set_group_from_menu(menu_groupname="None")
         #self.place_group_shot()
-        self.mainloop()
-        
+        self.master.mainloop()
 
         # some sort of a GUI loop here...
         
@@ -151,9 +166,11 @@ class Colab(tk.Frame):
         Put up the main, initial set of widgets
         """
         self.master.title('coLab')
-        self.master.configure(bg=self.bg)
+        #self.master.configure(bg=self.bg)
         self.master.lift(aboveThis=None)
-        self.main_frame=tk.LabelFrame(self, text='coLab', bg=self.bg).grid(padx=20, pady=20, ipadx=10, ipady=10)
+        
+        self.main_frame=tk.LabelFrame(self.top, text='coLab')
+        self.main_frame.grid(padx=20, pady=20, ipadx=10, ipady=10)
 
         try:
             self.display_group_list()
@@ -167,10 +184,10 @@ class Colab(tk.Frame):
 
         # do a few of the simpler ones here...
                 
-        top = self.winfo_toplevel()
-        self.menuBar = tk.Menu(top)
+        
+        self.menuBar = tk.Menu(self.main_frame)
         #self.configure(bg='#8cf')        #--- RBF - consider this as a background for everything...
-        top['menu'] = self.menuBar
+        #self.top['menu'] = self.menuBar
         
         # Menu bar...
         self.subMenu = tk.Menu(self.menuBar)
@@ -178,16 +195,16 @@ class Colab(tk.Frame):
         self.subMenu.add_command(label='About coLab...', command=self.__aboutHandler)
         
         # Just the word: "Group:"
-        tk.Label(self.main_frame, text="Group:", bg=self.bg, justify=tk.RIGHT).grid(row=2, column=0, sticky=tk.E)
+        tk.Label(self.main_frame, text="Group:", justify=tk.RIGHT).grid(row=2, column=0, sticky=tk.E)
         
         self.subtitle_str = tk.StringVar()     # put text into self.subtitle.set("new string")
         self.subtitle_str.set("Not set yet")
-        self.subtitle=tk.Label(self.main_frame, textvariable=self.subtitle_str, bg=self.bg, anchor=tk.NE, justify=tk.CENTER).grid(row=1, column=1, columnspan=3, sticky=tk.E)
+        self.subtitle=tk.Label(self.main_frame, textvariable=self.subtitle_str, anchor=tk.NE, justify=tk.CENTER).grid(row=1, column=1, columnspan=3, sticky=tk.E)
 
         # refresh button...
-        self.refreshButton = tk.Button(self.main_frame, text="Refresh", bg=self.bg, command=self.refresh_group).grid(column=4, row=3)
+        self.refreshButton = tk.Button(self.main_frame, text="Refresh", command=self.refresh_group).grid(column=4, row=3)
         # quit button...
-        self.quitButton = tk.Button(self.main_frame, text="Quit", bg=self.bg, command=self.my_quit).grid(column=9, row=9)
+        self.quitButton = tk.Button(self.main_frame, text="Quit", command=self.my_quit).grid(column=9, row=9)
         
     def __aboutHandler(self):
         """
@@ -374,7 +391,7 @@ class Colab(tk.Frame):
         """
         print "Time to quit."
 
-        self.quit()
+        self.master.quit()
         
 def task(obj,bar):
     bar.step(1.0)
@@ -383,68 +400,16 @@ def task(obj,bar):
 
 
 """
-Create an instance - loop it!
+Just enough to get us started...   
+Create the root and pass it into the Colab class (master)
 """
 
 def main():
     print "Colab Main"
-    w=Colab()
+    root = tk.Tk()
+    
+    w=Colab(root)
     
 if __name__ == '__main__':
     main()
-    
-"""
-stuff for later reference...
-
-a = tk.Tk()
-
-quitButton = tk.Button(a, text="Quit", command=a.quit)
-quitButton.grid(column=3, row=3)
-
-groupOptions = ( 'Catharsis', 'South Bay Philharmonic', 'Johnny' )
-
-gOpt = tk.StringVar()
-gOpt.set(groupOptions[0])
-
-groupOption = tk.OptionMenu(a, gOpt, 'Catharsis', 'South Bay Philharmonic', 'Johnny')
-
-groupOption.grid(column=1, row=1)
-"""
-"""
-screenshot = tkFileDialog.askopenfilename(initialdir="~/Desktop", title="Select a Screen Shot", parent=a)
-
-print "Got Screenshot:", screenshot
-
-audio = tkFileDialog.askopenfilename(initialdir="/Volumes/iMac 2TB/Music/JDJ", title="Select an audio file", parent=a)
-print "Got audio file:", audio
-
-"""
-
-
-"""
-value = tk.IntVar()
-
-progBar = ttk.Progressbar(a, length=500, maximum=30, mode='determinate', variable=value)
-
-progBar["value"] = 20.0
-
-progBar.grid(column=1, columnspan=3, row=2)
-
-
-for i in range(400):
-    time.sleep(.1)
-    progBar.step(1)
-    print i
-
-#v.set(450)
-#progBar.start(10)
-
-a.after(20, task, a, progBar)
-
-a.mainloop()
-
-
-
-print  gOpt.get()
-
-"""
+   

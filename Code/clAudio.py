@@ -63,6 +63,7 @@ def make_movie(page, prog_bar=None):
             try:
                 nextline = ffmpeg.stdout.readline()
             except IOError:
+                nextline = '?'
                 pass
             
             print "nextline:", nextline

@@ -390,7 +390,7 @@ def songgen(group):
 				content += '<li><a href="#' + part + '">' + name + '</a>\n'
 			content += '</ul><br><hr>\n'
 
-		fontpath = fonts.fontpath('Blacklight')
+		fontpath = fonts.fontpath('FoxboroScriptBold')
 		for part in song.partlist:
 			# make the title graphics...
 			# For now - just the part name - more when we datafy it....

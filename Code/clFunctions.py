@@ -1110,7 +1110,7 @@ def rebuild_page_edit(obj):
 		
 		clSchedule.start_mamp()
 		pageTop = tk.Toplevel()
-		pageTop.transient(obj.parent)
+		pageTop.transient(obj.parent.top)
 		page_frame = tk.LabelFrame(master=pageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
 		page_frame.lift(aboveThis=None)
 		page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)

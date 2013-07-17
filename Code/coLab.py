@@ -33,13 +33,14 @@ import rebuild
 class Colab():
     """
     Basic class for the colab front end - holder of the main window and
-    basic methods.
+    basic methods. 
     
-    It all starts here.  The base class is a frame - it holds the graphic
-    elements, as well as the basic methods for performing the basic tasks.
+    It all starts here.  The "top" element is the root of the Tkinter GUI.
+    It holds the graphic elements, as well as the basic methods for performing
+    the basic tasks.
     
     This tool is the interface to the coLab data structure, consisting
-    of a heirarchy:  Groups, Projects (nyi), Songs, and Pages.  
+    of a hierarchy:  Groups, Projects (nyi), Songs, and Pages.  
     
     Basic functions include creating and editing (eventually
     projects), songs, and pages, and updating the external web
@@ -170,7 +171,7 @@ class Colab():
         self.master.lift(aboveThis=None)
         
         self.main_frame=tk.LabelFrame(self.top, text='coLab')
-        self.main_frame.grid(padx=20, pady=20, ipadx=10, ipady=10)
+        self.main_frame.grid(padx=10, pady=10, ipadx=10, ipady=10)
 
         try:
             self.display_group_list()
@@ -183,15 +184,13 @@ class Colab():
             raise SystemError
 
         # do a few of the simpler ones here...
-                
-        
-        self.menuBar = tk.Menu(self.main_frame)
+        self.menuBar = tk.Menubutton(self.top)
         #self.configure(bg='#8cf')        #--- RBF - consider this as a background for everything...
         #self.top['menu'] = self.menuBar
         
         # Menu bar...
         self.subMenu = tk.Menu(self.menuBar)
-        self.menuBar.add_cascade(label='Help', menu=self.subMenu)
+        #self.subMenu.add_cascade(label='Help', menu=self.subMenu)
         self.subMenu.add_command(label='About coLab...', command=self.__aboutHandler)
         
         # Just the word: "Group:"

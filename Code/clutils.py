@@ -101,34 +101,38 @@ class fontlib:
 	A collection of paths.   Mostly to return the path to a named font,
 	but also can return the list of fonts / paths.
 	"""
-	def __init__(self):
+	def __init__(self, conf=None):
+		self.conf = conf
+		if self.conf is None:
+			self.conf = get_config()
+		
 		self.default = 'FoxboroScriptEBold'	# default font...
 		self.fontdict = {
-		'BaroqueScript': '/Users/Johnny/dev/coLab/Resources/Fonts/BaroqueScript.ttf',
-		'TantrumTongue': '/Users/Johnny/dev/coLab/Resources/Fonts/TantrumTongue.ttf',
-		'Neurochrome': '/Users/Johnny/dev/coLab/Resources/Fonts/Neurochrome/neurochr.ttf',
-		'Daemones': '/Users/Johnny/dev/coLab/Resources/Fonts/DAEMONES.ttf',
-		'TarantellaMF': '/Users/Johnny/dev/coLab/Resources/Fonts/TarantellaMF/Tarantella MF.ttf',
-		'Minus': '/Users/Johnny/dev/coLab/Resources/Fonts/Minus.ttf',
-		'Scretch': '/Users/Johnny/dev/coLab/Resources/Fonts/Scretch.ttf',
-		'Radaern': '/Users/Johnny/dev/coLab/Resources/Fonts/RADAERN.ttf',
-		'FoxboroScriptBold': '/Users/Johnny/dev/coLab/Resources/Fonts/SF Foxboro Script v1.0/SF Foxboro Script Bold.ttf',
-		'FoxboroScriptEBold': '/Users/Johnny/dev/coLab/Resources/Fonts/SF Foxboro Script v1.0/SF Foxboro Script Extended Bold.ttf',
-		'WorstveldSling': '/Users/Johnny/dev/coLab/Resources/Fonts/WorstveldSling/WorstveldSling.ttf',
-		'Maxine': '/Users/Johnny/dev/coLab/Resources/Fonts/maxine.ttf',
-		'JohnnyMacScrawl': '/Users/Johnny/dev/coLab/Resources/Fonts/JohnnyMacScrawl/jmacscrl.ttf',
-		'Blippo': '/Users/Johnny/dev/coLab/Resources/Fonts/Blippo/BlippBlaD.ttf',
-		'Metropolataines': '/Users/Johnny/dev/coLab/Resources/Fonts/Metropolitaines/MetroD.ttf',
-		'Diskus': '/Users/Johnny/dev/coLab/Resources/Fonts/Diskus/DiskuDMed.ttf',
-		'Coronet': '/Users/Johnny/dev/coLab/Resources/Fonts/Coronet/CoronI.ttf',
-		'Blacklight': '/Users/Johnny/dev/coLab/Resources/Fonts/Blacklight/BlackD.ttf',
-		'Freebooter': '/Users/Johnny/dev/coLab/Resources/Fonts/Freebooter/FreebooterUpdated.ttf',
-		'Gillies': '/Users/Johnny/dev/coLab/Resources/Fonts/Gillies/GilliGotDLig.ttf',
-		'Palette': '/Users/Johnny/dev/coLab/Resources/Fonts/Palette/PaletD.ttf',
-		'DomCasual': '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf',
-		'RageJoi': '/Users/Johnny/dev/coLab/Resources/Fonts/Rage/RageJoiD.ttf',
-		'Rage': '/Users/Johnny/dev/coLab/Resources/Fonts/Rage/RageD.ttf',
-		'AenigmaScrawl': '/Users/Johnny/dev/coLab/Resources/Fonts/AenigmaScrawl/aescrawl.ttf'
+		'BaroqueScript': 'Resources/Fonts/BaroqueScript.ttf',
+		'TantrumTongue': 'Resources/Fonts/TantrumTongue.ttf',
+		'Neurochrome': 'Resources/Fonts/Neurochrome/neurochr.ttf',
+		'Daemones': 'Resources/Fonts/DAEMONES.ttf',
+		'TarantellaMF': 'Resources/Fonts/TarantellaMF/Tarantella MF.ttf',
+		'Minus': 'Resources/Fonts/Minus.ttf',
+		'Scretch': 'Resources/Fonts/Scretch.ttf',
+		'Radaern': 'Resources/Fonts/RADAERN.ttf',
+		'FoxboroScriptBold': 'Resources/Fonts/SF Foxboro Script v1.0/SF Foxboro Script Bold.ttf',
+		'FoxboroScriptEBold': 'Resources/Fonts/SF Foxboro Script v1.0/SF Foxboro Script Extended Bold.ttf',
+		'WorstveldSling': 'Resources/Fonts/WorstveldSling/WorstveldSling.ttf',
+		'Maxine': 'Resources/Fonts/maxine.ttf',
+		'JohnnyMacScrawl': 'Resources/Fonts/JohnnyMacScrawl/jmacscrl.ttf',
+		'Blippo': 'Resources/Fonts/Blippo/BlippBlaD.ttf',
+		'Metropolataines': 'Resources/Fonts/Metropolitaines/MetroD.ttf',
+		'Diskus': 'Resources/Fonts/Diskus/DiskuDMed.ttf',
+		'Coronet': 'Resources/Fonts/Coronet/CoronI.ttf',
+		'Blacklight': 'Resources/Fonts/Blacklight/BlackD.ttf',
+		'Freebooter': 'Resources/Fonts/Freebooter/FreebooterUpdated.ttf',
+		'Gillies': 'Resources/Fonts/Gillies/GilliGotDLig.ttf',
+		'Palette': 'Resources/Fonts/Palette/PaletD.ttf',
+		'DomCasual': 'Resources/Fonts/Dom Casual/DomCasDReg.ttf',
+		'RageJoi': 'Resources/Fonts/Rage/RageJoiD.ttf',
+		'Rage': 'Resources/Fonts/Rage/RageD.ttf',
+		'AenigmaScrawl': 'Resources/Fonts/AenigmaScrawl/aescrawl.ttf'
 		}
 
 	def fontpath(self,font):
@@ -137,7 +141,7 @@ class fontlib:
 		return the default if no match.
 		"""
 		try:
-			path=self.fontdict[font]
+			path= os.path.join(self.conf.coLab_home, self.fontdict[font])
 		except KeyError:
 			print "No such font: '" + font + "' Using default: '" + self.default + "'"
 			path=self.fontdict[self.default]

@@ -18,5 +18,5 @@ Add a set() function to clFunctions  row objects.
 
 Convert the row object list from a list to a dict.
 
-
+Menu / MenuBar is broken- doesn't appear to have been done correctly - fix it!
 

@@ -1,4 +1,6 @@
-*background: #88B
+*background: #44B
+#*highlightbackground: #448
+*highlightbackground: green
 *OptionMenu.background: black
 *Button*Background: red
 *activebackground: red

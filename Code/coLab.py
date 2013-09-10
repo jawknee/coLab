@@ -201,9 +201,9 @@ class Colab():
         self.subtitle=tk.Label(self.main_frame, textvariable=self.subtitle_str, anchor=tk.NE, justify=tk.CENTER).grid(row=1, column=1, columnspan=3, sticky=tk.E)
 
         # refresh button...
-        self.refreshButton = tk.Button(self.main_frame, text="Refresh", command=self.refresh_group).grid(column=4, row=3)
+        self.refreshButton = ttk.Button(self.main_frame, text="Refresh", command=self.refresh_group).grid(column=4, row=3)
         # quit button...
-        self.quitButton = tk.Button(self.main_frame, text="Quit", command=self.my_quit).grid(column=9, row=9)
+        self.quitButton = ttk.Button(self.main_frame, text="Quit", command=self.my_quit).grid(column=9, row=9)
         
     def __aboutHandler(self):
         """

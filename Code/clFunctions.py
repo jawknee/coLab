@@ -48,7 +48,7 @@ def set_status(obj, ok = None):
 		color = '#f11'	# bright red
 		txt = 'X'
 		
-	obj.status.configure(fg=color)
+	obj.status.configure(foreground=color)
 	obj.statusVar.set(txt)
 	
 
@@ -190,7 +190,7 @@ class Entry_row():
 		"""
 		if self.label is None:
 			# write the base label...
-			self.label = tk.Label(self.parent.page_frame, text=self.text+":", justify=tk.RIGHT)
+			self.label = ttk.Label(self.parent.page_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 			self.nameVar = tk.StringVar()
 			# Now we build a string that is the name of the associated variable.   Then we use eval and exec to
@@ -204,7 +204,7 @@ class Entry_row():
 			# set up a small label between the title and the value to 
 			# display the status of the value...
 			self.statusVar = tk.StringVar()
-			self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
+			self.status = ttk.Label(self.parent.page_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
 			if self.new:
 				set_status(self,None)
@@ -216,7 +216,7 @@ class Entry_row():
 		# if not editable - just display as a label...
 		print "vobj - editable:", self.editable
 		if not self.editable:
-			self.widget = tk.Label(self.parent.page_frame, textvariable=self.nameVar, justify=tk.LEFT)
+			self.widget = ttk.Label(self.parent.page_frame, textvariable=self.nameVar, justify=tk.LEFT)
 			self.widget.grid(row=self.row,column=self.column + 2, columnspan=3, sticky=tk.W)
 			self.nameVar.set(self.value)
 			#self.ok = True		# since we can't change it - it's good
@@ -238,7 +238,7 @@ class Entry_row():
 			if self.new:
 				fg = '#AAA'	# light gray
 			
-			self.widget = tk.Entry(self.parent.page_frame, textvariable=self.nameVar, width=self.width, fg=fg, validate=self.validate, validatecommand=self.validatecommand )
+			self.widget = ttk.Entry(self.parent.page_frame, textvariable=self.nameVar, width=self.width, foreground=fg,background='#e9e9e9', validate=self.validate, validatecommand=self.validatecommand )
 			print "v-obj widget created:", self.widget
 			self.widget.grid(row=self.row, column=self.column + 2, sticky=tk.W)
 			self.nameVar.set(self.value)
@@ -394,7 +394,7 @@ class Text_row():
 		self.subframe = tk.LabelFrame(self.parent.page_frame, relief=tk.GROOVE)
 		self.subframe.grid(row=self.row, column=self.column+2, columnspan=3, sticky=tk.W)
 		
-		self.widget = tk.Text(self.subframe, height=15, width=80, padx=5, pady=5, relief=tk.GROOVE, wrap=tk.WORD, undo=True)
+		self.widget = tk.Text(self.subframe, height=15, width=80, padx=5, pady=5, relief=tk.GROOVE, wrap=tk.WORD,bg='#ffffff', undo=True)
 		self.widget.grid(row=0, column=0, sticky=tk.W)
 		self.widget.insert('1.0', self.content)
 		# vertical scroll bar...
@@ -559,7 +559,7 @@ class Graphic_row():
 
 			self.gOpt = tk.StringVar()
 			
-			self.changeButton = tk.Button(self.parent.page_frame, text="Change " + self.text, command=self.button_handler).grid(column=self.column + 2, row=self.row + 1, sticky=tk.W )
+			self.changeButton = ttk.Button(self.parent.page_frame, text="Change " + self.text, command=self.button_handler).grid(column=self.column + 2, row=self.row + 1, sticky=tk.W )
 			
 			self.statusVar = tk.StringVar()
 			self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
@@ -668,7 +668,7 @@ class Graphic_row_screenshot(Graphic_row):
 		"""
 		Put up a second button to allow using the sound graphic.
 		"""
-		self.changeButton = tk.Button(self.parent.page_frame, text="Use Sound Graphic", command=self.button2_handler).grid(column=self.column + 3, row=self.row + 1, sticky=tk.W )
+		self.changeButton = ttk.Button(self.parent.page_frame, text="Use Sound Graphic", command=self.button2_handler).grid(column=self.column + 3, row=self.row + 1, sticky=tk.W )
 		
 	def button2_handler(self):
 		"""
@@ -839,8 +839,8 @@ class Page_edit_screen():
 			self.editlist[row.member] =  row 		# just process this one item...
 			
 			self.row = 8		# push these buttons down out of the way...
-			self.saveButton = tk.Button(self.page_frame, text="Save", bg='#345', command=self.save_page).grid(column=3, row=self.row)	# add  command=
-			self.quitButton = tk.Button(self.page_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
+			self.saveButton = ttk.Button(self.page_frame, text="Save", bg='#345', command=self.save_page).grid(column=3, row=self.row)	# add  command=
+			self.quitButton = ttk.Button(self.page_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
 			
 			# stop and wait for the above window to return...
 			self.pageTop.wait_window(self.page_frame)
@@ -965,8 +965,8 @@ class Page_edit_screen():
 		menu.post()
 		
 		#"""
-		self.saveButton = tk.Button(self.page_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
-		self.quitButton = tk.Button(self.page_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
+		self.saveButton = ttk.Button(self.page_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
+		self.quitButton = ttk.Button(self.page_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
 		
 		
 	def refresh(self):
@@ -1157,7 +1157,7 @@ def rebuild_page_edit(obj):
 		
 		f4 = tk.Frame(page_frame)
 		f4.grid(row=3, column=0, sticky=tk.E)
-		quitButton = tk.Button(f4, text="Quit", command=pageTop.quit)
+		quitButton = ttk.Button(f4, text="Quit", command=pageTop.quit)
 		quitButton.grid()
 		
 		

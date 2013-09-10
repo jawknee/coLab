@@ -626,13 +626,12 @@ class Graphic_row_screenshot(Graphic_row):
 		except Exception as e:
 			print "Failure copying", file_path, "to", dest
 			raise Exception
-		self.graphic_path = dest
+		#self.graphic_path = dest
 		#
-		# Kludge alert - let's find a better way to do this...
+		# use "open" to schedule preview - seems to do what we need....
 		try:
-			open = '/usr/bin/open'		#os.path.join(self.parent.obj.coLab_home, 'Code', 'PhotoShopElements.scpt')
-			options = '-a ' + dest
-			subprocess.call([open, '-a', 'Preview.app', dest])
+			open = '/usr/bin/open'		
+			subprocess.call([open, '-W', '-a', 'Preview.app',  dest])
 		except Exception as e:
 			print "Ooops - Exception", e, sys.exc_info()[0]
 			sys.exit(1)
@@ -647,11 +646,20 @@ class Graphic_row_screenshot(Graphic_row):
 		if tkMessageBox.askyesno('Select Limits',"Do you need to set the left and right limits?", icon=tkMessageBox.QUESTION):
 			# Now - post the display sized object to let us enter the xStart, xEnd
 			image_file = os.path.join(self.parent.obj.home, self.parent.obj.graphic)
-			image = Image.open(image_file)
-			image.show()
+			#image = Image.open(image_file)
+			#image.show()
+			try:
+				open = '/usr/bin/open'	
+				subprocess.call([open, '-W', '-a', 'Preview.app', image_file])
+			except Exception as e:
+				print "Problem opening the image for limits", e, sys.exc_info()[0]
+				sys.exit(1)
 			
-		self.parent.post_member('screenshot')
-
+				
+			
+		#self.parent.post_member('screenshot')
+		self.graphic_path = os.path.join(self.parent.obj.home, self.parent.obj.soundthumbnail)
+		self.post()
 			
 	def return_value(self):
 		return(self.parent.obj.screenshot, self.ok)	# I know, a bit redundant...
@@ -775,6 +783,7 @@ class Page_edit_screen():
 		self.needs_rebuild = False
 		
 		page.page_type = 'html5'		# new pages use this..
+		
 		"""
 		self.setup()
 				
@@ -1175,6 +1184,7 @@ def create_new_page(parent):
 	print "New page"
 	group_name = parent.current_groupname		# currently selected group
 	this_group = parent.current_group
+	
 	print "My group is:", group_name, this_group.title
 	
 	print "Group info:", this_group.subtitle
@@ -1191,7 +1201,14 @@ def create_new_page(parent):
 def edit_page(parent):
 	print "edit Page"
 	pagename='TestPage'
-	pagename="NolaShort"
+	pagename="Summer4Dad"
+	pagename="aaayrtyrt"
+	plist = parent.current_group.pagelist
+	plist.sort(key=clclasses.createkey, reverse=True)
+	pagename=plist[0].name
+	
+	for page in parent.current_group.pagelist:
+		print "ep:", page.name, page.desc_title
 	#pagename="WaterMoonTomBass"
 	#pagename="N-Drone"
 	#pagename="JDJ-2-Jan2013"

@@ -100,6 +100,7 @@ def make_sub_images(page):
 		tn_image = orig_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
 		base_image.save(graphic, 'PNG')
 		tn_image.save(thumbnail, 'PNG')
+		print "make_sub_images:", graphic, thumbnail
 		del orig_image
 		
 	soundgraph = os.path.join(page.home, page.soundgraphic)
@@ -111,6 +112,7 @@ def make_sub_images(page):
 	else:
 		tn_image = snd_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
 		tn_image.save(soundthumb, 'PNG')
+		print "make_sub_images:", soundgraph, soundthumb
 		del snd_image
 	#
 	# sound image:
@@ -577,8 +579,9 @@ class Sound_image():
 			
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamFatSkewNarrow.ttf'
-		#fontpath = '/Users/jklonaris/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
-		fontpath = '/Users/jklonaris/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
+		fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
+		# RBF: Convert this to not have a full path
+		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
 		font = ImageFont.truetype(fontpath, 18)	
 	
 		# Build the text strings for the graphic

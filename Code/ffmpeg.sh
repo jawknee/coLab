@@ -55,7 +55,12 @@ ogg_opts="-r $fps  -codec:v libtheora -s 640x480 -qscale:v 5 -codec:a libvorbis 
 webm_opts="-r $fps -codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5  $pagedir/$name-media.webm"
 webm_opts="-r $fps -codec:v libvpx -crf 10 -b:v 500k -codec:a libvorbis -qscale:a 5  $pagedir/$name-media.webm"
 # mp4
-mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -preset slow -crf 22 -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 $pagedir/$name-media.mp4"
+mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2  $pagedir/$name-media.mp4"
+#mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -preset slow -crf 22 -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 $pagedir/$name-media.mp4"
+#mp4_opts="-r $fps -vcodec h264 -acodec aac -strict -2 $pagedir/$name-media.mp4"
+#mp4_opts="-r $fps -b:v 1500k -preset slow -profile:v baseline -vcodec libx264 -g 30 $pagedir/$name-media.mp4"
+#mp4_opts="-r $fps -b 1500k -vcodec libx264 -vpre slow -vpre baseline -g 30 $pagedir/$name-media.mp4"
+#mp4_opts="-r $fps -i %1 -b 1500k -vcodec libx264 -vpre slow -vpre baseline g 30 -s 640x480 $pagedir/$name-media.mp4"	
 #mp4_opts="-r $fps -codec:v libx264 -b:v 1500k -vpre slow -vpre baseline -g 30 $pagedir/$name-media.mp4"
 #mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -preset slow -movflags faststart -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 $pagedir/$name-media.mp4"
 #mp4_opts="-r $fps -codec:v libx264 -profile:v baseline  -movflags faststart -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 $pagedir/$name-media.mp4"

@@ -641,8 +641,23 @@ def navgen(group):
 	<div class="maintext">
 	<img src="Title.png"><br>
 	<font color=a0b0c0>
-	Not much for now - but feel free to comment.<p>
-	There is this: <a href="http://jawknee.com/coLab/Resources/FontIndex/">Font List</a>
+	A few Catharsis related links you might find interesting:  (these open in a new tab/window)
+	<ul>
+		<li><a href="http://jawknee.com/iWeb/Catharsis_Log/Clog/Clog.html" target=_blank>The Clog</a><br>
+			the one that started us down this web collaboration path... our private area
+		<li><a href="http://jawknee.com/iWeb/Catharsis/Music/Music.html" target=_blank>The Catharsis Cast</a><br>
+			stuff we were willing to share including photos and The Basement.
+		<li><a href="http://jawknee.com/iWeb/Catharsis_Friends/Music_for_Friends/Music_for_Friends.html" target=_blank>Catharsis Friends</a><br>	
+			music we sort of shared...   added to the complexity that helps spawn coLab.
+		<li><a href="http://jawknee.com/coLab/Group/Johnny/" target=_blank>Johnny's coLab Page</a><br>
+			What it says...
+			
+		<li><a href="http://jawknee.com/iWeb/Johnnys_Sandbox/Welcome_to_the_Sandbox.html" target=_blank>Johnny's Sandbox</a><br>
+			Johnny's iWeb based sharing...
+	</ul>		
+		
+	And in the category of just because I can, here are the fonts currently available in coLab:<p>
+	 <a href="http://jawknee.com/coLab/Resources/FontIndex/">Font List</a>
 	<p><i>""" + cldate.now() + """</i><p>"""
 
 	outfile.write(content)

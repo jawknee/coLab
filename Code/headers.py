@@ -164,6 +164,9 @@ class Html:
 			<p><hr><P>
 			<!--#include virtual="!groupURL!/Shared/projectlist.html" -->
 			</div> <! End sidebar>
+			<div class="sidebar_r">
+			<!--#include virtual="!groupURL!/Shared/rightbar.html" -->
+			</div> <! End right sidebar>
 			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> <! logo>
 			""" + self.banner + """	
 			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >

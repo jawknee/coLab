@@ -13,7 +13,7 @@ textarea { background-color: #b0b0b8; font-family: Georgia; width: 640px; font-s
 
 input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 
-.banner { position: absolute; top: 4px; left: 4;  height: 20px;  right: 4;
+.banner { position: absolute; top: 4px; left: 4px;  height: 20px;  right: 4px;
 	z-index: 3;
 	font-family:Georgia; color: #c0b0a0; 
 	background-color: #000040; background-image: url('http://jawknee.com/coLab/Resources/BlueBlackBanner.png'); 
@@ -35,6 +35,17 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .sidebar_l a:visited { color: #0000c0; text-decoration: none; }
 .sidebar_l a:hover { color: #f0e0d0; text-decoration: underline;}
 .sidebar_l a:active { color: #ffffff; text-decoration: underline;}
+
+.sidebar_r { position: absolute; top: 75px; left: 915px; 
+	font-family: Helvetica; font-size: smaller;
+	color: black; 
+	background-color: #606060; background-image: url('http://jawknee.com/coLab/Resources/P1GraySm.png'); 
+	}
+
+.sidebar_r a:link { color: #2030ff; text-decoration: none;}
+.sidebar_r a:visited { color: #0000c0; text-decoration: none; }
+.sidebar_r a:hover { color: #f0e0d0; text-decoration: underline;}
+.sidebar_r a:active { color: #ffffff; text-decoration: underline;}
 
 .main { position: absolute; top: 24px; left: 204px;  width: 700px; 
 	font-family:Georgia; 

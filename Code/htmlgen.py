@@ -648,7 +648,7 @@ def navgen(group):
 		<li><a href="http://jawknee.com/iWeb/Catharsis/Music/Music.html" target=_blank>The Catharsis Cast</a><br>
 			stuff we were willing to share including photos and The Basement.
 		<li><a href="http://jawknee.com/iWeb/Catharsis_Friends/Music_for_Friends/Music_for_Friends.html" target=_blank>Catharsis Friends</a><br>	
-			music we sort of shared...   added to the complexity that helps spawn coLab.
+			music we sort of shared...   added to the complexity that helped spawn coLab.
 		<li><a href="http://jawknee.com/coLab/Group/Johnny/" target=_blank>Johnny's coLab Page</a><br>
 			What it says...
 			
@@ -720,7 +720,7 @@ def archivegen(group):
         make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
 	content = """
-		</center>
+		</center></center>
 
 	<div class="maintext">
 	<img src="Title.png"><br>
@@ -812,6 +812,34 @@ def helpgen(group):
 	doesn't make sense, you have a question or a comment, feel
 	free to enter something below.
 	<p>
+	<b>Known problem with Windows 8 / Internet Explorer 10:</b><br>
+	Both IE10 and IE9 are notoriously picky about playing html5 video,
+	which is how the newer pages here are presented.   All other 
+	browsers and platforms I've tested have worked, including IE8 and
+	earlier.   
+	<p>
+	The symptom is a "poster" graphic (no counters in the lower corners)
+	 and the error:
+	 <p>
+	<tt>Error: Unsupported video type or invalid file path</tt>
+	<p>
+	For IE10, what seems to work is:
+	
+	<ul>
+	   <li>Press f12<br>
+	      This should bring up a window along the bottom of the browser.
+	      
+	   <li>Locate "Browser Mode:" near the middle of the new area's title bar.
+	      Select:   <tt>Internet Explorer 10 Compatibility Mode</tt>  
+	   <li>You may also need to set Document Mode: to <tt>Internet Explorer 7 standards</tt>
+	</ul>
+	If this works, you should see a line under the player that says: 
+	<p>
+	<tt><i>Your browser does not support html5 - using mp4 plug-in</i></tt>
+	<p>
+	It's working on my virtual Windows 8 with IE10.
+	
+	<p>
 	Some highlights:
 	<ul>
 		<li><b>Recent Updates</b><br>
@@ -832,9 +860,7 @@ def helpgen(group):
 		date.
 		<li><b>Archive</b><br>
 		Beyond that - the most useful item is probably the 
-		Archve link in the top nav bar (interestingly 
-		or not - the "Nav" link in the nav bar is easily the
-		least useful feature).  The Archive page will show 
+		Archive link in the top nav bar. The Archive page will show 
 		every page, in chronological order, most recent first.
 	</ul>
 	<p>

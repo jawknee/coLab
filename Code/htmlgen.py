@@ -812,7 +812,7 @@ def helpgen(group):
 	doesn't make sense, you have a question or a comment, feel
 	free to enter something below.
 	<p>
-	<b>Known problem with Windows 8 / Internet Explorer 10:</b><br>
+	<h4>Known problem with Windows 8 / Internet Explorer 10:</h4>
 	Both IE10 and IE9 are notoriously picky about playing html5 video,
 	which is how the newer pages here are presented.   All other 
 	browsers and platforms I've tested have worked, including IE8 and
@@ -837,10 +837,10 @@ def helpgen(group):
 	<p>
 	<tt><i>Your browser does not support html5 - using mp4 plug-in</i></tt>
 	<p>
-	It's working on my virtual Windows 8 with IE10.
+	Which means you're in fallback mode, which should work.  It's working on my virtual Windows 8 with IE10.
 	
 	<p>
-	Some highlights:
+	<h4>Some highlights:</h4>
 	<ul>
 		<li><b>Recent Updates</b><br>
 		The top of the left side bar shows the 

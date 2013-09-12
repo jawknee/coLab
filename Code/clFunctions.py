@@ -308,7 +308,7 @@ class Entry_row():
 			self.nameVar.set(would)
 			fg='#000'	# black
 			#self.widget.configure(fg=fg)
-			self.widget.configure(fg=fg, validate=self.validate, validatecommand=self.validatecommand )
+			self.widget.configure(foreground=fg, validate=self.validate, validatecommand=self.validatecommand )
 			self.new = False
 			r_code = False		# Reject the character - we've already set it in, above
 			
@@ -839,7 +839,7 @@ class Page_edit_screen():
 			self.editlist[row.member] =  row 		# just process this one item...
 			
 			self.row = 8		# push these buttons down out of the way...
-			self.saveButton = ttk.Button(self.page_frame, text="Save", bg='#345', command=self.save_page).grid(column=3, row=self.row)	# add  command=
+			self.saveButton = ttk.Button(self.page_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
 			self.quitButton = ttk.Button(self.page_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
 			
 			# stop and wait for the above window to return...

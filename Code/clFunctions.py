@@ -496,7 +496,9 @@ class Menu_row():
 			if song_obj.partlist == [ 'All'	]:
 				print "Partlist is just 'all'"
 				set_status(self.parent.part_obj, ok=True)
-				time.sleep(2)
+				#time.sleep(2)
+			# set the new dictiony in place...
+			self.parent.part_obj.dict = self.parent.part_lookup
 			self.parent.part_obj.post()
 			
 			#for i in song_obj.
@@ -658,7 +660,7 @@ class Graphic_row_screenshot(Graphic_row):
 				
 			
 		#self.parent.post_member('screenshot')
-		self.graphic_path = os.path.join(self.parent.obj.home, self.parent.obj.soundthumbnail)
+		self.graphic_path = os.path.join(self.parent.obj.home, self.parent.obj.thumbnail)
 		self.post()
 			
 	def return_value(self):
@@ -1001,7 +1003,7 @@ class Page_edit_screen():
 		and conversion dictionary (Long names are
 		displayed, simple names are stored.)
 		
-		Returns a tuple ready to be assigned to an ObjectMenu..
+		Returns a tuple of long names ready to be assigned to an ObjectMenu for display
 		"""
 		if self.song_obj is None:
 			part_name_list = [ 'All' ]
@@ -1026,7 +1028,7 @@ class Page_edit_screen():
 		"""
 		print "Reading into obj.."
 		self.ok = True		# until we hear otherwise...
-		self.bad_list = []	# Keep trck of the names that are not set well..
+		self.bad_list = []	# Keep track of the names that are not set well..
 		for item in self.editlist:
 			row_obj = self.editlist[item]
 			print "item.member:", row_obj.member

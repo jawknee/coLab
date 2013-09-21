@@ -20,5 +20,6 @@ Resources/FontIndex
 Resources/*.png
 logs
 logs/*
+bin/Older_stuff
 Old
 Old/*

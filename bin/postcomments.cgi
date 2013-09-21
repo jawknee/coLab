@@ -5,9 +5,11 @@
 source ../.coLab.conf
 #eval "$(./cgi-parse.py | tee -a ../logs/var.log | ./evalfix)"
 
-log="$coLab_home/logs/var.log"
+ulog="$coLab_home/logs/uri.log"		# what is passed in...
+vlog="$coLab_home/logs/var.log"		# what is processed...
+elog="$coLab_home/logs/eval.log"		# what is processed...
 
-eval "$(tee -a $log | $coLab_home/bin/cgi-parse.py |  tee -a $log | $coLab_home/bin/evalfix.py )"
+eval "$(tee $ulog | $coLab_home/bin/cgi-parse.py |  tee -a $vlog | $coLab_home/bin/evalfix.py | tee $elog )"
 
 
 source ../.coLab.conf	# don't like this...
@@ -26,7 +28,7 @@ then
 	<p>
 	(Variable: "Text")
 	<p>
-	This is an uncharacerized bug at this point and intermittent.
+	This is an uncharacterized bug at this point and intermittent.
 	If you think of anything unusual about you entered the comments,
 	please let me know.
 	<p>
@@ -75,7 +77,9 @@ EOF
 #
 # At this point the web page is ready for the content.  We also want to mail that content
 # so we put it all into vars, post the content to the and mail it to list.
-export cLmail_subject="New: $desc_title Comment"
+#   Convert any html &#xxx; characters...
+text_title=$(echo $desc_title | $coLab_home/bin/html_decode.py)
+export cLmail_subject="New: $text_title Comment"
 # hardcoded for now - header should move to .coLab.conf
 
 export cLmail_bodytext=$(cat <<-EOF
@@ -100,7 +104,8 @@ $cLmail_bodytext
 
 EOF
 
-group=$(basename $dirname)
+# oh - this is a bit ugly....
+group=$(basename $(dirname $(dirname $dirname)))
 
 #
 # For now - hardcoded addresses...

@@ -35,11 +35,11 @@ def newSong(name):
 	print "Creating song:", name
 
 	conf = clutils.get_config()
-	group = cltkutils.getGroup()
+	#group = cltkutils.getGroup()
 
-	songhome = os.path.join(conf.coLab_home, 'Group', group, 'Song', name)
+	#songhome = os.path.join(conf.coLab_home, 'Group', group, 'Song', name)
 	#songhome = os.path.join(conf.coLab_home, 'Group', 'SBP', 'Song', name)
-	#songhome = os.path.join(conf.coLab_home, 'Group', 'Johnny', 'Song', name)
+	songhome = os.path.join(conf.coLab_home, 'Group', 'Johnny', 'Song', name)
 	local = 'coLab_local'
 
 	if os.path.isdir(songhome):

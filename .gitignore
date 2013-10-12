@@ -4,6 +4,8 @@
 *.png
 *.bak
 .coLab.conf*
+misc
+misc/*
 datac
 coLab_local
 coLab_local/*

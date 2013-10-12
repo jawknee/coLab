@@ -12,8 +12,9 @@ def get_config(debug=False):
 		Look in the likely places for a .coLab.conf file - return 
 		the contents as an object.
 		
-		This allows paths to be set different on different installations.
-		return a conf object with these members:
+		This allows paths to be set differently on different installations.
+
+		Returns a conf object with these members:
 		
 		Current coLab vars:
 		coLab_url_head		absolute URL   (e.g. http://localhost/coLab )

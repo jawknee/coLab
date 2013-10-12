@@ -3,7 +3,9 @@
 # I'm just looking for some (data)  touch...
 #
 cd ~/coLab/Group/
-for group in *
+glist="*"
+glist="Johnny"
+for group in $glist
 do
 	(
 	cd $group

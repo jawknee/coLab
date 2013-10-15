@@ -1202,9 +1202,7 @@ def create_new_page(parent):
 	
 def edit_page(parent):
 	print "edit Page"
-	pagename='TestPage'
-	pagename="Summer4Dad"
-	pagename="aaayrtyrt"
+
 	plist = parent.current_group.pagelist
 	plist.sort(key=clclasses.createkey, reverse=True)
 	pagename=plist[0].name

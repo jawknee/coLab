@@ -20,9 +20,16 @@ import time
 #from coLab import main
 import clclasses
 
-
+# this needs to be driven by a table - low/med/high res...
 width = 640
 height = 480
+width = 1280
+height = 960
+width = 2560
+height = 1920
+width = 1440
+height = 1080
+
 size = (width, height)
 
 tn_width = 160
@@ -36,6 +43,7 @@ black = (0,0,0,255)
 partBlack = (0, 0, 0, 180)	# partly transparent black
 Green = (20, 255, 20, 255)	# a bright, opaque green
 eBlue = (20, 20, 255, 255)	# electric blue
+dBlue = (10, 20, 128, 255)	# dark blue
 
 
 def calculate_fps(page):
@@ -182,7 +190,7 @@ def make_images(page, prog_bar=None):
 	xLen = page.xEnd - page.xStart
 
 	frameIncr = float(xLen) / frames
-
+	botpix = height - 1		# bottom pixel
 	#while fr <= frames:
 	last_fr_num = frames - 1
 	for fr_num in range(frames):
@@ -202,9 +210,9 @@ def make_images(page, prog_bar=None):
 
 		# Put the cursor into the overlay
 		xLine = int(xPos)
-		overlay_draw.line( [ (xLine-1,0), (xLine-1,479) ], fill=Hilite)
-		overlay_draw.line( [ (xLine+1,0), (xLine+1,479) ], fill=Hilite)
-		overlay_draw.line( [ (xLine,0), (xLine,479) ], fill=black)
+		overlay_draw.line( [ (xLine-1,0), (xLine-1,botpix) ], fill=Hilite)
+		overlay_draw.line( [ (xLine+1,0), (xLine+1,botpix) ], fill=Hilite)
+		overlay_draw.line( [ (xLine,0), (xLine,botpix) ], fill=black)
 
 		#
 		# Build the left and right boxes...
@@ -345,7 +353,7 @@ class Sound_image():
 	"""
 	Take an arbitary sound file (well - .aiff for now) 
 	and turn it into a base image for the page.
-	Should (not quite yet):
+	Should:
 	Handles 1 or more channels, 8, 16, or 24 bit (whatever sample size the file has)
 	Generates a standard (or other) sized png file.
 	"""
@@ -378,7 +386,7 @@ class Sound_image():
 		self.nframes = self.aud.getnframes()
 		self.framerate = self.aud.getframerate()
 		
-		self.samp_max = 2 ** (self.sampwidth * 8 - 1)	# -1 because we're signed range is -samp_max(-1?) - +samp_max
+		self.samp_max = 1 << (self.sampwidth * 8 - 1)	# -1 because we're signed.  range is -samp_max(-1?) - +samp_max; 3 => -8388607 - 8388608
 		
 	
 	def build(self):
@@ -440,12 +448,18 @@ class Sound_image():
 		nchan = self.nchannels
 		w = self.sampwidth
 		
-		# Build the min_tab and max_tab "arrays".   These are lists of lists. 
+		# Build the min_tab, max_tab, and rms_tab "arrays".   These are lists of lists. 
+		# The tables are lists of lists - by channel, and then by vertical line.
 		# The number of lists for each is the number of channels in the audio.    Each of 
 		# those list entries is a list of num_xpix values, min or max for that channel.
 		
+		# tables are lists of min/max/etc pre channel, per line
 		min_tab = []
 		max_tab = []
+		rms_tab = []	# actually the avg of squares, (sqrt later...)
+		# values per channell
+		chan_min = []
+		chan_max = []
 		run_count = []
 		sum_sqrs = []
 		
@@ -454,6 +468,9 @@ class Sound_image():
 		for c in range(nchan):
 			min_tab.append([])	# one list per channel
 			max_tab.append([])
+			rms_tab.append([])
+			chan_min.append(self.samp_max)	#seed min/max with the other...
+			chan_max.append(-self.samp_max)
 			run_count.append(0)	# A running average for each
 			sum_sqrs.append(0.0)
 		
@@ -469,8 +486,9 @@ class Sound_image():
 			self.prog_bar.update(s)
 			next_samp = int((s+1) * frames_per_pixel)	# where are we reading to next?
 			for c in range(nchan):
-				min_tab[c].append(self.samp_max)
-				max_tab[c].append(-self.samp_max)
+				min_tab[c].append(self.samp_max)	# seed with max value
+				max_tab[c].append(-self.samp_max)	# seed with min...
+				rms_tab[c].append(0.0)
 				
 			# frame_data is a string of characters:  the number 
 			# of samples x sample width(w) (bytes) x # channels
@@ -481,21 +499,28 @@ class Sound_image():
 				
 			for i in range(num_samps):		# for the samples we just read..
 				for c in range(nchan):
+					
 					ep = p + w	# end pointer
 					value = signed2int( frame_data[p:ep] )
 					p = ep
 					#frame_data = frame_data[w:]		# strip what we just read off the front
 					run_count[c] += value
-					sum_sqrs[c] += value * value	# squares
-					
+					val_squared = value * value
+					sum_sqrs[c] += val_squared	# squares
+					rms_tab[c][s] += val_squared / num_samps	# average of squares for this line
 					if value < min_tab[c][s]:
 						min_tab[c][s] = value
-						if value < min:
-							min = value
+						if value < chan_min[c]:
+							chan_min[c] = value
+							if value < min:
+								min = value
 					if value > max_tab[c][s]:
 						max_tab[c][s] = value
-						if value > max:
-							max = value
+						if value > chan_max[c]:
+							chan_max[c] = value
+							if value > max:
+								max = value
+								
 			last_samp = next_samp	# and so it goes, round and round...
 			
 		self.prog_bar.update(num_xpix)
@@ -508,6 +533,7 @@ class Sound_image():
 		
 		# Might want this to be per channel - for now it's global
 		# We want the furthest excursion, min or max
+	
 		max_xcrsn = max		# maximum excursion
 		if -min > max:
 			max_xcrsn = -min
@@ -517,9 +543,9 @@ class Sound_image():
 		hr_ratio = float(max_xcrsn) / self.samp_max	# ratio of highest peak to max value - headroom as a ratio
 		# create an "effective headroom" - do we do any correction or not?
 		if hr_ratio < 0.9:
-			eff_ratio = hr_ratio
+			eff_ratio = hr_ratio * 1.1	# make the end points just short of the limits
 		else:
-			eff_ratio = 1	# close enough - show the wave form as iss
+			eff_ratio = 1	# close enough - show the wave form as is
 			
 		headroom = 20 * math.log10(hr_ratio)
 		
@@ -547,8 +573,29 @@ class Sound_image():
 			for c in range(nchan):
 				top = int(centers[c] - ( float(max_tab[c][s]) / levels_per_pixel ) / eff_ratio ) + 1
 				bot = int(centers[c] - ( float(min_tab[c][s]) / levels_per_pixel ) / eff_ratio ) + 1
+				rms = math.sqrt(rms_tab[c][s])	
+				rms_offset = (rms / levels_per_pixel) / eff_ratio
+				rms_center = (top + bot) / 2
+				# or...
+				rms_center = centers[c]
+				
+				t_rms = int(rms_center - rms_offset)
+				b_rms = int(rms_center + rms_offset)
+				# or...
+				
 			
-				graphic_draw.line([(x,top), (x,bot)], fill = eBlue)
+				# temp - may make this an option at some point...
+				rms_display = True
+				
+				if rms_display:
+					# as three - rms "middle" is darker
+					graphic_draw.line([(x,t_rms), (x,b_rms)], fill = dBlue)
+					graphic_draw.line([(x,top), (x,t_rms)], fill = eBlue)
+					graphic_draw.line([(x,b_rms), (x,bot)], fill = eBlue)
+				else:
+					# as one line...
+					graphic_draw.line([(x,top), (x,bot)], fill = eBlue)
+					
 				# Draw the end points - mark any likely clip points
 				# Note these may not be explicit clips, since we are
 				# looking at the graphic data, not the audio data

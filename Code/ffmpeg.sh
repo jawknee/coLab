@@ -50,7 +50,8 @@ input_opts="-y -r $fps -i $overlay_dir/Frame-%05d.png -i $pagedir/$soundfile"
 # output streams...
 #
 # Ogg / theora
-ogg_opts="-r $fps  -codec:v libtheora -s 640x480 -qscale:v 5 -codec:a libvorbis -qscale:a 5 $pagedir/$name-media.ogg"
+#ogg_opts="-r $fps  -codec:v libtheora -s 640x480 -qscale:v 5 -codec:a libvorbis -qscale:a 5 $pagedir/$name-media.ogg"
+ogg_opts="-r $fps  -codec:v libtheora -qscale:v 5 -codec:a libvorbis -qscale:a 5 $pagedir/$name-media.ogg"
 # Webm
 webm_opts="-r $fps -codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5  $pagedir/$name-media.webm"
 webm_opts="-r $fps -codec:v libvpx -crf 10 -b:v 500k -codec:a libvorbis -qscale:a 5  $pagedir/$name-media.webm"

@@ -57,6 +57,9 @@ webm_opts="-r $fps -codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5  $p
 webm_opts="-r $fps -codec:v libvpx -crf 10 -b:v 500k -codec:a libvorbis -qscale:a 5  $pagedir/$name-media.webm"
 # mp4
 mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -preset slow -movflags faststart -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 $pagedir/$name-media.mp4"
+mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -level 3 $pagedir/$name-media.mp4"
+mp4_opts="-r $fps -s 640x480 -codec:v libx264 -profile:v baseline -level 3 $pagedir/$name-media.mp4"
+mp4_opts="-r $fps -codec:v h264 -codec:a aac -strict -2 -pix_fmt yuv420p $pagedir/$name-media.mp4"
 #mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -preset slow -crf 22 -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 $pagedir/$name-media.mp4"
 #mp4_opts="-r $fps -vcodec h264 -acodec aac -strict -2 $pagedir/$name-media.mp4"
 #mp4_opts="-r $fps -b:v 1500k -preset slow -profile:v baseline -vcodec libx264 -g 30 $pagedir/$name-media.mp4"

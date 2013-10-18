@@ -17,18 +17,24 @@ import os
 import math
 import time
 
-#from coLab import main
+#from coLab import mai
 import clclasses
 
 # this needs to be driven by a table - low/med/high res...
 width = 640
 height = 480
-width = 1280
-height = 960
-width = 2560
-height = 1920
-width = 1440
-height = 1080
+#width = 960
+#height = 720
+#width = 1280
+#height = 960
+#width = 2560
+#height = 1440
+#height = 1920
+#width = 1440
+#height = 1080
+#width = 1920
+#width = 320
+#height = 240
 
 size = (width, height)
 
@@ -81,10 +87,17 @@ def calculate_fps(page):
 	pps =  pixels / secs_long	# pixels per second required
 	print "calculate_fps, pps:", pps
 
+	"""   At this time - there are no fractional fps,
+	      ffmpeg does not support it - so let's eliminate
+	      the calculation (may have been a bit of error 
+	      anyway...
+	"""     
 	for (frames, seconds) in fps_values:
-		fps = float(frames) / seconds
+		#fps = float(frames) / seconds
+		fps = frames
 		if fps >= pps:
 			break	# this is the one.
+	
 	page.post()	# seems like I think you'd want to remember..
 	return(fps)	# should account for max fps being enough...
 
@@ -180,17 +193,18 @@ def make_images(page, prog_bar=None):
 	lastx = -1	# x-pos - force draw of the cursor
 
 	xPos = page.xStart
-	prevLine = -1
+	prev = -1
 
 	# Now - loop through, generating images as we need...
 	#
-	frames = int(float(page.duration) * page.fps) + 1
+	frames = int(float(page.duration) * page.fps) 
 
 	print "duration, fps, frames:", page.duration, page.fps, frames
 	xLen = page.xEnd - page.xStart
 
-	frameIncr = float(xLen) / frames
+	frameIncr = float(xLen) / (frames - 1)
 	botpix = height - 1		# bottom pixel
+	prog_bar.set_max(frames)
 	#while fr <= frames:
 	last_fr_num = frames - 1
 	for fr_num in range(frames):
@@ -260,7 +274,7 @@ def make_images(page, prog_bar=None):
 
 		xPos += frameIncr
 		try:
-			prog_bar.update(fr_num)
+			prog_bar.update(fr_num+1)
 		except:
 			pass
 		
@@ -475,16 +489,16 @@ class Sound_image():
 			sum_sqrs.append(0.0)
 		
 		
-		# s is sample
+		# v is vertical line
 # 		print "reading frames...", self.nframes
-		frame_data = self.aud.readframes(self.nframes)
+		frame_data = self.aud.readframes(self)
 	
 		print "Done reading.", len(frame_data)
 		p = 0	# pointer into the frame data
 		last_samp = 0					# where were we last?
-		for s in range(num_xpix):		# Calculate min/max for each line in the graphic
-			self.prog_bar.update(s)
-			next_samp = int((s+1) * frames_per_pixel)	# where are we reading to next?
+		for v in range(num_xpix):		# Calculate min/max for each line in the graphic
+			self.prog_bar.update(v)
+			next_samp = int((v+1) * frames_per_pixel)	# where are we reading to next?
 			for c in range(nchan):
 				min_tab[c].append(self.samp_max)	# seed with max value
 				max_tab[c].append(-self.samp_max)	# seed with min...
@@ -507,15 +521,15 @@ class Sound_image():
 					run_count[c] += value
 					val_squared = value * value
 					sum_sqrs[c] += val_squared	# squares
-					rms_tab[c][s] += val_squared / num_samps	# average of squares for this line
-					if value < min_tab[c][s]:
-						min_tab[c][s] = value
+					rms_tab[c][v] += val_squared / num_samps	# average of squares for this line
+					if value < min_tab[c][v]:
+						min_tab[c][v] = value
 						if value < chan_min[c]:
 							chan_min[c] = value
 							if value < min:
 								min = value
-					if value > max_tab[c][s]:
-						max_tab[c][s] = value
+					if value > max_tab[c][v]:
+						max_tab[c][v] = value
 						if value > chan_max[c]:
 							chan_max[c] = value
 							if value > max:

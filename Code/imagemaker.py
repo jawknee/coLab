@@ -23,9 +23,9 @@ import clclasses
 # this needs to be driven by a table - low/med/high res...
 width = 640
 height = 480
-<<<<<<< HEAD
-#width = 960
-#height = 720
+
+width = 960
+height = 720
 #width = 1280
 #height = 960
 #width = 2560
@@ -36,14 +36,10 @@ height = 480
 #width = 1920
 #width = 320
 #height = 240
-=======
-width = 1280
-height = 960
-width = 2560
-height = 1920
-width = 1440
-height = 1080
->>>>>>> ad0e546ffabb6ac3f648a5d9a90999eb800e1353
+
+
+
+
 
 size = (width, height)
 
@@ -93,8 +89,7 @@ def calculate_fps(page):
 	# spf:  10 5 4 3 2 1
 	# fps:  2 6 10 12 15 24 25 30 50 60 
 	# (we skip the fractional ones for now...)
-	#fps_values = [ (1,10), (1,5), (1,4), (1,3), (1,2), (1,1),
-	fps_values = [  (1,1),			
+	fps_values = [ (1,10), (1,5), (1,4), (1,3), (1,2), (1,1),
 	      (2,1), (6,1), (10,1), (12,1), (15,1), (24,1), 
 	      (25,1), (30,1) ]  #  not using:   (50,1), (60,1) 
 	try:
@@ -120,8 +115,8 @@ def calculate_fps(page):
 		if fps >= pps:
 			break	# this is the one.
 	
-	page.post()	# seems like I think you'd want to remember..
-	return(fps)	# should account for max fps being enough...
+	#page.post()	# seems like I think you'd want to remember..
+	return( (frames, seconds) )	# should account for max fps being enough...
 
 
 def make_sub_images(page):
@@ -200,7 +195,7 @@ def make_images(page, prog_bar=None):
 	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 
 	# use the pixels and duration to determine frames per second...
-	page.fps = calculate_fps_val(page)
+	page.fps = calc_fps_val(page)
 	
 
 	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
@@ -224,14 +219,10 @@ def make_images(page, prog_bar=None):
 	print "duration, fps, frames:", page.duration, page.fps, frames
 	xLen = page.xEnd - page.xStart
 
-<<<<<<< HEAD
-	frameIncr = float(xLen) / (frames - 1)
-	botpix = height - 1		# bottom pixel
-	prog_bar.set_max(frames)
-=======
+
 	frameIncr = float(xLen) / frames
 	botpix = height - 1		# bottom pixel
->>>>>>> ad0e546ffabb6ac3f648a5d9a90999eb800e1353
+
 	#while fr <= frames:
 	last_fr_num = frames - 1
 	for fr_num in range(frames):
@@ -548,26 +539,19 @@ class Sound_image():
 					run_count[c] += value
 					val_squared = value * value
 					sum_sqrs[c] += val_squared	# squares
-<<<<<<< HEAD
+
 					rms_tab[c][v] += val_squared / num_samps	# average of squares for this line
 					if value < min_tab[c][v]:
 						min_tab[c][v] = value
-=======
-					rms_tab[c][s] += val_squared / num_samps	# average of squares for this line
-					if value < min_tab[c][s]:
-						min_tab[c][s] = value
->>>>>>> ad0e546ffabb6ac3f648a5d9a90999eb800e1353
+
 						if value < chan_min[c]:
 							chan_min[c] = value
 							if value < min:
 								min = value
-<<<<<<< HEAD
+
 					if value > max_tab[c][v]:
 						max_tab[c][v] = value
-=======
-					if value > max_tab[c][s]:
-						max_tab[c][s] = value
->>>>>>> ad0e546ffabb6ac3f648a5d9a90999eb800e1353
+
 						if value > chan_max[c]:
 							chan_max[c] = value
 							if value > max:
@@ -771,7 +755,7 @@ def main():
 	sys.exit(0)
 	p = clclasses.Page('imagemakerTest')
 	p.xStart = 10
-	p.xEnd = 630
+	p.xEnd = 710
 
 
 	p.duration = .01	# start small (seconds) but get big fast...

@@ -317,7 +317,7 @@ class Page:
 		('xStart',  0),
 		('xEnd',  0),
 		# Frames per second, generally calculated from xEnd-xStart and duration
-		('fps', 6.),
+		('fps', '6'),
 		
 		('project', "<unset>"),
 		('assoc_projects', ''),
@@ -331,7 +331,7 @@ class Page:
 		]
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
-		self.floatvars = [ 'duration', 'fps' ]
+		self.floatvars = [ 'duration' ]
 		self.intvars = [ 'xStart', 'xEnd' ]
 
 		set_init_vars(self, initdata)

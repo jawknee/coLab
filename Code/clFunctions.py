@@ -680,11 +680,9 @@ class Graphic_row_screenshot(Graphic_row):
 		self.parent.needs_rebuild = True
 		self.parent.obj.screenshot = self.parent.obj.soundgraphic
 		self.parent.set_member('xStart', 30)	#   RBF:  these need to be set elsewhere...
-<<<<<<< HEAD
-		self.parent.set_member('xEnd',630)
-=======
-		self.parent.set_member('xEnd',1430)
->>>>>>> ad0e546ffabb6ac3f648a5d9a90999eb800e1353
+
+		self.parent.set_member('xEnd', 710)
+
 		self.parent.set_member('screenshot', self.parent.obj.soundgraphic)
 		imagemaker.make_sub_images(self.parent.obj)
 		self.graphic_path =  os.path.join(self.parent.obj.home, self.parent.obj.soundthumbnail)
@@ -1131,7 +1129,7 @@ def rebuild_page_edit(obj):
 		page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 		#
 		
-		fps = imagemaker.calculate_fps_val(obj.obj)
+		fps = imagemaker.calc_fps_val(obj.obj)
 		frames = int(float(obj.obj.duration) * fps) 
 		if obj.needs_rebuild:
 			f1 = tk.Frame(page_frame)
@@ -1209,13 +1207,10 @@ def edit_page(parent):
 
 	plist = parent.current_group.pagelist
 	plist.sort(key=clclasses.createkey, reverse=True)
-	pagename=plist[1].name
+	pagename=plist[21].name
 	
 	for page in parent.current_group.pagelist:
 		print "ep:", page.name, page.desc_title
-	#pagename="WaterMoonTomBass"
-	#pagename="N-Drone"
-	#pagename="JDJ-2-Jan2013"
 	
 	new_page = clclasses.Page(pagename)
 	new_page.group_obj = parent.current_group

@@ -680,7 +680,11 @@ class Graphic_row_screenshot(Graphic_row):
 		self.parent.needs_rebuild = True
 		self.parent.obj.screenshot = self.parent.obj.soundgraphic
 		self.parent.set_member('xStart', 30)	#   RBF:  these need to be set elsewhere...
+<<<<<<< HEAD
 		self.parent.set_member('xEnd',630)
+=======
+		self.parent.set_member('xEnd',1430)
+>>>>>>> ad0e546ffabb6ac3f648a5d9a90999eb800e1353
 		self.parent.set_member('screenshot', self.parent.obj.soundgraphic)
 		imagemaker.make_sub_images(self.parent.obj)
 		self.graphic_path =  os.path.join(self.parent.obj.home, self.parent.obj.soundthumbnail)
@@ -1205,7 +1209,7 @@ def edit_page(parent):
 
 	plist = parent.current_group.pagelist
 	plist.sort(key=clclasses.createkey, reverse=True)
-	pagename=plist[0].name
+	pagename=plist[1].name
 	
 	for page in parent.current_group.pagelist:
 		print "ep:", page.name, page.desc_title

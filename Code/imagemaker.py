@@ -23,6 +23,7 @@ import clclasses
 # this needs to be driven by a table - low/med/high res...
 width = 640
 height = 480
+<<<<<<< HEAD
 #width = 960
 #height = 720
 #width = 1280
@@ -35,6 +36,14 @@ height = 480
 #width = 1920
 #width = 320
 #height = 240
+=======
+width = 1280
+height = 960
+width = 2560
+height = 1920
+width = 1440
+height = 1080
+>>>>>>> ad0e546ffabb6ac3f648a5d9a90999eb800e1353
 
 size = (width, height)
 
@@ -215,9 +224,14 @@ def make_images(page, prog_bar=None):
 	print "duration, fps, frames:", page.duration, page.fps, frames
 	xLen = page.xEnd - page.xStart
 
+<<<<<<< HEAD
 	frameIncr = float(xLen) / (frames - 1)
 	botpix = height - 1		# bottom pixel
 	prog_bar.set_max(frames)
+=======
+	frameIncr = float(xLen) / frames
+	botpix = height - 1		# bottom pixel
+>>>>>>> ad0e546ffabb6ac3f648a5d9a90999eb800e1353
 	#while fr <= frames:
 	last_fr_num = frames - 1
 	for fr_num in range(frames):
@@ -534,15 +548,26 @@ class Sound_image():
 					run_count[c] += value
 					val_squared = value * value
 					sum_sqrs[c] += val_squared	# squares
+<<<<<<< HEAD
 					rms_tab[c][v] += val_squared / num_samps	# average of squares for this line
 					if value < min_tab[c][v]:
 						min_tab[c][v] = value
+=======
+					rms_tab[c][s] += val_squared / num_samps	# average of squares for this line
+					if value < min_tab[c][s]:
+						min_tab[c][s] = value
+>>>>>>> ad0e546ffabb6ac3f648a5d9a90999eb800e1353
 						if value < chan_min[c]:
 							chan_min[c] = value
 							if value < min:
 								min = value
+<<<<<<< HEAD
 					if value > max_tab[c][v]:
 						max_tab[c][v] = value
+=======
+					if value > max_tab[c][s]:
+						max_tab[c][s] = value
+>>>>>>> ad0e546ffabb6ac3f648a5d9a90999eb800e1353
 						if value > chan_max[c]:
 							chan_max[c] = value
 							if value > max:

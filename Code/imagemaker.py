@@ -51,7 +51,20 @@ Green = (20, 255, 20, 255)	# a bright, opaque green
 eBlue = (20, 20, 255, 255)	# electric blue
 dBlue = (10, 20, 128, 255)	# dark blue
 
+def calc_fps_val(page):
+	"""
+	returns the fps value as a real number
+	"""
+	(f,s) = calculate_fps(page)
+	return(float(f)/s)
 
+def calc_fps_string(page):
+	(f,s) = calculate_fps(page)
+	
+	if s == 1:
+		return(str(f))
+	else:
+		return(str(f) + '/' + str(s))
 def calculate_fps(page):
 	"""
 	Return a "legal" frames per second based on the number
@@ -178,7 +191,7 @@ def make_images(page, prog_bar=None):
 	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 
 	# use the pixels and duration to determine frames per second...
-	page.fps = calculate_fps(page)
+	page.fps = calculate_fps_val(page)
 	
 
 	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.

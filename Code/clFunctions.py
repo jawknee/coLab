@@ -1127,7 +1127,7 @@ def rebuild_page_edit(obj):
 		page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 		#
 		
-		fps = imagemaker.calculate_fps(obj.obj)
+		fps = imagemaker.calculate_fps_val(obj.obj)
 		frames = int(float(obj.obj.duration) * fps) 
 		if obj.needs_rebuild:
 			f1 = tk.Frame(page_frame)

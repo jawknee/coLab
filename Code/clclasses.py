@@ -404,17 +404,6 @@ class Page:
 		
 		import_data(self)
 
-		# ------- this next block must go once we're committed to the GUI
-		if self.group == '<unset>':
-			self.group = cltkutils.getGroup()
-			#self.group = "SBP"
-			#self.group= "Johnny"
-			print "Note: override: group =", self.group
-
-		#sub_dir = os.path.join('Group', self.group, 'Page', self.name)
-		#set_paths(self, sub_dir)
-
-
 
 	def post(self):
 		"""
@@ -572,6 +561,7 @@ class Song:
 		"""
 
 		if self.group == '<unset>':
+			raise(ValueError)
 			self.group_obj = cltkutils.getGroup()
 			self.group = self.group_obj.name
 			#self.group = "SBP"
@@ -620,19 +610,14 @@ class Song:
 def main():
 	print "Welcome to classes..."
 	
-	group = cltkutils.getGroup()
-
-	p = Page()
-	p.load('/Users/Johnny/dev/coLab/Group/' + group + '/Page/BeachFlute')
-	print p.dump()
-
+	"""
 	
 	g = Group()
 	g.load(group)
 
 	for p in g.pagelist:
 		print "got page:", p.name, p.desc_title, p.fun_title
-
+	"""
 
 if __name__ == '__main__':
 	main()

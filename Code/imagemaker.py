@@ -17,19 +17,19 @@ import os
 import math
 import time
 
-#from coLab import mai
+#from coLab import main
 import clclasses
 
 # this needs to be driven by a table - low/med/high res...
 width = 640
 height = 480
 
-width = 960
-height = 720
+#width = 960
+#height = 720
 #width = 1280
 #height = 960
-#width = 2560
-#height = 1440
+width = 2560
+height = 1440
 #height = 1920
 #width = 1440
 #height = 1080
@@ -196,6 +196,7 @@ def make_images(page, prog_bar=None):
 
 	# use the pixels and duration to determine frames per second...
 	page.fps = calc_fps_val(page)
+	
 	
 
 	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
@@ -509,7 +510,7 @@ class Sound_image():
 		
 		# v is vertical line
 # 		print "reading frames...", self.nframes
-		frame_data = self.aud.readframes(self)
+		frame_data = self.aud.readframes(self.nframes)
 	
 		print "Done reading.", len(frame_data)
 		p = 0	# pointer into the frame data
@@ -755,7 +756,7 @@ def main():
 	sys.exit(0)
 	p = clclasses.Page('imagemakerTest')
 	p.xStart = 10
-	p.xEnd = 710
+	p.xEnd = 1430
 
 
 	p.duration = .01	# start small (seconds) but get big fast...

@@ -277,6 +277,7 @@ def updatekey(self):
 	return (self.updatetime)	# return the update time as seconds for sorting
 def createkey(self):
 	return (self.createtime)	# ditto the create time
+
 class Page:
 	"""
 	A Page object contains the data associated with a posted page.

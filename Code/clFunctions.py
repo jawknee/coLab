@@ -681,7 +681,7 @@ class Graphic_row_screenshot(Graphic_row):
 		self.parent.obj.screenshot = self.parent.obj.soundgraphic
 		self.parent.set_member('xStart', 30)	#   RBF:  these need to be set elsewhere...
 
-		self.parent.set_member('xEnd', 710)
+		self.parent.set_member('xEnd', 1430)
 
 		self.parent.set_member('screenshot', self.parent.obj.soundgraphic)
 		imagemaker.make_sub_images(self.parent.obj)
@@ -1200,15 +1200,57 @@ def create_new_page(parent):
 	
 	parent.page = Page_edit_screen(parent, new_page, new=True)
 	
+class Select_edit():
+	"""
+	A simple class to hold the pieces we need to 
+	determine which page we want to edit...
+	"""
+	def __init__(self, parent):
+		self.parent = parent
 	
+	def post(self):
+		self.tmpBox = tk.Toplevel()
+		self.tmpBox.transient(self.parent.top)
+		
+		frame = tk.LabelFrame(master=self.tmpBox, relief=tk.GROOVE, text="Select Page to Edit (Group: " + self.parent.current_groupname + ')', borderwidth=5)
+		frame.lift(aboveThis=None)
+		frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+		plist = self.parent.current_group.pagelist
+		plist.sort(key=clclasses.createkey, reverse=True)
+		
+		self.myom = cltkutils.clOption_menu(frame, plist, 'desc_title' )
+		self.myom.om.grid(column=1, row=1)
+		
+		self.button = ttk.Button(frame, text="Edit", command=self.edit_select).grid(column=2, row=2)	
+		self.tmpBox.wait_window(frame)
+	
+	def edit_select(self):
+		"""
+		Called when the "Edit" button is pushed
+		"""
+		print "edit_select called."
+		selected_str = self.myom.var.get()
+		if selected_str is None:
+			print "Got a Null selection."
+		print self.myom.var.get()
+		self.selected = self.myom.dictionary[selected_str]
+		self.tmpBox.destroy()
+		
 	
 def edit_page(parent):
 	print "edit Page"
-
-	plist = parent.current_group.pagelist
-	plist.sort(key=clclasses.createkey, reverse=True)
-	pagename=plist[21].name
 	
+	selector = Select_edit(parent)	# pick a page...
+	print "ep hello"
+	selector.post()
+	print "ep post post"
+	page = selector.selected
+	if page is None:
+		return
+	print "Selected:", page.name
+	
+	
+	"""
 	for page in parent.current_group.pagelist:
 		print "ep:", page.name, page.desc_title
 	
@@ -1223,8 +1265,8 @@ def edit_page(parent):
 	new_page.load()
 	
 	new_page.song_obj = new_page.group_obj.find_song(new_page.song)
-	
-	parent.page = Page_edit_screen(parent, new_page, new=False)
+	"""
+	parent.page = Page_edit_screen(parent, page, new=False)
 	
 def create_new_song(parent):
 	print "new song"

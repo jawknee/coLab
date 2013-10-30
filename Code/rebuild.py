@@ -69,7 +69,7 @@ def rebuild(g, mirror=False, opt="nope"):
 
 	print "----------"
 	#  sort pages by creation date - old to new...
-	g.pagelist.sort(key=createkey)
+	g.pagelist.sort(key=clclasses.createkey)
 
 	pagedir = os.path.join(g.coLab_home, 'Page')
 
@@ -109,7 +109,7 @@ def rebuild(g, mirror=False, opt="nope"):
 	for songname in song_dict:
 		print "Song:", songname
 		song = song_dict[songname]
-		song.list.sort(key=updatekey)
+		song.list.sort(key=clclasses.updatekey)
 		for page in song.list:
 			print "  Page:", page.name
 
@@ -122,7 +122,7 @@ def rebuild(g, mirror=False, opt="nope"):
 
 	# sort pages by update time... oldest to newest
 	
-	g.pagelist.sort(key=updatekey)
+	g.pagelist.sort(key=clclasses.updatekey)
 
 	"""
 	Build the most recent list, typically included on the left sidebar...
@@ -190,7 +190,7 @@ def rebuild(g, mirror=False, opt="nope"):
 		index = -index
 
 	songURLbase = os.path.join(g.root, 'Song')
-	g.songlist.sort(key=createkey)
+	g.songlist.sort(key=clclasses.createkey)
 	print "index is", index, "song list is", g.songlist
 	for sg in g.songlist[index:]:
 		#print "times:", sg.createtime, sg.updatetime
@@ -216,7 +216,7 @@ def rebuild(g, mirror=False, opt="nope"):
 	f_project.close()
 	#
 	# Generate the links from the list..
-	g.pagelist.sort(key=createkey)
+	g.pagelist.sort(key=clclasses.createkey)
 	linkgen(g)	# build the included links for the each page
 	for song in g.songlist:
 		print "precheck:", g.name, song.name

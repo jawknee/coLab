@@ -51,23 +51,82 @@ class graphic_element():
         except Exception as e:
             print "self.graphic.grid_forget / destroy excepted...", e, sys.exc_info()[0]
            
-def task(obj,bar):
+class clOption_menu():
+    """
+    creates a tk.OptionMenu as a child of the parent, from 
+    the list - using the "eval_string" for the display
+    (derivative classes can replace opt_string to change 
+    the output)
     
-    val = raw_input('Next Spot')
+    Builds a dictionary, and returns pointer to the member 
+    of the list that was selected.
     
-    obj.value.set(val)
-
-    val = raw_input('Max val')
+    """
+    def __init__(self, parent, list, eval_string, default='-Choose-'):
     
-    bar.configure(maximum=val)
-
-    obj.after(50, task, obj,bar)
-
-
+        self.parent = parent
+        self.list = list
+        self.eval_string = eval_string
+        self.default = default
+         
+        # Create a list of strings and a dictionary to later convert
+        # the return string back to a pointer to the list member
+        self.namelist = []
+        self.dictionary = dict()
+        self.dictionary[default] = None # detect when there's no selection
+    
+        for member in self.list:
+            string = self.opt_string(member, eval_string)
+            print "New member", string
+            self.namelist.append(string)
+            self.dictionary[string] = member
+             
+        self.var = tk.StringVar()
+        self.var.set(self.default)
+        self.om = tk.OptionMenu(self.parent, self.var, *self.namelist)
+        
+        print self.var.get()
+        
+    def return_value(self):
+        """ which one is currently selected """
+        string = self.var.get()
+        if string == '-Choose-':
+            return None
+        return self.dict[string]    # could "try" this... but a failure is pretty serious in any case
+        
+    def opt_string(self, member, eval_string):
+        value = eval('member' + '.' + eval_string)
+        return(str(value))
+ 
+""" for debugging.... """
+class Thingy():
+    def __init__(self):
+        self.a = 'string'
+        self.b = 1
+              
+def main():
+    t = tk.Tk() # base object
+    t.grid()
+    l = []
+    a = Thingy()
+    a.a = 'zero'
+    a.b = 0
+    b = Thingy()
+    b.a = "one"
+    b.b = 1
+    c = Thingy()
+    c.a = 'two'
+    c.b = 2
+    l = [ a, b, c]
+    myom = clOption_menu(t, l, 'a', 'one' )
+    myom.om.grid()
+    
+    
+    
 import coLab
 if __name__ == '__main__':
-    coLab.main()
-    
+    #coLab.main()
+    main()
     
     
     

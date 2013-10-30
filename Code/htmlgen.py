@@ -19,7 +19,9 @@ import shutil
 import clutils
 import cldate
 
-from clclasses  import *
+#from clclasses import *
+import clclasses
+
 from headers import *
 from imagemaker import make_text_graphic
 
@@ -193,7 +195,7 @@ def linkgen(group):
 	# page to the end of the list named "Archive" 
 	#
 	# A bit tricky...   append the list with a fake page: "Archive"
-	p = Page('null')
+	p = clclasses.Page('null')
 	p.name = "Archive"
 	p.root = os.path.join(group.root, 'Shared', 'Archive')
 	p.home = os.path.join(group.home, 'Shared', 'Archive')
@@ -415,7 +417,7 @@ def songgen(group):
 				content += "(none)<p>"
 				continue
 
-			song.part_dict[part].sort(key=updatekey, reverse=True)
+			song.part_dict[part].sort(key=clclasses.updatekey, reverse=True)
 			hr = ''	# cute trick to only put an <hr> tag "between" entries
 			for pg in song.part_dict[part]:	#step though the pages
 
@@ -468,7 +470,7 @@ def homegen(group):
 
 	index='index.shtml'
 
-	page = Page('null')	# create a page structure - to pass in a title
+	page = clclasses.Page('null')	# create a page structure - to pass in a title
 	page.desc_title = group.title
 	page.fun_title = group.subtitle
 	page.name = group.name
@@ -688,7 +690,7 @@ def archivegen(group):
 
 	index='index.shtml'
 
-	page = Page('null')	# create a page structure - to pass in a title
+	page = clclasses.Page('null')	# create a page structure - to pass in a title
 	page.desc_title = group.title + " Archive"
 	page.fun_title = group.title + " Archive"
 	page.name = "Archive"
@@ -733,7 +735,7 @@ def archivegen(group):
 	outfile.write(content)
 
 
-	group.pagelist.sort(key=createkey)
+	group.pagelist.sort(key=clclasses.createkey)
 	group.pagelist.reverse()
 	hr = ''		# no horizontal rule on the first pass...
 	for pg in group.pagelist:
@@ -772,7 +774,7 @@ def helpgen(group):
 		print "Skipping helpgen..."
 		return
 
-	page = Page('null')	# create a page structure - to pass in a title
+	page = clclasses.Page('null')	# create a page structure - to pass in a title
 	page.desc_title = "Help"
 	page.fun_title = "Help"
 	page.name = "Help"

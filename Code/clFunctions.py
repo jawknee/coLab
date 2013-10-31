@@ -791,7 +791,7 @@ class Page_edit_screen():
 		"""
 		self.setup()
 				
-	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing now...
+	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing no...
 		#"""
 		print "-----------Setup called!"
 		if self.page_frame is not None:
@@ -936,7 +936,7 @@ class Page_edit_screen():
 		#--- Song
 
 		#self.obj.song_obj = None
-		menu = Menu_row(self, "Songs", "song")
+		menu = Menu_row(self, "Song", "song")
 		l = []		# list of song titles (desc_title)
 		d = {}		# dictionary to convert desc_title to name
 		if self.new:
@@ -951,7 +951,7 @@ class Page_edit_screen():
 		menu.titles = tuple (l)		# Convert to a tuple...
 		
 		try:
-			menu.default = self.obj.song_obj.desc_title
+			menu.default = self.song_obj.desc_title
 		except:
 			pass
 		self.editlist[menu.member] =  menu

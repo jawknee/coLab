@@ -538,7 +538,7 @@ def newgen(group):
 		print "Skipping newgen..."
 		return
 
-	page = Page('null')	# create a page structure - to pass in a title
+	page = clclasses.Page('null')	# create a page structure - to pass in a title
 	page.desc_title = "What's New"
 	page.fun_title = "What's new in " + group.title + " Land"
 	page.name = "WhatIsNew"

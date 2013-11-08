@@ -28,8 +28,8 @@ height = 480
 #height = 720
 #width = 1280
 #height = 960
-width = 2560
-height = 1440
+#width = 2560
+#height = 1440
 #height = 1920
 #width = 1440
 #height = 1080
@@ -89,7 +89,8 @@ def calculate_fps(page):
 	# spf:  10 5 4 3 2 1
 	# fps:  2 6 10 12 15 24 25 30 50 60 
 	# (we skip the fractional ones for now...)
-	fps_values = [ (1,10), (1,5), (1,4), (1,3), (1,2), (1,1),
+	#fps_values = [ (1,10), (1,5), (1,4), (1,3), (1,2), (1,1),
+	fps_values = [ (1,1), 
 	      (2,1), (6,1), (10,1), (12,1), (15,1), (24,1), 
 	      (25,1), (30,1) ]  #  not using:   (50,1), (60,1) 
 	try:
@@ -756,7 +757,7 @@ def main():
 	sys.exit(0)
 	p = clclasses.Page('imagemakerTest')
 	p.xStart = 10
-	p.xEnd = 1430
+	p.xEnd = 470
 
 
 	p.duration = .01	# start small (seconds) but get big fast...

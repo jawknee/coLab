@@ -90,12 +90,13 @@ class Html:
 		self.media_insert_html5="""
 			<center>
 			<video  poster="ScreenShot.png" width="640" height="530" controls>
-			  <source src="!name!-media.ogg" type='video/ogg; codecs="theora, vorbis"'>
 			  <source src="!name!-media.webm" type='video/webm; codecs="vp8.0, vorbis"'>
+			  <source src="!name!-media.mp4" type='video/mp4'>
 			  <!--
 			  <source src="!name!-media.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+			  <source src="!name!-media.ogg" type='video/ogg; codecs="theora, vorbis"'>
 			  -->
-			  <source src="!name!-media.mp4" type='video/mp4'>
+			  
 			  <!-- Fall back for non-html5 browsers, (WinXP/IE8, e.g.) simple mp4 embed tag -->
 			  <br>
 			  <embed src="!name!-media.mp4" autostart="false" height="500" width="640" /><br>

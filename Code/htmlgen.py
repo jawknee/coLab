@@ -607,7 +607,7 @@ def navgen(group):
 		print "Skipping nevgen..."
 		return
 
-	page = Page('null')	# create a page structure - to pass in a title
+	page = clclasses.Page('null')	# create a page structure - to pass in a title
 	page.desc_title = "Navigation"
 	page.fun_title = "Navigation: " + group.title 
 	page.name = "Navigation"

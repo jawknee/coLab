@@ -190,7 +190,7 @@ class Entry_row():
 		"""
 		if self.label is None:
 			# write the base label...
-			self.label = ttk.Label(self.parent.page_frame, text=self.text+":", justify=tk.RIGHT)
+			self.label = ttk.Label(self.parent.edit_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 			self.nameVar = tk.StringVar()
 			# Now we build a string that is the name of the associated variable.   Then we use eval and exec to
@@ -204,7 +204,7 @@ class Entry_row():
 			# set up a small label between the title and the value to 
 			# display the status of the value...
 			self.statusVar = tk.StringVar()
-			self.status = ttk.Label(self.parent.page_frame, textvariable=self.statusVar)
+			self.status = ttk.Label(self.parent.edit_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
 			if self.new:
 				set_status(self,None)
@@ -216,7 +216,7 @@ class Entry_row():
 		# if not editable - just display as a label...
 		print "vobj - editable:", self.editable
 		if not self.editable:
-			self.widget = ttk.Label(self.parent.page_frame, textvariable=self.nameVar, justify=tk.LEFT)
+			self.widget = ttk.Label(self.parent.edit_frame, textvariable=self.nameVar, justify=tk.LEFT)
 			self.widget.grid(row=self.row,column=self.column + 2, columnspan=3, sticky=tk.W)
 			self.nameVar.set(self.value)
 			#self.ok = True		# since we can't change it - it's good
@@ -227,7 +227,7 @@ class Entry_row():
 			print "Ev_init: callback is:", self.callback
 			# Build a list: the call back registery and the subcodes, 
 			# then turn the list into a tuple to pass in...
-			l = [ self.parent.page_frame.register(self.callback) ]		# first part is the registration of the call back.
+			l = [ self.parent.edit_frame.register(self.callback) ]		# first part is the registration of the call back.
 			#widget.destroy()
 			for sc in self.subcodes:
 				l.append(sc)
@@ -238,7 +238,7 @@ class Entry_row():
 			if self.new:
 				fg = '#AAA'	# light gray
 			
-			self.widget = ttk.Entry(self.parent.page_frame, textvariable=self.nameVar, width=self.width, foreground=fg,background='#e9e9e9', validate=self.validate, validatecommand=self.validatecommand )
+			self.widget = ttk.Entry(self.parent.edit_frame, textvariable=self.nameVar, width=self.width, foreground=fg,background='#e9e9e9', validate=self.validate, validatecommand=self.validatecommand )
 			print "v-obj widget created:", self.widget
 			self.widget.grid(row=self.row, column=self.column + 2, sticky=tk.W)
 			self.nameVar.set(self.value)
@@ -246,7 +246,7 @@ class Entry_row():
 
 			
 			self.matchVar = tk.StringVar()
-			self.match = tk.Label(self.parent.page_frame, textvariable=self.matchVar, justify=tk.LEFT)
+			self.match = tk.Label(self.parent.edit_frame, textvariable=self.matchVar, justify=tk.LEFT)
 			self.match.grid(row=self.row, column=self.column + 3, rowspan=6, columnspan=2, sticky=tk.NW)		
 	
 	def set(self, value):
@@ -387,11 +387,11 @@ class Text_row():
 		"""
 		
 		# write the base label...
-		self.label = tk.Label(self.parent.page_frame, text=self.text+":", justify=tk.RIGHT)
+		self.label = tk.Label(self.parent.edit_frame, text=self.text+":", justify=tk.RIGHT)
 		self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 		
 		# need a "sub-frame" to hold the desc. and scroll bar.
-		self.subframe = tk.LabelFrame(self.parent.page_frame, relief=tk.GROOVE)
+		self.subframe = tk.LabelFrame(self.parent.edit_frame, relief=tk.GROOVE)
 		self.subframe.grid(row=self.row, column=self.column+2, columnspan=3, sticky=tk.W)
 		
 		self.widget = tk.Text(self.subframe, height=15, width=80, padx=5, pady=5, relief=tk.GROOVE, wrap=tk.WORD,bg='#ffffff', undo=True)
@@ -441,7 +441,7 @@ class Menu_row():
 		
 		if self.label is None:
 		# write the base label...
-			self.label = tk.Label(self.parent.page_frame, text=self.text+":", justify=tk.RIGHT)
+			self.label = tk.Label(self.parent.edit_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 
 			self.gOpt = tk.StringVar()
@@ -450,12 +450,12 @@ class Menu_row():
 			
 		self.gOpt.set(self.default)
 
-		self.widget = tk.OptionMenu(self.parent.page_frame, self.gOpt, *self.titles, command=self.handler)
+		self.widget = tk.OptionMenu(self.parent.edit_frame, self.gOpt, *self.titles, command=self.handler)
 
 		self.widget.grid(column=self.column+2, row=self.row,  columnspan=3,sticky=tk.W)
 		
 		self.statusVar = tk.StringVar()
-		self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
+		self.status = tk.Label(self.parent.edit_frame, textvariable=self.statusVar)
 		self.status.grid(row=self.row, column=self.column + 1)
 		if self.new:
 			set_status(self,None)
@@ -555,16 +555,16 @@ class Graphic_row():
 		print "Graphic post"
 		if self.label is None:
 		# write the base label...
-			self.frame = self.parent.page_frame
+			self.frame = self.parent.edit_frame
 			self.label = tk.Label(self.frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 
 			self.gOpt = tk.StringVar()
 			
-			self.changeButton = ttk.Button(self.parent.page_frame, text="Change " + self.text, command=self.button_handler).grid(column=self.column + 2, row=self.row + 1, sticky=tk.W )
+			self.changeButton = ttk.Button(self.parent.edit_frame, text="Change " + self.text, command=self.button_handler).grid(column=self.column + 2, row=self.row + 1, sticky=tk.W )
 			
 			self.statusVar = tk.StringVar()
-			self.status = tk.Label(self.parent.page_frame, textvariable=self.statusVar)
+			self.status = tk.Label(self.parent.edit_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
 			
 		else:
@@ -639,7 +639,7 @@ class Graphic_row_screenshot(Graphic_row):
 			sys.exit(1)
 			
 		#message = 'Please crop the graphic and save in place.'
-		#tkMessageBox.showinfo("Crop IT!", message, parent=self.parent.page_frame, icon=tkMessageBox.ERROR)
+		#tkMessageBox.showinfo("Crop IT!", message, parent=self.parent.edit_frame, icon=tkMessageBox.ERROR)
 		# 
 		# Let's create the various bits...
 		imagemaker.make_sub_images(self.parent.obj)
@@ -670,7 +670,7 @@ class Graphic_row_screenshot(Graphic_row):
 		"""
 		Put up a second button to allow using the sound graphic.
 		"""
-		self.changeButton = ttk.Button(self.parent.page_frame, text="Use Sound Graphic", command=self.button2_handler).grid(column=self.column + 3, row=self.row + 1, sticky=tk.W )
+		self.changeButton = ttk.Button(self.parent.edit_frame, text="Use Sound Graphic", command=self.button2_handler).grid(column=self.column + 3, row=self.row + 1, sticky=tk.W )
 		
 	def button2_handler(self):
 		"""
@@ -731,13 +731,13 @@ class Graphic_row_soundfile(Graphic_row):
 	
 def make_sound_image(page_edit, sound, image):
 	print "Creating image...", image
-	pageTop = tk.Toplevel()
-	#pageTop.transient(page_edit)
-	page_frame = tk.LabelFrame(master=pageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
-	page_frame.lift(aboveThis=None)
-	page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+	soundimageTop = tk.Toplevel()
+	#soundimageTop.transient(page_edit)
+	soundimage_frame = tk.LabelFrame(master=soundimageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
+	soundimage_frame.lift(aboveThis=None)
+	soundimage_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 	
-	f1 = tk.Frame(page_frame)
+	f1 = tk.Frame(soundimage_frame)
 	f1.grid(row=0, column=0, sticky=tk.W)
 	
 	img_gen_progbar = Progress_bar(f1, 'Image Generation')
@@ -752,7 +752,7 @@ def make_sound_image(page_edit, sound, image):
 	
 	imagemaker.make_sub_images(page_edit.obj)
 	page_edit.post_member('soundfile')
-	pageTop.destroy()
+	soundimageTop.destroy()
 
 class Select_edit():
 	"""
@@ -795,7 +795,43 @@ class Select_edit():
 		self.selected = self.myom.dictionary[selected_str]
 		self.tmpBox.destroy()
 
-class Page_edit_screen():
+class Edit_screen:
+	"""
+	Base class for the Page, Song and whatever future
+	classes.   Does the barebones setup of a frame, ready
+	for edit rows, or what ever else shows up.
+	"""
+	def __init__(self, parent, object, new=False):
+		"""
+		Set up for the base object (Page, Song, etc.).  
+	
+		If new is True, we're likely creating a new object
+		including a dir (no spaces, etc.).   In any case,
+		not to be called directly - set up for the derivative
+		class
+		"""
+		print "hello"
+		if parent.edit_lock:
+			print "locked"  # (obviously more, later)
+			return
+		#parent.edit_lock = True
+		#new = False
+		print "PES: new:",new
+		self.parent = parent
+		self.object_type = 'Unset'
+		
+		self.row=0
+		self.column=0
+		self.obj = object		# the object we're editing
+		self.new = new
+		self.ok = not new
+		self.edit_frame = None
+		self.song_obj = None
+		self.changed = False
+		self.needs_rebuild = False
+		
+		
+class Page_edit_screen(Edit_screen):
 	"""
 	A way of posting a screen that lets us enter
 	or edit the variables associated with a page class.
@@ -808,25 +844,9 @@ class Page_edit_screen():
 	the current group
 	"""
 	def __init__(self, parent, page, new=False):
-		print "hello"
-		if parent.edit_lock:
-			print "locked"  # (obviously more, later)
-			return
-		#parent.edit_lock = True
-		#new = False
-		print "PES: new:",new
-		self.parent = parent
-		
-		self.row=0
-		self.column=0
-		self.obj = page		# the object we're editing
-		self.new = new
-		self.ok = not new
-		self.page_frame = None
-		self.song_obj = None
-		self.changed = False
-		self.needs_rebuild = False
-		
+		Edit_screen.__init__(self, parent, page, new)
+
+		page.object_type = 'Page'
 		page.page_type = 'html5'		# new pages use this..
 		
 		"""
@@ -835,20 +855,20 @@ class Page_edit_screen():
 	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing no...
 		#"""
 		print "-----------Setup called!"
-		if self.page_frame is not None:
+		if self.edit_frame is not None:
 			print "---------------Destroy All Page Frames...---------"
-			self.page_frame.destroy()
+			self.edit_frame.destroy()
 	
 		# Set up a dictionary listing the row objects, etc. that have the 
 		# info we need.  By indexing by the "member" name - we can find the mas 
 		# needed - or step through the whole list.
 		self.editlist = dict()		
 		if self.new:
-			self.pageTop = tk.Toplevel()
-			self.pageTop.transient(self.parent.top)
-			self.page_frame = tk.LabelFrame(master=self.pageTop, relief=tk.GROOVE, text="New Page (Group: " + self.parent.current_groupname + ')', borderwidth=5)
-			self.page_frame.lift(aboveThis=None)
-			self.page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+			self.editTop = tk.Toplevel()
+			self.editTop.transient(self.parent.top)
+			self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text="New Page (Group: " + self.parent.current_groupname + ')', borderwidth=5)
+			self.edit_frame.lift(aboveThis=None)
+			self.edit_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 			
 			# we first open, it it's new, with a simple window for the name...
 			
@@ -884,24 +904,24 @@ class Page_edit_screen():
 			self.editlist[row.member] =  row 		# just process this one item...
 			
 			self.row = 8		# push these buttons down out of the way...
-			self.saveButton = ttk.Button(self.page_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
-			self.quitButton = ttk.Button(self.page_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
+			self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
+			self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
 			
 			# stop and wait for the above window to return...
-			self.pageTop.wait_window(self.page_frame)
+			self.editTop.wait_window(self.edit_frame)
 			
 			if not self.ok:
 				return()
 		#
 		# Basically start over - this time with the name preset...
 		#time.sleep(1)		# Seems to be necessary for the window to die (is there a call for this?)
-		self.pageTop = tk.Toplevel()
-		self.pageTop.transient(self.parent.top)
+		self.editTop = tk.Toplevel()
+		self.editTop.transient(self.parent.top)
 		self.row=0
 		self.column=0
-		self.page_frame = tk.LabelFrame(master=self.pageTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', bd=100, padx=10, pady=10, borderwidth=5)
-		self.page_frame.lift(aboveThis=None)
-		self.page_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
+		self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', bd=100, padx=10, pady=10, borderwidth=5)
+		self.edit_frame.lift(aboveThis=None)
+		self.edit_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
 		
 		#---- Descriptive title, "unique", but flexible with case, spaces, etc...
 		row = Entry_row(self, "Descriptive title", "desc_title", width=30)
@@ -1010,8 +1030,8 @@ class Page_edit_screen():
 		menu.post()
 		
 		#"""
-		self.saveButton = ttk.Button(self.page_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
-		self.quitButton = ttk.Button(self.page_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
+		self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
+		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
 		
 		
 	def refresh(self):
@@ -1113,7 +1133,7 @@ class Page_edit_screen():
 				message += spacer + i
 				spacer = ', '
 			message += '.\n\nPlease correct.'
-			tkMessageBox.showerror("There were problems...", message, parent=self.page_frame, icon=tkMessageBox.ERROR)
+			tkMessageBox.showerror("There were problems...", message, parent=self.edit_frame, icon=tkMessageBox.ERROR)
 			return
 		
 		else:
@@ -1123,7 +1143,7 @@ class Page_edit_screen():
 				type = 'update'
 			message = "This will " + type + " the page: " + self.obj.name
 			message += "\n\nOK?"
-			if not tkMessageBox.askquestion('OK to save?', message, parent=self.page_frame, icon=tkMessageBox.QUESTION):
+			if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				print "return"
 	
 	
@@ -1132,7 +1152,7 @@ class Page_edit_screen():
 				self.obj.group_obj.pagelist.append(self.obj)		# add the page name
 				self.obj.group_obj.pagedict[self.obj.name] = self.obj	# name -> page obj
 				self.obj.create()				# build the page dir structure, base data page.
-				self.pageTop.destroy()
+				self.editTop.destroy()
 				return							# just create the dir and 1-entry data file - we only have the name so far
 						
 			# We're good - let's post this...
@@ -1142,14 +1162,14 @@ class Page_edit_screen():
 			page_thread.start()
 			#rebuild_page_edit(self)
 			
-			self.pageTop.destroy()
+			self.editTop.destroy()
 			
 	def my_quit(self):
 		if self.changed:
 			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
-			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.page_frame, icon=tkMessageBox.QUESTION):
-				return
-		self.pageTop.destroy()
+			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
+				return(None)
+		self.editTop.destroy()
 		
 
 def rebuild_page_edit(obj):
@@ -1163,17 +1183,17 @@ def rebuild_page_edit(obj):
 		# let's make sure mamp is running...
 		
 		clSchedule.start_mamp()
-		pageTop = tk.Toplevel()
-		pageTop.transient(obj.parent.top)
-		page_frame = tk.LabelFrame(master=pageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
-		page_frame.lift(aboveThis=None)
-		page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+		progressTop = tk.Toplevel()
+		progressTop.transient(obj.parent.top)
+		edit_frame = tk.LabelFrame(master=progressTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
+		edit_frame.lift(aboveThis=None)
+		edit_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 		#
 		
 		fps = imagemaker.calc_fps_val(obj.obj)
 		frames = int(float(obj.obj.duration) * fps) 
 		if obj.needs_rebuild:
-			f1 = tk.Frame(page_frame)
+			f1 = tk.Frame(edit_frame)
 			f1.grid(row=0, column=0, sticky=tk.W)
 			
 			img_gen_progbar = Progress_bar(f1, 'Image Generation', max=frames)
@@ -1182,7 +1202,7 @@ def rebuild_page_edit(obj):
 			img_gen_progbar.max = frames
 			img_gen_progbar.post()		# initial layout...
 			
-			f2 = tk.Frame(page_frame)
+			f2 = tk.Frame(edit_frame)
 			f2.grid(row=1, column=0, sticky=tk.W)
 			
 			vid_gen_progbar = Progress_bar(f2, 'Video Generation', max=frames)
@@ -1192,7 +1212,7 @@ def rebuild_page_edit(obj):
 			vid_gen_progbar.post()
 		 
 		#""" 	
-		f3 = tk.Frame(page_frame)
+		f3 = tk.Frame(edit_frame)
 		f3.grid(row=2, column=0, sticky=tk.W)
 		ftp_progbar = Progress_bar(f3, 'ftp mirror...')
 		ftp_progbar.width = 500
@@ -1200,9 +1220,9 @@ def rebuild_page_edit(obj):
 		ftp_progbar.post()
 		#"""
 		
-		f4 = tk.Frame(page_frame)
+		f4 = tk.Frame(edit_frame)
 		f4.grid(row=3, column=0, sticky=tk.E)
-		quitButton = ttk.Button(f4, text="Quit", command=pageTop.quit)
+		quitButton = ttk.Button(f4, text="Quit", command=progressTop.quit)
 		quitButton.grid()
 		
 		
@@ -1214,7 +1234,7 @@ def rebuild_page_edit(obj):
 		rebuild.rebuild(obj.obj.group_obj)		# currently the group name - change to the object...
 		ftp_progbar.progBar.stop()
 				
-		pageTop.destroy()
+		progressTop.destroy()
 		local_url = "http://localhost/" + obj.obj.root
 		clSchedule.browse_url(local_url)
 
@@ -1305,7 +1325,7 @@ def edit_song(parent):
 	
 	
 
-class Song_edit_screen():
+class Song_edit_screen(Edit_screen):
 	"""
 	A way of posting a screen that lets us enter
 	or edit the variables associated with a song class.
@@ -1318,6 +1338,8 @@ class Song_edit_screen():
 	the current group
 	"""
 	def __init__(self, parent, song, new=False):
+		Edit_screen.__init__(self, parent, song, new)
+		
 		print "hello"
 		if parent.edit_lock:
 			print "locked"  # (obviously more, later)
@@ -1325,17 +1347,6 @@ class Song_edit_screen():
 		#parent.edit_lock = True
 		#new = False
 		print "SES: new:",new
-		self.parent = parent
-		
-		self.row=0
-		self.column=0
-		self.obj = song		# the object we're editing
-		self.new = new
-		self.ok = not new
-		self.page_frame = None
-		self.song_obj = None
-		self.changed = False
-		self.needs_rebuild = False
 		
 		"""
 		self.setup()
@@ -1343,20 +1354,20 @@ class Song_edit_screen():
 	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing no...
 		#"""
 		print "-----------Setup called!"
-		if self.page_frame is not None:
+		if self.edit_frame is not None:
 			print "---------------Destroy All Page Frames...---------"
-			self.page_frame.destroy()
+			self.edit_frame.destroy()
 	
 		# Set up a dictionary listing the row objects, etc. that have the 
 		# info we need.  By indexing by the "member" name - we can find the mas 
 		# needed - or step through the whole list.
 		self.editlist = dict()		
 		if self.new:
-			self.pageTop = tk.Toplevel()
-			self.pageTop.transient(self.parent.top)
-			self.page_frame = tk.LabelFrame(master=self.pageTop, relief=tk.GROOVE, text="New Page (Group: " + self.parent.current_groupname + ')', borderwidth=5)
-			self.page_frame.lift(aboveThis=None)
-			self.page_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+			self.editTop = tk.Toplevel()
+			self.editTop.transient(self.parent.top)
+			self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text="New Page (Group: " + self.parent.current_groupname + ')', borderwidth=5)
+			self.edit_frame.lift(aboveThis=None)
+			self.edit_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 			
 			# we first open, it it's new, with a simple window for the name...
 			
@@ -1392,24 +1403,24 @@ class Song_edit_screen():
 			self.editlist[row.member] =  row 		# just process this one item...
 			
 			self.row = 8		# push these buttons down out of the way...
-			self.saveButton = ttk.Button(self.page_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
-			self.quitButton = ttk.Button(self.page_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
+			self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
+			self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
 			
 			# stop and wait for the above window to return...
-			self.pageTop.wait_window(self.page_frame)
+			self.editTop.wait_window(self.edit_frame)
 			
 			if not self.ok:
 				return()
 		#
 		# Basically start over - this time with the name preset...
 		#time.sleep(1)		# Seems to be necessary for the window to die (is there a call for this?)
-		self.pageTop = tk.Toplevel()
-		self.pageTop.transient(self.parent.top)
+		self.editTop = tk.Toplevel()
+		self.editTop.transient(self.parent.top)
 		self.row=0
 		self.column=0
-		self.page_frame = tk.LabelFrame(master=self.pageTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', bd=100, padx=10, pady=10, borderwidth=5)
-		self.page_frame.lift(aboveThis=None)
-		self.page_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
+		self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', bd=100, padx=10, pady=10, borderwidth=5)
+		self.edit_frame.lift(aboveThis=None)
+		self.edit_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
 		
 		#---- Descriptive title, "unique", but flexible with case, spaces, etc...
 		row = Entry_row(self, "Descriptive title", "desc_title", width=30)
@@ -1518,8 +1529,8 @@ class Song_edit_screen():
 		menu.post()
 		
 		#"""
-		self.saveButton = ttk.Button(self.page_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
-		self.quitButton = ttk.Button(self.page_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
+		self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
+		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
 		
 		
 	def refresh(self):
@@ -1621,7 +1632,7 @@ class Song_edit_screen():
 				message += spacer + i
 				spacer = ', '
 			message += '.\n\nPlease correct.'
-			tkMessageBox.showerror("There were problems...", message, parent=self.page_frame, icon=tkMessageBox.ERROR)
+			tkMessageBox.showerror("There were problems...", message, parent=self.edit_frame, icon=tkMessageBox.ERROR)
 			return
 		
 		else:
@@ -1631,7 +1642,7 @@ class Song_edit_screen():
 				type = 'update'
 			message = "This will " + type + " the page: " + self.obj.name
 			message += "\n\nOK?"
-			if not tkMessageBox.askquestion('OK to save?', message, parent=self.page_frame, icon=tkMessageBox.QUESTION):
+			if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				print "return"
 	
 	
@@ -1640,7 +1651,7 @@ class Song_edit_screen():
 				self.obj.group_obj.pagelist.append(self.obj)		# add the page name
 				self.obj.group_obj.pagedict[self.obj.name] = self.obj	# name -> page obj
 				self.obj.create()				# build the page dir structure, base data page.
-				self.pageTop.destroy()
+				self.editTop.destroy()
 				return							# just create the dir and 1-entry data file - we only have the name so far
 						
 			# We're good - let's post this...
@@ -1650,14 +1661,14 @@ class Song_edit_screen():
 			page_thread.start()
 			#rebuild_page_edit(self)
 			
-			self.pageTop.destroy()
+			self.editTop.destroy()
 			
 	def my_quit(self):
 		if self.changed:
 			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
-			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.page_frame, icon=tkMessageBox.QUESTION):
+			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				return
-		self.pageTop.destroy()
+		self.editTop.destroy()
 		
 
 	

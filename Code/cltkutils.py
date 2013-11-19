@@ -118,8 +118,8 @@ def main():
     c.a = 'two'
     c.b = 2
     l = [ a, b, c]
-    myom = clOption_menu(t, l, 'a', 'one' )
-    myom.om.grid()
+    my_obj_module = clOption_menu(t, l, 'a', 'one' )
+    my_obj_module.om.grid()
     
     
     

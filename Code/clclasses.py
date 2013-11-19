@@ -482,14 +482,13 @@ class Song:
 		('group', "<unset>"),
 		('desc_title', "<unset>"),
 		('fun_title', "<unset>"),
-		('duration',  0.0),
 
 		('project', "<unset>"),
 		('assoc_projects', ''),
 		('song', "<unset>"),
 		('partlist', ['All']),
 		('partnames', ['All']), 
-		('description', "\n<unset>\n"),
+		('description', ""),
 
 		('prevlink', "<unset>"),
 		('nextlink', "<unset>"),
@@ -500,7 +499,7 @@ class Song:
 		]
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
-		self.floatvars = [ 'duration' ]
+		self.floatvars = [ ]
 		self.intvars = []
 		self.name = name
 
@@ -531,7 +530,6 @@ class Song:
 			'group="' + self.group + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
-			'duration="' + str(self.duration) + EOL +
 			'\n' +
 			'project="' + self.project + EOL +
 			'assoc_projects="' + self.assoc_projects + EOL +
@@ -586,6 +584,30 @@ class Song:
 			print "Insertng name:", i, self.partlist[i], self.partnames[i]
 			self.partname_dict[self.partlist[i]] = self.partnames[i]
 
+	def create(self):
+		"""
+		This could be part of post - but I want to 
+		restrict directory creation to when I'm specifically
+		creating a new page.
+		"""
+		local = 'coLab_local'
+	
+		if not os.path.isdir(self.home):
+			try:
+				# Create the local subdir - get it all at once...
+				localdir = os.path.join(self.home, local)
+				os.makedirs(localdir)
+	
+			except OSError, info:
+				print "Path:", localdir, "problem:", info
+				print "Try again."
+				sys.exit(1)
+	
+		# create a stub for the data file...
+		datafile = os.path.join(self.home, 'data')
+		f = open(datafile, 'a+')
+		f.write('name="' + self.name + '"\n')
+		f.close()
 
 	def post(self):
 		"""

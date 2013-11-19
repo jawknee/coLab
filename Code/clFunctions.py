@@ -777,8 +777,8 @@ class Select_edit():
 		plist = eval("self.parent.current_group." + self.list)
 		plist.sort(key=clclasses.createkey, reverse=True)
 		
-		self.myom = cltkutils.clOption_menu(frame, plist, self.member )
-		self.myom.om.grid(column=1, row=1)
+		self.my_obj_module = cltkutils.clOption_menu(frame, plist, self.member )
+		self.my_obj_module.om.grid(column=1, row=1)
 		
 		self.button = ttk.Button(frame, text="Edit", command=self.edit_select).grid(column=2, row=2)	
 		self.tmpBox.wait_window(frame)
@@ -788,11 +788,11 @@ class Select_edit():
 		Called when the "Edit" button is pushed
 		"""
 		print "edit_select called."
-		selected_str = self.myom.var.get()
+		selected_str = self.my_obj_module.var.get()
 		if selected_str is None:
 			print "Got a Null selection."
-		print self.myom.var.get()
-		self.selected = self.myom.dictionary[selected_str]
+		print self.my_obj_module.var.get()
+		self.selected = self.my_obj_module.dictionary[selected_str]
 		self.tmpBox.destroy()
 
 class Edit_screen:
@@ -831,6 +831,125 @@ class Edit_screen:
 		self.needs_rebuild = False
 		
 		
+	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing no...
+		
+		print "-----------Setup called!"
+		if self.edit_frame is not None:
+			print "---------------Destroy All Page Frames...---------"
+			self.edit_frame.destroy()
+	
+		# Set up a dictionary listing the row objects, etc. that have the 
+		# info we need.  By indexing by the "member" name - we can find the mas 
+		# needed - or step through the whole list.
+		self.editlist = dict()		
+		if self.new:
+			self.editTop = tk.Toplevel()
+			self.editTop.transient(self.parent.top)
+			self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=self.new_text, borderwidth=5)
+			self.edit_frame.lift(aboveThis=None)
+			self.edit_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+			
+			# we first open, it it's new, with a simple window for the name...
+			
+			
+			# get a little tricky - since we don't know the name yet - set a temp var in the 
+			# object:  sub_dir so that we can pass this, plus the final name, to set_paths...
+			self.obj.sub_dir = self.sub_dir
+			clclasses.set_paths(self.obj, self.obj.sub_dir)
+			#================
+			# Build page editor
+			#================
+			#
+			# Build a list of basically name/value pairs
+			# Each pair (e.g., title and entry widget), is added to a list, 
+			# on "save" we retrieve each
+			
+			#---- name - this is a file name so we need to be somewhat strict about characters
+			
+			# gather the names of all the pages to exclude (dir name)
+			row = Entry_row(self, "Name", "name", width=20)
+			# build the list of excluded names: the existing page list of the parent group...
+			print "PES: obj, group", self.obj.name, self.obj.group_obj.name
+
+			row.exclude_list = self.exclude_list
+			row.exclude_chars=' "/:'	# characters we don't want in file names...
+			row.ignore_case = True
+			row.new = self.new				# as passed in
+			row.editable = self.new		# don't edit a file name that's already been created...
+			row.post()
+			# cheat a little through u up quick descriptive label
+			# later...  columnspan 2
+			
+			self.editlist[row.member] =  row 		# just process this one item...
+			
+			self.row = 8		# push these buttons down out of the way...
+			self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save).grid(column=3, row=self.row)	# add  command=
+			self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
+			
+			# stop and wait for the above window to return...
+			self.editTop.wait_window(self.edit_frame)
+		
+		#
+		# Basically start over - this time with the name preset...
+		#time.sleep(1)		# Seems to be necessary for the window to die (is there a call for this?)
+		self.editTop = tk.Toplevel()
+		self.editTop.transient(self.parent.top)
+		self.row=0
+		self.column=0
+		self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', bd=100, padx=10, pady=10, borderwidth=5)
+		self.edit_frame.lift(aboveThis=None)
+		self.edit_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
+		
+		return	
+	
+	def read(self):
+		"""
+		Read the current state of the edit list into the 
+		object.
+		"""
+		print "Reading into obj.."
+		self.ok = True		# until we hear otherwise...
+		self.bad_list = []	# Keep track of the names that are not set well..
+		for item in self.editlist:
+			row_obj = self.editlist[item]
+			print "item.member:", row_obj.member
+			(value, ok) = row_obj.return_value()
+			if not ok:
+				self.ok = False
+				self.bad_list.append(row_obj.text)
+			
+			# may not want to do this - but it likely doesn't matter as we 
+			# will either correct it, or toss it.
+			string = "self.obj." + item + ' = """' + str(value) + '"""'
+			print "exec string:", string
+			exec(string)
+				
+		
+	def refresh(self):
+		for i in self.editlist:
+			self.editlist[i].post()
+	
+	def get_member(self, member):
+		try:
+			return(self.editlist[member])
+		except Exception as e:
+			print "Initialization Failed", sys.exc_info()[0], e
+			print "member is:", member
+			raise SystemError
+				
+	def set_member(self, member, value):
+		"""
+		use the editlist to set a specific value.		
+		"""
+		self.get_member(member).set(value)
+			
+		
+	def post_member(self, member):
+		"""
+		Post the specified member...
+		"""
+		self.get_member(member).post()
+		
 class Page_edit_screen(Edit_screen):
 	"""
 	A way of posting a screen that lets us enter
@@ -848,80 +967,14 @@ class Page_edit_screen(Edit_screen):
 
 		page.object_type = 'Page'
 		page.page_type = 'html5'		# new pages use this..
-		
-		"""
-		self.setup()
-				
-	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing no...
-		#"""
-		print "-----------Setup called!"
-		if self.edit_frame is not None:
-			print "---------------Destroy All Page Frames...---------"
-			self.edit_frame.destroy()
-	
-		# Set up a dictionary listing the row objects, etc. that have the 
-		# info we need.  By indexing by the "member" name - we can find the mas 
-		# needed - or step through the whole list.
-		self.editlist = dict()		
 		if self.new:
-			self.editTop = tk.Toplevel()
-			self.editTop.transient(self.parent.top)
-			self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text="New Page (Group: " + self.parent.current_groupname + ')', borderwidth=5)
-			self.edit_frame.lift(aboveThis=None)
-			self.edit_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
-			
-			# we first open, it it's new, with a simple window for the name...
-			
-			
-			# get a little tricky - since we don't know the name yet - set a temp far in the 
-			# page:  sub_dir so that we can pass this, plus the final name, to set_paths...
-			self.obj.sub_dir = os.path.join('Group', self.parent.current_groupname, 'Page', )
-			clclasses.set_paths(self.obj, self.obj.sub_dir)
-			#================
-			# Build page editor
-			#================
-			#
-			# Build a list of basically name/value pairs
-			# Each pair (e.g., title and entry widget), is added to a list, 
-			# on "save" we retrieve each
-			
-			#---- name - this is a file name so we need to be somewhat strict about characters
-			
-			# gather the names of all the pages to exclude (dir name)
-			row = Entry_row(self, "Name", "name", width=20)
-			# build the list of excluded names: the existing page list of the parent group...
-			print "PES: obj, group", self.obj.name, self.obj.group_obj.name
+			self.new_text = "New Page (Group: " + self.parent.current_groupname + ')'
+			self.sub_dir = os.path.join('Group', self.parent.current_groupname, 'Page', )
+			self.exclude_list = []	# names to not allow for a new page
 			for nextpage in self.obj.group_obj.pagelist:
-				row.exclude_list.append(nextpage.name)
-			row.exclude_chars=' "/:'	# characters we don't want in file names...
-			row.ignore_case = True
-			row.new = self.new				# as passed in
-			row.editable = self.new		# don't edit a file name that's already been created...
-			row.post()
-			# cheat a little through u up quick descriptive label
-			# later...  columnspan 2
-			
-			self.editlist[row.member] =  row 		# just process this one item...
-			
-			self.row = 8		# push these buttons down out of the way...
-			self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
-			self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
-			
-			# stop and wait for the above window to return...
-			self.editTop.wait_window(self.edit_frame)
-			
-			if not self.ok:
-				return()
-		#
-		# Basically start over - this time with the name preset...
-		#time.sleep(1)		# Seems to be necessary for the window to die (is there a call for this?)
-		self.editTop = tk.Toplevel()
-		self.editTop.transient(self.parent.top)
-		self.row=0
-		self.column=0
-		self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', bd=100, padx=10, pady=10, borderwidth=5)
-		self.edit_frame.lift(aboveThis=None)
-		self.edit_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
+				self.exclude_list.append(nextpage.name)
+				
+		self.setup()
 		
 		#---- Descriptive title, "unique", but flexible with case, spaces, etc...
 		row = Entry_row(self, "Descriptive title", "desc_title", width=30)
@@ -1030,35 +1083,9 @@ class Page_edit_screen(Edit_screen):
 		menu.post()
 		
 		#"""
-		self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
-		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
-		
-		
-	def refresh(self):
-		for i in self.editlist:
-			self.editlist[i].post()
+		self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save).grid(column=3, row=self.row)	# add  command=
+		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
 	
-	def get_member(self, member):
-		try:
-			return(self.editlist[member])
-		except Exception as e:
-			print "Initialization Failed", sys.exc_info()[0], e
-			print "member is:", member
-			raise SystemError
-				
-	def set_member(self, member, value):
-		"""
-		use the editlist to set a specific value.		
-		"""
-		self.get_member(member).set(value)
-			
-		
-	def post_member(self, member):
-		"""
-		Post the specified member...
-		"""
-		self.get_member(member).post()
-
 			
 	def build_part_list(self):
 		"""
@@ -1084,33 +1111,11 @@ class Page_edit_screen(Edit_screen):
 			self.part_lookup[part_dict[i]] = i
 		return(tuple(l))
 		
-	def read_page(self):
-		"""
-		Read the current state of the edit list into the 
-		object.
-		"""
-		print "Reading into obj.."
-		self.ok = True		# until we hear otherwise...
-		self.bad_list = []	# Keep track of the names that are not set well..
-		for item in self.editlist:
-			row_obj = self.editlist[item]
-			print "item.member:", row_obj.member
-			(value, ok) = row_obj.return_value()
-			if not ok:
-				self.ok = ok
-				self.bad_list.append(row_obj.text)
-			
-			# may not want to do this - but it likely doesn't matter as we 
-			# will either correct it, or toss it.
-			string = "self.obj." + item + ' = """' + str(value) + '"""'
-			print "exec string:", string
-			exec(string)
-		
-	def save_page(self):
+	def save(self):
 		print
 		print "------------------"
 		print "Dump of page", self.obj.name
-		self.read_page()
+		self.read()
 		print "Dump----------------"	
 		#print self.obj.dump()
 		print'---first home'
@@ -1137,17 +1142,18 @@ class Page_edit_screen(Edit_screen):
 			return
 		
 		else:
-			if float(self.obj.duration) == 0.0:
-				type = 'create'
+			if self.new:
+				action = 'create'
 			else:
-				type = 'update'
-			message = "This will " + type + " the page: " + self.obj.name
+				action = 'update'
+			message = "This will " + action + " the page: " + self.obj.name
 			message += "\n\nOK?"
 			if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				print "return"
+				return
 	
 	
-			if type == 'create':
+			if action == 'create':
 				# need to add this bit to the group's lists
 				self.obj.group_obj.pagelist.append(self.obj)		# add the page name
 				self.obj.group_obj.pagedict[self.obj.name] = self.obj	# name -> page obj
@@ -1164,7 +1170,7 @@ class Page_edit_screen(Edit_screen):
 			
 			self.editTop.destroy()
 			
-	def my_quit(self):
+	def quit(self):
 		if self.changed:
 			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
 			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
@@ -1313,17 +1319,14 @@ def edit_song(parent):
 	selector.post()
 	print "ep post post"
 	try:
-		page = selector.selected
+		song = selector.selected
 	except:
-		page = None
-	if page is None:
+		song = None
+	if song is None:
 		return
-	print "Selected:", page.name
+	print "Selected:", song.name
 	
-	parent.page = Page_edit_screen(parent, page, new=False)	
-	
-	
-	
+	parent.page = Song_edit_screen(parent, song, new=False)	
 
 class Song_edit_screen(Edit_screen):
 	"""
@@ -1348,79 +1351,17 @@ class Song_edit_screen(Edit_screen):
 		#new = False
 		print "SES: new:",new
 		
-		"""
-		self.setup()
-				
-	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing no...
-		#"""
-		print "-----------Setup called!"
-		if self.edit_frame is not None:
-			print "---------------Destroy All Page Frames...---------"
-			self.edit_frame.destroy()
-	
-		# Set up a dictionary listing the row objects, etc. that have the 
-		# info we need.  By indexing by the "member" name - we can find the mas 
-		# needed - or step through the whole list.
-		self.editlist = dict()		
+		song.object_type = 'Song'
+		
 		if self.new:
-			self.editTop = tk.Toplevel()
-			self.editTop.transient(self.parent.top)
-			self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text="New Page (Group: " + self.parent.current_groupname + ')', borderwidth=5)
-			self.edit_frame.lift(aboveThis=None)
-			self.edit_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
-			
-			# we first open, it it's new, with a simple window for the name...
-			
-			
-			# get a little tricky - since we don't know the name yet - set a temp far in the 
-			# page:  sub_dir so that we can pass this, plus the final name, to set_paths...
-			self.obj.sub_dir = os.path.join('Group', self.parent.current_groupname, 'Page', )
-			clclasses.set_paths(self.obj, self.obj.sub_dir)
-			#================
-			# Build page editor
-			#================
-			#
-			# Build a list of basically name/value pairs
-			# Each pair (e.g., title and entry widget), is added to a list, 
-			# on "save" we retrieve each
-			
-			#---- name - this is a file name so we need to be somewhat strict about characters
-			
-			# gather the names of all the pages to exclude (dir name)
-			row = Entry_row(self, "Name", "name", width=20)
-			# build the list of excluded names: the existing page list of the parent group...
-			print "PES: obj, group", self.obj.name, self.obj.group_obj.name
-			for nextpage in self.obj.group_obj.pagelist:
-				row.exclude_list.append(nextpage.name)
-			row.exclude_chars=' "/:'	# characters we don't want in file names...
-			row.ignore_case = True
-			row.new = self.new				# as passed in
-			row.editable = self.new		# don't edit a file name that's already been created...
-			row.post()
-			# cheat a little through u up quick descriptive label
-			# later...  columnspan 2
-			
-			self.editlist[row.member] =  row 		# just process this one item...
-			
-			self.row = 8		# push these buttons down out of the way...
-			self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
-			self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
-			
-			# stop and wait for the above window to return...
-			self.editTop.wait_window(self.edit_frame)
-			
-			if not self.ok:
-				return()
-		#
-		# Basically start over - this time with the name preset...
-		#time.sleep(1)		# Seems to be necessary for the window to die (is there a call for this?)
-		self.editTop = tk.Toplevel()
-		self.editTop.transient(self.parent.top)
-		self.row=0
-		self.column=0
-		self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', bd=100, padx=10, pady=10, borderwidth=5)
-		self.edit_frame.lift(aboveThis=None)
-		self.edit_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
+			self.new_text = "New Song (Group: " + self.parent.current_groupname + ')'
+			self.sub_dir = os.path.join('Group', self.parent.current_groupname, 'Song', )
+			self.exclude_list = []	# names to not allow for a new page
+			for nextsong in self.obj.group_obj.songlist:
+				self.exclude_list.append(nextsong.name)
+				
+		self.setup()
+
 		
 		#---- Descriptive title, "unique", but flexible with case, spaces, etc...
 		row = Entry_row(self, "Descriptive title", "desc_title", width=30)
@@ -1442,123 +1383,11 @@ class Song_edit_screen(Edit_screen):
 		row.content = self.obj.description
 		row.post()
 		
-		#---- Sound file...
-		# 
-		# is there such a file?
-		screenshot_path = os.path.join(self.obj.home, self.obj.soundthumbnail)
-		if not os.path.isfile(screenshot_path):		# we need a backup file...
-			screenshot_path = os.path.join(self.obj.coLab_home, 'Resources', 'coLab-NoPageImage_tn.png')
-			
-		row = Graphic_row_soundfile(self, "Soundfile", 'soundfile', screenshot_path)
-		self.editlist[row.member] =  row
-		row.post()
-		
-		
-		#---- Duration - display only ...
-		row = Entry_row(self, "Duration", "duration", width=8)
-		row.editable = False
-		self.editlist[row.member] =  row
-		row.post()
-		self.duration_obj = row
-		
-		
-		#---- Screen Shot
-		# (for now, the name - later: the picture (thumbnail)
-		try:	
-			screenshot_path = os.path.join(self.obj.home, self.obj.thumbnail)
-		except:				# in case something's not preset - we'll catch it in the test...
-			pass
-		if not os.path.isfile(screenshot_path):
-			screenshot_path = os.path.join(self.obj.coLab_home, 'Resources', 'coLab-NoPageImage_tn.png')
-			
-		row = Graphic_row_screenshot(self, "Graphic", 'screenshot', screenshot_path)
-		self.editlist[row.member] =  row
-		row.post()
-		row.sound_button()
-		
-		#----  x Start and Stop - eventually done with graphic input...
-		row = Entry_row(self, "xStart", "xStart", width=5)
-		self.editlist[row.member] =  row
-		row.post()
-		
-		row = Entry_row(self, "xEnd", "xEnd", width=5)
-		self.editlist[row.member] =  row
-		row.post()
-		
 		#"""
-		#----   fps: should be calculated...
-		row = Entry_row(self, "fps", "fps", width=5)
-		self.editlist[row.member] =  row
-		row.editable = False
-		row.post()
-		#"""
+		self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save).grid(column=3, row=self.row)	# add  command=
+		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
 		
-		#--- Song
 
-		#self.obj.song_obj = None
-		menu = Menu_row(self, "Song", "song")
-		l = []		# list of song titles (desc_title)
-		d = {}		# dictionary to convert desc_title to name
-		if self.new:
-			l = ['-select song-']		# build a list of song names...
-		for i in self.obj.group_obj.songlist:
-			l.append(i.desc_title)
-			d[i.desc_title] = i.name
-			if i.name == self.obj.song:
-				self.song_obj = i		# remember this object
-		l.append('-New song-')
-			
-		menu.titles = tuple (l)		# Convert to a tuple...
-		
-		try:
-			menu.default = self.song_obj.desc_title
-		except:
-			pass
-		self.editlist[menu.member] =  menu
-		menu.dict = d
-		menu.post()
-			
-		#  Part - depends on the song selected.
-		print "part time..."
-		menu = Menu_row(self, "Part", "part")
-		self.part_obj = menu		# save this for song changes (implying a new part list)
-		menu.titles = self.build_part_list()
-		self.editlist[menu.member] =  menu
-		menu.dict = self.part_lookup
-		
-		menu.post()
-		
-		#"""
-		self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save_page).grid(column=3, row=self.row)	# add  command=
-		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.my_quit).grid(column=4, row=self.row)
-		
-		
-	def refresh(self):
-		for i in self.editlist:
-			self.editlist[i].post()
-	
-	def get_member(self, member):
-		try:
-			return(self.editlist[member])
-		except Exception as e:
-			print "Initialization Failed", sys.exc_info()[0], e
-			print "member is:", member
-			raise SystemError
-				
-	def set_member(self, member, value):
-		"""
-		use the editlist to set a specific value.		
-		"""
-		self.get_member(member).set(value)
-			
-		
-	def post_member(self, member):
-		"""
-		Post the specified member...
-		"""
-		self.get_member(member).post()
-
-			
 	def build_part_list(self):
 		"""
 		Use the song object to build the part list
@@ -1583,38 +1412,16 @@ class Song_edit_screen(Edit_screen):
 			self.part_lookup[part_dict[i]] = i
 		return(tuple(l))
 		
-	def read_page(self):
-		"""
-		Read the current state of the edit list into the 
-		object.
-		"""
-		print "Reading into obj.."
-		self.ok = True		# until we hear otherwise...
-		self.bad_list = []	# Keep track of the names that are not set well..
-		for item in self.editlist:
-			row_obj = self.editlist[item]
-			print "item.member:", row_obj.member
-			(value, ok) = row_obj.return_value()
-			if not ok:
-				self.ok = ok
-				self.bad_list.append(row_obj.text)
-			
-			# may not want to do this - but it likely doesn't matter as we 
-			# will either correct it, or toss it.
-			string = "self.obj." + item + ' = """' + str(value) + '"""'
-			print "exec string:", string
-			exec(string)
-		
-	def save_page(self):
+	def save(self):
 		print
 		print "------------------"
 		print "Dump of page", self.obj.name
-		self.read_page()
+		self.read()
 		print "Dump----------------"	
 		#print self.obj.dump()
 		print'---first home'
 		try:
-			sub_dir = os.path.join('Group', self.obj.group, 'Page',  self.obj.name)
+			sub_dir = os.path.join('Group', self.obj.group, 'Song',  self.obj.name)
 			home_dir = os.path.join(self.obj.coLab_home, sub_dir)
 		except Exception as e:
 			print "Cannot build new page subdir", e, sys.exc_info()[0]
@@ -1636,34 +1443,36 @@ class Song_edit_screen(Edit_screen):
 			return
 		
 		else:
-			if float(self.obj.duration) == 0.0:
-				type = 'create'
+			if self.new:
+				action = 'create'
 			else:
-				type = 'update'
-			message = "This will " + type + " the page: " + self.obj.name
+				action = 'update'
+			message = "This will " + action + " the song: " + self.obj.name
 			message += "\n\nOK?"
 			if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				print "return"
+				return
 	
 	
-			if type == 'create':
+			if action == 'create':
 				# need to add this bit to the group's lists
-				self.obj.group_obj.pagelist.append(self.obj)		# add the page name
-				self.obj.group_obj.pagedict[self.obj.name] = self.obj	# name -> page obj
+				self.obj.group_obj.songlist.append(self.obj)		# add the page name
+				self.obj.group_obj.songdict[self.obj.name] = self.obj	# name -> page obj
 				self.obj.create()				# build the page dir structure, base data page.
 				self.editTop.destroy()
+				self.new = False
 				return							# just create the dir and 1-entry data file - we only have the name so far
 						
 			# We're good - let's post this...
 			clclasses.convert_vars(self.obj)
 			self.obj.post()
-			page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
-			page_thread.start()
+			#page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
+			#page_thread.start()
 			#rebuild_page_edit(self)
 			
 			self.editTop.destroy()
 			
-	def my_quit(self):
+	def quit(self):
 		if self.changed:
 			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
 			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):

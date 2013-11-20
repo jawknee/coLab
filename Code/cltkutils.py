@@ -43,6 +43,7 @@ class graphic_element():
             self.graphic.grid(column=self.column, row=self.row, rowspan=self.rowspan, columnspan=self.columnspan, sticky=self.sticky)
         except Exception as e:
             print "Title creation exception", sys.exc_info()[0], e
+            print "Filepath:", self.filepath
             raise SystemError
     def destroy(self):        
         try:

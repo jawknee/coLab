@@ -4,7 +4,7 @@
 #
 cd ~/coLab/Group/
 glist="*"
-glist="Johnny"
+#glist="Johnny"
 for group in $glist
 do
 	(

@@ -66,6 +66,8 @@ class Html:
 		tail = self.tail.replace('!name!', page.name)
 		tail = tail.replace('!fun_title!', page.fun_title)
 		tail = tail.replace('!desc_title!', page.desc_title)
+		if page.a_type == "Page":
+			tail = tail.replace('!page_type!', page.page_type)
 		return(tail)	# ...and done.
 
 
@@ -202,6 +204,9 @@ class Html:
 		<!--#include virtual="links.html" -->
 		<p>&nbsp;<p>
 		</td></tr></table>
+		<font size=1>
+		Page type: !page_type!
+		</font>
 		</div>	<! middle content>
 		</div>	<! container >
 

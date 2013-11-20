@@ -471,7 +471,7 @@ class Menu_row():
 		self.parent.changed = True	
 		
 		#time.sleep(4)
-		self.parent.read_page()
+		self.parent.read()
 		if self.member == 'song':
 			# Special case for a song:  reload the part list..
 			self.parent.obj.song = value
@@ -1142,7 +1142,8 @@ class Page_edit_screen(Edit_screen):
 			return
 		
 		else:
-			if self.new:
+			# I don't like this - I want a better method to determine if this is new or not...
+			if float(self.obj.duration) == 0.0:
 				action = 'create'
 			else:
 				action = 'update'
@@ -1151,7 +1152,6 @@ class Page_edit_screen(Edit_screen):
 			if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				print "return"
 				return
-	
 	
 			if action == 'create':
 				# need to add this bit to the group's lists
@@ -1164,6 +1164,7 @@ class Page_edit_screen(Edit_screen):
 			# We're good - let's post this...
 			clclasses.convert_vars(self.obj)
 			self.obj.post()
+			# Now build the frames and video in the background...
 			page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
 			page_thread.start()
 			#rebuild_page_edit(self)
@@ -1185,6 +1186,9 @@ def rebuild_page_edit(obj):
 		data, in a distracting and entertaining way...
 		
 		Yeah, right.
+		
+		Specifically: the generation of the image frames, followed by the generation of
+		the video from those frames plus the audio.
 		"""
 		# let's make sure mamp is running...
 		
@@ -1217,7 +1221,7 @@ def rebuild_page_edit(obj):
 			vid_gen_progbar.max = frames
 			vid_gen_progbar.post()
 		 
-		#""" 	
+		""" 	
 		f3 = tk.Frame(edit_frame)
 		f3.grid(row=2, column=0, sticky=tk.W)
 		ftp_progbar = Progress_bar(f3, 'ftp mirror...')
@@ -1236,9 +1240,9 @@ def rebuild_page_edit(obj):
 			imagemaker.make_images(obj.obj, img_gen_progbar)
 			img_gen_progbar.progBar.stop()
 			clAudio.make_movie(obj.obj, vid_gen_progbar)
-		ftp_progbar.progBar.start()
+		#ftp_progbar.progBar.start()
 		rebuild.rebuild(obj.obj.group_obj)		# currently the group name - change to the object...
-		ftp_progbar.progBar.stop()
+		#ftp_progbar.progBar.stop()
 				
 		progressTop.destroy()
 		local_url = "http://localhost/" + obj.obj.root
@@ -1366,8 +1370,8 @@ class Song_edit_screen(Edit_screen):
 		#---- Descriptive title, "unique", but flexible with case, spaces, etc...
 		row = Entry_row(self, "Descriptive title", "desc_title", width=30)
 		# exclude existing titles...
-		for nextpage in self.obj.group_obj.pagelist:
-			row.exclude_list.append(nextpage.desc_title)
+		for nextsong in self.obj.group_obj.songlist:
+			row.exclude_list.append(nextsong.desc_title)
 		self.editlist[row.member] =  row
 		row.post()
 		
@@ -1469,7 +1473,7 @@ class Song_edit_screen(Edit_screen):
 			#page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
 			#page_thread.start()
 			#rebuild_page_edit(self)
-			
+			rebuild.rebuild(self.obj.group_obj)		
 			self.editTop.destroy()
 			
 	def quit(self):

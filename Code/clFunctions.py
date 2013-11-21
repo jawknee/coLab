@@ -33,26 +33,6 @@ import imagemaker
 import clAudio
 import rebuild
 
-def set_status(obj, ok = None):
-	"""
-	Set the status of the widget - log the state, and update
-	the status column, should work for most/all row classes...
-	"""
-	obj.ok = ok
-	if ok is None:
-		color = '#a73'
-		txt = '-'
-	if ok:
-		color = '#2f2'	# bright green
-		txt = 'OK'
-	else:
-		color = '#f11'	# bright red
-		txt = 'X'
-		
-	obj.status.configure(foreground=color)
-	obj.statusVar.set(txt)
-	
-
 class Progress_bar():
 	"""
 	Build a generic progress bar.   Various items can
@@ -144,9 +124,58 @@ class Progress_bar():
 		self.t_string.set(rem_str)
 		
 	
-	
+class Data_row:
+	"""
+	Base class for the various rows that gather data.  
+	Basic layout is a row that has the name, a status cell,
+	and some kind of a gadget that presents/gathers data.
+	"""
+	def __init__(self, parent, text, member):
+		"""
+		Set up the default values common to all rows...
+		"""
+		self.parent = parent
+		self.text = text
+		self.member = member
+		# Basic row / cell management
+		self.row = parent.row		# parent keeps track of row / column
+		parent.row += 1				# move the  parent row down one...
+		self.column = parent.column
+		# initialization come to some / most / all
+		self.label = None
+		self.new = parent.new		# when true, items are ghosted / replaced on first key  
+		self.ok = not self.new		# new items are assumed to be not good yet, and vice-versa
 		
-class Entry_row():
+		self.content = ""
+	
+	def set(self, value):
+		self.value = value
+		self.new = False
+		self.set_status(self.ok)
+		self.post()
+		
+	def set_status(self, ok = None):
+		"""
+		Set the status of the widget - log the state, and update
+		the status column, should work for most/all row classes...
+		"""
+		self.ok = ok
+		if ok is None:
+			color = '#a73'
+			txt = ' - '
+		if ok:
+			color = '#2f2'	# bright green
+			txt = 'OK'
+		else:
+			color = '#f11'	# bright red
+			txt = ' X '
+			
+		self.status.configure(foreground=color)
+		self.statusVar.set(txt)
+	
+
+			
+class Entry_row(Data_row):
 	"""
 	A class for an entry row in an edit panel.  Holds the info specific to
 	a row - implements posting the Text and the value in an entry field.
@@ -155,12 +184,8 @@ class Entry_row():
 	class. Also marks the status and matching fields.
 	"""
 	def __init__(self, parent, text, member, width=15):
-		"""
-		Set up the default values for the row object
-		"""
-		self.parent = parent
-		self.text = text
-		self.member = member
+		Data_row.__init__(self, parent, text, member)
+		
 		self.width = width
 		
 		self.label = None				# have we been here before
@@ -170,14 +195,10 @@ class Entry_row():
 		self.match = None	
 		self.match_text = ''		# used to recall the last bad match (equiv. file name, e.g.)	
 		self.match_color = '#666'
-		self.new = parent.new		# when true, items are ghosted / replaced on first key  
+		#self.new = parent.new		# when true, items are ghosted / replaced on first key  
 		self.editable = True		# occasionally we get one (existing file name) that we don't want to edit...
-		self.ok = not self.new		# new items are assumed to be not good yet, and vice-versa
 		
-		self.row = parent.row		# parent keeps track of row / column
-		parent.row += 1				# move the  parent row down one...
-		self.column = parent.column
-				
+		
 		# Validation callback parameters
 		self.callback = self.validate_entry	
 		self.validate = 'all'
@@ -208,9 +229,9 @@ class Entry_row():
 			self.status = ttk.Label(self.parent.edit_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
 			if self.new:
-				set_status(self,None)
+				self.set_status(None)
 			else:
-				set_status(self,ok=True)
+				self.set_status(ok=True)
 		else:
 			self.widget.destroy()
 		
@@ -221,7 +242,7 @@ class Entry_row():
 			self.widget.grid(row=self.row,column=self.column + 2, columnspan=3, sticky=tk.W)
 			self.nameVar.set(self.value)
 			#self.ok = True		# since we can't change it - it's good
-			set_status(self,ok=True)
+			self.set_status(ok=True)
 			print "non-edit _obj:", self.widget
 		else:
 			
@@ -243,19 +264,12 @@ class Entry_row():
 			print "v-obj widget created:", self.widget
 			self.widget.grid(row=self.row, column=self.column + 2, sticky=tk.W)
 			self.nameVar.set(self.value)
-			
-
-			
+						
 			self.matchVar = tk.StringVar()
 			self.match = tk.Label(self.parent.edit_frame, textvariable=self.matchVar, justify=tk.LEFT)
 			self.match.grid(row=self.row, column=self.column + 3, rowspan=6, columnspan=2, sticky=tk.NW)		
 	
-	def set(self, value):
-		self.value = value
-		
-		self.new = False
-		set_status(self,ok=True)
-		self.post()
+
 		
 	def validate_entry(self, why, what, would, how):
 		"""
@@ -316,7 +330,7 @@ class Entry_row():
 		print "Would is:", would
 		#-- zero length?  
 		if  len(would) == 0:
-			set_status(self, ok = False)
+			self.set_status(ok = False)
 			print "Bad-==========-Zero length"
 			self.match_text = ''
 			self.post_match()
@@ -346,7 +360,7 @@ class Entry_row():
 					self.match_text += item + '\n'
 		#
 		# Post the status and the matching text, if any
-		set_status(self, good)			
+		self.set_status(good)			
 		self.post_match()
 		return r_code	
 			
@@ -365,23 +379,16 @@ class Entry_row():
 		"""
 		return(self.nameVar.get(), self.ok)
 	
-class Text_row():
+	def set(self, value):
+		self.value = value
+		self.new = False
+		self.set_status(True)
+		self.post()
+		
+class Text_row(Data_row):
 	"""
 	A class for a text row in an edit panel.    Very simple
 	"""
-	def __init__(self, parent, text, member):
-		"""
-		Set up the default values for the row object
-		"""
-		self.parent = parent
-		self.text = text
-		self.member = member
-		self.content = ""
-		
-		self.row = parent.row		# parent keeps track of row / column
-		parent.row += 1				# move the  parent row down one...
-		self.column = parent.column
-		
 	def post(self):
 		"""
 		Just post the text...
@@ -409,30 +416,18 @@ class Text_row():
 		"""
 		return(self.widget.get('1.0', 'end'), True)
 	
-	def set(self):
-		print "No 'set()' method for Text obj"
-		return()
 	
-class Menu_row:
+class Menu_row(Data_row):
 	"""
 	Just put up an OptionMenu from the provided list..)
 	"""
 	
 	def __init__(self, parent, text, member):
-		
-		self.parent = parent
-		self.text = text
-		self.member = member
+		Data_row.__init__(self, parent, text, member)
 		
 		self.default = None
-		self.label = None				# have we been here before
 		self.titles = ('no-titles',)
-		self.new = parent.new
-		self.ok = not self.new		
-		self.row = parent.row
-		self.column = parent.column
 		self.handler = self.handle_menu
-		parent.row += 1	
 		
 	def post(self):
 		print "Welcome menu-post"
@@ -459,16 +454,16 @@ class Menu_row:
 		self.status = tk.Label(self.parent.edit_frame, textvariable=self.statusVar)
 		self.status.grid(row=self.row, column=self.column + 1)
 		if self.new:
-			set_status(self,None)
+			self.set_status(None)
 		else:
-			set_status(self,ok=True)
+			self.set_status(ok=True)
 	
 		
 	def handle_menu(self, value):
 		#new_name = self.gOpt.get()		# not needed here, name is what we want.
 		
 		# if the menu item starts with a "-", it is an unacceptable value
-		set_status(self, value[0] != '-')
+		self.set_status( value[0] != '-')
 		self.parent.changed = True	
 		
 		#time.sleep(4)
@@ -491,6 +486,13 @@ class Menu_row:
 		self.value = value
 		self.ok = True
 		self.post()
+
+class Resolution_menu_row(Menu_row):
+	def handle_menu(self, value):
+		"""
+		Reset the parent's size vars...
+		"""
+		self.parent.size = self.parent.size_class.sizeof(self.dict[value])	
 	
 class Song_menu_row(Menu_row):
 	"""
@@ -499,7 +501,7 @@ class Song_menu_row(Menu_row):
 	def handle_menu(self, value):
 		
 		# if the menu item starts with a "-", it is an unacceptable value
-		set_status(self, value[0] != '-')
+		self.set_status(ok=value[0] != '-')
 		self.parent.changed = True	
 		
 		# Special case for a song:  reload the part list..
@@ -524,32 +526,26 @@ class Song_menu_row(Menu_row):
 		print "testing the partlist..."
 		if song_obj.partlist == [ 'All'	]:
 			print "Partlist is just 'all'"
-			set_status(self.parent.part_obj, ok=True)
+			self.set_status(ok=True)
 			#time.sleep(2)
 		# set the new dictiony in place...
 		self.parent.part_obj.dict = self.parent.part_lookup
 		self.parent.part_obj.post()
 		self.parent.read()
 		
-class Graphic_row():
+class Graphic_row(Data_row):
 	"""
 	Post a row with a title and a graphic...
 	and something to let us deal with it ("Change" button?)
 	"""
 	def __init__(self, parent, text, member, graphic_path):
-		self.parent = parent
-		self.text = text
-		self.member = member
+		Data_row.__init__(self, parent, text, member)
+
 		self.graphic_path = graphic_path
 		
-		self.label = None			# have we been here...
-		self.new = parent.new
-		self.ok = not self.new		
-		self.row = parent.row
-		self.column = parent.column
 		self.handler = self.button_handler
 		
-		self.parent.row += 2		# this one takes up 2 rows
+		self.parent.row += 1		# this one takes up 2 rows, one more than most
 		
 	def post(self):
 		"""
@@ -589,15 +585,15 @@ class Graphic_row():
 		self.widget.post()	
 		
 		if self.new:
-			set_status(self,None)
+			self.set_status(None)
 			self.new = False
 		else:
-			set_status(self,True)
+			self.set_status(True)
 	
 	def set(self, value):
 		self.value = value
 		self.new = False
-		set_status(self,ok=True)
+		self.set_status(ok=True)
 		self.post()
 	
 
@@ -622,7 +618,7 @@ class Graphic_row_screenshot(Graphic_row):
 			return
 		
 		self.ok = True
-		set_status(self, True)
+		self.set_status( True)
 		filename = os.path.split(file_path)[1]
 		
 		subdir = os.path.join('coLab_local', filename)
@@ -689,6 +685,7 @@ class Graphic_row_screenshot(Graphic_row):
 		self.parent.changed = True
 		self.parent.needs_rebuild = True
 		self.parent.obj.screenshot = self.parent.obj.soundgraphic
+
 		self.parent.set_member('xStart', 30)	#   RBF:  these need to be set elsewhere...
 		width, height = self.parent.size
 		end = width - 10
@@ -713,7 +710,7 @@ class Graphic_row_soundfile(Graphic_row):
 			return
 		
 		self.ok = True
-		set_status(self, True)
+		self.set_status( True)
 		filename = os.path.split(file_path)[1]
 		
 		subdir = os.path.join('coLab_local', filename)
@@ -982,8 +979,8 @@ class Page_edit_screen(Edit_screen):
 		page.page_type = 'html5'		# new pages use this..
 		
 		# convert the media size (e.g., small, medium, etc) to (width, height)
-		size_class = config.Sizes()
-		self.size = size_class.sizeof(page.media_size)	
+		self.size_class = config.Sizes()
+		self.size = self.size_class.sizeof(page.media_size)	
 		
 		if self.new:
 			self.new_text = "New Page (Group: " + self.parent.current_groupname + ')'
@@ -1016,11 +1013,11 @@ class Page_edit_screen(Edit_screen):
 		
 		#--- Resolution
 		#self.obj.song_obj = None
-		menu = Menu_row(self, "Resolution", "media_size")
+		menu = Resolution_menu_row(self, "Resolution", "media_size")
 		l = []		# list of resolutions and their actual size
 		d = {}		# dictionary of strings to media_size names...
-		for resolution in size_class.list():
-			string = resolution + " " + str(size_class.sizeof(resolution))
+		for resolution in self.size_class.list():
+			string = resolution + " " + str(self.size_class.sizeof(resolution))
 			l.append(string)
 			d[string] = resolution
 			if resolution == page.media_size:
@@ -1031,6 +1028,7 @@ class Page_edit_screen(Edit_screen):
 		self.editlist[menu.member] =  menu
 		menu.dict = d
 		menu.post()
+		menu.set_status(True)	# It's always good...
 		#---- Sound file...
 		# 
 		# is there such a file?

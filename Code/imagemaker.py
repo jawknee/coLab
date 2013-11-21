@@ -706,10 +706,10 @@ class Sound_image():
 							
 		(dir, filename) = os.path.split(self.sound_file)
 		bot_string = 'File: ' + filename + '  /  Length(m:s): ' 
-		seconds = self.nframes / self.framerate
+		seconds = float(self.nframes) / self.framerate
 		minutes = int(seconds / 60)
 		secs = seconds - minutes * 60
-		bot_string += '%d:%02.3f' % (minutes, secs)
+		bot_string += '%d:%06.3f' % (minutes, secs)
 		bot_string += ' /  %d bits' % (self.sampwidth * 8)
 		bot_string += ' / %0.3f kHz' % (self.framerate / 1000.)
 		graphic_draw.text((60, self.ymax+3), bot_string, font=font, fill=Green)

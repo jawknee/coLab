@@ -16,6 +16,7 @@ SIZE_LIST = [
 			( 'Super-HD-Letterbox', (1920, 1440)),
 			( 'HiDef', (1920, 1080)),
 			( 'HD-Letterbox', (1440, 1080)),
+			( 'Large', (1280, 960)),
 			( 'Medium', (960, 720)),
 			( 'Small', (640, 480)),
 			( 'Tiny', (320, 240)),

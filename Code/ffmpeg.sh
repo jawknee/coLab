@@ -45,7 +45,7 @@ overlay_dir=$pagedir/coLab_local/Overlays
 ffmpeg=/usr/local/bin/ffmpeg
 #
 # input of image sequence...
-input_opts="-y -r "$fps" -i $overlay_dir/Frame-%05d.png -i $pagedir/$soundfile"
+input_opts="-y -r $fps -i $overlay_dir/Frame-%05d.png -i"
 
 # output streams...
 #
@@ -74,13 +74,13 @@ unset ogg_opts
 # redirect the stderr to stdout - changing carriage returns to new lines so we can read it...
 cat <<-EOF
 Runstring: $ffmpeg
-input:	$input_opts
+input:	$input_opts "$pagedir/$soundfile"
 ogg:	$ogg_opts
 webm:	$webm_opts
 mp4:	$mp4_opts
 EOF
 
-$ffmpeg $input_opts $ogg_opts $webm_opts $mp4_opts 2>&1 | tr -u '\r' '\n'
+$ffmpeg $input_opts "$pagedir/$soundfile" $ogg_opts $webm_opts $mp4_opts 2>&1 | tr -u '\r' '\n'
 
 # earlier attempts
 #mp4_opts="-r $fps -codec:v mpeg4  -strict -2  -b:a 320k $pagedir/$name-media.mp4"

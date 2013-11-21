@@ -19,10 +19,11 @@ import time
 
 #from coLab import main
 import clclasses
+import config
 
 # this needs to be driven by a table - low/med/high res...
-width = 640
-height = 480
+#width = 640
+#height = 480
 
 #width = 960
 #height = 720
@@ -41,7 +42,7 @@ height = 480
 
 
 
-size = (width, height)
+#size = (width, height)
 
 tn_width = 160
 tn_height = 120
@@ -78,7 +79,7 @@ def calculate_fps(page):
 
 	Basically the philosophy is that we would like the cursor
 	line to never skip a pixel position, but not be any more 
-	often then necessary beyond that (i.e, an occassional 'no-move'
+	often then necessary beyond that (i.e, an occasional 'no-move'
 	frame.)   We start at the slowest and work our way up until
 	we find the value we want and return it.
 	"""
@@ -93,6 +94,9 @@ def calculate_fps(page):
 	fps_values = [ (1,1), 
 	      (2,1), (6,1), (10,1), (12,1), (15,1), (24,1), 
 	      (25,1), (30,1) ]  #  not using:   (50,1), (60,1) 
+	
+	size_class = config.Sizes()
+	size = size_class.sizeof(page.media_size)
 	try:
 		secs_long = float(page.duration)
 		start = float(page.xStart)
@@ -129,6 +133,7 @@ def make_sub_images(page):
 	screenshot = os.path.join(page.home, page.screenshot)
 	graphic = os.path.join(page.home, page.graphic)
 	thumbnail = os.path.join(page.home, page.thumbnail)
+	size = config.Sizes().sizeof(page.media_size)
 	#
 	try:
 		orig_image = Image.open(screenshot)
@@ -174,7 +179,8 @@ def make_images(page, prog_bar=None):
 		print info
 		sys.exit(1)
 
-
+	size = config.Sizes().sizeof(page.media_size)
+	(width, height) = size
 	box_width = 55
 	box_height = 35
 	box_size = (box_width, box_height)
@@ -392,7 +398,7 @@ class Sound_image():
 	Generates a standard (or other) sized png file.
 	"""
 	
-	def __init__(self, sound_file, image_file, prog_bar=None):
+	def __init__(self, sound_file, image_file, size, prog_bar=None):
 		"""
 		open the sound file and set the various internal vars.
 		"""
@@ -412,8 +418,7 @@ class Sound_image():
 		self.tborder = 25
 		self.bborder = 25
 		
-		self.width = width
-		self.height = height
+		self.width, self.height = size
 		
 		self.nchannels = self.aud.getnchannels()
 		self.sampwidth = self.aud.getsampwidth()
@@ -455,7 +460,7 @@ class Sound_image():
 		# how "tall" is each sample in the range of values - account for the number of channels
 		levels_per_pixel = ( float(self.samp_max * 2) / (self.ymax - self.ymin + 1) ) * self.nchannels
 		
-		graphic = Image.new('RGBA', size, color=partBlack)
+		graphic = Image.new('RGBA', (self.width, self.height), color=partBlack)
 		graphic_draw = ImageDraw.Draw(graphic)
 		
 		# Draw the limit lines...

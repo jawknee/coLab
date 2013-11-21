@@ -201,7 +201,7 @@ class Group:
 		# varname, value pairs...
 		#
 		initdata = [
-		('a_type', 'Group'),
+		('obj_type', 'Group'),
 		('title', "<unset>"),
 		('subtitle', "<unset>"),
 		('collaborators', "<unset>"),
@@ -301,12 +301,13 @@ class Page:
 		timenow=cldate.utcnow()
 		# varname, value pairs...
 		initdata = [
-		('a_type', 'Page'),
+		('obj_type', 'Page'),
 		('page_type', 'orig'),
 		('group', "<unset>"),
 		('desc_title', "(Descriptive title - should be unique)"),
 		('fun_title', "(Fun title - whatever feels right)"),
 		('duration',  0.0),
+		('media_size', "Small"),
 		('screenshot', ""),
 		('graphic', "ScreenShot.png"),
 		('thumbnail', "ScreenShot_tn.png"),
@@ -349,6 +350,7 @@ class Page:
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
 			'duration=' + str(self.duration) + '\n' +
+			'media_size="' + str(self.media_size) + EOL +
 			'screenshot="' + self.screenshot + EOL +
 			'graphic="' + self.graphic + EOL +
 			'thumbnail="' + self.thumbnail + EOL +
@@ -478,7 +480,7 @@ class Song:
 		# varname, value pairs...
 		initdata = [
 		('name', name),
-		('a_type', 'Song'),
+		('obj_type', 'Song'),
 		('group', "<unset>"),
 		('desc_title', "<unset>"),
 		('fun_title', "<unset>"),

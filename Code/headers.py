@@ -66,8 +66,8 @@ class Html:
 		tail = self.tail.replace('!name!', page.name)
 		tail = tail.replace('!fun_title!', page.fun_title)
 		tail = tail.replace('!desc_title!', page.desc_title)
-		if page.a_type == "Page":
-			tail = tail.replace('!page_type!', page.page_type)
+		if page.obj_type == "Page":
+			tail = tail.replace('!page_type!', page.page_type)	# "orig" or "html5"
 		return(tail)	# ...and done.
 
 

@@ -25,6 +25,7 @@ import tkFileDialog
 import tkMessageBox
 from PIL import Image
 
+import config
 import clclasses
 import cltkutils
 import clSchedule
@@ -412,7 +413,7 @@ class Text_row():
 		print "No 'set()' method for Text obj"
 		return()
 	
-class Menu_row():
+class Menu_row:
 	"""
 	Just put up an OptionMenu from the provided list..)
 	"""
@@ -472,42 +473,7 @@ class Menu_row():
 		
 		#time.sleep(4)
 		self.parent.read()
-		if self.member == 'song':
-			# Special case for a song:  reload the part list..
-			self.parent.obj.song = value
-			try:
-				group = self.parent.obj.group_obj
-			except Exception as e:
-				print "------- No such group found as part of", self.parent.obj.value
-				print "---- fix  - for now, returning"
-				return
-			
-			song_obj = group.find_song_title(value)
-			if song_obj == None:
-				print "No such song object found for:", value
-				
-			# build a part list...
-			self.parent.song_obj = song_obj
-			self.parent.obj.part = 'All'			# if a new song, use default part for now...
-			self.parent.part_obj.titles = self.parent.build_part_list()
-			
-			# Special case a song with only the default part as "OK"
-			print "testing the partlist..."
-			if song_obj.partlist == [ 'All'	]:
-				print "Partlist is just 'all'"
-				set_status(self.parent.part_obj, ok=True)
-				#time.sleep(2)
-			# set the new dictiony in place...
-			self.parent.part_obj.dict = self.parent.part_lookup
-			self.parent.part_obj.post()
-			
-			#for i in song_obj.
-			
-			#self.post()
-		else:
-			print "Not a song........................."
-		#self.parent.refresh()
-		
+	
 	def return_value(self):
 		"""
 		Return the OptionMenu value...
@@ -520,10 +486,50 @@ class Menu_row():
 		except:
 			pass
 		return(value, self.ok)
+	
 	def set(self, value):
 		self.value = value
 		self.ok = True
 		self.post()
+	
+class Song_menu_row(Menu_row):
+	"""
+	Derivative class - separate handler...
+	"""
+	def handle_menu(self, value):
+		
+		# if the menu item starts with a "-", it is an unacceptable value
+		set_status(self, value[0] != '-')
+		self.parent.changed = True	
+		
+		# Special case for a song:  reload the part list..
+		self.parent.obj.song = value
+		try:
+			group = self.parent.obj.group_obj
+		except Exception as e:
+			print "------- No such group found as part of", self.parent.obj.value
+			print "---- fix  - for now, returning"
+			return
+		
+		song_obj = group.find_song_title(value)
+		if song_obj == None:
+			print "No such song object found for:", value
+			
+		# build a part list...
+		self.parent.song_obj = song_obj
+		self.parent.obj.part = 'All'			# if a new song, use default part for now...
+		self.parent.part_obj.titles = self.parent.build_part_list()
+		
+		# Special case a song with only the default part as "OK"
+		print "testing the partlist..."
+		if song_obj.partlist == [ 'All'	]:
+			print "Partlist is just 'all'"
+			set_status(self.parent.part_obj, ok=True)
+			#time.sleep(2)
+		# set the new dictiony in place...
+		self.parent.part_obj.dict = self.parent.part_lookup
+		self.parent.part_obj.post()
+		self.parent.read()
 		
 class Graphic_row():
 	"""
@@ -671,7 +677,11 @@ class Graphic_row_screenshot(Graphic_row):
 		Put up a second button to allow using the sound graphic.
 		"""
 		self.changeButton = ttk.Button(self.parent.edit_frame, text="Use Sound Graphic", command=self.button2_handler).grid(column=self.column + 3, row=self.row + 1, sticky=tk.W )
-		
+	def size_menu(self):
+		"""
+		Offer up a menu of sizes...
+		"""
+			
 	def button2_handler(self):
 		"""
 		Just use the sound graphic...
@@ -680,8 +690,9 @@ class Graphic_row_screenshot(Graphic_row):
 		self.parent.needs_rebuild = True
 		self.parent.obj.screenshot = self.parent.obj.soundgraphic
 		self.parent.set_member('xStart', 30)	#   RBF:  these need to be set elsewhere...
-
-		self.parent.set_member('xEnd', 630)
+		width, height = self.parent.size
+		end = width - 10
+		self.parent.set_member('xEnd', end)
 
 		self.parent.set_member('screenshot', self.parent.obj.soundgraphic)
 		imagemaker.make_sub_images(self.parent.obj)
@@ -722,14 +733,15 @@ class Graphic_row_soundfile(Graphic_row):
 		img_dest = os.path.join(self.parent.obj.home, self.parent.obj.soundgraphic)
 		#make_sound_image(self.parent.obj, sound_dest, img_dest)
 		self.graphic_path =  os.path.join(self.parent.obj.home, self.parent.obj.soundthumbnail)
-		page_thread=threading.Thread(target=make_sound_image, args=(self.parent, sound_dest, img_dest))
+		
+		page_thread=threading.Thread(target=make_sound_image, args=(self.parent, sound_dest, img_dest, self.parent.size))
 		page_thread.start()
 		#rebuild_page_edit(self)
 
 	def return_value(self):
 		return(self.parent.obj.soundfile, self.ok)	# I know, a bit redundant...
 	
-def make_sound_image(page_edit, sound, image):
+def make_sound_image(page_edit, sound, image, size):
 	print "Creating image...", image
 	soundimageTop = tk.Toplevel()
 	#soundimageTop.transient(page_edit)
@@ -746,7 +758,7 @@ def make_sound_image(page_edit, sound, image):
 	#img_gen_progbar.max = 600		# This needs to be calculated 
 	#img_gen_progbar.post()		# initial layout...   called in Sound_image.build()
 	
-	snd_image = imagemaker.Sound_image(sound, image, img_gen_progbar)
+	snd_image = imagemaker.Sound_image(sound, image, size, img_gen_progbar)
 	snd_image.build()	# separate - we may want to change a few things before the build...
 	page_edit.obj.soundthumbnail = "SoundGraphic_tn.png"
 	
@@ -829,6 +841,7 @@ class Edit_screen:
 		self.song_obj = None
 		self.changed = False
 		self.needs_rebuild = False
+		
 		
 		
 	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing no...
@@ -967,6 +980,11 @@ class Page_edit_screen(Edit_screen):
 
 		page.object_type = 'Page'
 		page.page_type = 'html5'		# new pages use this..
+		
+		# convert the media size (e.g., small, medium, etc) to (width, height)
+		size_class = config.Sizes()
+		self.size = size_class.sizeof(page.media_size)	
+		
 		if self.new:
 			self.new_text = "New Page (Group: " + self.parent.current_groupname + ')'
 			self.sub_dir = os.path.join('Group', self.parent.current_groupname, 'Page', )
@@ -996,6 +1014,23 @@ class Page_edit_screen(Edit_screen):
 		row.content = self.obj.description
 		row.post()
 		
+		#--- Resolution
+		#self.obj.song_obj = None
+		menu = Menu_row(self, "Resolution", "media_size")
+		l = []		# list of resolutions and their actual size
+		d = {}		# dictionary of strings to media_size names...
+		for resolution in size_class.list():
+			string = resolution + " " + str(size_class.sizeof(resolution))
+			l.append(string)
+			d[string] = resolution
+			if resolution == page.media_size:
+				menu.default = string
+			
+		menu.titles = tuple(l)		# Convert to a tuple...
+		
+		self.editlist[menu.member] =  menu
+		menu.dict = d
+		menu.post()
 		#---- Sound file...
 		# 
 		# is there such a file?
@@ -1050,7 +1085,7 @@ class Page_edit_screen(Edit_screen):
 		#--- Song
 
 		#self.obj.song_obj = None
-		menu = Menu_row(self, "Song", "song")
+		menu = Song_menu_row(self, "Song", "song")
 		l = []		# list of song titles (desc_title)
 		d = {}		# dictionary to convert desc_title to name
 		if self.new:

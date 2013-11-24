@@ -15,7 +15,98 @@ import ttk
 
 from PIL import Image, ImageTk
 
-class graphic_element():
+class Progress_bar():
+    """
+    Build a generic progress bar.   Various items can
+    be adjusted before calling post().  The update() 
+    method handles both the bar and the remaining time.
+    Creates a frame within the parent object, and grids
+    out the title and 
+    """
+    
+    def __init__(self, parent, title, width=200, max=0, init=0):
+        self.parent = parent
+        self.title = title
+        self.width = width
+        self.max = max
+        if self.max == 0:
+            self.of_str = ' of ???'
+        else:
+            self.of_str = ' of ' + str(max)
+        # value used to set the progress bard
+        self.value = tk.DoubleVar()
+        self.value.set(init)
+        # string to show the progress status as text
+        self.v_string = tk.StringVar()
+        self.v_string.set(str(init) + self.of_str)
+        # string to show remaining time..
+        self.t_string = tk.StringVar()
+        self.t_string.set('?:??')
+        self.start_time = time.time()
+        self.what = 'Item'    # what it is....
+        self.mode = 'determinate'
+        
+        
+    def post(self):
+        """
+        Build a small grid, # items of items (0,0), time remaining (0,1),
+        Progress bar, (1,0-1) (columnspan 2)
+        """
+        self.start_time = time.time()
+        
+        self.frame = tk.Frame(self.parent)
+        self.frame.grid(sticky=tk.W)
+        
+        
+        tk.Label(self.frame, text=self.title).grid(row=0, column=0, columnspan=5, sticky=tk.W)
+        if self.mode == 'determinate':
+            tk.Label(self.frame, text=self.what + ':', justify= tk.LEFT).grid(row=1, column=0, sticky=tk.W)
+            self.which = tk.Label(self.frame, textvariable=self.v_string, justify= tk.LEFT)
+            self.which.grid(row=1, column=1, sticky=tk.W)
+            
+            tk.Label(self.frame, text='Time remaining: ', justify= tk.RIGHT).grid(row=1, column=3, sticky=tk.E)
+            tk.Label(self.frame, textvariable=self.t_string, justify= tk.RIGHT).grid(row=1, column=4, sticky=tk.E)
+        
+        self.progBar = ttk.Progressbar(self.frame, length=self.width, maximum=self.max, mode=self.mode, variable=self.value)
+        self.progBar.grid(row=2, column=0, columnspan=5, sticky=tk.W)
+        
+    def set_max(self, new_max):
+        self.max = new_max 
+        self.of_str = ' of ' + str(self.max)
+        self.progBar.configure(maximum=self.max)
+    
+            
+    def update(self, new_value):
+        """
+        Update the bits and pieces with the new value...
+        Move the progress bar, display the new value and
+        time remaining.
+        """
+        # for now...
+        self.value.set(new_value)
+        self.v_string.set(str(new_value) + self.of_str)
+        
+        # time remaining:
+        if new_value == 0:
+            self.start_time=time.time()
+            return
+        
+        elapsed = time.time() - self.start_time
+        rem = elapsed / new_value * (self.max - new_value)    # remaining time in seconds...
+        (minutes, seconds) = divmod(rem, 60)    # split (note: they are floats)
+
+        # doesn't seem this should be necessary - but the %02.2f conversion is
+        # not working as I expected...
+        (isecs, frac) = divmod(seconds, 1)
+        ifrac = int(frac*10)
+        
+        #rem_str =  ('%0d:%02d.%02d') % (minutes, isecs, frac)
+        rem_str =  '%0d:%02d.%01d' % (minutes, isecs, ifrac)
+        rem_str =  '%0d:%02d' % (minutes, isecs)
+        self.t_string.set(rem_str)
+        
+    
+class graphic_element:
     """
     Used to place a generic image on the grid.
     """
@@ -44,7 +135,7 @@ class graphic_element():
         except Exception as e:
             print "Title creation exception", sys.exc_info()[0], e
             print "Filepath:", self.filepath
-            raise SystemError
+            #raise SystemError
     def destroy(self):        
         try:
             self.graphic.grid_forget()
@@ -52,7 +143,7 @@ class graphic_element():
         except Exception as e:
             print "self.graphic.grid_forget / destroy excepted...", e, sys.exc_info()[0]
            
-class clOption_menu():
+class clOption_menu:
     """
     creates a tk.OptionMenu as a child of the parent, from 
     the list - using the "eval_string" for the display
@@ -99,6 +190,28 @@ class clOption_menu():
         value = eval('member' + '.' + eval_string)
         return(str(value))
  
+class Popup:
+    """
+    A very simple way to put something on the screen that will disappear soon.
+    """
+    def __init__(self, label="Info...", text="Pop-up!"):
+        print "Popup: creating popup, label:", label, "text:", text
+        self.t = tk.Toplevel()
+        self.t.transient()
+        lf = tk.LabelFrame(master=self.t, relief=tk.GROOVE, text=label, borderwidth=5)
+        lf.lift(aboveThis=None)
+        lf.grid(ipadx=10, ipady=40, padx=25, pady=15)
+        f = tk.Frame(lf)
+        f.grid(row=0, column=0, sticky=tk.W)
+        ttk.Label(f, text=text).grid()
+        self.t.update()     # Get the pop-up on the screen...
+        
+         
+    def destroy(self):
+        """ Just make it go away..."""
+        self.t.destroy()
+        
+         
 """ for debugging.... """
 class Thingy():
     def __init__(self):

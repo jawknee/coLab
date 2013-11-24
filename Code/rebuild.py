@@ -11,17 +11,108 @@ import os
 import sys
 import subprocess
 
+import Tkinter as tk
+import ttk
+
+import config
 import clutils
+import cltkutils
 import cldate
-
 import clclasses
-
+import clAudio
+import imagemaker
+import clSchedule
 from htmlgen import *
 
 # 
 # put these somewhere....
 num_recent_entries = 5
 num_project_entries = 10
+
+def render_page(page, media_size=None, max_samples_per_pixel=0):
+	"""
+	Interface to the routines to render a page.  By passing in size,
+	it only renders that size - presumably for a preview.  Max samples/pixel
+	can be set some number (100?) to speed up the generation of the 
+	soundfile image - again, for previews. 
+	
+	This routine can be called from the interactive (clFunctions) section
+	or the background task - so that multiple media types can be generated.
+	"""
+	
+	if media_size is None:
+		media_size = page.media_size
+		
+	size = config.Sizes().sizeof(media_size)
+	print "render_page - size is:", size
+	sound_dest = os.path.join(page.home, page.soundfile)
+	img_dest = os.path.join(page.home, page.soundgraphic)
+	#make_sound_image(page, sound_dest, img_dest, size, max_samples_per_pixel)
+	
+	# let's make sure mamp is running...
+	
+	clSchedule.start_mamp()
+	progressTop = tk.Toplevel()
+	progressTop.transient()
+	render_frame = tk.LabelFrame(master=progressTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
+	render_frame.lift(aboveThis=None)
+	render_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+	#
+	
+	fps = imagemaker.calc_fps_val(page)
+	frames = int(float(page.duration) * fps) 
+	f0 = tk.Frame(render_frame)
+	f0.grid(row=0, column=0, sticky=tk.W)
+	imagemaker.make_sound_image(f0, page, sound_dest, img_dest, size, max_samples_per_pixel)
+	if page.needs_rebuild:
+		f1 = tk.Frame(render_frame)
+		f1.grid(row=1, column=0, sticky=tk.W)
+		
+		img_gen_progbar = cltkutils.Progress_bar(f1, 'Image Generation', max=frames)
+		img_gen_progbar.what = 'Image'
+		img_gen_progbar.width = 500
+		img_gen_progbar.max = frames
+		img_gen_progbar.post()		# initial layout...
+		
+		f2 = tk.Frame(render_frame)
+		f2.grid(row=2, column=0, sticky=tk.W)
+		
+		vid_gen_progbar = cltkutils.Progress_bar(f2, 'Video Generation', max=frames)
+		vid_gen_progbar.what = 'Frame'
+		vid_gen_progbar.width = 500
+		vid_gen_progbar.max = frames
+		vid_gen_progbar.post()
+	 
+	"""
+	f3 = tk.Frame(render_frame)
+	f3.grid(row=2, column=0, sticky=tk.W)
+	ftp_progbar = cltkutils.Progress_bar(f3, 'ftp mirror...')
+	ftp_progbar.width = 500
+	ftp_progbar.mode = 'indeterminate'
+	ftp_progbar.post()
+	"""
+
+	f4 = tk.Frame(render_frame)
+	f4.grid(row=3, column=0, sticky=tk.E)
+	quitButton = ttk.Button(f4, text="Quit", command=progressTop.quit)
+	quitButton.grid()
+	
+	try:
+		if page.needs_rebuild:	
+			imagemaker.make_images(page, img_gen_progbar, media_size)
+			img_gen_progbar.progBar.stop()
+			clAudio.make_movie(page, vid_gen_progbar)
+	except:
+		print "no page editor object - likely running free..."
+		
+	#ftp_progbar.progBar.start()
+	rebuild(page.group_obj)		# currently the group name - change to the object...
+	#ftp_progbar.progBar.stop()
+			
+	progressTop.destroy()
+	local_url = "http://localhost/" + page.root
+	clSchedule.browse_url(local_url)
+	
 
 def rebuild(g, mirror=False, opt="nope"):
 	"""

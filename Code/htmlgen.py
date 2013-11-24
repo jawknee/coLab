@@ -15,6 +15,7 @@ import os
 import sys
 import imp	# to input the data file
 import shutil
+import subprocess
 
 import clutils
 import cldate
@@ -23,10 +24,16 @@ import cldate
 import clclasses
 
 from headers import *
-from imagemaker import make_text_graphic
+import imagemaker
 
 tan = (196, 176, 160, 255)
 fill = tan
+
+# 
+# put these somewhere....
+num_recent_entries = 5
+num_project_entries = 10
+
 
 def check_comments(obj):
 	"""
@@ -129,11 +136,11 @@ def pagegen(group, page):
 	fonts = clutils.fontlib()	# maybe put this in the group?
 	fontpath = fonts.fontpath('AenigmaScrawl')
 	if clutils.needs_update('.', file='Title.png'):
-		make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=8, fill=fill, maxsize=(640,90) )
+		imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=8, fill=fill, maxsize=(640,90) )
 	else:
 		print "Not updating Title.png"
 	if clutils.needs_update('.', file='Header.png'):
-		make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill)#, maxsize=(400,90) )
+		imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill)#, maxsize=(400,90) )
 	else:
 		print "Not updating Header.png"
 
@@ -348,9 +355,9 @@ def songgen(group):
 		fonts = clutils.fontlib()	# maybe put this in the group?
 		fontpath = fonts.fontpath('FoxboroScriptBold')
 		if clutils.needs_update('.', file='Title.png'):
-			make_text_graphic(song.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+			imagemaker.make_text_graphic(song.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 		if clutils.needs_update('.', file='Header.png'):
-			make_text_graphic(song.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
+			imagemaker.make_text_graphic(song.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 	
 		if not clutils.needs_update('.', file='index.shtml'):
 			print "Song", song.name, "does not need update."
@@ -399,7 +406,7 @@ def songgen(group):
 			partPng = 'Part' + part + '.png'
 			if clutils.needs_update('.', file=partPng):
 				partname = song.partname_dict[part]
-				make_text_graphic(partname, partPng, fontpath, fontsize=45, border=5, fill=fill )
+				imagemaker.make_text_graphic(partname, partPng, fontpath, fontsize=45, border=5, fill=fill )
 
 			content += '<a name="' + part + '">\n'
 			if multiparts:	# only include parts if there are 2 or more... (otherwise we get a separate "All")
@@ -478,8 +485,8 @@ def homegen(group):
 	# make the title graphics...
 	fonts = clutils.fontlib()	# maybe put this in the group?
 	fontpath = fonts.fontpath('FoxboroScriptBold')
-	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
-        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=45, border=2, fill=fill )
+	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=45, border=2, fill=fill )
 	
 	# open the index file, dump the header, body, etc. into it...
 	try:
@@ -554,8 +561,8 @@ def newgen(group):
 	# make the title graphics...
 	fonts = clutils.fontlib()	# maybe put this in the group?
 	fontpath = fonts.fontpath('FoxboroScriptBold')
-	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
-        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
+	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
 
 	html = Html()	# create an html object that contains the html strings...
@@ -623,8 +630,8 @@ def navgen(group):
 	# make the title graphics...
 	fonts = clutils.fontlib()	# maybe put this in the group?
 	fontpath = fonts.fontpath('FoxboroScriptBold')
-	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
-        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
+	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
 
 	html = Html()	# create an html object that contains the html strings...
@@ -718,8 +725,8 @@ def archivegen(group):
 	# make the title graphics...
 	fonts = clutils.fontlib()	# maybe put this in the group?
 	fontpath = fonts.fontpath('FoxboroScriptBold')
-	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
-        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
+	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
 	content = """
 		</center></center>
@@ -790,8 +797,8 @@ def helpgen(group):
 	# make the title graphics...
 	fonts = clutils.fontlib()	# maybe put this in the group?
 	fontpath = fonts.fontpath('FoxboroScriptBold')
-	make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
-        make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
+	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 
 
 	html = Html()	# create an html object that contains the html strings...

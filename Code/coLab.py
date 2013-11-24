@@ -104,6 +104,7 @@ class Colab():
         ... some data structure... - for now:
         """
         self.current_groupname = "Catharsis"
+        self.current_groupname = "Johnny's Music"
         print "btw", self.current_groupname
         #print "and", self.hello
         

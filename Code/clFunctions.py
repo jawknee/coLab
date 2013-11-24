@@ -33,97 +33,6 @@ import imagemaker
 import clAudio
 import rebuild
 
-class Progress_bar():
-	"""
-	Build a generic progress bar.   Various items can
-	be adjusted before calling post().  The update() 
-	method handles both the bar and the remaining time.
-	Creates a frame within the parent object, and grids
-	out the title and 
-	"""
-	
-	def __init__(self, parent, title, width=200, max=0, init=0):
-		self.parent = parent
-		self.title = title
-		self.width = width
-		self.max = max
-		if self.max == 0:
-			self.of_str = ' of ???'
-		else:
-			self.of_str = ' of ' + str(max)
-		# value used to set the progress bard
-		self.value = tk.DoubleVar()
-		self.value.set(init)
-		# string to show the progress status as text
-		self.v_string = tk.StringVar()
-		self.v_string.set(str(init) + self.of_str)
-		# string to show remaining time..
-		self.t_string = tk.StringVar()
-		self.t_string.set('?:??')
-		self.start_time = time.time()
-		self.what = 'Item'	# what it is....
-		self.mode = 'determinate'
-		
-		
-	def post(self):
-		"""
-		Build a small grid, # items of items (0,0), time remaining (0,1),
-		Progress bar, (1,0-1) (columnspan 2)
-		"""
-		self.start_time = time.time()
-		
-		self.frame = tk.Frame(self.parent)
-		self.frame.grid(sticky=tk.W)
-		
-		
-		tk.Label(self.frame, text=self.title).grid(row=0, column=0, columnspan=5, sticky=tk.W)
-		if self.mode == 'determinate':
-			tk.Label(self.frame, text=self.what + ':', justify= tk.LEFT).grid(row=1, column=0, sticky=tk.W)
-			self.which = tk.Label(self.frame, textvariable=self.v_string, justify= tk.LEFT)
-			self.which.grid(row=1, column=1, sticky=tk.W)
-			
-			tk.Label(self.frame, text='Time remaining: ', justify= tk.RIGHT).grid(row=1, column=3, sticky=tk.E)
-			tk.Label(self.frame, textvariable=self.t_string, justify= tk.RIGHT).grid(row=1, column=4, sticky=tk.E)
-		
-		self.progBar = ttk.Progressbar(self.frame, length=self.width, maximum=self.max, mode=self.mode, variable=self.value)
-		self.progBar.grid(row=2, column=0, columnspan=5, sticky=tk.W)
-		
-	def set_max(self, new_max):
-		self.max = new_max 
-		self.of_str = ' of ' + str(self.max)
-		self.progBar.configure(maximum=self.max)
-	
-			
-	def update(self, new_value):
-		"""
-		Update the bits and pieces with the new value...
-		Move the progress bar, display the new value and
-		time remaining.
-		"""
-		# for now...
-		self.value.set(new_value)
-		self.v_string.set(str(new_value) + self.of_str)
-		
-		# time remaining:
-		if new_value == 0:
-			self.start_time=time.time()
-			return
-		
-		elapsed = time.time() - self.start_time
-		rem = elapsed / new_value * (self.max - new_value)	# remaining time in seconds...
-		(minutes, seconds) = divmod(rem, 60)	# split (note: they are floats)
-
-		# doesn't seem this should be necessary - but the %02.2f conversion is
-		# not working as I expected...
-		(isecs, frac) = divmod(seconds, 1)
-		ifrac = int(frac*10)
-		
-		#rem_str =  ('%0d:%02d.%02d') % (minutes, isecs, frac)
-		rem_str =  '%0d:%02d.%01d' % (minutes, isecs, ifrac)
-		rem_str =  '%0d:%02d' % (minutes, isecs)
-		self.t_string.set(rem_str)
-		
-	
 class Data_row:
 	"""
 	Base class for the various rows that gather data.  
@@ -569,6 +478,7 @@ class Graphic_row(Data_row):
 			self.status = tk.Label(self.parent.edit_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
 			
+        
 		else:
 			try:
 				self.widget.graphic.destroy()
@@ -610,8 +520,9 @@ class Graphic_row_screenshot(Graphic_row):
 	"""
 	def button_handler(self):
 		print "this is the button handler"
-		self.parent.changed = True
-		self.parent.needs_rebuild = True
+		page = self.parent.obj
+		page.changed = True
+		page.needs_rebuild = True
 		initialPath = "/Users/Johnny/Desktop"
 		file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.png', title="Open screen shot...")
 		if not file_path:
@@ -619,11 +530,12 @@ class Graphic_row_screenshot(Graphic_row):
 		
 		self.ok = True
 		self.set_status( True)
+		page.use_soundgraphic = False
 		filename = os.path.split(file_path)[1]
 		
 		subdir = os.path.join('coLab_local', filename)
-		self.parent.obj.screenshot = subdir
-		dest = os.path.join(self.parent.obj.home, subdir)
+		page.screenshot = subdir
+		dest = os.path.join(page.home, subdir)
 						
 		try:
 			shutil.copy(file_path, dest)
@@ -682,18 +594,20 @@ class Graphic_row_screenshot(Graphic_row):
 		"""
 		Just use the sound graphic...
 		"""
-		self.parent.changed = True
-		self.parent.needs_rebuild = True
-		self.parent.obj.screenshot = self.parent.obj.soundgraphic
+		page = self.parent.obj
+		page.changed = True
+		page.needs_rebuild = True
+		page.screenshot = page.soundgraphic
+		page.use_soundgraphic = True
 
 		self.parent.set_member('xStart', 30)	#   RBF:  these need to be set elsewhere...
 		width, height = self.parent.size
 		end = width - 10
 		self.parent.set_member('xEnd', end)
 
-		self.parent.set_member('screenshot', self.parent.obj.soundgraphic)
-		imagemaker.make_sub_images(self.parent.obj)
-		self.graphic_path =  os.path.join(self.parent.obj.home, self.parent.obj.soundthumbnail)
+		self.parent.set_member('screenshot', page.soundgraphic)
+		imagemaker.make_sub_images(page)
+		self.graphic_path =  os.path.join(page.home, page.soundthumbnail)
 		self.parent.post_member('screenshot')
 		
 class Graphic_row_soundfile(Graphic_row):
@@ -702,66 +616,57 @@ class Graphic_row_soundfile(Graphic_row):
 	"""
 	def button_handler(self):
 		print "this is the sound file button handler"
-		self.parent.changed = True
-		self.parent.needs_rebuild = True	
+		page = self.parent.obj
+		page.changed = True
+		page.needs_rebuild = True	
 		initialPath = "/Volumes/iMac 2TB/Music/"
 		file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.aif', title="Open AIFF sound file...")
 		if not file_path:
 			return
 		
+		
 		self.ok = True
 		self.set_status( True)
 		filename = os.path.split(file_path)[1]
+		popup = cltkutils.Popup("Sound file:" + filename, "Copying...")
+		page = self.parent.obj
 		
-		subdir = os.path.join('coLab_local', filename)
-		self.parent.obj.soundfile = subdir
-		sound_dest = os.path.join(self.parent.obj.home, subdir)
+		filepath = os.path.join('coLab_local', filename)
+		
+		page.soundfile = filepath
+		sound_dest = os.path.join(page.home, filepath)
 						
 		try:
 			shutil.copy(file_path, sound_dest)
 		except Exception as e:
 			print "Failure copying", file_path, "to", sound_dest
 			raise Exception
+		finally:
+			popup.destroy()
 		
-		#self.parent.obj.duration = str(clAudio.get_audio_len(sound_dest))
+		
 		self.parent.set_member('duration', str(clAudio.get_audio_len(sound_dest)))
 		#self.parent.duration_obj.nameVar.set(self.parent.obj.duration)
 		
+		page.editor = self.parent	# the editor object we're in rigt now...
+		#page_thread=threading.Thread(target=rebuild.render_page, args=(page, media_size='Tiny', max_samples_per_pixel=100))
+		page_thread=threading.Thread(target=rebuild.render_page, args=(page, 'Tiny', 100))
+		page_thread.start()
+		#rebuild.render_page(page, media_size='Tiny', max_samples_per_pixel=100)   # render as a preview...
+		"""
 		img_dest = os.path.join(self.parent.obj.home, self.parent.obj.soundgraphic)
 		#make_sound_image(self.parent.obj, sound_dest, img_dest)
 		self.graphic_path =  os.path.join(self.parent.obj.home, self.parent.obj.soundthumbnail)
-		
-		page_thread=threading.Thread(target=make_sound_image, args=(self.parent, sound_dest, img_dest, self.parent.size))
+		max = 100 	# overview -no more than 100 sound frames (samples) per vertical pixel
+		page_thread=threading.Thread(target=make_sound_image, args=(self.parent, sound_dest, img_dest, self.parent.size, max))
 		page_thread.start()
 		#rebuild_page_edit(self)
-
+		"""
+		self.parent.post_member('soundfile')
+		
 	def return_value(self):
 		return(self.parent.obj.soundfile, self.ok)	# I know, a bit redundant...
 	
-def make_sound_image(page_edit, sound, image, size):
-	print "Creating image...", image
-	soundimageTop = tk.Toplevel()
-	#soundimageTop.transient(page_edit)
-	soundimage_frame = tk.LabelFrame(master=soundimageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
-	soundimage_frame.lift(aboveThis=None)
-	soundimage_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
-	
-	f1 = tk.Frame(soundimage_frame)
-	f1.grid(row=0, column=0, sticky=tk.W)
-	
-	img_gen_progbar = Progress_bar(f1, 'Image Generation')
-	img_gen_progbar.what = 'Line'
-	img_gen_progbar.width = 500
-	#img_gen_progbar.max = 600		# This needs to be calculated 
-	#img_gen_progbar.post()		# initial layout...   called in Sound_image.build()
-	
-	snd_image = imagemaker.Sound_image(sound, image, size, img_gen_progbar)
-	snd_image.build()	# separate - we may want to change a few things before the build...
-	page_edit.obj.soundthumbnail = "SoundGraphic_tn.png"
-	
-	imagemaker.make_sub_images(page_edit.obj)
-	page_edit.post_member('soundfile')
-	soundimageTop.destroy()
 
 class Select_edit():
 	"""
@@ -777,11 +682,11 @@ class Select_edit():
 	
 	def post(self):
 		self.tmpBox = tk.Toplevel()
-		self.tmpBox.transient(self.parent.top)
+		#self.tmpBox.transient(self.parent.top)
 		
 		frame = tk.LabelFrame(master=self.tmpBox, relief=tk.GROOVE, text="Select " + self.name + " to Edit (Group: " + self.parent.current_groupname + ')', borderwidth=5)
 		frame.lift(aboveThis=None)
-		frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+		frame.grid(ipadx=10, ipady=40, padx=15, pady=15)
 		# return the list...
 		plist = eval("self.parent.current_group." + self.list)
 		plist.sort(key=clclasses.createkey, reverse=True)
@@ -836,8 +741,8 @@ class Edit_screen:
 		self.ok = not new
 		self.edit_frame = None
 		self.song_obj = None
-		self.changed = False
-		self.needs_rebuild = False
+		self.obj.changed = False
+		self.obj.needs_rebuild = False
 		
 		
 		
@@ -1198,14 +1103,18 @@ class Page_edit_screen(Edit_screen):
 			clclasses.convert_vars(self.obj)
 			self.obj.post()
 			# Now build the frames and video in the background...
-			page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
+			#page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
+			page = self.obj
+			page.editor = None
+			#page.editor = self	# pass in the page, but reference this editor obj.
+			page_thread=threading.Thread(target=rebuild.render_page, args=(page,))
 			page_thread.start()
 			#rebuild_page_edit(self)
 			
 			self.editTop.destroy()
 			
 	def quit(self):
-		if self.changed:
+		if self.obj.changed:
 			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
 			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				return(None)
@@ -1239,7 +1148,7 @@ def rebuild_page_edit(obj):
 			f1 = tk.Frame(edit_frame)
 			f1.grid(row=0, column=0, sticky=tk.W)
 			
-			img_gen_progbar = Progress_bar(f1, 'Image Generation', max=frames)
+			img_gen_progbar = cltkutils.Progress_bar(f1, 'Image Generation', max=frames)
 			img_gen_progbar.what = 'Image'
 			img_gen_progbar.width = 500
 			img_gen_progbar.max = frames
@@ -1248,7 +1157,7 @@ def rebuild_page_edit(obj):
 			f2 = tk.Frame(edit_frame)
 			f2.grid(row=1, column=0, sticky=tk.W)
 			
-			vid_gen_progbar = Progress_bar(f2, 'Video Generation', max=frames)
+			vid_gen_progbar = cltkutils.Progress_bar(f2, 'Video Generation', max=frames)
 			vid_gen_progbar.what = 'Frame'
 			vid_gen_progbar.width = 500
 			vid_gen_progbar.max = frames
@@ -1257,7 +1166,7 @@ def rebuild_page_edit(obj):
 		""" 	
 		f3 = tk.Frame(edit_frame)
 		f3.grid(row=2, column=0, sticky=tk.W)
-		ftp_progbar = Progress_bar(f3, 'ftp mirror...')
+		ftp_progbar = cltkutils.Progress_bar(f3, 'ftp mirror...')
 		ftp_progbar.width = 500
 		ftp_progbar.mode = 'indeterminate'
 		ftp_progbar.post()
@@ -1506,11 +1415,11 @@ class Song_edit_screen(Edit_screen):
 			#page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
 			#page_thread.start()
 			#rebuild_page_edit(self)
-			rebuild.rebuild(self.obj.group_obj)		
+			htmlgen.rebuild(self.obj.group_obj)		
 			self.editTop.destroy()
 			
 	def quit(self):
-		if self.changed:
+		if self.obj.changed:
 			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
 			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				return

@@ -5,40 +5,32 @@
 	scrolling line...
 """
 
+import aifc
+import sys
+import os
+import math
+import threading
+import time
+
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 #import Image
 #import ImageDraw
 #import ImageFont
-import aifc
-import sys
-import os
-import math
-import time
+
+import Tkinter as tk
+import ttk
+import tkFileDialog
+import tkMessageBox
 
 #from coLab import main
-import clclasses
 import config
-
-# this needs to be driven by a table - low/med/high res...
-#width = 640
-#height = 480
-
-#width = 960
-#height = 720
-#width = 1280
-#height = 960
-#width = 2560
-#height = 1440
-#height = 1920
-#width = 1440
-#height = 1080
-#width = 1920
-#width = 320
-#height = 240
-
-
+import clclasses
+import cltkutils
+import clSchedule
+import clAudio
+from rebuild import rebuild
 
 
 
@@ -90,6 +82,7 @@ def calculate_fps(page):
 	# spf:  10 5 4 3 2 1
 	# fps:  2 6 10 12 15 24 25 30 50 60 
 	# (we skip the fractional ones for now...)
+	
 	#fps_values = [ (1,10), (1,5), (1,4), (1,3), (1,2), (1,1),
 	fps_values = [ (1,1), 
 	      (2,1), (6,1), (10,1), (12,1), (15,1), (24,1), 
@@ -124,7 +117,39 @@ def calculate_fps(page):
 	return( (frames, seconds) )	# should account for max fps being enough...
 
 
-def make_sub_images(page):
+def make_sound_image(frame, page, sound, image, size, max_samp_per_pixel=0):
+	print "Creating image...", image
+	"""
+	soundimageTop = tk.Toplevel()
+	
+	soundimage_frame = tk.LabelFrame(master=soundimageTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
+	soundimage_frame.lift(aboveThis=None)
+	soundimage_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+	"""
+	soundimage_frame = frame
+	f1 = tk.Frame(soundimage_frame)
+	f1.grid(row=0, column=0, sticky=tk.W)
+	
+	img_gen_progbar = cltkutils.Progress_bar(f1, 'Image Generation')
+	img_gen_progbar.what = 'Line'
+	img_gen_progbar.width = 500
+	#img_gen_progbar.max = 600		# This needs to be calculated 
+	#img_gen_progbar.post()		# initial layout...   called in Sound_image.build()
+	
+	snd_image = Sound_image(sound, image, size, img_gen_progbar, max_samp_per_pixel)
+	snd_image.build()	# separate - we may want to change a few things before the build...
+	page.soundthumbnail = "SoundGraphic_tn.png"
+	
+	make_sub_images(page)
+	try:
+		page.editor.get_member('soundfile').post()
+	except:
+		print "Free running..."
+		pass
+	
+	#soundimageTop.destroy()
+
+def make_sub_images(page, size=None):
 	"""
 	Create the main graphic and thumbnail for a page.
 	Could/should be generalized for other objects.
@@ -133,7 +158,8 @@ def make_sub_images(page):
 	screenshot = os.path.join(page.home, page.screenshot)
 	graphic = os.path.join(page.home, page.graphic)
 	thumbnail = os.path.join(page.home, page.thumbnail)
-	size = config.Sizes().sizeof(page.media_size)
+	if size is None:
+		size = config.Sizes().sizeof(page.media_size)
 	#
 	try:
 		orig_image = Image.open(screenshot)
@@ -161,7 +187,7 @@ def make_sub_images(page):
 	#
 	# sound image:
 	
-def make_images(page, prog_bar=None):
+def make_images(page, prog_bar=None, media_size=None):
 	"""
 	 for now - just create and display a time box...
 	"""
@@ -178,8 +204,9 @@ def make_images(page, prog_bar=None):
 		print "Problem changing to :", page.home
 		print info
 		sys.exit(1)
-
-	size = config.Sizes().sizeof(page.media_size)
+	if media_size is None:
+		media_size = page.media_size
+	size = config.Sizes().sizeof(media_size)
 	(width, height) = size
 	box_width = 55
 	box_height = 35
@@ -398,10 +425,12 @@ class Sound_image():
 	Generates a standard (or other) sized png file.
 	"""
 	
-	def __init__(self, sound_file, image_file, size, prog_bar=None):
+	def __init__(self, sound_file, image_file, size, prog_bar=None, max_samp_per_pixel=0):
 		"""
 		open the sound file and set the various internal vars.
 		"""
+		print "Beginning Sound file open..."
+		
 		try:
 			self.aud = aifc.open(sound_file)
 		except:
@@ -411,6 +440,13 @@ class Sound_image():
 		self.sound_file = sound_file
 		self.image_file = image_file
 		self.prog_bar = prog_bar
+		# max samp/pixel let's us process hour long audio quickly for preview. 
+		# Setting to some value (e.g., 100) approximates that many sample per
+		# vertical line(horizontal pixel) vs, the 60,000 or so in the hour recording
+		# for preview, it can reduce the render time from 20 minutes to less than 5 seconds
+		# with reasonable accuracy, but should be set to 0 for final versions in order to
+		# get accurate clipping, rms and other values.
+		self.max_samp_per_pixel = max_samp_per_pixel	# set to zero for no skipping.
 		# Set up min and max based on border size,
 		# and various factors and values
 		self.lborder = 30		# left border width
@@ -515,11 +551,18 @@ class Sound_image():
 		
 		
 		# v is vertical line
-# 		print "reading frames...", self.nframes
+ 		print "reading frames...", self.nframes
+
 		frame_data = self.aud.readframes(self.nframes)
 	
 		print "Done reading.", len(frame_data)
 		p = 0	# pointer into the frame data
+		# for previews, we can seet sample_skip to some value 
+		# (e.g. 100) to 
+		if self.max_samp_per_pixel == 0:
+			frame_skip = 1
+		else:
+			frame_skip = int(frames_per_pixel / self.max_samp_per_pixel) + 1
 		last_samp = 0					# where were we last?
 		for v in range(num_xpix):		# Calculate min/max for each line in the graphic
 			self.prog_bar.update(v)
@@ -534,14 +577,17 @@ class Sound_image():
 			# We turn group of "w" sample bytes into a signed
 			# int and do the math...
 			num_samps = next_samp - last_samp
+			chunk_offset = next_samp * w * nchan		# where does the next chunk (vertical line) start
 			#frame_data = self.aud.readframes(num_samps)
 				
-			for i in range(num_samps):		# for the samples we just read..
+			for i in range(0, num_samps, frame_skip):		# for the samples we just read..
+				offset = i * nchan * w + chunk_offset
 				for c in range(nchan):
-					
-					ep = p + w	# end pointer
+					p = offset +  c * w
+					ep = p + w
+					#ep = p + w	# end pointer
 					value = signed2int( frame_data[p:ep] )
-					p = ep
+					#p = ep
 					#frame_data = frame_data[w:]		# strip what we just read off the front
 					run_count[c] += value
 					val_squared = value * value

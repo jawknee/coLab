@@ -10,9 +10,12 @@
 import os
 import sys
 import subprocess
+# temp?
+import time
 
 import Tkinter as tk
 import ttk
+import threading
 
 import config
 import clutils
@@ -29,6 +32,201 @@ from htmlgen import *
 num_recent_entries = 5
 num_project_entries = 10
 
+class Render_engine():
+	"""
+	A class to allow us to render pages in the background.
+	A file contains a list of page dirs that need to be
+	rendered (relative to home / colab_home).  The rebuild_page method then calls render_page
+	for each page - and each resolution needed.
+	"""
+	
+	def __init__(self, master, render_list_file=None):
+		"""
+		Open the initial window if not already set.  
+		Note this is a separate loop from the main edit
+		as it can run offline.
+		
+		Process the waiting pages.
+		"""
+		self.master = master
+		self.busy = False
+		try:
+			self.conf=clutils.get_config()
+			print "conf shows:", self.conf.coLab_home
+		except ImportError:
+			print "Cannot find config."
+			sys.exit(1)		# fatal...
+			
+		self.home = self.conf.coLab_home   # can be overridden - not currently anticipated
+		if render_list_file is None:	
+			render_list_file = os.path.join(self.home, "PendingRenders")	
+		
+		print "Render list:", render_list_file
+			
+		self.render_list_file = render_list_file
+		self.top = None		# force the first frame to open...
+		self.init()
+		
+	def init(self):
+		"""
+		Continue the opening of the "initial" frame.  By separating
+		this from the main init, we can call it from other methods
+		to reopen the render frame in case someone has terminated it.
+		"""
+		# Have we created the render master window?   if not, do so...
+		if isinstance(self.top, tk.Toplevel):
+			return 
+		
+		self.top = tk.Toplevel()
+		self.top.title("coLab Render Engine")
+		self.top.geometry("+1000+60")
+		self.top.lift(self.master)
+		self.r_frame = tk.LabelFrame(self.top, text="coLab Render Engine", relief=tk.GROOVE)
+		self.r_frame.grid(padx=25, pady=25, ipadx=10, ipady=10)
+		active_frame = tk.LabelFrame(self.r_frame, text="Active render:")
+		active_frame.grid(row=0, column=0, padx=5, pady=5, ipadx=10, ipady=10, stick=tk.E+tk.W)
+		
+		self.active_name = tk.StringVar()
+		self.active_name.set("None")
+		
+		tk.Label(active_frame, textvariable=self.active_name, anchor=tk.NE, justify=tk.LEFT).grid()
+		
+		pending_frame = tk.LabelFrame(self.r_frame, text="Pending Renders:")
+		pending_frame.grid(row=1, column=0, padx=5, pady=5, ipadx=10, ipady=10, sticky=tk.E+tk.W)
+		
+		self.pending_list = tk.StringVar()
+		self.pending_list.set('')
+		tk.Label(pending_frame, textvariable=self.pending_list, anchor=tk.NE, justify=tk.LEFT).grid()
+		
+		ttk.Button(self.r_frame, text="Terminate", command=self.terminate).grid(row=2, sticky=tk.SW)
+		
+		# initialize the pending list any existing file...
+		try:
+			f = open(self.render_list_file)
+			self.pending_renders = f.read().split('\n')	# split on new lines - last one - remove
+		except:
+			print "Oops?"
+			self.pending_renders = ['']
+		
+		
+		print "Render file list:", self.pending_renders
+		self.pending_renders.pop()
+		self.refresh()
+
+		# Make sure we stop by once in a while to see how things are going....
+		self.master.after(2000,self.check)
+	
+	def check(self):	
+		"""
+		Called every now and then to see what we're up to...
+		"""
+		print "Entered check."
+		try:
+			next_render = self.pending_renders.pop(0)
+		except:
+			next_render = None
+			self.active_name.set("(None)")
+			return
+		else:	
+			self.active_name.set('--pending--')
+			
+			
+		page = clclasses.Page()
+		# If we got here "offline", i.e., an abandoned render found in the 
+		# file, the let's set the rebuild/changed flags...
+		try:
+			page.needs_rebuild
+		except:
+			page.needs_rebuild = True
+		try:
+			page.changed
+		except:
+			page.changed = True
+			
+		try:
+			page.load(next_render)
+		except:
+			print "Something went wrong with the loading of 'next_render'"
+		
+		# Build the new display text...
+		active_text = page.desc_title + '\n'
+		active_text += page.media_size + u"\u2190"
+		self.active_name.set(active_text)
+		page_thread=threading.Thread(target=self.render_all, args=(page,))
+		page_thread.start()
+		self.refresh()
+		self.busy = True
+
+		#self.master.after(2000,self.check)
+		
+	def refresh(self):
+		"""
+		Update the strings based on the current state of things....
+		"""
+		print "Greetings from refresh"
+		# create a Page class - load it up to the title, 
+		# build the titles from that...
+		p = clclasses.Page('temp')
+		renderlist = []		# titles of the pending renders...
+		for path in self.pending_renders:
+			#print "Path:", path
+			#fullpath = os.path.join(self.home, path)
+			p.load(path)
+			renderlist.append(p.desc_title)
+		#print "Renderlist is:", renderlist
+		renderstring = '\n'.join(renderlist)
+		self.pending_list.set('\n'.join(renderlist))
+		
+	
+	def add_render(self, path):
+		""" 
+		Add the passed path to the render list
+		"""
+		print "Add_render: just called with:", path
+		self.init()
+		self.pending_renders.append(path)
+		self.refresh()
+		if not self.busy:
+			self.master.after(5000,self.check)	# make sure we get called...
+		
+	def terminate(self):
+		self.top.destroy()
+		self.top = None
+		
+	def set_list(self, list):
+		self.init()	# check?
+		# tmp - just to see if I can set the list on the fly...
+		print "Just received list:", list
+		self.pending_list.set(list)
+		
+	def hello(self):
+		print "Greetings from Page_builder"
+		print "My render_list is:", self.render_list_file
+	
+	def render_all(self, page):
+		"""
+		Calls render_page for each of the media sizes 
+		that relate to the page's specified size.
+		"""
+		# Save the size - we've already posted the size, and
+		# we're going to generate the media by manipulating
+		# page.media_size - but it's a good idea to set it
+		# back when we're done...
+		original_size = page.media_size
+		size_c = config.Sizes()
+		
+		while page.media_size != config.SMALLEST:
+			print "Render-all, rendering:", page.media_size
+			render_page(page)
+			page.media_size = size_c.next_size(page.media_size)
+			
+		page.media_size = original_size
+		self.busy = False
+		self.master.after(2000, self.check)
+		local_url = "http://localhost/" + page.root
+		browse_thread = threading.Thread(clSchedule.browse_url, args=(local_url))
+		browse_thread.start()
+		
 def render_page(page, media_size=None, max_samples_per_pixel=0):
 	"""
 	Interface to the routines to render a page.  By passing in size,
@@ -54,7 +252,9 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	clSchedule.start_mamp()
 	progressTop = tk.Toplevel()
 	progressTop.transient()
-	render_frame = tk.LabelFrame(master=progressTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
+	progressTop.title('coLab Page Rendering')
+	title = "New Page Generation: " + page.desc_title + ' (' + media_size + ')'
+	render_frame = tk.LabelFrame(master=progressTop, relief=tk.GROOVE, text=title, borderwidth=5)
 	render_frame.lift(aboveThis=None)
 	render_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 	#
@@ -63,12 +263,16 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	frames = int(float(page.duration) * fps) 
 	f0 = tk.Frame(render_frame)
 	f0.grid(row=0, column=0, sticky=tk.W)
-	imagemaker.make_sound_image(f0, page, sound_dest, img_dest, size, max_samples_per_pixel)
+	
+	snd_img_progbar = cltkutils.Progress_bar(f0, 'Sound Image Overview')
+	snd_img_progbar.what = 'Line'
+	snd_img_progbar.width = 500
+	
 	if page.needs_rebuild:
 		f1 = tk.Frame(render_frame)
 		f1.grid(row=1, column=0, sticky=tk.W)
 		
-		img_gen_progbar = cltkutils.Progress_bar(f1, 'Image Generation', max=frames)
+		img_gen_progbar = cltkutils.Progress_bar(f1, 'Video Images', max=frames)
 		img_gen_progbar.what = 'Image'
 		img_gen_progbar.width = 500
 		img_gen_progbar.max = frames
@@ -99,21 +303,25 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	
 	try:
 		if page.needs_rebuild:	
+			imagemaker.make_sound_image(page, snd_img_progbar, sound_dest, img_dest, size, max_samples_per_pixel)
+			#snd_img_progbar.stop()
 			imagemaker.make_images(page, img_gen_progbar, media_size)
-			img_gen_progbar.progBar.stop()
+			#img_gen_progbar.progBar.stop()
 			clAudio.make_movie(page, vid_gen_progbar)
+			#vid_gen_progbar.stop()
 	except:
 		print "no page editor object - likely running free..."
 		
 	#ftp_progbar.progBar.start()
-	rebuild(page.group_obj)		# currently the group name - change to the object...
+	try:
+		rebuild(page.group_obj)		# currently the group name - change to the object...
+	except:
+		print"Need to find a solution to the group render problem!"
 	#ftp_progbar.progBar.stop()
 			
 	progressTop.destroy()
-	local_url = "http://localhost/" + page.root
-	clSchedule.browse_url(local_url)
-	
 
+	
 def rebuild(g, mirror=False, opt="nope"):
 	"""
 	Create and populate group object, adding page and
@@ -329,6 +537,7 @@ def rebuild(g, mirror=False, opt="nope"):
 
 
 def main():
+	"""
 	# Name of the group...
 	try:
 		group = sys.argv[1]
@@ -343,7 +552,22 @@ def main():
 		opt = 'none'
 
 	rebuild(group, opt)
+	"""
+	print "In main of rebuild..."
+	master = tk.Tk()
+	pb = Render_engine(master)
+	#threading.Thread(target=test_thread, args=(pb,)).start()
+	master.mainloop()
 	
+def test_thread(pb):
+	print "Greetings from tt"
+	pb.hello()
+	"""
+	for l in ("just-this", "A Test\nAnotherTest\nStormJustBecause", "Everybody happy\nNow You Happy Too"):
+		time.sleep(5)
+		print "Setting list to:", l
+		pb.set_list(l)
+	"""
 	
 if __name__ == '__main__':
 	main()

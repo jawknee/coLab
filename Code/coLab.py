@@ -56,6 +56,7 @@ class Colab():
         """
         # Get the system wide config - find the local config file and 
         # set the basic paths to content, code, etc.
+
         self.master = master
         
         try:
@@ -64,6 +65,8 @@ class Colab():
         except ImportError:
             print "Cannot find config."
             sys.exit(1)        # fatal...
+        
+        self.home = self.conf.coLab_home   # can be overridden - not currently anticipated
             
         try:
             option_file = os.path.join(self.conf.coLab_home, ".coLab_tkOptions")
@@ -87,6 +90,8 @@ class Colab():
         # The "name" is what's returned from the menu - thus the need for translation
         self.load_group_list()
         self.edit_lock = False
+        
+        self.render_engine = rebuild.Render_engine(self.master)
                
        
         self.get_last_group()    # set the initial group, and load it...

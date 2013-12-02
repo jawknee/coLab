@@ -117,7 +117,7 @@ def calculate_fps(page):
 	return( (frames, seconds) )	# should account for max fps being enough...
 
 
-def make_sound_image(frame, page, sound, image, size, max_samp_per_pixel=0):
+def make_sound_image(page, prog_bar, sound, image, size, max_samp_per_pixel=0):
 	print "Creating image...", image
 	"""
 	soundimageTop = tk.Toplevel()
@@ -126,17 +126,11 @@ def make_sound_image(frame, page, sound, image, size, max_samp_per_pixel=0):
 	soundimage_frame.lift(aboveThis=None)
 	soundimage_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 	"""
-	soundimage_frame = frame
-	f1 = tk.Frame(soundimage_frame)
-	f1.grid(row=0, column=0, sticky=tk.W)
 	
-	img_gen_progbar = cltkutils.Progress_bar(f1, 'Image Generation')
-	img_gen_progbar.what = 'Line'
-	img_gen_progbar.width = 500
 	#img_gen_progbar.max = 600		# This needs to be calculated 
 	#img_gen_progbar.post()		# initial layout...   called in Sound_image.build()
 	
-	snd_image = Sound_image(sound, image, size, img_gen_progbar, max_samp_per_pixel)
+	snd_image = Sound_image(sound, image, size, prog_bar, max_samp_per_pixel)
 	snd_image.build()	# separate - we may want to change a few things before the build...
 	page.soundthumbnail = "SoundGraphic_tn.png"
 	
@@ -257,7 +251,7 @@ def make_images(page, prog_bar=None, media_size=None):
 
 	frameIncr = float(xLen) / frames
 	botpix = height - 1		# bottom pixel
-
+	prog_bar.set_time()
 	#while fr <= frames:
 	last_fr_num = frames - 1
 	for fr_num in range(frames):

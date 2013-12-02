@@ -20,8 +20,9 @@ DISPLAY_SIZE = (640, 480)
 # The sequence is used to determine which sizes to 
 # generate for multiple platforms by following a chain.
 SIZE_LIST = [
+			( '4k-Ultra-HD', (3840, 2160), "Super-HD"),
 			( 'Super-HD', (2560, 1440), "HiDef"),
-			( 'Super-HD-Letterbox', (1920, 1440), "Hi-Letterbox"),
+			( 'Super-HD-Letterbox', (1920, 1440), "HD-Letterbox"),
 			( 'HiDef', (1920, 1080), "Large"),
 			( 'HD-Letterbox', (1440, 1080), "Large"),
 			( 'Large', (1280, 960), "Medium"),

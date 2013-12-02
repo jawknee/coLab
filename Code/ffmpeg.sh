@@ -49,9 +49,8 @@ input_opts="-y -r $fps -i $overlay_dir/Frame-%05d.png -i"
 
 # output streams...
 # Webm
-webm_opts="-codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5 -threads 3 -r $fps $pagedir/$name-media.webm"
-webm_opts="-codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5 -threads 3 $pagedir/$name-media.webm"
-mp4_opts="-codec:v libx264 -profile:v baseline -movflags faststart -pix_fmt yuv420p -threads 3 -codec:a aac -strict -2 -r $fps $pagedir/$name-media.mp4"
+webm_opts="-codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5 -threads 3 -r $fps $pagedir/$name-media-$media_size.webm"
+mp4_opts="-codec:v libx264 -profile:v baseline -movflags faststart -pix_fmt yuv420p -threads 3 -codec:a aac -strict -2 -r $fps $pagedir/$name-media-$media_size.mp4"
 
 #unset ogg_opts webm_opts
 unset ogg_opts 

@@ -3,12 +3,18 @@
 	Raw html clumps that are used in various places...
 
 """
+
+import config
+
 class Html:
 	"""
 	An html object contains the headers, with substitutions marked with '!', (e.g.,
 	!desc_title!).
 
 	Methods are provided for emitting the various parts of most types of web pages.
+	
+	NOTE: __init__() method is a long string of string assignments - and is declared below.
+	
 	"""
 	def emit_head(self, page, media=True):
 		"""
@@ -52,8 +58,11 @@ class Html:
 			
 			# base the name of the media insert on the page type
 			media_insert = eval('self.media_insert_' + page.page_type)
-			
-			body += media_insert.replace("!name!", page.name) + '</center>'
+			# replace the name in the older, quicktime based pages, as 
+			# well as the fallback "Small" version in the html5 version..
+			media_insert = media_insert.replace("!name!", page.name) 
+			body += media_insert.replace("!html5-source-lines!", self.gen_html5_source(page.name, page.media_size))
+			body += '</center>'
 
 		return(body)
 
@@ -70,6 +79,33 @@ class Html:
 			tail = tail.replace('!page_type!', page.page_type)	# "orig" or "html5"
 		return(tail)	# ...and done.
 
+	def gen_html5_source(self, name, size):
+		"""
+		This script generates a number of html5 video source lines, based on the
+		size.  It works its way down the list of sizes, generating the codecs
+		set up.
+		
+		<source src="!name!-media-!media_size!.webm" type='video/webm; codecs="vp8.0, vorbis"'>
+		<source src="!name!-media-!media_size!.mp4" type='video/mp4'>
+		"""
+		print "gen_html5_source:", name, size
+		sources = '\n'
+		t3 = '\t' * 3	# 3 tabs - makes the html easier to read....
+		size_c = config.Sizes()
+		while size != config.SMALLEST:	# Stop when we get to the smallest size...
+			# add webm...  (First because Chrome will pick up the mp4 if it finds it first,
+			# and it does better with webm)
+			sources += t3 +'<source src="' + name + '-media-' + size + '.webm" '	# first part
+			sources += """type='video/webm; codecs="vp8.0, vorbis"'>\n"""		# type=  portion
+			# add mp4...
+			sources += t3 + '<source src="' + name + '-media-' + size + '.mp4" '	# first part
+			sources += """type='video/mp4'>\n"""	# type= portion
+			# We may want to consider:
+			#sources += """type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>"""
+			# Now - move down to the next size...
+			size = size_c.next_size(size)
+			print "Next size:", size
+		return(sources)
 
 	def __init__(self):
 		#
@@ -92,16 +128,16 @@ class Html:
 		self.media_insert_html5="""
 			<center>
 			<video  poster="ScreenShot.png" width="640" height="530" controls>
-			  <source src="!name!-media.webm" type='video/webm; codecs="vp8.0, vorbis"'>
-			  <source src="!name!-media.mp4" type='video/mp4'>
-			  <!--
-			  <source src="!name!-media.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-			  <source src="!name!-media.ogg" type='video/ogg; codecs="theora, vorbis"'>
-			  -->
-			  
+			<!-- The following line is replaced the full complement of html5 video
+			      codecs for this page... -->
+			 !html5-source-lines!
+			<!--  Older - replaced by the line above...
+			  <source src="!name!-media-!media_size!.webm" type='video/webm; codecs="vp8.0, vorbis"'>
+			  <source src="!name!-media-!media_size!.mp4" type='video/mp4'>
+			 --> 
 			  <!-- Fall back for non-html5 browsers, (WinXP/IE8, e.g.) simple mp4 embed tag -->
 			  <br>
-			  <embed src="!name!-media.mp4" autostart="false" height="500" width="640" /><br>
+			  <embed src="!name!-media-Small.mp4" autostart="false" height="500" width="640" /><br>
 			  <font size=-2>
 			  <i>Your browser does not support html5 - using mp4 plug-in</i>
 			  </font>
@@ -214,4 +250,12 @@ class Html:
 		</body>
 		</html>
 		"""
-	
+
+def main():
+	""" test gen_html5_sources"""
+	h = Html()
+	source = h.gen_html5_source("ZZZZZZ", "Super-HD-Letterbox")
+	print "Got source:"
+	print source
+if __name__ == '__main__':
+	main()

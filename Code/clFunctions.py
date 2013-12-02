@@ -32,6 +32,7 @@ import clSchedule
 import imagemaker
 import clAudio
 import rebuild
+import htmlgen
 
 class Data_row:
 	"""
@@ -644,14 +645,18 @@ class Graphic_row_soundfile(Graphic_row):
 		finally:
 			popup.destroy()
 		
-		
-		self.parent.set_member('duration', str(clAudio.get_audio_len(sound_dest)))
+		page.duration = clAudio.get_audio_len(sound_dest)
+		self.parent.set_member('duration', str(page.duration))
 		#self.parent.duration_obj.nameVar.set(self.parent.obj.duration)
 		
 		page.editor = self.parent	# the editor object we're in rigt now...
 		#page_thread=threading.Thread(target=rebuild.render_page, args=(page, media_size='Tiny', max_samples_per_pixel=100))
-		page_thread=threading.Thread(target=rebuild.render_page, args=(page, 'Tiny', 100))
+		self.size_save = page.media_size
+		page.media_size = 'Tiny'	# for now - probably will define a "Preview" size
+		# 
+		page_thread=threading.Thread(target=self.render_and_post, args=(page, 'Tiny', 100))
 		page_thread.start()
+		
 		#rebuild.render_page(page, media_size='Tiny', max_samples_per_pixel=100)   # render as a preview...
 		"""
 		img_dest = os.path.join(self.parent.obj.home, self.parent.obj.soundgraphic)
@@ -662,7 +667,18 @@ class Graphic_row_soundfile(Graphic_row):
 		page_thread.start()
 		#rebuild_page_edit(self)
 		"""
+	def render_and_post(self, page, media_size, max_samples_per_pixel):
+		"""
+		A routine to handle the last bit of the rendering - in the background, 
+		so we can see it (i.e. so we return to the main loop while building)
+		"""
+		#rebuild.render_page(page, 'Tiny', 100)	# probably always... but:
+		rebuild.render_page(page, media_size, max_samples_per_pixel)
 		self.parent.post_member('soundfile')
+		page.media_size = self.size_save 	# restore what was saved before we were called.
+		if page.use_soundgraphic:
+			page.graphic_row.button2_handler()
+			page.graphic_row.post()
 		
 	def return_value(self):
 		return(self.parent.obj.soundfile, self.ok)	# I know, a bit redundant...
@@ -760,6 +776,7 @@ class Edit_screen:
 		if self.new:
 			self.editTop = tk.Toplevel()
 			self.editTop.transient(self.parent.top)
+			self.editTop.title("coLab Edit")
 			self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=self.new_text, borderwidth=5)
 			self.edit_frame.lift(aboveThis=None)
 			self.edit_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
@@ -967,6 +984,7 @@ class Page_edit_screen(Edit_screen):
 		self.editlist[row.member] =  row
 		row.post()
 		row.sound_button()
+		self.obj.graphic_row = row	# we'll want this later....
 		
 		#----  x Start and Stop - eventually done with graphic input...
 		row = Entry_row(self, "xStart", "xStart", width=5)
@@ -1068,6 +1086,8 @@ class Page_edit_screen(Edit_screen):
 		print "Pagehome:", self.obj.home
 		print "Pageroot:", self.obj.root
 		
+		
+		
 		if not self.ok:
 			print "Still something wrong - see above"
 			message = "There were problems with the following fields:\n\n"
@@ -1106,12 +1126,15 @@ class Page_edit_screen(Edit_screen):
 			#page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
 			page = self.obj
 			page.editor = None
+			htmlgen.pagegen(page.group_obj, page)
+			self.parent.render_engine.add_render(sub_dir)
 			#page.editor = self	# pass in the page, but reference this editor obj.
-			page_thread=threading.Thread(target=rebuild.render_page, args=(page,))
-			page_thread.start()
+			#page_thread=threading.Thread(target=rebuild.render_page, args=(page,))
+			#page_thread.start()
 			#rebuild_page_edit(self)
 			
 			self.editTop.destroy()
+			
 			
 	def quit(self):
 		if self.obj.changed:
@@ -1119,7 +1142,7 @@ class Page_edit_screen(Edit_screen):
 			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				return(None)
 		self.editTop.destroy()
-		
+'''
 
 def rebuild_page_edit(obj):
 		"""
@@ -1189,7 +1212,7 @@ def rebuild_page_edit(obj):
 		progressTop.destroy()
 		local_url = "http://localhost/" + obj.obj.root
 		clSchedule.browse_url(local_url)
-
+'''
 
 		
 def create_new_page(parent):

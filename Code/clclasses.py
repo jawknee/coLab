@@ -55,7 +55,7 @@ def set_paths(obj,sub_dir):
 	obj.root = os.path.join(conf.coLab_root, sub_dir)
 	obj.home = os.path.join(conf.coLab_home, sub_dir)
 
-def import_data(obj, path='Null'):
+def import_data(obj, path=None):
 	"""
 	used by the various load routines to import the data file
 	in the "path" dir.  Import the values found in the data file,
@@ -66,7 +66,7 @@ def import_data(obj, path='Null'):
 	object's home var.  If path is set, we use that instead.
 	"""
 	#
-	if path != 'Null':
+	if path is not None:
 		datafile = os.path.join(path, 'data')
 	else:
 		datafile = os.path.join(obj.home, 'data')
@@ -288,7 +288,7 @@ class Page:
 
 	"""
 	
-	def __init__(self, name):
+	def __init__(self, name='temp'):
 		"""
 		We create an initial set of variables from the variable, value pairs.
 		This lets us also create a master variable list which we can use to 
@@ -380,7 +380,7 @@ class Page:
 			'\n'
 			)
 
-	def load(self, path='None'):
+	def load(self, path=None):
 		"""
 		This is a bit kludgy right now, 
 		we read the file, then populate
@@ -393,21 +393,26 @@ class Page:
 
 		For now, this is generic and flexible
 		"""
-		try:
-			page_dir = os.path.join('Group', self.group, 'Page', self.name)
-		except Exception as e:
-			print "Cannot build page paths"
 		
-		set_paths(self, page_dir)
-			
-		if path == 'None':
+		if path is None:
 			try:
-				path = self.home
-			except NameError, info:
-				print "load: NE", info
-				sys.exit(1)
-		
+				page_dir = os.path.join('Group', self.group, 'Page', self.name)
+				set_paths(self.page_dir)
+			except Exception as e:
+				print "Cannot build page paths"	
+		else:
+			print "Page load path passed in:", path
+			set_paths(self, path)
+
+			# the second piece of "path" should be the group
+			print "About to split:", path
+			self.group = path.split('/')[1]
+			# probably running offline - load the object too...
+			#self.group_obj = Group('self.group')
+			#self.group_obj.load()
+			
 		import_data(self)
+		
 
 
 	def post(self):

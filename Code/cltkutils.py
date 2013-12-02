@@ -69,7 +69,9 @@ class Progress_bar():
         
         self.progBar = ttk.Progressbar(self.frame, length=self.width, maximum=self.max, mode=self.mode, variable=self.value)
         self.progBar.grid(row=2, column=0, columnspan=5, sticky=tk.W)
-        
+    
+    def set_time(self):
+        self.start_time = time.time()    
     def set_max(self, new_max):
         self.max = new_max 
         self.of_str = ' of ' + str(self.max)
@@ -198,6 +200,8 @@ class Popup:
         print "Popup: creating popup, label:", label, "text:", text
         self.t = tk.Toplevel()
         self.t.transient()
+        self.t.title("File copy")
+        self.t.geometry('+95+95')
         lf = tk.LabelFrame(master=self.t, relief=tk.GROOVE, text=label, borderwidth=5)
         lf.lift(aboveThis=None)
         lf.grid(ipadx=10, ipady=40, padx=25, pady=15)

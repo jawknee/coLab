@@ -10,6 +10,8 @@ import select
 import time
 import aifc
 
+import config
+
 def get_audio_len(file):
     """
     For now - some simple intefaces that do what we need...
@@ -37,6 +39,7 @@ def make_movie(page, prog_bar=None):
     content = 'pagedir="' + page.home + '"\n' 
     content += 'soundfile="' + page.soundfile + '"\n' 
     content += 'fps="' + str(page.fps) + '"\n'
+    content += 'media_size="' + page.media_size + '"\n'
     
     outfile.write(content)
     outfile.close()

@@ -32,6 +32,7 @@ SIZE_LIST = [
 			( 'Micro', (160, 120), None)
 			]
 
+BASE_SIZE = 'Small'		# what the main "page" is generated with...
 SMALLEST = 'Micro'		# the smallest size used 
 
 class Sizes:

@@ -219,15 +219,16 @@ class Render_engine():
 			print "Render-all, rendering:", page.media_size
 			render_page(page)
 			page.media_size = size_c.next_size(page.media_size)
-			if page.media_size != config.SMALLEST:
+			if page.media_size == config.SMALLEST:
 				break
 			
 		page.media_size = original_size
 		self.busy = False
 		self.master.after(2000, self.check)
 		local_url = "http://localhost/" + page.root
-		browse_thread = threading.Thread(clSchedule.browse_url, args=(local_url))
-		browse_thread.start()
+		clSchedule.browse_url(local_url)
+		#browse_thread = threading.Thread(clSchedule.browse_url, args=(local_url))
+		#browse_thread.start()
 		
 def render_page(page, media_size=None, max_samples_per_pixel=0):
 	"""

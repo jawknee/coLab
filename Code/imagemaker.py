@@ -117,7 +117,6 @@ def calculate_fps(page):
 	
 	#page.post()	# seems like I think you'd want to remember..
 	print "Derived fps is:", fps
-	time.sleep(5)
 	return( (frames, seconds) )	# should account for max fps being enough...
 
 
@@ -194,10 +193,9 @@ def make_images(page, prog_bar=None, media_size=None):
 	and elapsed and remaining time counters.  Also the size of the
 	boxes and internal fonts should scale to the size being generated.
 	
-	Sizes are scaled to half the ratio between the generated size
-	and the base (height only).   If the generated size is 960 high
-	and the base size is 640 x 480, the ratio is two.  The graphics
-	are scaled a 1.5   more on this once I work it out better...
+	The time boxes are adjusted to some non-linear relationship
+	to the factor - based on the "BASE_SIZE":
+	square root of the ratio.
 	"""
 
 	print "make_images: page.home:", page.home
@@ -216,8 +214,19 @@ def make_images(page, prog_bar=None, media_size=None):
 		media_size = page.media_size
 	size = config.Sizes().sizeof(media_size)
 	(width, height) = size
-	box_width = 55
-	box_height = 35
+	
+	# the scale factor (below) is the ratio of the target size to
+	# the original.   The adjust factor is for 
+	# the time boxes.
+	#"""
+	size_class = config.Sizes()
+	base_height = size_class.sizeof(config.BASE_SIZE)[1]	# we only care about the height...
+	adjust_factor = math.sqrt(float(height)/base_height)
+	print "adjust_factor:", adjust_factor
+
+	box_width = int(55 * adjust_factor) 
+	box_height = int(35 * adjust_factor)
+	
 	box_size = (box_width, box_height)
 	box_rect = [ (0,0), (box_width-1, box_height-1) ]
 	box_rect2 = [ (2,2), (box_width-3, box_height-3) ]
@@ -245,18 +254,19 @@ def make_images(page, prog_bar=None, media_size=None):
 
 	#font = ImageFont.truetype('../Resources/Fonts/data-latin.ttf', 18)
 	fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
-
-	font = ImageFont.truetype(fontpath, 12)
+	fontsize = int(12 * adjust_factor)
+	font = ImageFont.truetype(fontpath, fontsize)
 
 	lefttime = -1	# force a build of the left box
 	righttime = -1 	# ditto, right
 	lastx = -1	# x-pos - force draw of the cursor
 	
-	c_factor = float(width) / page.screenshot_width 
-
+	
+	scale_factor = float(width) / page.screenshot_width 
+	
 	secs_long = float(page.duration)
-	xPos = page.xStart * c_factor
-	xEnd = page.xEnd * c_factor
+	xPos = page.xStart * scale_factor
+	xEnd = page.xEnd * scale_factor
 	xLen = xEnd - xPos
 		
 	prev = -1	# force

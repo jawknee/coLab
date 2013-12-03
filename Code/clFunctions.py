@@ -28,6 +28,7 @@ from PIL import Image
 import config
 import clclasses
 import cltkutils
+import clGraphEdit
 import clSchedule
 import imagemaker
 import clAudio
@@ -556,13 +557,14 @@ class Graphic_row_screenshot(Graphic_row):
 		#message = 'Please crop the graphic and save in place.'
 		#tkMessageBox.showinfo("Crop IT!", message, parent=self.parent.edit_frame, icon=tkMessageBox.ERROR)
 		# 
-		# Let's create the various bits...
-		imagemaker.make_sub_images(self.parent.obj)
+		# Let's create the poster size and thumbnails
+		imagemaker.make_sub_images(page)
 		#self.post()
 		
 		if tkMessageBox.askyesno('Select Limits',"Do you need to set the left and right limits?", icon=tkMessageBox.QUESTION):
 			# Now - post the display sized object to let us enter the xStart, xEnd
-			image_file = os.path.join(self.parent.obj.home, self.parent.obj.graphic)
+			image_file = os.path.join(page.home, page.graphic)
+			"""
 			#image = Image.open(image_file)
 			#image.show()
 			try:
@@ -571,8 +573,18 @@ class Graphic_row_screenshot(Graphic_row):
 			except Exception as e:
 				print "Problem opening the image for limits", e, sys.exc_info()[0]
 				sys.exit(1)
+			#"""
+			graph_edit = clGraphEdit.GraphEdit(page, dest)
+			graph_edit.post()
+			#page.xStart = graph_edit.start_x
+			#page.xEnd = graph_edit.end_x
+			self.parent.set_member('xStart', graph_edit.start_x)
+			self.parent.set_member('xEnd', graph_edit.end_x)
 			
-				
+			print "xStart, xEnd", self.parent.get_member('xStart'), self.parent.get_member('xEnd')
+			#self.parent.post_member('xStart')
+			#self.parent.post_member('xEnd')
+			self.parent.refresh()
 			
 		#self.parent.post_member('screenshot')
 		self.graphic_path = os.path.join(self.parent.obj.home, self.parent.obj.thumbnail)
@@ -649,7 +661,6 @@ class Graphic_row_soundfile(Graphic_row):
 		self.parent.set_member('duration', str(page.duration))
 		#self.parent.duration_obj.nameVar.set(self.parent.obj.duration)
 		
-		page.editor = self.parent	# the editor object we're in rigt now...
 		#page_thread=threading.Thread(target=rebuild.render_page, args=(page, media_size='Tiny', max_samples_per_pixel=100))
 		self.size_save = page.media_size
 		page.media_size = 'Tiny'	# for now - probably will define a "Preview" size
@@ -760,6 +771,8 @@ class Edit_screen:
 		self.obj.changed = False
 		self.obj.needs_rebuild = False
 		
+		object.editor = self	# so we can get back to the editor
+		
 		
 		
 	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing no...
@@ -825,6 +838,7 @@ class Edit_screen:
 		# Basically start over - this time with the name preset...
 		#time.sleep(1)		# Seems to be necessary for the window to die (is there a call for this?)
 		self.editTop = tk.Toplevel()
+		self.obj.top = self.editTop.winfo_toplevel()
 		self.editTop.transient(self.parent.top)
 		self.row=0
 		self.column=0
@@ -1234,6 +1248,7 @@ def create_new_page(parent):
 	new_page.group = this_group.name
 	new_page.coLab_home = this_group.coLab_home		# just enough path to get us stared..
 	
+	page.master = parent.master
 	parent.page = Page_edit_screen(parent, new_page, new=True)
 	
 	
@@ -1251,7 +1266,7 @@ def edit_page(parent):
 	if page is None:
 		return
 	print "Selected:", page.name
-	
+	page.master = parent.master
 	parent.page = Page_edit_screen(parent, page, new=False)
 
 

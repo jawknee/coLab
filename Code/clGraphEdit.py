@@ -11,6 +11,8 @@ import Tkinter as tk
 import ttk
 from PIL import Image, ImageTk
 
+import clclasses
+
 class Button:
 	"""
 	Handles the 4 inc/dec buttons - keeps track of clicks, 
@@ -95,7 +97,7 @@ class Button:
 			print "New value:", new_value, " - lo, hi", lo_limit, hi_limit
 			if new_value == lo_limit or new_value == hi_limit:
 				print "Out of range..."
-				
+				self.obj.bell()
 				return
 			print "Press:", self.which, self.type, self.amt
 			# Slightly tricky - we move the line in question,
@@ -118,13 +120,36 @@ class GraphEdit:
 	and whatever gadgets we need to deal with it all
 	"""
 	
-	def __init__(self, parent, file):
+	def __init__(self, parent, file=None):
 		self.parent = parent
 		self.file = file
-		# probably:
-		#root = page.parent.parent.master
-		root = self.parent
-		
+		self.running = True
+		# parent may be a tk root (when we're testing) 
+		# or more generally , a page object...
+		if isinstance(parent, clclasses.Page):
+			self.start_x = parent.xStart
+			self.end_x = parent.xEnd
+			self.top = tk.Toplevel()
+			#self.root = tk.Tk()
+			self.root = parent.master
+			#self.root = parent.top.winfo_toplevel() 	# for access to the mainloop
+			#self.top = parent.master
+			#self.top = self.root
+			self.top.transient()
+			#self.root.transient()
+			self.top.title('Select start and end points...')
+			#self.top = None			# set later - which window to kill
+			self.runtype = 'Page'
+		else:
+			self.start_x = 30
+			self.end_x = None		# flag to set this later...
+			self.root = self.parent	# for access to mainloop
+			self.top = self.parent	# kill this window when done
+			self.runtype = 'Test'
+		# 
+		# minor KLUDGE Alert - I seem to need to do a 3 pixel offset for
+		# the image to be aligned as expected...   at least on my Mac
+		self.offset = 3	 # Seems to be needed to correctly position the graphic
 		# Validation callback parameters
 		self.callback = self.validate_entry	
 		self.validate = 'all'
@@ -134,13 +159,12 @@ class GraphEdit:
 	def post(self):
 		"post the current canvas"	
 		
+		self.s_image = Image.open(self.file)
+		self.photo = ImageTk.PhotoImage(self.s_image)
+		img_width, img_height = self.s_image.size
+		if self.end_x is None:
+			self.end_x = int(img_width * 0.97)	# for testing only...
 		
-		s_image = Image.open(self.file)
-		photo = ImageTk.PhotoImage(s_image)
-		img_width, img_height = s_image.size
-		self.offset = 3	 # Seems to be needed to correctly position the graphic
-		self.start_x = 30
-		self.end_x = img_width - 10
 		# Set up to see if there is room below for 
 		screen_height=1440 - 60 	# accounts for decorations
 		
@@ -155,20 +179,30 @@ class GraphEdit:
 			cnvs_height += control_height
 		cnvs_width = img_width
 		self.width = img_width
-		cnvs = tk.Canvas(width=cnvs_width, borderwidth=0, closeenough=10., height=cnvs_height, background="#222")
+		cnvs = tk.Canvas(self.top, width=cnvs_width, borderwidth=0, closeenough=10., height=cnvs_height, background="#222")
 		self.cnvs = cnvs
+		if self.top is None:
+			self.top = cnvs
+			
 		cnvs.grid()
 		
-		self.image_id = cnvs.create_image(self.offset, self.offset, image=photo, state=tk.DISABLED, anchor=tk.NW)
-		cnvs.photo = photo	# keep a reference so it isn't garbage collected
+		self.image_id = cnvs.create_image(self.offset, self.offset, image=self.photo, state=tk.DISABLED, anchor=tk.NW)
+		
 		
 		# control widgets
 		x = cnvs_width / 2 + bw + self.offset
 		y = cnvs_height + bw + self.offset
-		self.control_frame()
-		control_window = cnvs.create_window(x,y,  height=control_height, anchor=tk.S, window=self.c_frame)
+		self.control_frame(cnvs)
+		control_window = cnvs.create_window(x,y,  height=control_height, anchor=tk.S)
+		cnvs.itemconfigure(control_window, window=self.c_frame)
 		
+		i_frame = tk.Frame(self.top, bg="#e9e9e9", borderwidth=2, padx=10, pady=5)
 		
+		# Info window RBF: This is not done right...
+		info = "Use the arrows or grab the lines to set the start and end points."
+		ttk.Label(i_frame, text=info, foreground="black", anchor=tk.SW, justify=tk.RIGHT).grid(column=0, row=0)
+		
+		info_window = cnvs.create_window(x/2, y, height=control_height/2, anchor=tk.SE, window=i_frame)
 		# animated dashed lines for start and end
 		dashoff = 0
 		self.dash_offset = dashoff
@@ -186,8 +220,13 @@ class GraphEdit:
 		self._drag_data = {"x": 0, "item": None}
 		
 		self.dash_line_list = [ self.start_line, self.end_line]
-		self.parent.after(200, self.animate_lines)
+		self.root.after(200, self.animate_lines)
 		#self.parent.after(200, self.line_move, cnvs, end_line)
+		# A little bit tricky here...    
+		# we don't want to return to the calling process until we're done...
+		# but all the work is being driven by the mainloop.  So...  we loop here
+		# waiting for word that the coast is clear...
+		
 		
 	def animate_lines(self):
 		"""
@@ -205,7 +244,10 @@ class GraphEdit:
 		for item in self.dash_line_list:
 			self.cnvs.itemconfigure(item, dashoff=dashoff)
 		
-		self.parent.after(delay, self.animate_lines)
+		if self.running:
+			self.root.after(delay, self.animate_lines)
+		else:
+			print "Line animate terminating."
 	
 	def lineSelect(self, event):
 		print "Entered 'select'", event.type, event.x, event.y
@@ -269,6 +311,7 @@ class GraphEdit:
 	def update_line_nums(self,x):
 		if x > self.line_max:
 			x = self.line_max
+	
 		if x < self.line_min:
 			x = self.line_min
 		
@@ -378,19 +421,24 @@ class GraphEdit:
 		self.set_status(good)			
 		self.post_match()
 		return r_code	
-	def control_frame(self):
+	def control_frame(self, parent):
 		"""
 		Build the control frame with the various widgets
 		to do what we want (at least set the start and 
 		end lines, terminate)
 		"""
-		self.c_frame = tk.Frame(bg="#e9e9e9", borderwidth=2, padx=10, pady=5)
+		self.c_frame = tk.Frame(parent, bg="#e9e9e9", borderwidth=2, padx=10, pady=5)
 		
 		# At this point, one row has:  start / end in the corresponding colors,
-		# and arrows and text windows to let us set the values
+		# and arrows and text windows to let us set the value
+		dash = u"\u2015" * 5
+		ttk.Label(self.c_frame, text=dash, foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=0, row=0)
+		ttk.Label(self.c_frame, text="Start", foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=1, row=0)
+		ttk.Label(self.c_frame, text=dash, foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=2, row=0)
 		
-		ttk.Label(self.c_frame, text="Start", foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=0, columnspan=3, row=0)
-		ttk.Label(self.c_frame, text="End", foreground="red", anchor=tk.NE, justify=tk.CENTER).grid(column=3, columnspan=3, row=0)
+		ttk.Label(self.c_frame, text=dash, foreground="red", anchor=tk.NW, justify=tk.CENTER).grid(column=3, row=0)
+		ttk.Label(self.c_frame, text="End", foreground="red", anchor=tk.NE, justify=tk.CENTER).grid(column=4,row=0)
+		ttk.Label(self.c_frame, text=dash, foreground="red", anchor=tk.NW, justify=tk.CENTER).grid(column=5, row=0)
 		
 		# buttons...
 		self.button_list = [] 	# we do our own button handling - keep a list
@@ -409,10 +457,10 @@ class GraphEdit:
 		self.button_list.append(button)
 		
 		# and a separate one for finishing up....
-		ttk.Button(self.c_frame, text='Quit', command=self.quit_handler).grid(column=6, row=1)
+		ttk.Button(self.c_frame, text='Done', command=self.quit_handler).grid(column=6, row=0)
 		
 		
-		self.parent.after(100, self.button_handler)
+		self.root.after(100, self.button_handler)
 		# and the entry widgets
 		self.startText = tk.StringVar()
 		self.startText.set(str(self.start_x))
@@ -433,11 +481,38 @@ class GraphEdit:
 		"""
 		for button in self.button_list:
 			button.handler(handled=True)
-
-		self.parent.after(100, self.button_handler)
+		if self.running:
+			self.root.after(100, self.button_handler)
+		else:
+			print "Button handler termminating."
 		
 	def quit_handler(self):
-		self.parent.destroy()
+		"""
+		We're done here - post the start and end values
+		to the parent - if a Page, then call the appropriate
+		methods.
+		"""
+		
+		self.parent.xStart = self.start_x
+		self.parent.xEnd = self.end_x
+		if self.runtype == "Page":
+			page = self.parent
+	
+			page.editor.set_member('xStart', self.start_x)
+			page.editor.set_member('xEnd', self.end_x)
+				
+			print "xStart, xEnd", page.editor.get_member('xStart'), page.editor.get_member('xEnd')
+			#self.parent.post_member('xStart')
+			#self.parent.post_member('xEnd')
+			page.editor.refresh()
+		#
+		# have the animation and button handler loops stop...
+		self.running = False
+		self.root.after(150, self.terminate)
+		
+	def terminate(self):
+		""" and done... - called from the mainloop after the others have terminated """
+		self.top.destroy()
 		
 		
 def main():

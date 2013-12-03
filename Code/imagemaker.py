@@ -30,8 +30,6 @@ import clclasses
 import cltkutils
 import clSchedule
 import clAudio
-from rebuild import rebuild
-
 
 
 #size = (width, height)
@@ -89,17 +87,21 @@ def calculate_fps(page):
 	      (25,1), (30,1) ]  #  not using:   (50,1), (60,1) 
 	
 	size_class = config.Sizes()
-	size = size_class.sizeof(page.media_size)
+	(width, height) = size_class.sizeof(page.media_size)
+	# we need to know the correction factor for this page size.
+	c_factor = float(width) / page.screenshot_width 
 	try:
 		secs_long = float(page.duration)
-		start = float(page.xStart)
-		end = float(page.xEnd)
+		start = page.xStart * c_factor
+		end = page.xEnd * c_factor
 	except NameError,info:
 		print "oops: must have vars!!", info
 		sys.exit(1)
 	pixels = end - start + 1 
 	# 
 	pps =  pixels / secs_long	# pixels per second required
+	print "Size:", width, height
+	print "start, end:",  start, end, c_factor
 	print "calculate_fps, pps:", pps
 
 	"""   At this time - there are no fractional fps,
@@ -114,6 +116,8 @@ def calculate_fps(page):
 			break	# this is the one.
 	
 	#page.post()	# seems like I think you'd want to remember..
+	print "Derived fps is:", fps
+	time.sleep(5)
 	return( (frames, seconds) )	# should account for max fps being enough...
 
 
@@ -157,6 +161,7 @@ def make_sub_images(page, size=None):
 	#
 	try:
 		orig_image = Image.open(screenshot)
+		page.screenshot_width = orig_image.size[0]	# save the width...
 	except:
 		print "Error opening:", screenshot
 	else:
@@ -183,7 +188,16 @@ def make_sub_images(page, size=None):
 	
 def make_images(page, prog_bar=None, media_size=None):
 	"""
-	 for now - just create and display a time box...
+	Starting with the audio and an image (either a cropped screenshot
+	or an image generated from the sound), create a series of images
+	that will be turned into a movie by adding a moving cursor
+	and elapsed and remaining time counters.  Also the size of the
+	boxes and internal fonts should scale to the size being generated.
+	
+	Sizes are scaled to half the ratio between the generated size
+	and the base (height only).   If the generated size is 960 high
+	and the base size is 640 x 480, the ratio is two.  The graphics
+	are scaled a 1.5   more on this once I work it out better...
 	"""
 
 	print "make_images: page.home:", page.home
@@ -237,19 +251,23 @@ def make_images(page, prog_bar=None, media_size=None):
 	lefttime = -1	# force a build of the left box
 	righttime = -1 	# ditto, right
 	lastx = -1	# x-pos - force draw of the cursor
+	
+	c_factor = float(width) / page.screenshot_width 
 
-	xPos = page.xStart
-	prev = -1
+	secs_long = float(page.duration)
+	xPos = page.xStart * c_factor
+	xEnd = page.xEnd * c_factor
+	xLen = xEnd - xPos
+		
+	prev = -1	# force
 
 	# Now - loop through, generating images as we need...
 	#
 	frames = int(float(page.duration) * page.fps) 
 
 	print "duration, fps, frames:", page.duration, page.fps, frames
-	xLen = page.xEnd - page.xStart
 
-
-	frameIncr = float(xLen) / frames
+	frameIncr = xLen / frames
 	botpix = height - 1		# bottom pixel
 	prog_bar.set_time()
 	#while fr <= frames:
@@ -264,7 +282,7 @@ def make_images(page, prog_bar=None, media_size=None):
 		# at slower frame rates the final frame can be short of the mark,
 		# make sure we're at the end if this is the final frame.
 		if last_frame:
-			xPos = page.xEnd
+			xPos = xEnd
 			time = page.duration		# force to the end...
 		else:
 			time = float(fr_num) / page.fps	# normal...

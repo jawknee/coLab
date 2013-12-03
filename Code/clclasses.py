@@ -316,9 +316,10 @@ class Page:
 		('soundgraphic', os.path.join("coLab_local", "SoundGraphic.png")),
 		('soundthumbnail', "SoundGraphic_tn.png"),
 		('description', ""),
-		# start and end of the piece on the graphic
+		# start and end of the piece on the original graphic
 		('xStart',  0),
 		('xEnd',  0),
+		('screenshot_width', 0),
 		# Frames per second, generally calculated from xEnd-xStart and duration
 		('fps', '6'),
 		
@@ -335,7 +336,7 @@ class Page:
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = [ 'duration' ]
-		self.intvars = [ 'xStart', 'xEnd' ]
+		self.intvars = [ 'xStart', 'xEnd', 'screenshot_width' ]
 
 		set_init_vars(self, initdata)
 
@@ -365,11 +366,11 @@ class Page:
 			'assoc_projects="' + self.assoc_projects + EOL +
 			'song="' + self.song + EOL +
 			'part="' + self.part + EOL +
-			'description="""' + self.description +	
-			'"""\n' +
+			'description="""' + self.description + '"""\n' +
 			'\n' +
 			'xStart=' + str(self.xStart) + '\n' +
 			'xEnd=' + str(self.xEnd) + '\n' +
+			'screenshot_width=' + str(self.screenshot_width) + '\n' +
 			'fps=' + str(self.fps) + '\n' +
 			'\n' +
 			'prevlink="' + self.prevlink + EOL +

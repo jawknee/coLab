@@ -215,10 +215,12 @@ class Render_engine():
 		original_size = page.media_size
 		size_c = config.Sizes()
 		
-		while page.media_size != config.SMALLEST:
+		while True:
 			print "Render-all, rendering:", page.media_size
 			render_page(page)
 			page.media_size = size_c.next_size(page.media_size)
+			if page.media_size != config.SMALLEST:
+				break
 			
 		page.media_size = original_size
 		self.busy = False

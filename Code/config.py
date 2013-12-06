@@ -3,7 +3,7 @@
 	coLab config: globals and such
 	
 """
-
+import math
 
 #--------------------------------------
 # Resolution 
@@ -13,6 +13,14 @@
 
 # size of the inline html
 DISPLAY_SIZE = (640, 480)	
+# base size of the time boxes
+T_BOX_WIDE = 55
+T_BOX_HIGH = 35
+# Sound graphic borders:
+SG_LEFT_BORDER = 30
+SG_RIGHT_BORDER = 10
+SG_TOP_BORDER = 25
+SG_BOTTOM_BORDER = 25
 
 # a list of tuples, each member defines a size, starting at
 # the largest, going to the smallest, then a 2-tuple of
@@ -20,11 +28,11 @@ DISPLAY_SIZE = (640, 480)
 # The sequence is used to determine which sizes to 
 # generate for multiple platforms by following a chain.
 SIZE_LIST = [
-			( '4k-Ultra-HD', (3840, 2160), "Super-HD"),
+			( '4k-Ultra-HD', (3840, 2160), "HiDef"),
 			( 'Super-HD', (2560, 1440), "HiDef"),
-			( 'Super-HD-Letterbox', (1920, 1440), "HD-Letterbox"),
-			( 'HiDef', (1920, 1080), "Large"),
-			( 'HD-Letterbox', (1440, 1080), "Large"),
+			( 'Super-HD-Letterbox', (1920, 1440), "Large"),
+			( 'HiDef', (1920, 1080), "Medium"),
+			( 'HD-Letterbox', (1440, 1080), "Medium"),
 			( 'Large', (1280, 960), "Medium"),
 			( 'Medium', (960, 720), "Small"),
 			( 'Small', (640, 480), "Tiny"),
@@ -33,7 +41,7 @@ SIZE_LIST = [
 			]
 
 BASE_SIZE = 'Small'		# what the main "page" is generated with...
-SMALLEST = 'Micro'		# the smallest size used 
+SMALLEST = 'Tiny'		# the smallest size used 
 
 class Sizes:
 	def __init__(self):
@@ -61,7 +69,22 @@ class Sizes:
 		""" What's the next size down?
 		"""
 		return(self.next_d[name])
-			
+	def calc_scale(self, height):
+		"""
+		returns the ratio of the passed height to the
+		BASE size (above)
+		"""
+		base_height = self.sizeof(BASE_SIZE)[1]	# we only care about the height...
+		return(float(height)/base_height)
+	
+	def calc_adjust(self, height):
+		"""
+		returns a modified adjustment
+		where a pure ratio is too much.
+		Currently: sqrt of calc_scale
+		"""
+		
+		return(math.sqrt(self.calc_scale(height)))
 		
 def main():
 	print "Colab config"
@@ -76,5 +99,8 @@ def main():
 	for name in s.names:
 		print "Size of", name, "is", s.sizeof(name)
 		print "next size would be:", s.next_size(name)
+		
+	print "Scale of 960:", s.calc_scale(960)
+	print "Adjst of 960:", s.calc_adjust(960)
 if __name__ == '__main__':
 	main()

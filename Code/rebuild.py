@@ -187,7 +187,7 @@ class Render_engine():
 		self.pending_renders.append(path)
 		self.refresh()
 		if not self.busy:
-			self.master.after(5000,self.check)	# make sure we get called...
+			self.master.after(1000,self.check)	# make sure we get called...
 		
 	def terminate(self):
 		self.top.destroy()
@@ -215,18 +215,30 @@ class Render_engine():
 		original_size = page.media_size
 		size_c = config.Sizes()
 		
+		toplist = []	# kludge alert - keep a list of the top list and shoot them later
 		while True:
 			print "Render-all, rendering:", page.media_size
-			render_page(page)
+			top_bar = render_page(page)
+			toplist.append(top_bar)
+			#toplist.append(top_bar)
 			page.media_size = size_c.next_size(page.media_size)
 			if page.media_size == config.SMALLEST:
 				break
 			
 		page.media_size = original_size
 		self.busy = False
-		self.master.after(2000, self.check)
+		self.master.after(1, self.check)
+		# Need something here to keep things going...   
+		#self.top.configure(takefocus=True)
+		
 		local_url = "http://localhost/" + page.root
 		clSchedule.browse_url(local_url)
+		#"""
+		for top_bar in toplist:
+			print "Killing old Top Bar"
+			top_bar.destroy()
+		#"""
+			
 		#browse_thread = threading.Thread(clSchedule.browse_url, args=(local_url))
 		#browse_thread.start()
 		
@@ -244,8 +256,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	if media_size is None:
 		media_size = page.media_size
 		
-	size = config.Sizes().sizeof(media_size)
-	print "render_page - size is:", size
+	print "render_page - size is:", media_size
 	sound_dest = os.path.join(page.home, page.soundfile)
 	img_dest = os.path.join(page.home, page.soundgraphic)
 	#make_sound_image(page, sound_dest, img_dest, size, max_samples_per_pixel)
@@ -256,20 +267,23 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	progressTop = tk.Toplevel()
 	progressTop.transient()
 	progressTop.title('coLab Page Rendering')
+	progressTop.geometry('-250+100')
 	title = "New Page Generation: " + page.desc_title + ' (' + media_size + ')'
 	render_frame = tk.LabelFrame(master=progressTop, relief=tk.GROOVE, text=title, borderwidth=5)
 	render_frame.lift(aboveThis=None)
 	render_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+	
 	#
 	
 	fps = imagemaker.calc_fps_val(page)
 	frames = int(float(page.duration) * fps) 
-	f0 = tk.Frame(render_frame)
-	f0.grid(row=0, column=0, sticky=tk.W)
+	if page.use_soundgraphic:
+		f0 = tk.Frame(render_frame)
+		f0.grid(row=0, column=0, sticky=tk.W)
 	
-	snd_img_progbar = cltkutils.Progress_bar(f0, 'Sound Image Overview')
-	snd_img_progbar.what = 'Line'
-	snd_img_progbar.width = 500
+		snd_img_progbar = cltkutils.Progress_bar(f0, 'Sound Image Overview')
+		snd_img_progbar.what = 'Line'
+		snd_img_progbar.width = 500
 	
 	if page.needs_rebuild:
 		f1 = tk.Frame(render_frame)
@@ -303,12 +317,17 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	f4.grid(row=3, column=0, sticky=tk.E)
 	quitButton = ttk.Button(f4, text="Quit", command=progressTop.quit)
 	quitButton.grid()
-	
+
+	if page.use_soundgraphic:
+		imagemaker.make_sound_image(page, snd_img_progbar, sound_dest, img_dest, media_size, max_samples_per_pixel)
+
 	try:
+
 		if page.needs_rebuild:	
-			imagemaker.make_sound_image(page, snd_img_progbar, sound_dest, img_dest, size, max_samples_per_pixel)
+		
 			#snd_img_progbar.stop()
-			imagemaker.make_images(page, img_gen_progbar, media_size)
+			#imagemaker.make_images(page, img_gen_progbar, media_size)
+			imagemaker.make_images(page, img_gen_progbar)
 			#img_gen_progbar.progBar.stop()
 			clAudio.make_movie(page, vid_gen_progbar)
 			#vid_gen_progbar.stop()
@@ -322,7 +341,8 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 		print"Need to find a solution to the group render problem!"
 	#ftp_progbar.progBar.stop()
 			
-	progressTop.destroy()
+	return(progressTop)	# so we can get rid of it later...
+
 
 	
 def rebuild(g, mirror=False, opt="nope"):
@@ -559,18 +579,8 @@ def main():
 	print "In main of rebuild..."
 	master = tk.Tk()
 	pb = Render_engine(master)
-	#threading.Thread(target=test_thread, args=(pb,)).start()
+	
 	master.mainloop()
-	
-def test_thread(pb):
-	print "Greetings from tt"
-	pb.hello()
-	"""
-	for l in ("just-this", "A Test\nAnotherTest\nStormJustBecause", "Everybody happy\nNow You Happy Too"):
-		time.sleep(5)
-		print "Setting list to:", l
-		pb.set_list(l)
-	"""
-	
+
 if __name__ == '__main__':
 	main()

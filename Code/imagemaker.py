@@ -30,6 +30,7 @@ import clclasses
 import cltkutils
 import clSchedule
 import clAudio
+import clColors
 
 
 #size = (width, height)
@@ -37,15 +38,6 @@ import clAudio
 tn_width = 160
 tn_height = 120
 tn_size = (tn_width, tn_height)
-
-# Colors....
-Xparent = (0,0,0,0)
-Hilite = (255,255,255,32)	# mostly transparent white - to contrast black
-black = (0,0,0,255)
-partBlack = (0, 0, 0, 180)	# partly transparent black
-Green = (20, 255, 20, 255)	# a bright, opaque green
-eBlue = (20, 20, 255, 255)	# electric blue
-dBlue = (10, 20, 128, 255)	# dark blue
 
 def calc_fps_val(page):
 	"""
@@ -89,7 +81,11 @@ def calculate_fps(page):
 	size_class = config.Sizes()
 	(width, height) = size_class.sizeof(page.media_size)
 	# we need to know the correction factor for this page size.
-	c_factor = float(width) / page.screenshot_width 
+	try:	# screenshot width may not be set yet...
+		c_factor = float(width) / page.screenshot_width
+	except:
+		c_factor = 1
+		  
 	try:
 		secs_long = float(page.duration)
 		start = page.xStart * c_factor
@@ -184,8 +180,7 @@ def make_sub_images(page, size=None):
 		del snd_image
 	#
 	# sound image:
-	
-def make_images(page, prog_bar=None, media_size=None):
+def make_images_x(page, prog_bar=None, media_size=None):
 	"""
 	Starting with the audio and an image (either a cropped screenshot
 	or an image generated from the sound), create a series of images
@@ -212,32 +207,53 @@ def make_images(page, prog_bar=None, media_size=None):
 		sys.exit(1)
 	if media_size is None:
 		media_size = page.media_size
-	size = config.Sizes().sizeof(media_size)
-	(width, height) = size
+	
+	
 	
 	# the scale factor (below) is the ratio of the target size to
 	# the original.   The adjust factor is for 
 	# the time boxes.
 	#"""
 	size_class = config.Sizes()
-	base_height = size_class.sizeof(config.BASE_SIZE)[1]	# we only care about the height...
-	adjust_factor = math.sqrt(float(height)/base_height)
+	size = size_class.sizeof(media_size)
+	(width, height) = size
+	
+	adjust_factor = size_class.calc_adjust(height)
 	print "adjust_factor:", adjust_factor
 
-	box_width = int(55 * adjust_factor) 
-	box_height = int(35 * adjust_factor)
+	box_width = int(config.T_BOX_WIDE * adjust_factor) 
+	box_height = int(config.T_BOX_HIGH * adjust_factor)
 	
 	box_size = (box_width, box_height)
 	box_rect = [ (0,0), (box_width-1, box_height-1) ]
 	box_rect2 = [ (2,2), (box_width-3, box_height-3) ]
 
-	lbox_offset = (2, height - box_height - 2)
-	rbox_offset = (width - box_width - 2, height - box_height - 2)
+	
+	# build box locations  (top and bottom are common)
+	# top  and bottom./.. 
+	box_bot = height - 2
+	box_top = box_bot - box_height
+	
+
+	# left box...
+	lbox_left = 2
+	lbox_right = box_width + 1 		# ( lbox_left - 1 = +1)
+	lbox_rect = [ ( lbox_left, box_top), (lbox_right, box_bot) ]
+	lbox_hl_rect = [ ( lbox_left + 2, box_top + 2), (lbox_right - 2, box_bot - 2) ]
+	# right box....  
+	rbox_left = width - box_width - 2
+	rbox_right = rbox_left + box_width - 1 
+	rbox_rect = [ ( rbox_left, box_top), (rbox_right, box_bot) ]
+	rbox_hl_rect = [ (rbox_left + 2, box_top + 2), (rbox_right - 2, box_bot - 2) ]
+	
+	
+	
+	#rbox_offset = (width - box_width - 2, height - box_height - 2)
 
 	# create basic box...
-	box = Image.new('RGBA', box_size, color=partBlack)
+	#box = Image.new('RGBA', box_size, color=clColors.PART_BLACK)
 	#boxdraw = ImageDraw.Draw(box)
-	#boxdraw.rectangle(box_rect, outline=Green)
+	#boxdraw.rectangle(box_rect, outline=clColors.GREEN)
 
 
 	# Set up the base image that will be copied and overlaid as needed...
@@ -245,6 +261,7 @@ def make_images(page, prog_bar=None, media_size=None):
 	orig_image = Image.open(page.screenshot)
 	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 
+	
 	# use the pixels and duration to determine frames per second...
 	page.fps = calc_fps_val(page)
 	
@@ -276,7 +293,236 @@ def make_images(page, prog_bar=None, media_size=None):
 	frames = int(float(page.duration) * page.fps) 
 
 	print "duration, fps, frames:", page.duration, page.fps, frames
+	
+	# change the colors of the cursor and 
+	# and the contrasting surround (mostly transparent)
+	if page.use_soundgraphic:
+		linecolor=clColors.MAIZE
+		offsetcolor=clColors.LOLITE
+		offsetcolor=clColors.XPARENT
+	else:
+		linecolor=clColors.BLACK
+		offsetcolor=clColors.HILITE
+	# set the width of the offset based on the scale adjustment
+	offsetwidth = 1 + int(adjust_factor) 
+	print "color, offset, width", linecolor, offsetcolor, offsetwidth
+	
+	
+	frameIncr = xLen / frames
+	botpix = height - 1		# bottom pixel
+	try:
+		prog_bar.set_time()
+	except:
+		pass
+	#while fr <= frames:
+	last_fr_num = frames - 1
+	for fr_num in range(frames):
+		last_frame = fr_num == last_fr_num # Boolean
+		# create a new overlay
+		overlay = Image.new( 'RGBA', size, color=clColors.XPARENT)
+		#overlay_draw = ImageDraw.Draw(overlay)
+		
+		frame_image = base_image
+		frame_draw = ImageDraw.Draw(frame_image)
 
+		#
+		# at slower frame rates the final frame can be short of the mark,
+		# make sure we're at the end if this is the final frame.
+		if last_frame:
+			xPos = xEnd
+			time = page.duration		# force to the end...
+		else:
+			time = float(fr_num) / page.fps	# normal...
+
+		# Put the cursor into the overlay
+		xLine = int(xPos)
+		# add to "rectangles" that are mostly transparent but help offset the cursor on similar colors
+		#frame_draw.rectangle( [ (xLine-1,0), (xLine-offsetwidth,botpix) ], outline=offsetcolor, fill=offsetcolor)
+		frame_draw.rectangle( [ (xLine+1,0), (xLine+offsetwidth,botpix) ], outline=offsetcolor, fill=offsetcolor)
+		frame_draw.line( [ (xLine,0), (xLine,botpix) ], fill=linecolor)
+
+		#
+		# Build the left and right boxes...
+		#lbox = box.copy()
+		#lbox_draw = ImageDraw.Draw(lbox)	# draw object...
+		outline_color = clColors.GREEN
+
+		# Draw time boxes, semi-transparent black, with a green outline, 
+		# unless the box is highlighted (start or end) in which case it is
+		# electric blue, with another rectangle inside
+		#
+		# Left box: elapsed time
+		if fr_num == 0:	# add a highlight
+			frame_draw.rectangle(lbox_rect, outline=clColors.EL_BLUE ) #, fill=clColors.PART_BLACK)
+			frame_draw.rectangle(lbox_hl_rect, outline=clColors.EL_BLUE)
+		else:
+			frame_draw.rectangle(lbox_rect, outline=clColors.GREEN )#, fill=clColors.PART_BLACK)
+		
+		# Calculate the time string	
+		seconds = int(time)
+		tstring = "%01d:%02d" % divmod(seconds, 60)
+
+		# center the time inside the box, and draw it there...
+		(twidth, theight) = frame_draw.textsize(tstring, font=font)
+		#offset = ( (box_width - twidth) / 2, (box_height - theight) / 2)
+		ltext_offset = ( lbox_left + (box_width - twidth) / 2,  box_top + (box_height - theight ) / 2)
+		frame_draw.text( ltext_offset, tstring, font=font, fill=clColors.GREEN)
+		#overlay.paste(lbox, lbox_offset)
+
+		# repeat the process for the right box, time remaining.
+		if last_frame:		# Outline last frame time.
+			frame_draw.rectangle(rbox_rect, outline=clColors.EL_BLUE )#, fill=clColors.PART_BLACK)
+			frame_draw.rectangle(rbox_hl_rect, outline=clColors.EL_BLUE)
+		else:
+			frame_draw.rectangle(rbox_rect, outline=clColors.GREEN )#, fill=clColors.PART_BLACK)
+
+		seconds = int(page.duration - time)
+		tstring = "-%01d:%02d" % divmod(seconds, 60)
+
+		(twidth, theight) = frame_draw.textsize(tstring, font=font)
+		rtext_offset = ( rbox_left + (box_width - twidth) / 2, box_top + (box_height - theight) / 2)
+		frame_draw.text( rtext_offset, tstring, font=font, fill=clColors.GREEN)
+		#overlay.paste(rbox, rbox_offset)
+		#
+		"""
+		# Now we gotta git a bit tricky since PIL doesn't support alpha compositing...
+		r, g, b, a = overlay.split()
+		overlay_rgb = Image.merge('RGB', (r,g,b))
+		mask = Image.merge('L', (a,))
+
+		frame_image = base_image.copy()		# new copy of the base...
+		frame_image.paste(overlay_rgb, (0,0), mask)
+		#"""
+		print "Frame", fr_num, "of", last_fr_num
+		frame_image.save( directory + '/' + 'Frame-%05d.png' % fr_num, 'PNG')
+
+		xPos += frameIncr
+		try:
+			prog_bar.update(fr_num+1)
+		except:
+			pass
+		
+	print "Done: ",
+	if page.fps < 1:
+		print "Seconds per frame:", 1/page.fps
+	else:
+		print "Frames per second:", page.fps
+
+def make_images(page, prog_bar=None, media_size=None):
+	"""
+	Starting with the audio and an image (either a cropped screenshot
+	or an image generated from the sound), create a series of images
+	that will be turned into a movie by adding a moving cursor
+	and elapsed and remaining time counters.  Also the size of the
+	boxes and internal fonts should scale to the size being generated.
+	
+	The time boxes are adjusted to some non-linear relationship
+	to the factor - based on the "BASE_SIZE":
+	square root of the ratio.
+	"""
+
+	print "make_images: page.home:", page.home
+
+	directory = os.path.join(page.home, 'coLab_local', 'Overlays' )
+	os.system('rm -rfv ' + directory + '/')
+	os.system('mkdir -pv ' + directory )
+
+	try:
+		os.chdir(page.home)
+	except OSError, info:
+		print "Problem changing to :", page.home
+		print info
+		sys.exit(1)
+	if media_size is None:
+		media_size = page.media_size
+	
+	
+	
+	# the scale factor (below) is the ratio of the target size to
+	# the original.   The adjust factor is for 
+	# the time boxes.
+	#"""
+	size_class = config.Sizes()
+	size = size_class.sizeof(media_size)
+	(width, height) = size
+	
+	adjust_factor = size_class.calc_adjust(height)
+	print "adjust_factor:", adjust_factor
+
+	box_width = int(config.T_BOX_WIDE * adjust_factor) 
+	box_height = int(config.T_BOX_HIGH * adjust_factor)
+	
+	box_size = (box_width, box_height)
+	box_rect = [ (0,0), (box_width-1, box_height-1) ]
+	box_rect2 = [ (2,2), (box_width-3, box_height-3) ]
+
+	lbox_offset = (2, height - box_height - 2)
+	rbox_offset = (width - box_width - 2, height - box_height - 2)
+
+	# create basic box...
+	box = Image.new('RGBA', box_size, color=clColors.PART_BLACK)
+	boxdraw = ImageDraw.Draw(box)
+	boxdraw.rectangle(box_rect, outline=clColors.GREEN)
+
+
+	# Set up the base image that will be copied and overlaid as needed...
+	#
+	orig_image = Image.open(page.screenshot)
+	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
+
+	# use the pixels and duration to determine frames per second...
+	page.fps = calc_fps_val(page)
+	
+	
+
+	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
+
+	#font = ImageFont.truetype('../Resources/Fonts/data-latin.ttf', 18)
+	fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
+	fontsize = int(12 * adjust_factor)
+	font = ImageFont.truetype(fontpath, fontsize)
+
+	lefttime = -1	# force a build of the left box
+	righttime = -1 	# ditto, right
+	lastx = -1	# x-pos - force draw of the cursor
+	
+	if page.use_soundgraphic:
+		scale_factor = 1.0
+	else:	# compensate for the actual size of the screenshot image...
+		scale_factor = float(width) / page.screenshot_width
+	
+	secs_long = float(page.duration)
+	xPos = page.xStart * scale_factor
+	xEnd = page.xEnd * scale_factor
+	xLen = xEnd - xPos
+		
+	prev = -1	# force
+
+	# Now - loop through, generating images as we need...
+	#
+	frames = int(float(page.duration) * page.fps) 
+
+	print "duration, fps, frames:", page.duration, page.fps, frames
+	if frames != prog_bar.max:
+		print "------FRAME MISMATCH---------", frames, prog_bar.max
+	
+	
+	# change the colors of the cursor and 
+	# and the contrasting surround (mostly transparent)
+	if page.use_soundgraphic:
+		linecolor=clColors.MAIZE
+		offsetcolor=clColors.LOLITE
+	else:
+		linecolor=clColors.BLACK
+		offsetcolor=clColors.HILITE
+	# set the width of the offset based on the scale adjustment
+	offsetwidth = 1 + int(adjust_factor) 
+	print "color, offset, width", linecolor, offsetcolor, offsetwidth
+	
+	overlay_master = Image.new( 'RGBA', size, color=clColors.XPARENT)
+	master_draw = ImageDraw.Draw(overlay_master)
+	add_res_text(master_draw, size, adjust_factor)
+	
 	frameIncr = xLen / frames
 	botpix = height - 1		# bottom pixel
 	prog_bar.set_time()
@@ -285,7 +531,7 @@ def make_images(page, prog_bar=None, media_size=None):
 	for fr_num in range(frames):
 		last_frame = fr_num == last_fr_num # Boolean
 		# create a new overlay
-		overlay = Image.new( 'RGBA', size, color=Xparent)
+		overlay = overlay_master.copy()
 		overlay_draw = ImageDraw.Draw(overlay)
 
 		#
@@ -299,17 +545,18 @@ def make_images(page, prog_bar=None, media_size=None):
 
 		# Put the cursor into the overlay
 		xLine = int(xPos)
-		overlay_draw.line( [ (xLine-1,0), (xLine-1,botpix) ], fill=Hilite)
-		overlay_draw.line( [ (xLine+1,0), (xLine+1,botpix) ], fill=Hilite)
-		overlay_draw.line( [ (xLine,0), (xLine,botpix) ], fill=black)
+		# add to "rectangles" that are mostly transparent but help offset the cursor on similar colors
+		overlay_draw.rectangle( [ (xLine-1,0), (xLine-offsetwidth,botpix) ], outline=offsetcolor, fill=offsetcolor)
+		overlay_draw.rectangle( [ (xLine+1,0), (xLine+offsetwidth,botpix) ], outline=offsetcolor, fill=offsetcolor)
+		overlay_draw.line( [ (xLine,0), (xLine,botpix) ], fill=linecolor)
 
 		#
 		# Build the left and right boxes...
 		lbox = box.copy()
 		lbox_draw = ImageDraw.Draw(lbox)	# draw object...
 		if fr_num == 0:	# add a highlight
-			lbox_draw.rectangle(box_rect, outline=eBlue)
-			lbox_draw.rectangle(box_rect2, outline=eBlue)
+			lbox_draw.rectangle(box_rect, outline=clColors.EL_BLUE)
+			lbox_draw.rectangle(box_rect2, outline=clColors.EL_BLUE)
 		
 			
 		seconds = int(time)
@@ -317,15 +564,15 @@ def make_images(page, prog_bar=None, media_size=None):
 
 		(twidth, theight) = lbox_draw.textsize(tstring, font=font)
 		offset = ( (box_width - twidth) / 2, (box_height - theight) / 2)
-		lbox_draw.text( offset, tstring, font=font, fill=Green)
+		lbox_draw.text( offset, tstring, font=font, fill=clColors.GREEN)
 		overlay.paste(lbox, lbox_offset)
 
 
 		rbox = box.copy()
 		rbox_draw = ImageDraw.Draw(rbox)
 		if last_frame:		# Outline last frame time.
-			rbox_draw.rectangle(box_rect, outline=eBlue)
-			rbox_draw.rectangle(box_rect2, outline=eBlue)
+			rbox_draw.rectangle(box_rect, outline=clColors.EL_BLUE)
+			rbox_draw.rectangle(box_rect2, outline=clColors.EL_BLUE)
 
 
 		seconds = int(page.duration - time)
@@ -333,7 +580,7 @@ def make_images(page, prog_bar=None, media_size=None):
 
 		(twidth, theight) = rbox_draw.textsize(tstring, font=font)
 		offset = ( (box_width - twidth) / 2, (box_height - theight) / 2)
-		rbox_draw.text( offset, tstring, font=font, fill=Green)
+		rbox_draw.text( offset, tstring, font=font, fill=clColors.GREEN)
 		overlay.paste(rbox, rbox_offset)
 		#
 		# Now we gotta git a bit tricky since PIL doesn't support alpha compositing...
@@ -346,6 +593,7 @@ def make_images(page, prog_bar=None, media_size=None):
 
 		print "Frame", fr_num, "of", last_fr_num
 		frame_image.save( directory + '/' + 'Frame-%05d.png' % fr_num, 'PNG')
+		print "Saved:", directory + '/' + 'Frame-%05d.png' % fr_num
 
 		xPos += frameIncr
 		try:
@@ -370,9 +618,8 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	font = ImageFont.truetype(fontfile, fontsize)
 
 	# create a temp image - just long enough to get the size of the text
-	Xparent = (0,0,0,0)
 	size = (10,10)
-	box = Image.new('RGBA', size, color=Xparent)
+	box = Image.new('RGBA', size, color=clColors.XPARENT)
 	box_draw = ImageDraw.Draw(box)
 
 	(w,h) = box_draw.textsize(string, font=font)
@@ -406,7 +653,7 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	offset = (border, border)
 	
 	# start over with a new graphic, this time with the text at the corrected (if necessary) font size
-	box = Image.new('RGBA', size, color=Xparent)
+	box = Image.new('RGBA', size, color=clColors.XPARENT)
 	box_draw = ImageDraw.Draw(box)
 
 	(fw,fh) = box_draw.textsize(string, font=font)	# how big is it really?
@@ -415,7 +662,48 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 
 	box.save(output_file, 'PNG')
 	
+def add_res_text(draw, size, adjust_factor=1.0):
+	"""
+	Put a simple (elegant?) bit of text in the lower right
+	of the graphic showing the resolution
+	"""
 	
+	(width, height) = size
+	
+	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
+	font_size = int(10 * adjust_factor)
+	font = ImageFont.truetype(fontpath, font_size)
+	res_string = str(width) + " x " + str(height)
+	(t_width, t_height) = draw.textsize(res_string, font=font)
+	print "Text size is :", t_width, t_height
+	
+	
+	print "build sound file"
+	lborder = config.SG_LEFT_BORDER
+	rborder = config.SG_RIGHT_BORDER 
+	tborder = int(config.SG_TOP_BORDER * adjust_factor)
+	bborder = int(config.SG_BOTTOM_BORDER * adjust_factor)
+	print "Border constants set."
+	xmin = lborder
+	xmax = width - rborder 
+	ymin = bborder
+	ymax = height - tborder
+	box_width = int(config.T_BOX_WIDE * adjust_factor) 
+	
+	r_text_x = xmax - box_width - int(10 * adjust_factor) - t_width
+	r_text_y = ymax + int(10 * adjust_factor)
+	
+	print "rx,ry, ", r_text_x, r_text_y
+	
+	# Draw with hi/lo lights so it should show up on many any background
+	# (and look cool!)
+	
+	#for (offset, color) in [ (+1, clColors.BLACK), (-1, clColors.GRAY_TEXT), (0, clColors.PART_BLACK)]:
+	for (offset, color) in [ (+1, clColors.PART_BLACK), (-1, clColors.GRAY_TEXT), (0, clColors.TRANS_GRAY)] :
+		draw.text((r_text_x+offset, r_text_y+offset), res_string, font=font, fill=color)
+	
+	
+
 def signed2int(s):
         """
         take an signed byte string
@@ -447,7 +735,7 @@ class Sound_image():
 	Generates a standard (or other) sized png file.
 	"""
 	
-	def __init__(self, sound_file, image_file, size, prog_bar=None, max_samp_per_pixel=0):
+	def __init__(self, sound_file, image_file, media_size, prog_bar=None, max_samp_per_pixel=0):
 		"""
 		open the sound file and set the various internal vars.
 		"""
@@ -456,11 +744,12 @@ class Sound_image():
 		try:
 			self.aud = aifc.open(sound_file)
 		except:
-			print "poops"
+			print "Sound file problems:", sound_file
 			raise Exception
 		
 		self.sound_file = sound_file
 		self.image_file = image_file
+		self.media_size = media_size
 		self.prog_bar = prog_bar
 		# max samp/pixel let's us process hour long audio quickly for preview. 
 		# Setting to some value (e.g., 100) approximates that many sample per
@@ -469,14 +758,6 @@ class Sound_image():
 		# with reasonable accuracy, but should be set to 0 for final versions in order to
 		# get accurate clipping, rms and other values.
 		self.max_samp_per_pixel = max_samp_per_pixel	# set to zero for no skipping.
-		# Set up min and max based on border size,
-		# and various factors and values
-		self.lborder = 30		# left border width
-		self.rborder = 10
-		self.tborder = 25
-		self.bborder = 25
-		
-		self.width, self.height = size
 		
 		self.nchannels = self.aud.getnchannels()
 		self.sampwidth = self.aud.getsampwidth()
@@ -509,28 +790,49 @@ class Sound_image():
 		when we build the graphic.
 		
 		"""
-				
-		self.xmin = self.lborder
-		self.xmax = self.width - self.rborder 
-		self.ymin = self.bborder
-		self.ymax = self.height - self.tborder
+		# Set up min and max based on border size,
+		# and various factors and values
+		
+		size_class = config.Sizes()
+		size = size_class.sizeof(self.media_size)
+		(width, height) = size
+		
+		adjust_factor = size_class.calc_adjust(height)
+		print "adjust_factor:", adjust_factor
+		
+		print "build sound file"
+		lborder = config.SG_LEFT_BORDER
+		rborder = config.SG_RIGHT_BORDER 
+		tborder = int(config.SG_TOP_BORDER * adjust_factor)
+		bborder = int(config.SG_BOTTOM_BORDER * adjust_factor)
+		print "Border constants set."
+		xmin = lborder
+		xmax = width - rborder 
+		ymin = bborder
+		ymax = height - tborder
 		
 		# how "tall" is each sample in the range of values - account for the number of channels
-		levels_per_pixel = ( float(self.samp_max * 2) / (self.ymax - self.ymin + 1) ) * self.nchannels
+		levels_per_pixel = ( float(self.samp_max * 2) / (ymax - ymin + 1) ) * self.nchannels
 		
-		graphic = Image.new('RGBA', (self.width, self.height), color=partBlack)
+		graphic = Image.new('RGBA', (width, height), color=clColors.PART_BLACK)
 		graphic_draw = ImageDraw.Draw(graphic)
 		
 		# Draw the limit lines...
-		graphic_draw.line([(self.xmin,self.ymin), (self.xmax,self.ymin)], fill=Green)
-		graphic_draw.line([(self.xmin,self.ymax), (self.xmax, self.ymax)], fill=Green )
+		graphic_draw.line([(xmin,ymin), (xmax,ymin)], fill=clColors.GREEN)
+		# A little tricky here - account for the time boxes:
+		box_width = int(config.T_BOX_WIDE * adjust_factor)
+		graphic_draw.line([(xmin+box_width,ymax), (xmax-box_width, ymax)], fill=clColors.GREEN )
 		
 		
-		num_xpix = self.xmax - self.xmin		# number of available x pixels
+		num_xpix = xmax - xmin		# number of available x pixels
 	
 		# seems a bit odd - but we post before setting the max...
-		self.prog_bar.post()
-		self.prog_bar.set_max(num_xpix)			# how many for the progress bar...
+		try:
+			self.prog_bar.post()
+			self.prog_bar.set_max(num_xpix)			# how many for the progress bar...
+		except:
+			pass
+		
 		
 		
 		
@@ -587,7 +889,10 @@ class Sound_image():
 			frame_skip = int(frames_per_pixel / self.max_samp_per_pixel) + 1
 		last_samp = 0					# where were we last?
 		for v in range(num_xpix):		# Calculate min/max for each line in the graphic
-			self.prog_bar.update(v)
+			try:
+				self.prog_bar.update(v)
+			except:		# when debugging, there isn't one...
+				pass
 			next_samp = int((v+1) * frames_per_pixel)	# where are we reading to next?
 			for c in range(nchan):
 				min_tab[c].append(self.samp_max)	# seed with max value
@@ -633,9 +938,10 @@ class Sound_image():
 								max = value
 								
 			last_samp = next_samp	# and so it goes, round and round...
-			
-		self.prog_bar.update(num_xpix)
-			
+		try:
+			self.prog_bar.update(num_xpix)
+		except:
+			pass
 			
 		self.aud.close()
 		# At this point we have the min and max arrays, and an overall
@@ -661,21 +967,21 @@ class Sound_image():
 		headroom = 20 * math.log10(hr_ratio)
 		
 		
-		chan_ht = ( self.ymax - self.ymin ) / nchan
+		chan_ht = ( ymax - ymin ) / nchan
 		centers = []
 		separators = []	# note  there n-1 - we skip 0 later
 		for c in range(nchan):		# Build the center lines,  bottom up..
 			# This is where we do the next bit of reversal - so that left or 1 is 
 			# at the top, we build the list bottom up
-			centers.append(self.ymin + c * chan_ht + chan_ht / 2)
-			separators.append(self.ymin + c * chan_ht )
+			centers.append(ymin + c * chan_ht + chan_ht / 2)
+			separators.append(ymin + c * chan_ht )
 			# and add separaters
 			if c != 0:	# we do n-1 separators
 				y = separators[c]
-				graphic_draw.line([(self.xmin,y), (self.xmax, y)], fill=Hilite)
+				graphic_draw.line([(xmin,y), (xmax, y)], fill=clColors.HILITE)
 		
 		clip_count = 0
-		x = self.xmin
+		x = xmin
 		for s in range(num_xpix):	
 			# step through, scaling the samples as we go
 			# and emitting the graphics 
@@ -700,12 +1006,12 @@ class Sound_image():
 				
 				if rms_display:
 					# as three - rms "middle" is darker
-					graphic_draw.line([(x,t_rms), (x,b_rms)], fill = dBlue)
-					graphic_draw.line([(x,top), (x,t_rms)], fill = eBlue)
-					graphic_draw.line([(x,b_rms), (x,bot)], fill = eBlue)
+					graphic_draw.line([(x,t_rms), (x,b_rms)], fill = clColors.DK_BLUE)
+					graphic_draw.line([(x,top), (x,t_rms)], fill = clColors.EL_BLUE)
+					graphic_draw.line([(x,b_rms), (x,bot)], fill = clColors.EL_BLUE)
 				else:
 					# as one line...
-					graphic_draw.line([(x,top), (x,bot)], fill = eBlue)
+					graphic_draw.line([(x,top), (x,bot)], fill = clColors.EL_BLUE)
 					
 				# Draw the end points - mark any likely clip points
 				# Note these may not be explicit clips, since we are
@@ -719,7 +1025,7 @@ class Sound_image():
 					tip_stretch = 1
 					print "====Clip!", s, c, top
 				else:
-					fill = Hilite
+					fill = clColors.HILITE
 				#graphic_draw.point([(x,top)], fill = fill)
 				graphic_draw.line([(x-tip_stretch,top), (x+tip_stretch,top)], fill = fill)
 				
@@ -729,7 +1035,7 @@ class Sound_image():
 					tip_stretch = 1
 					print "-----Clip!", s, c, bot
 				else:
-					fill = Hilite
+					fill = clColors.HILITE
 				#graphic_draw.point([(x,bot)], fill = fill)
 				graphic_draw.line([(x-tip_stretch,bot), (x+tip_stretch,bot)], fill = fill)
 			x += 1 		# Next vertical line
@@ -740,7 +1046,8 @@ class Sound_image():
 		fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
 		# RBF: Convert this to not have a full path
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
-		font = ImageFont.truetype(fontpath, 18)	
+		font_size = int( 18 * adjust_factor)
+		font = ImageFont.truetype(fontpath, font_size)	
 	
 		# Build the text strings for the graphic
 		#
@@ -760,12 +1067,12 @@ class Sound_image():
 			# while we're at it, let's label the channels
 
 			# Channel name:
-			graphic_draw.text((self.xmin/2, centers[c]-10), clist[c], font=font, fill=Green)
+			graphic_draw.text((xmin/2, centers[c]-10), clist[c], font=font, fill=clColors.GREEN)
 							
 		top_string = 'Headroom: %0.1fdB' % -headroom
 		top_string += '  /  ' + rms + '  -  ' + offset 
 		#top_string += '  /   ' + offset
-		graphic_draw.text((60, 5), top_string, font=font, fill=Green)
+		graphic_draw.text((60, 5), top_string, font=font, fill=clColors.GREEN)
 				
 		if clip_count > 0:
 			# add in a string about clipping
@@ -780,7 +1087,12 @@ class Sound_image():
 		bot_string += '%d:%06.3f' % (minutes, secs)
 		bot_string += ' /  %d bits' % (self.sampwidth * 8)
 		bot_string += ' / %0.3f kHz' % (self.framerate / 1000.)
-		graphic_draw.text((60, self.ymax+3), bot_string, font=font, fill=Green)
+		left = lborder + box_width + 5
+		graphic_draw.text((left, ymax+3), bot_string, font=font, fill=clColors.GREEN)
+		
+		#add_res_text(graphic_draw, size, adjust_factor)
+
+	#"""
 		
 		graphic.save(self.image_file, 'PNG')
 		
@@ -789,10 +1101,11 @@ class Sound_image():
 		
 		print "Top String:", top_string
 		print "Bot String:", bot_string
-		
+	
+
 	def chan_list(self):
 		"""
-		Return a list of channel names: if mono, 'A' (?), 
+		Return a list of channel names: if mono, 'All', 
 		if stereo, L and R, otherwise a list of channel numbers.
 		"""
 		if self.nchannels == 1:
@@ -801,6 +1114,7 @@ class Sound_image():
 			return(['L', 'R'])
 		else:
 			return([ str(x+1) for x in range(self.nchannels) ])
+		
 import coLab		
 def main():
 	"""
@@ -808,26 +1122,49 @@ def main():
 	"""
 	#------ interface to main routine...
 
-
+	"""
 	print "Colab Main"
 	w=coLab.Colab()
 	sys.exit(0)
+	"""
 	
 	
-	
-	snd = '/Users/Johnny/dev/coLab/Group/Catharsis/Page/WaterMoonTomBass/coLab_local/TomGtrBassDemo2.aif'
-	snd = '/Volumes/iMac 2TB/Music/JDJ/JDJ-2 Oct 2008/Assembly Sessions/Audio Files/JDJ-2-Jan13Mix.aif'
-	#snd = '/Volumes/iMac 2TB/Music/JDJ/JDJ-5.1-Mar2013/Audio Files/E_07.aif'
-	#snd = '/Volumes/iMac 2TB/Music/Misc/ShortPanTest/Audio Files/LR-8bit-Demo.aif'
-	#snd = '/Users/Johnny/dev/coLab/Group/Catharsis/Page/FullStormMIDI/coLab_local/StormCompleteMIDIb.aif'
-	
-	pic = '/Users/Johnny/dev/coLab/Group/Catharsis/Page/WaterMoonTomBass/coLab_local/soundgraphic.png'
-	pic = '/Users/Johnny/Desktop/E_07.png'
+	snd = '/Users/Johnny/coLab/Group/Johnny/Page/TestPage2/coLab_local/4-channel.aiff'
+	pdir = 'Group/Johnny/Page/TestPage2'
+	#pic = '/Users/Johnny/coLab/Group/Johnny/Page/AudioTest/coLab_local/TestSoundGraphic.png'
 	#pic = '/Users/Johnny/dev/coLab/Group/Catharsis/Page/FullStormMIDI/coLab_local/soundgraphic.png'
 	
-	Sound_image(snd, pic).build()
+
+	#"""
+	# what the hell - make a bunch...
+	s = config.Sizes()
+	img_base = snd[:snd.rfind('/')+1]
+	
+	#for media_size in s.list():
+	for media_size in [ 'Small' ]:
+		print "Media size:", media_size
+		
+		pic = img_base + 'TestImage-' + media_size + ".png"
+		print "Image file:", pic
+		Sound_image(snd, pic, media_size).build()
+	
+	# now create and load a page so we can have some images....
+	page = clclasses.Page()
+	page.load(pdir)
+	
+	page.media_size = media_size
+	main = tk.Tk()
+	f1 = tk.Frame(main)
+	prog_bar = cltkutils.Progress_bar(f1, 'Image Generation', max=100)
+	make_images(page, prog_bar)
 	
 	sys.exit(0)
+	
+	
+	
+	
+	
+	
 	p = clclasses.Page('imagemakerTest')
 	p.xStart = 10
 	p.xEnd = 470
@@ -843,5 +1180,5 @@ def main():
 
 
 if __name__ == '__main__':
-	coLab.main()
-
+	#coLab.main()
+	main()

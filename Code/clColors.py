@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+"""
+Color definitions for coLab.
+"""
+
+
+# Colors....
+XPARENT = (0,0,0,0)
+HILITE = (255,255,255,32)    # mostly transparent white - to contrast black
+LOLITE = (0, 0, 0, 64)        # mostly transparent black - etc....
+BLACK = (0,0,0,255)
+MAIZE = (255, 225, 50, 255)
+PART_BLACK = (0, 0, 0, 180)    # partly transparent black
+TRANS_GRAY = (128, 128, 128, 128)   # middle gray, half transparent
+GRAY_TEXT = (192, 192, 192, 255)
+GREEN = (20, 255, 20, 255)    # a bright, opaque green
+EL_BLUE = (20, 20, 255, 255)    # electric blue
+DK_BLUE = (10, 20, 128, 255)    # dark blue

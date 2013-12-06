@@ -664,6 +664,11 @@ class Graphic_row_soundfile(Graphic_row):
 		#page_thread=threading.Thread(target=rebuild.render_page, args=(page, media_size='Tiny', max_samples_per_pixel=100))
 		self.size_save = page.media_size
 		page.media_size = 'Tiny'	# for now - probably will define a "Preview" size
+		
+		"""  KLUDGE ALERT!!--------------------------------------------------------------"""
+		self.parent.res_obj.ok = True
+		self.parent.res_obj.set_status(True)
+		
 		# 
 		page_thread=threading.Thread(target=self.render_and_post, args=(page, 'Tiny', 100))
 		page_thread.start()
@@ -965,6 +970,10 @@ class Page_edit_screen(Edit_screen):
 		menu.dict = d
 		menu.post()
 		menu.set_status(True)	# It's always good...
+		menu.ok = True
+		"""  Major Kludge Alert - this is just get create page working...  track this down!!!!!!!"""
+		self.res_obj = menu
+		
 		#---- Sound file...
 		# 
 		# is there such a file?
@@ -1101,6 +1110,8 @@ class Page_edit_screen(Edit_screen):
 		print "Pageroot:", self.obj.root
 		
 		
+		""" KLUDGE ALERT- forcing self.ok to true to work around the resolution not getting set.... """
+		self.ok = True
 		
 		if not self.ok:
 			print "Still something wrong - see above"
@@ -1156,77 +1167,6 @@ class Page_edit_screen(Edit_screen):
 			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				return(None)
 		self.editTop.destroy()
-'''
-
-def rebuild_page_edit(obj):
-		"""
-		This is called as the run method of a thread object.
-		The idea is to manage/monitor the creation of the web page
-		data, in a distracting and entertaining way...
-		
-		Yeah, right.
-		
-		Specifically: the generation of the image frames, followed by the generation of
-		the video from those frames plus the audio.
-		"""
-		# let's make sure mamp is running...
-		
-		clSchedule.start_mamp()
-		progressTop = tk.Toplevel()
-		progressTop.transient(obj.parent.top)
-		edit_frame = tk.LabelFrame(master=progressTop, relief=tk.GROOVE, text="New Page Generation" , borderwidth=5)
-		edit_frame.lift(aboveThis=None)
-		edit_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
-		#
-		
-		fps = imagemaker.calc_fps_val(obj.obj)
-		frames = int(float(obj.obj.duration) * fps) 
-		if obj.needs_rebuild:
-			f1 = tk.Frame(edit_frame)
-			f1.grid(row=0, column=0, sticky=tk.W)
-			
-			img_gen_progbar = cltkutils.Progress_bar(f1, 'Image Generation', max=frames)
-			img_gen_progbar.what = 'Image'
-			img_gen_progbar.width = 500
-			img_gen_progbar.max = frames
-			img_gen_progbar.post()		# initial layout...
-			
-			f2 = tk.Frame(edit_frame)
-			f2.grid(row=1, column=0, sticky=tk.W)
-			
-			vid_gen_progbar = cltkutils.Progress_bar(f2, 'Video Generation', max=frames)
-			vid_gen_progbar.what = 'Frame'
-			vid_gen_progbar.width = 500
-			vid_gen_progbar.max = frames
-			vid_gen_progbar.post()
-		 
-		""" 	
-		f3 = tk.Frame(edit_frame)
-		f3.grid(row=2, column=0, sticky=tk.W)
-		ftp_progbar = cltkutils.Progress_bar(f3, 'ftp mirror...')
-		ftp_progbar.width = 500
-		ftp_progbar.mode = 'indeterminate'
-		ftp_progbar.post()
-		#"""
-		
-		f4 = tk.Frame(edit_frame)
-		f4.grid(row=3, column=0, sticky=tk.E)
-		quitButton = ttk.Button(f4, text="Quit", command=progressTop.quit)
-		quitButton.grid()
-		
-		
-		if obj.needs_rebuild:	
-			imagemaker.make_images(obj.obj, img_gen_progbar)
-			img_gen_progbar.progBar.stop()
-			clAudio.make_movie(obj.obj, vid_gen_progbar)
-		#ftp_progbar.progBar.start()
-		rebuild.rebuild(obj.obj.group_obj)		# currently the group name - change to the object...
-		#ftp_progbar.progBar.stop()
-				
-		progressTop.destroy()
-		local_url = "http://localhost/" + obj.obj.root
-		clSchedule.browse_url(local_url)
-'''
 
 		
 def create_new_page(parent):
@@ -1248,7 +1188,7 @@ def create_new_page(parent):
 	new_page.group = this_group.name
 	new_page.coLab_home = this_group.coLab_home		# just enough path to get us stared..
 	
-	page.master = parent.master
+	new_page.master = parent.master
 	parent.page = Page_edit_screen(parent, new_page, new=True)
 	
 	
@@ -1270,7 +1210,6 @@ def edit_page(parent):
 	parent.page = Page_edit_screen(parent, page, new=False)
 
 
-	
 def create_new_song(parent):
 	print "new song"
 	"""

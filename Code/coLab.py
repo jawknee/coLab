@@ -94,6 +94,9 @@ class Colab():
         self.render_engine = rebuild.Render_engine(self.master)
                
        
+        # let's make sure mamp is running...
+        clSchedule.start_mamp()
+
         self.get_last_group()    # set the initial group, and load it...
         #self.set_group()        # update the internal group structure
         self.createMainWidgets()    # put the initial widgets up...

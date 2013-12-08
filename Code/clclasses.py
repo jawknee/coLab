@@ -404,10 +404,12 @@ class Page:
 		else:
 			print "Page load path passed in:", path
 			set_paths(self, path)
-
+			
+			# Kludge alert:  this is not OS independent - should use sys calls...
 			# the second piece of "path" should be the group
 			print "About to split:", path
 			self.group = path.split('/')[1]
+			self.name = path.split('/')[3]
 			# probably running offline - load the object too...
 			#self.group_obj = Group('self.group')
 			#self.group_obj.load()

@@ -214,49 +214,63 @@ class Render_engine():
 		original_size = page.media_size
 		size_c = config.Sizes()
 		
-		# remove all media of the form <name>-media - plus the old stuff...
-		# (not *just* yet...   uncomment the middle section once there is a media-lock option )
-		print "Removing existing media files..."
-		for selector in [ "-media.*" """, "-desktop.m4v", "-iPhone-cell.3gp", "-iPhone.m4v", ".mov" """ ]:
-			mask = os.path.join(page.home, selector )
-			os.system('rm -rfv ' + mask)
-	
+			
 		try:
 			os.chdir(page.home)
 		except OSError, info:
 			print "Problem changing to :", page.home
 			print info
 			sys.exit(1)
+
+		# remove all media of the form <name>-media - plus the old stuff...
+		print "Removing existing media files..."
+		media_list = [ "-media-", "-desktop.m4v", "-iPhone-cell.3gp", "-iPhone.m4v", ".mov"  ]
+		# create a new list with the name prefix..
+		remove_list = []
+		for med in media_list:
+			remove_list.append(page.name + med)
+		file_list = os.listdir(page.home)
+
+		for file in file_list:
+			for prefix in remove_list:
+				if file.startswith(prefix):
+					print "Removing media,", file, ", matching:", prefix
+					os.system('rm -fv ' + file)
+
+			
+			
 		toplist = []	# kludge alert - keep a list of the top list and shoot them later
-		page.top = self.top
+		
 		while True:
 			print "Render-all, rendering:", page.media_size
 			top_bar = render_page(page)
 			toplist.append(top_bar)
 			print "Back from the render_page"
 			#self.top.grab_set()
-			#top_bar.destroy()
+			top_bar.destroy()
 			page.media_size = size_c.next_size(page.media_size)
 			if page.media_size == config.SMALLEST:
 				break
 		
-
+		print "Done - scheduling check in 100 ms"
 		page.media_size = original_size
 		self.busy = False
 		self.master.after(100, self.check)
 		# Need something here to keep things going...   
 		#self.top.configure(takefocus=True)
 		
+		print "Scheduling browser..."
 		local_url = "http://localhost/" + page.root
-		#clSchedule.browse_url(local_url)
+		clSchedule.browse_url(local_url)
+		#browse_thread = threading.Thread(clSchedule.browse_url, args=(local_url))
+		#browse_thread.start()
+		print "Done."
 		"""
 		for top_bar in toplist:
 			print "Killing old Top Bar"
 			top_bar.destroy()
 		#"""
 			
-		#browse_thread = threading.Thread(clSchedule.browse_url, args=(local_url))
-		#browse_thread.start()
 		
 def render_page(page, media_size=None, max_samples_per_pixel=0):
 	"""
@@ -279,10 +293,6 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	img_dest = os.path.join(page.home, page.soundgraphic)
 	#make_sound_image(page, sound_dest, img_dest, size, max_samples_per_pixel)
 	
-	# let's make sure mamp is running...
-	
-	#clSchedule.start_mamp()
-
 	progressTop = tk.Toplevel()
 	progressTop.transient()
 	progressTop.title('coLab Page Rendering')
@@ -292,10 +302,17 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	render_frame.lift(aboveThis=None)
 	render_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 	
-	#
+	size_c = config.Sizes()
+	(width, height) = size_c.sizeof(media_size)
 	
+	if page.use_soundgraphic:
+		adjust_factor = size_c.calc_adjust(height)
+		page.xStart = int(config.SG_LEFT_BORDER * adjust_factor)
+		page.xEnd = int(config.SG_RIGHT_BORDER * adjust_factor)
+	#
 	fps = imagemaker.calc_fps_val(page)
 	frames = int(float(page.duration) * fps) 
+	print "render_page fps, frames, page.duration", fps, frames,  page.duration
 	if page.use_soundgraphic:
 		f0 = tk.Frame(render_frame)
 		f0.grid(row=0, column=0, sticky=tk.W)
@@ -363,13 +380,11 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	#"""
 	#ftp_progbar.progBar.stop()
 	print "returning the progTop var", progressTop
-	page.top.update_idletasks()
-	progressTop.destroy()
+	#page.top.update_idletasks()
+	#progressTop.destroy()
 	progressTop.update_idletasks()
 	return(progressTop)	# so we can get rid of it later...
 
-
-	
 def rebuild(g, mirror=False, opt="nope"):
 	"""
 	Create and populate group object, adding page and
@@ -577,7 +592,6 @@ def rebuild(g, mirror=False, opt="nope"):
 	archivegen(g)
 	helpgen(g)
 	print "Rebuild done."
-	
 	
 	if mirror:
 		subprocess.call([osascript, scriptpath])

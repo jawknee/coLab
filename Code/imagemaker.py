@@ -84,25 +84,27 @@ def calculate_fps(page):
 	
 	size_class = config.Sizes()
 	(width, height) = size_class.sizeof(page.media_size)
-	# we need to know the correction factor for this page size.
-	try:	# screenshot width may not be set yet...
-		c_factor = float(width) / page.screenshot_width
-	except:
-		c_factor = 1
-		  
-	try:
-		secs_long = float(page.duration)
-		start = page.xStart * c_factor
-		end = page.xEnd * c_factor
-	except NameError,info:
-		print "oops: must have vars!!", info
-		sys.exit(1)
+	if page.use_soundgraphic:
+		factor = size_class.calc_adjust(height)
+		start = int(config.SG_LEFT_BORDER * factor)
+		end = width - int(config.SG_RIGHT_BORDER * factor)
+	else:
+		# we need to know the correction factor for this page size.
+		try:
+			factor = float(width) / page.screenshot_width
+		except:
+			factor = 1
+		start = page.xStart * factor
+		end = page.xEnd * factor
+	
+
+	secs_long = float(page.duration)
 	pixels = end - start + 1 
 	# 
 	pps =  pixels / secs_long	# pixels per second required
 	print "Size:", width, height
-	print "start, end:",  start, end, c_factor
-	print "calculate_fps, pps:", pps
+	print "start, end:",  start, end, factor
+	print "calculate_fps, pixels/sec:", pps
 
 	"""   At this time - there are no fractional fps,
 	      ffmpeg does not support it - so let's eliminate
@@ -943,7 +945,8 @@ def main():
 	
 	snd = '/Users/Johnny/coLab/Group/Johnny/Page/TestPage2/coLab_local/4-channel.aiff'
 	snd = '/Users/Johnny/dev/CoLab/Group/Johnny/Page/Hello_AHH/coLab_local/Hello_AHH!.aif'
-	pdir = 'Group/Johnny/Page/Hello_AHH'
+	snd = '/Users/Johnny/dev/CoLab/Group/Johnny/Page/Boyars/coLab_local/Boyars.aif'
+	pdir = 'Group/Johnny/Page/Boyars'
 	#pic = '/Users/Johnny/coLab/Group/Johnny/Page/AudioTest/coLab_local/TestSoundGraphic.png'
 	#pic = '/Users/Johnny/dev/coLab/Group/Catharsis/Page/FullStormMIDI/coLab_local/soundgraphic.png'
 	
@@ -957,9 +960,10 @@ def main():
 	f1 = tk.Frame(main)
 	f1.grid()
 
-	
-	for media_size in s.names:
+	"""
+	#for media_size in s.names:
 	#for media_size in [ 'Small', 'Medium', 'Large', 'HiDef', '4k-Ultra-HD']:
+	for media_size in [ 'Small']:
 		print "Media size:", media_size
 		
 		pic = img_base + 'TestImage-' + media_size + ".png"
@@ -971,16 +975,24 @@ def main():
 		prog_bar.max = s.sizeof(media_size)[0]
 		prog_bar.post()		# initial layout...
 		Sound_image(snd, pic, media_size, prog_bar, max_samp_per_pixel=0).build()
-	
+	#"""
 	# now create and load a page so we can have some images....
 
 	page = clclasses.Page()
 	page.load(pdir)
 	
+	
 	media_size = 'Large'
 	media_size = '4k-Ultra-HD'
 	media_size = 'HiDef'
 	#media_size = 'Small'
+	
+	prog_bar = cltkutils.Progress_bar(f1, 'Image Generation', max=100)
+	prog_bar.what = 'Image'
+	prog_bar.width = 500
+	prog_bar.max = s.sizeof(media_size)[0]
+	prog_bar.post()		# initial layout...
+	
 	page.media_size = media_size
 	pic = img_base + "SoundGraphic.png"
 	Sound_image(snd, pic, media_size, prog_bar).build()

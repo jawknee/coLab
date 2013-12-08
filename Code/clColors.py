@@ -16,3 +16,4 @@ GRAY_TEXT = (192, 192, 192, 255)
 GREEN = (20, 255, 20, 255)    # a bright, opaque green
 EL_BLUE = (20, 20, 255, 255)    # electric blue
 DK_BLUE = (10, 20, 128, 255)    # dark blue
+BRIGHT_RED = (255, 48, 16, 255) # bright red - warnings and such

@@ -48,20 +48,43 @@ def make_movie(page, prog_bar=None):
     
     print "running:", media_script, "with:", infofile
     try:
-        ffmpeg = subprocess.Popen([media_script, infofile], stdout = subprocess.PIPE, close_fds=True)
+        bufsize = 1     # line buffered
+        ffmpeg = subprocess.Popen([media_script, infofile], bufsize, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
     except:
         print "Video generation failed."
         sys.exit(1)
+    """
     # buffering info from Derrick Petzold: https://derrickpetzold.com/p/capturing-output-from-ffmpeg-python/
     fcntl.fcntl(
         ffmpeg.stdout.fileno(),
         fcntl.F_SETFL,
         fcntl.fcntl(ffmpeg.stdout.fileno(), fcntl.F_GETFL) | os.O_NONBLOCK,
     )
+    #   does not appear to be needed - the iter on the subprocess stdout works fine...
+    #"""
     prog_bar.update(0)      # reset the start time...
-    read_delay = .01    # very fast until we see "frame=" then a bit slower...
-    while True:
-        readx = select.select([ffmpeg.stdout.fileno()], [], []), [0]
+    #
+    # Read lines from the newly started ffmpeg... 
+    # parse them and update the progress bar...
+    for line in iter(ffmpeg.stdout.readline, 'b'):
+        
+        ffmpeg.poll()   # check the status....
+        if ffmpeg.returncode is not None:
+            print "ffmpeg is done:", ffmpeg.returncode
+            break
+
+        parms = line.split()
+        try:
+            if parms[0] == 'frame=':
+                frame_num = parms[1]
+                prog_bar.update(int(frame_num))
+                print" Frame", frame_num
+                  #read_delay=0.1      # a bit slower so we don't slow down the encoding...
+        except:
+            print "Something went wrong on the update...", frame_num
+            pass
+            #break
+        """
         if readx:
             try:
                 nextline = ffmpeg.stdout.readline()
@@ -71,6 +94,7 @@ def make_movie(page, prog_bar=None):
             
             print "nextline:", nextline
             if nextline == '':
+                print "Nothing - we think we're done with ffmpeg"
                 break       # all done - head back
             
             parms = nextline.split()
@@ -81,6 +105,9 @@ def make_movie(page, prog_bar=None):
                       read_delay=0.1      # a bit slower so we don't slow down the encoding...
             except:
                 break
-        time.sleep(read_delay)   
-            
+        else:
+            print "Got nothing back from select"
+        """
+        #time.sleep(read_delay)   
+    print "ffmpeg has completed."     
         

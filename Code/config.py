@@ -83,8 +83,31 @@ class Sizes:
 		where a pure ratio is too much.
 		Currently: sqrt of calc_scale
 		"""
-		
 		return(math.sqrt(self.calc_scale(height)))
+	
+	def is_smaller_than(self, s1, s2):
+		"""
+		Method of returning if a size, s1, is smaller
+		than another, s2.  Since the sizes are stored
+		largest first, the logic is reversed.
+		"""
+		try:
+			return self.names.index(s1) > self.names.index(s2)
+		except ValueError:
+			print "Sizes class invalid sizes:", s1, s2
+			raise ValueError('Invalid Size')
+	def is_larger_than(self,s1,s2):
+		"""
+		Convenient notation for the reverse...
+		"""
+		return not self.is_smaller_than(s1, s2)			
+	
+	def get_screensize(self):
+		"""
+		This won't work yet - it's a reference for later
+		"""
+		screen_width = root.winfo_screenwidth()
+		screen_height = root.winfo_screenheight() 	
 		
 def main():
 	print "Colab config"
@@ -102,5 +125,30 @@ def main():
 		
 	print "Scale of 960:", s.calc_scale(960)
 	print "Adjst of 960:", s.calc_adjust(960)
+	
+	if s.is_smaller_than('Large', 'Small'):
+		print "oops.   Large is not smaller than Small"
+	else:
+		print "Larger than Small"
+		
+	if s.is_smaller_than('Medium','Medium'):
+		print "oops  medium is not smaller"
+	else:
+		print "Medium is"
+		
+	if s.is_smaller_than('Tiny', 'HiDef'):
+		print "Tiny is smaller than HiDef"
+	else:
+		print "ooooops Tiny is not not smaller than HiDef"
+	try:
+		if s.is_smaller_than('Tiny', 'Bogus'):
+			print "No good - not smaller than Bogus"
+	except ValueError:
+		print "Good: detected Bogus"
+		
+	if s.is_larger_than('Tiny', 'HiDef'):
+		print "oooops,  Tiny is not larger than HiDef"
+	else:
+		print "is larger than looks good"
 if __name__ == '__main__':
 	main()

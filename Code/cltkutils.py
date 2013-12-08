@@ -70,8 +70,8 @@ class Progress_bar():
         self.progBar = ttk.Progressbar(self.frame, length=self.width, maximum=self.max, mode=self.mode, variable=self.value)
         self.progBar.grid(row=2, column=0, columnspan=5, sticky=tk.W)
     
-    def set_time(self):
-        self.start_time = time.time()    
+
+           
     def set_max(self, new_max):
         self.max = new_max 
         self.of_str = ' of ' + str(self.max)
@@ -83,6 +83,8 @@ class Progress_bar():
         Update the bits and pieces with the new value...
         Move the progress bar, display the new value and
         time remaining.
+        
+        Call with 0 to reset the starting time to now.
         """
         # for now...
         self.value.set(new_value)
@@ -156,12 +158,13 @@ class clOption_menu:
     of the list that was selected.
     
     """
-    def __init__(self, parent, list, eval_string, default='-Choose-'):
+    def __init__(self, parent, list, eval_string, default='-Choose-', command="None"):
     
         self.parent = parent
         self.list = list
         self.eval_string = eval_string
         self.default = default
+        self.command = command
          
         # Create a list of strings and a dictionary to later convert
         # the return string back to a pointer to the list member
@@ -177,7 +180,7 @@ class clOption_menu:
              
         self.var = tk.StringVar()
         self.var.set(self.default)
-        self.om = tk.OptionMenu(self.parent, self.var, *self.namelist)
+        self.om = tk.OptionMenu(self.parent, self.var, *self.namelist, command=command)
         
         print self.var.get()
         

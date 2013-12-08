@@ -669,11 +669,17 @@ class Graphic_row_soundfile(Graphic_row):
 		self.parent.res_obj.ok = True
 		self.parent.res_obj.set_status(True)
 		
+		# Set up a few vars to only generate the sound graphic..
+		use_save = page.use_soundgraphic
+		page.use_soundgraphic = True
+		page.needs_rebuild = False
 		# 
-		page_thread=threading.Thread(target=self.render_and_post, args=(page, 'Tiny', 100))
-		page_thread.start()
+		#page_thread=threading.Thread(target=self.render_and_post, args=(page, 'Tiny', 100))
+		#page_thread.start()
 		
-		#rebuild.render_page(page, media_size='Tiny', max_samples_per_pixel=100)   # render as a preview...
+		rebuild.render_page(page, media_size='Tiny', max_samples_per_pixel=100)   # render as a preview...
+		page.use_soundgraphic = use_save
+		page.needs_rebuild = True
 		"""
 		img_dest = os.path.join(self.parent.obj.home, self.parent.obj.soundgraphic)
 		#make_sound_image(self.parent.obj, sound_dest, img_dest)
@@ -723,8 +729,9 @@ class Select_edit():
 		plist = eval("self.parent.current_group." + self.list)
 		plist.sort(key=clclasses.createkey, reverse=True)
 		
-		self.my_obj_module = cltkutils.clOption_menu(frame, plist, self.member )
-		self.my_obj_module.om.grid(column=1, row=1)
+		self.my_option_menu = cltkutils.clOption_menu(frame, plist, self.member, command=self.menu_callback )
+		self.my_option_menu.om.grid(column=1, row=1)
+		#self.my_option_menu.om.configure(command=self.menu_callback)
 		
 		self.button = ttk.Button(frame, text="Edit", command=self.edit_select).grid(column=2, row=2)	
 		self.tmpBox.wait_window(frame)
@@ -734,13 +741,16 @@ class Select_edit():
 		Called when the "Edit" button is pushed
 		"""
 		print "edit_select called."
-		selected_str = self.my_obj_module.var.get()
+		selected_str = self.my_option_menu.var.get()
 		if selected_str is None:
 			print "Got a Null selection."
-		print self.my_obj_module.var.get()
-		self.selected = self.my_obj_module.dictionary[selected_str]
+		print self.my_option_menu.var.get()
+		self.selected = self.my_option_menu.dictionary[selected_str]
 		self.tmpBox.destroy()
-
+		
+	def menu_callback(self, value):
+		print "called back we were", value
+		
 class Edit_screen:
 	"""
 	Base class for the Page, Song and whatever future

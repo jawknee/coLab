@@ -67,8 +67,12 @@ ogg:	$ogg_opts
 webm:	$webm_opts
 mp4:	$mp4_opts
 EOF
-
 $ffmpeg $input_opts "$pagedir/$soundfile" $mp4_opts $webm_opts 2>&1 | tr -u '\r' '\n'
+rc=$?
+echo "$ffmpeg has completed with return code: $rc"
+exit $rc
+
+
 
 # earlier attempts
 #mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -preset slow -movflags faststart -pix_fmt yuv420p -threads 3 -codec:a aac -strict -2 $pagedir/$name-media.mp4"

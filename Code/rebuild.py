@@ -26,7 +26,6 @@ import clAudio
 import imagemaker
 import clSchedule
 from htmlgen import *
-
 # 
 # put these somewhere....
 num_recent_entries = 5
@@ -215,25 +214,42 @@ class Render_engine():
 		original_size = page.media_size
 		size_c = config.Sizes()
 		
+		# remove all media of the form <name>-media - plus the old stuff...
+		# (not *just* yet...   uncomment the middle section once there is a media-lock option )
+		print "Removing existing media files..."
+		for selector in [ "-media.*" """, "-desktop.m4v", "-iPhone-cell.3gp", "-iPhone.m4v", ".mov" """ ]:
+			mask = os.path.join(page.home, selector )
+			os.system('rm -rfv ' + mask)
+	
+		try:
+			os.chdir(page.home)
+		except OSError, info:
+			print "Problem changing to :", page.home
+			print info
+			sys.exit(1)
 		toplist = []	# kludge alert - keep a list of the top list and shoot them later
+		page.top = self.top
 		while True:
 			print "Render-all, rendering:", page.media_size
 			top_bar = render_page(page)
 			toplist.append(top_bar)
-			#toplist.append(top_bar)
+			print "Back from the render_page"
+			#self.top.grab_set()
+			#top_bar.destroy()
 			page.media_size = size_c.next_size(page.media_size)
 			if page.media_size == config.SMALLEST:
 				break
-			
+		
+
 		page.media_size = original_size
 		self.busy = False
-		self.master.after(1, self.check)
+		self.master.after(100, self.check)
 		# Need something here to keep things going...   
 		#self.top.configure(takefocus=True)
 		
 		local_url = "http://localhost/" + page.root
-		clSchedule.browse_url(local_url)
-		#"""
+		#clSchedule.browse_url(local_url)
+		"""
 		for top_bar in toplist:
 			print "Killing old Top Bar"
 			top_bar.destroy()
@@ -255,6 +271,8 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	
 	if media_size is None:
 		media_size = page.media_size
+	else:
+		page.media_size = media_size
 		
 	print "render_page - size is:", media_size
 	sound_dest = os.path.join(page.home, page.soundfile)
@@ -263,11 +281,12 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	
 	# let's make sure mamp is running...
 	
-	clSchedule.start_mamp()
+	#clSchedule.start_mamp()
+
 	progressTop = tk.Toplevel()
 	progressTop.transient()
 	progressTop.title('coLab Page Rendering')
-	progressTop.geometry('-250+100')
+	progressTop.geometry('+1500+100')
 	title = "New Page Generation: " + page.desc_title + ' (' + media_size + ')'
 	render_frame = tk.LabelFrame(master=progressTop, relief=tk.GROOVE, text=title, borderwidth=5)
 	render_frame.lift(aboveThis=None)
@@ -330,17 +349,23 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 			imagemaker.make_images(page, img_gen_progbar)
 			#img_gen_progbar.progBar.stop()
 			clAudio.make_movie(page, vid_gen_progbar)
+			print "Returned from clAudio.make_move"
 			#vid_gen_progbar.stop()
 	except:
 		print "no page editor object - likely running free..."
 		
 	#ftp_progbar.progBar.start()
+	"""
 	try:
 		rebuild(page.group_obj)		# currently the group name - change to the object...
 	except:
 		print"Need to find a solution to the group render problem!"
+	#"""
 	#ftp_progbar.progBar.stop()
-			
+	print "returning the progTop var", progressTop
+	page.top.update_idletasks()
+	progressTop.destroy()
+	progressTop.update_idletasks()
 	return(progressTop)	# so we can get rid of it later...
 
 
@@ -366,9 +391,10 @@ def rebuild(g, mirror=False, opt="nope"):
 		g = clclasses.Group(gname)
 		g.load()
 		
-	
+	print "Rebuilding group object:", g.title
 	# Now that we have the paths, let's call the interarchy applescript
 	# to update the mirror
+	mirror = False
 	scriptpath = os.path.join(g.coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
 	osascript = "/usr/bin/osascript"
 	if mirror:

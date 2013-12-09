@@ -350,11 +350,18 @@ class Menu_row(Data_row):
 		# write the base label...
 			self.label = tk.Label(self.parent.edit_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
-
-			self.gOpt = tk.StringVar()
 		else:
 			self.widget.destroy()
+
+
+		self.post_menu()
 			
+	def post_menu(self):
+		try:
+			self.gOpt 
+		except:
+			self.gOpt = tk.StringVar()
+
 		self.gOpt.set(self.default)
 
 		self.widget = tk.OptionMenu(self.parent.edit_frame, self.gOpt, *self.titles, command=self.handler)
@@ -399,11 +406,32 @@ class Menu_row(Data_row):
 		self.post()
 
 class Resolution_menu_row(Menu_row):
+	def __init__(self, parent, text, member):
+		Menu_row.__init__(self, parent, text, member)
+
+		l = []		# list of resolutions and their actual size
+		d = {}		# dictionary of strings to media_size names...
+		for resolution in parent.size_class.list():
+			string = resolution + " " + str(parent.size_class.sizeof(resolution))
+			l.append(string)
+			d[string] = resolution
+			page = parent.obj
+			if resolution == page.media_size:
+				self.default = string
+			
+		self.titles = tuple(l)		# Convert to a tuple...
+		self.dict = d
+		#"""
 	def handle_menu(self, value):
 		"""
 		Reset the parent's size vars...
 		"""
+		prev_size = self.parent.size 
 		self.parent.size = self.parent.size_class.sizeof(self.dict[value])	
+		if prev_size != self.parent.size:
+			print "Size has changed..."
+			self.parent.obj.needs_rebuild = True
+
 	
 class Song_menu_row(Menu_row):
 	"""
@@ -444,6 +472,85 @@ class Song_menu_row(Menu_row):
 		self.parent.part_obj.post()
 		self.parent.read()
 		
+class Graphic_menu_row(Menu_row):
+	"""
+	Based on the menu class, so we can easily use the handler callback,
+	this is a hybrid class that also does a graphical row.   The
+	top graphic is a full row, though as a child class of this object.
+	We get slightly tricky with the menu row, because we don't want
+	the label and status.
+	"""
+	def __init__(self, parent, text, member, graphic_path=None):
+		Menu_row.__init__(self, parent, '', member)
+
+		self.graphic_path = graphic_path	# may be set by the derived class post method
+		self.parent.row += 1		# this one takes up 2 rows, one more than most
+		self.row = self.parent.row	# the menu part is the second row
+
+		
+		self.graphic_row = Graphic_row(self.parent, text, member, graphic_path)	# create second row for the menu
+		self.graphic_row.row = self.row - 1		# graphic appears in the row above.
+
+	def post(self):
+		"""
+		put the text and graphic on the screen...
+		
+		also post the menu...
+		"""
+		self.post_menu()	# short cut to just the menu...
+		self.statusVar.set('!!')
+		print "Graphic post"
+		self.graphic_row.graphic_path = self.graphic_path
+		self.graphic_row.post()
+		
+		if self.new:
+			self.set_status(None)
+			self.new = False
+		else:
+			self.set_status(True)
+	
+	def set(self, value):
+		self.value = value
+		self.new = False
+		self.set_status(ok=True)
+		self.post()
+	
+
+				
+	def button_handler(self):
+		print "this is the button handler"
+			
+	def return_value(self):
+		return("SomeScreenSht"), self.ok
+
+class Graphic_menu_row_soundfile(Graphic_menu_row):
+	def post(self):
+		# is there such a file?
+		#self.widget = cltkutils.graphic_element(self.frame)
+		page = self.parent.obj
+		self.graphic_path = os.path.join(page.home, page.soundthumbnail)
+		if not os.path.isfile(self.graphic_path):		# we need a backup file...
+			self.graphic_path = os.path.join(page.coLab_home, 'Resources', 'coLab-NoPageSound_tn.png')
+		
+		self.titles = ("Load a sound file...", "Load a previous/existing file...", "Pat self on back (don't hurt yourself)" )
+		self.default = "Change Sound File"
+		
+		Graphic_menu_row.post(self)
+
+class Graphic_menu_row_screenshot(Graphic_menu_row):
+	def post(self):
+		# is there such a file?
+		#self.widget = cltkutils.graphic_element(self.frame)
+		page = self.parent.obj
+		self.graphic_path = os.path.join(page.home, page.thumbnail)
+		if not os.path.isfile(self.graphic_path):		# we need a backup file...
+			self.graphic_path = os.path.join(page.coLab_home, 'Resources', 'coLab-NoPageImage_tn.png')
+		
+		self.titles = ("Use the Sound Graphic", "Adjust start and end", "Load a new graphic file...", "Reuse a previous/existing file..." )
+		self.default = "Change Graphic"
+		
+		Graphic_menu_row.post(self)
+		
 class Graphic_row(Data_row):
 	"""
 	Post a row with a title and a graphic...
@@ -454,9 +561,9 @@ class Graphic_row(Data_row):
 
 		self.graphic_path = graphic_path
 		
-		self.handler = self.button_handler
+		self.handler = self.button_handler		#  ?????  probably not any more...
 		
-		self.parent.row += 1		# this one takes up 2 rows, one more than most
+		#self.parent.row += 1		# this one takes up 2 rows, one more than most
 		
 	def post(self):
 		"""
@@ -474,7 +581,7 @@ class Graphic_row(Data_row):
 
 			self.gOpt = tk.StringVar()
 			
-			self.changeButton = ttk.Button(self.parent.edit_frame, text="Change " + self.text, command=self.button_handler).grid(column=self.column + 2, row=self.row + 1, sticky=tk.W )
+			#self.changeButton = ttk.Button(self.parent.edit_frame, text="Change " + self.text, command=self.button_handler).grid(column=self.column + 2, row=self.row + 1, sticky=tk.W )
 			
 			self.statusVar = tk.StringVar()
 			self.status = tk.Label(self.parent.edit_frame, textvariable=self.statusVar)
@@ -483,18 +590,18 @@ class Graphic_row(Data_row):
         
 		else:
 			try:
-				self.widget.graphic.destroy()
+				self.graph_el.graphic.destroy()
 			except:
-				print "Widget.graphic.destroy failed."
+				print "Graphic_el.graphic.destroy failed."
 				pass
 		
-		self.widget = cltkutils.graphic_element(self.frame)
-		self.widget.filepath = self.graphic_path
-		self.widget.row = self.row
-		self.widget.column = self.column + 2
-		self.widget.columnspan = 3
-		self.widget.sticky = tk.W
-		self.widget.post()	
+		self.graph_el = cltkutils.graphic_element(self.frame)
+		self.graph_el.filepath = self.graphic_path
+		self.graph_el.row = self.row
+		self.graph_el.column = self.column + 2
+		self.graph_el.columnspan = 3
+		self.graph_el.sticky = tk.W
+		self.graph_el.post()	
 		
 		if self.new:
 			self.set_status(None)
@@ -523,13 +630,25 @@ class Graphic_row_screenshot(Graphic_row):
 	def button_handler(self):
 		print "this is the button handler"
 		page = self.parent.obj
-		page.changed = True
-		page.needs_rebuild = True
 		initialPath = "/Users/Johnny/Desktop"
-		file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.png', title="Open screen shot...")
+		filetypes = [ ('PNG', '*.png'), ('JPEG', '*.jpg')]
+		initialfile="ScreenShot.png"
+		file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.png', title="Open screen shot...", filetypes=filetypes, initialfile=initialfile)
 		if not file_path:
 			return
+
+		#try:
+		image = Image.open(file_path)
+		img_width, img_height = image.size
+		page.xStart = int(img_width * 0.05)	# a decent guess at a starting point
+		page.xEnd = img_width - page.xStart
+		#except:
+		#	print "Failure opening image file:", file_path
+		#	return
 		
+		page.changed = True
+		page.needs_rebuild = True
+
 		self.ok = True
 		self.set_status( True)
 		page.use_soundgraphic = False
@@ -610,13 +729,15 @@ class Graphic_row_screenshot(Graphic_row):
 		page = self.parent.obj
 		page.changed = True
 		page.needs_rebuild = True
-		page.screenshot = page.soundgraphic
+		page.screenshot = page.soundgraphic	# probably not needed.
 		page.use_soundgraphic = True
 
+		"""
 		self.parent.set_member('xStart', 30)	#   RBF:  these need to be set elsewhere...
 		width, height = self.parent.size
 		end = width - 10
 		self.parent.set_member('xEnd', end)
+		"""
 
 		self.parent.set_member('screenshot', page.soundgraphic)
 		imagemaker.make_sub_images(page)
@@ -633,7 +754,10 @@ class Graphic_row_soundfile(Graphic_row):
 		page.changed = True
 		page.needs_rebuild = True	
 		initialPath = "/Volumes/iMac 2TB/Music/"
-		file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.aif', title="Open AIFF sound file...")
+		filetypes = [ ('AIFF', '*.aif')]
+		initialfile = 'Stereo Mics_09.R.aif'
+
+		file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.aif', title="Open AIFF sound file...", filetypes=filetypes, initialfile=initialfile)
 		if not file_path:
 			return
 		
@@ -666,8 +790,8 @@ class Graphic_row_soundfile(Graphic_row):
 		page.media_size = 'Tiny'	# for now - probably will define a "Preview" size
 		
 		"""  KLUDGE ALERT!!--------------------------------------------------------------"""
-		self.parent.res_obj.ok = True
-		self.parent.res_obj.set_status(True)
+		#self.parent.res_obj.ok = True
+		#self.parent.res_obj.set_status(True)
 		
 		# Set up a few vars to only generate the sound graphic..
 		use_save = page.use_soundgraphic
@@ -965,6 +1089,7 @@ class Page_edit_screen(Edit_screen):
 		#--- Resolution
 		#self.obj.song_obj = None
 		menu = Resolution_menu_row(self, "Resolution", "media_size")
+		"""
 		l = []		# list of resolutions and their actual size
 		d = {}		# dictionary of strings to media_size names...
 		for resolution in self.size_class.list():
@@ -975,23 +1100,29 @@ class Page_edit_screen(Edit_screen):
 				menu.default = string
 			
 		menu.titles = tuple(l)		# Convert to a tuple...
+		#"""
 		
 		self.editlist[menu.member] =  menu
-		menu.dict = d
 		menu.post()
 		menu.set_status(True)	# It's always good...
 		menu.ok = True
 		"""  Major Kludge Alert - this is just get create page working...  track this down!!!!!!!"""
 		self.res_obj = menu
-		
+
 		#---- Sound file...
+		# (new version, menu based)
+		row = Graphic_menu_row_soundfile(self, "Soundfile", 'soundfile')
+		row.post()
+
+		#---- Sound file...
+		# (previous version - button based)
 		# 
 		# is there such a file?
-		screenshot_path = os.path.join(self.obj.home, self.obj.soundthumbnail)
-		if not os.path.isfile(screenshot_path):		# we need a backup file...
-			screenshot_path = os.path.join(self.obj.coLab_home, 'Resources', 'coLab-NoPageImage_tn.png')
+		soundgraphic_path = os.path.join(self.obj.home, self.obj.soundthumbnail)
+		if not os.path.isfile(soundgraphic_path):		# we need a backup file...
+			soundgraphic_path = os.path.join(self.obj.coLab_home, 'Resources', 'coLab-NoPageSound_tn.png')
 			
-		row = Graphic_row_soundfile(self, "Soundfile", 'soundfile', screenshot_path)
+		row = Graphic_row_soundfile(self, "Soundfile", 'soundfile', soundgraphic_path)
 		self.editlist[row.member] =  row
 		row.post()
 		
@@ -1003,6 +1134,10 @@ class Page_edit_screen(Edit_screen):
 		row.post()
 		self.duration_obj = row
 		
+		#---- Sound file...
+		# (new version, menu based)
+		row = Graphic_menu_row_screenshot(self, "Graphic", 'screenshot')
+		row.post()
 		
 		#---- Screen Shot
 		# (for now, the name - later: the picture (thumbnail)
@@ -1021,10 +1156,12 @@ class Page_edit_screen(Edit_screen):
 		
 		#----  x Start and Stop - eventually done with graphic input...
 		row = Entry_row(self, "xStart", "xStart", width=5)
+		row.editable = False
 		self.editlist[row.member] =  row
 		row.post()
 		
 		row = Entry_row(self, "xEnd", "xEnd", width=5)
+		row.editable = False
 		self.editlist[row.member] =  row
 		row.post()
 		
@@ -1121,7 +1258,7 @@ class Page_edit_screen(Edit_screen):
 		
 		
 		""" KLUDGE ALERT- forcing self.ok to true to work around the resolution not getting set.... """
-		self.ok = True
+		#self.ok = True
 		
 		if not self.ok:
 			print "Still something wrong - see above"
@@ -1134,41 +1271,41 @@ class Page_edit_screen(Edit_screen):
 			tkMessageBox.showerror("There were problems...", message, parent=self.edit_frame, icon=tkMessageBox.ERROR)
 			return
 		
+		# I don't like this - I want a better method to determine if this is new or not...
+		if float(self.obj.duration) == 0.0:
+			action = 'create'
 		else:
-			# I don't like this - I want a better method to determine if this is new or not...
-			if float(self.obj.duration) == 0.0:
-				action = 'create'
-			else:
-				action = 'update'
-			message = "This will " + action + " the page: " + self.obj.name
-			message += "\n\nOK?"
-			if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
-				print "return"
-				return
-	
-			if action == 'create':
-				# need to add this bit to the group's lists
-				self.obj.group_obj.pagelist.append(self.obj)		# add the page name
-				self.obj.group_obj.pagedict[self.obj.name] = self.obj	# name -> page obj
-				self.obj.create()				# build the page dir structure, base data page.
-				self.editTop.destroy()
-				return							# just create the dir and 1-entry data file - we only have the name so far
-						
-			# We're good - let's post this...
-			clclasses.convert_vars(self.obj)
-			self.obj.post()
-			# Now build the frames and video in the background...
-			#page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
-			page = self.obj
-			page.editor = None
-			htmlgen.pagegen(page.group_obj, page)
-			self.parent.render_engine.add_render(sub_dir)
-			#page.editor = self	# pass in the page, but reference this editor obj.
-			#page_thread=threading.Thread(target=rebuild.render_page, args=(page,))
-			#page_thread.start()
-			#rebuild_page_edit(self)
-			
+			action = 'update'
+		message = "This will " + action + " the page: " + self.obj.name
+		message += "\n\nOK?"
+		if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
+			print "return"
+			return
+
+		if action == 'create':
+			# need to add this bit to the group's lists
+			self.obj.group_obj.pagelist.append(self.obj)		# add the page name
+			self.obj.group_obj.pagedict[self.obj.name] = self.obj	# name -> page obj
+			self.obj.create()				# build the page dir structure, base data page.
 			self.editTop.destroy()
+			return							# just create the dir and 1-entry data file - we only have the name so far
+					
+		# We're good - let's post this...
+		clclasses.convert_vars(self.obj)
+		self.obj.post()
+		# Now build the frames and video in the background...
+		#page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
+		page = self.obj
+		page.editor = None
+		htmlgen.pagegen(page.group_obj, page)
+		if page.needs_rebuild:
+			self.parent.render_engine.add_render(sub_dir)
+		#page.editor = self	# pass in the page, but reference this editor obj.
+		#page_thread=threading.Thread(target=rebuild.render_page, args=(page,))
+		#page_thread.start()
+		#rebuild_page_edit(self)
+		
+		self.editTop.destroy()
 			
 			
 	def quit(self):

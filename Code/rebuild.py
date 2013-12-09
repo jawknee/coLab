@@ -137,10 +137,6 @@ class Render_engine():
 			page.needs_rebuild
 		except:
 			page.needs_rebuild = True
-		try:
-			page.changed
-		except:
-			page.changed = True
 			
 		try:
 			page.load(next_render)
@@ -149,7 +145,8 @@ class Render_engine():
 		
 		# Build the new display text...
 		active_text = page.desc_title + '\n'
-		active_text += page.media_size + u"\u2190"
+		page.base_size = page.media_size
+		active_text += "--pending---"
 		self.active_name.set(active_text)
 		page_thread=threading.Thread(target=self.render_all, args=(page,))
 		page_thread.start()
@@ -211,7 +208,6 @@ class Render_engine():
 		# we're going to generate the media by manipulating
 		# page.media_size - but it's a good idea to set it
 		# back when we're done...
-		original_size = page.media_size
 		size_c = config.Sizes()
 		
 			
@@ -241,7 +237,25 @@ class Render_engine():
 			
 		toplist = []	# kludge alert - keep a list of the top list and shoot them later
 		
+		#
+		# Start at the current size and work our way down through the
+		# sizes to generate all the media sizes we want.
 		while True:
+			# Build a new bit of text based on the size change, marking the one
+			# we're doing now with an arror...
+			active_text = page.desc_title + '\n'
+			size = page.base_size
+			while True:
+				active_text += "  " + size
+				if size == page.media_size:
+					active_text += u"\u2190"
+				active_text += '\n'
+				
+				size = size_c.next_size(size)
+				if size == config.SMALLEST:
+					break
+			self.active_name.set(active_text)	# post the name....
+			# reeder this resolution...
 			print "Render-all, rendering:", page.media_size
 			top_bar = render_page(page)
 			toplist.append(top_bar)
@@ -253,7 +267,7 @@ class Render_engine():
 				break
 		
 		print "Done - scheduling check in 100 ms"
-		page.media_size = original_size
+		page.media_size = page.base_size
 		self.busy = False
 		self.master.after(100, self.check)
 		# Need something here to keep things going...   

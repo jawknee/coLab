@@ -303,6 +303,7 @@ class Page:
 		initdata = [
 		('obj_type', 'Page'),
 		('page_type', 'orig'),
+		('locked', False),
 		('group', "<unset>"),
 		('desc_title', "(Descriptive title - should be unique)"),
 		('fun_title', "(Fun title - whatever feels right)"),
@@ -348,6 +349,7 @@ class Page:
 
 		return( 'name="' + self.name + EOL +
 			'page_type="' + self.page_type + EOL +
+			'locked=' + str(self.locked) + '\n' +
 			'group="' + self.group + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +
@@ -464,6 +466,15 @@ class Page:
 		f.write('name="' + self.name + '"\n')
 		f.close()
 
+	def localize_soundfile(self):
+		"""
+		Return the path to the local sound file - 
+		we store the full path to the original so we
+		can later find or highlight it
+		"""
+		# split it...
+		filename = os.path.split(self.soundfile)[1]
+		return os.path.join(self.home, 'coLab_local', filename)
 class Song:
 	"""
 	A Song object contains the data associated with a generate song page

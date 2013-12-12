@@ -256,6 +256,7 @@ def make_images(page, prog_bar=None, media_size=None):
 
 	#font = ImageFont.truetype('../Resources/Fonts/data-latin.ttf', 18)
 	fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
+	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/QuartBolD.ttf')
 	fontsize = int(12 * adjust_factor)
 	font = ImageFont.truetype(fontpath, fontsize)
 
@@ -406,6 +407,7 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	The fontfile var is the full path to a truetype font file.
 	(for now, size=12)
 	"""
+	print "Font file is:", fontfile
 	font = ImageFont.truetype(fontfile, fontsize)
 
 	# create a temp image - just long enough to get the size of the text
@@ -452,7 +454,8 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	box_draw.text(offset, string, font=font, fill=fill)
 
 	box.save(output_file, 'PNG')
-	
+	return (font.font.family, font.font.style)
+
 def add_res_text(draw, size, adjust_factor=1.0):
 	"""
 	Put a simple (elegant?) bit of text in the lower right
@@ -462,6 +465,8 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	(width, height) = size
 	
 	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
+	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/ArabBruD.ttf')
+	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	font_size = int(10 * adjust_factor)
 	font = ImageFont.truetype(fontpath, font_size)
 	res_string = str(width) + " x " + str(height)
@@ -747,7 +752,7 @@ class Sound_image():
 		# We want the furthest excursion, min or max
 	
 		max_xcrsn = max		# maximum excursion
-		if -min > max:
+		if -min > max+1:	# '+1' prevents -0.0
 			max_xcrsn = -min
 			
 		# Calculate what we now know...
@@ -842,6 +847,8 @@ class Sound_image():
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamFatSkewNarrow.ttf'
 		fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
+		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DomCasDReg.ttf')
+		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DomCasDReg.ttf'
 		# RBF: Convert this to not have a full path
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
 		font_size = int( 18 * adjust_factor)
@@ -945,8 +952,9 @@ def main():
 	
 	snd = '/Users/Johnny/coLab/Group/Johnny/Page/TestPage2/coLab_local/4-channel.aiff'
 	snd = '/Users/Johnny/dev/CoLab/Group/Johnny/Page/Hello_AHH/coLab_local/Hello_AHH!.aif'
-	snd = '/Users/Johnny/dev/CoLab/Group/Johnny/Page/Boyars/coLab_local/Boyars.aif'
+	#snd = '/Users/Johnny/dev/CoLab/Group/Johnny/Page/Boyars/coLab_local/Boyars.aif'
 	pdir = 'Group/Johnny/Page/Boyars'
+	pdir = 'Group/Johnny/Page/Hello_AHH'
 	#pic = '/Users/Johnny/coLab/Group/Johnny/Page/AudioTest/coLab_local/TestSoundGraphic.png'
 	#pic = '/Users/Johnny/dev/coLab/Group/Catharsis/Page/FullStormMIDI/coLab_local/soundgraphic.png'
 	
@@ -983,8 +991,8 @@ def main():
 	
 	
 	media_size = 'Large'
-	media_size = '4k-Ultra-HD'
-	media_size = 'HiDef'
+	#media_size = '4k-Ultra-HD'
+	#media_size = 'HiDef'
 	#media_size = 'Small'
 	
 	prog_bar = cltkutils.Progress_bar(f1, 'Image Generation', max=100)

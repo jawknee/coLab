@@ -37,7 +37,7 @@ def make_movie(page, prog_bar=None):
     #
     # Just some variable assignments used by the script.
     content = 'pagedir="' + page.home + '"\n' 
-    content += 'soundfile="' + page.soundfile + '"\n' 
+    content += 'soundfile="' + page.localize_soundfile() + '"\n' 
     content += 'fps="' + str(page.fps) + '"\n'
     content += 'media_size="' + page.media_size + '"\n'
     

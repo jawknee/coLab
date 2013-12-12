@@ -23,9 +23,9 @@ then
 fi
 name=$(basename $pagedir)
 
-if [ -z "$soundfile" -o ! -f "$pagedir/$soundfile" ]
+if [ -z "$soundfile" -o ! -f "$soundfile" ]
 then
-	echo "$0: no sound file: $pagedir/$soundfile"
+	echo "$0: no sound file: $soundfile"
 	exit 1
 fi
 
@@ -62,12 +62,12 @@ unset ogg_opts
 # redirect the stderr to stdout - changing carriage returns to new lines so we can read it...
 cat <<-EOF
 Runstring: $ffmpeg
-input:	$input_opts "$pagedir/$soundfile"
+input:	$input_opts "$soundfile"
 ogg:	$ogg_opts
 webm:	$webm_opts
 mp4:	$mp4_opts
 EOF
-$ffmpeg $input_opts "$pagedir/$soundfile" $mp4_opts $webm_opts 2>&1 | tr -u '\r' '\n'
+$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts 2>&1 | tr -u '\r' '\n'
 rc=$?
 echo "$ffmpeg has completed with return code: $rc"
 exit $rc

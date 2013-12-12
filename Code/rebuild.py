@@ -25,7 +25,7 @@ import clclasses
 import clAudio
 import imagemaker
 import clSchedule
-from htmlgen import *
+import htmlgen
 # 
 # put these somewhere....
 num_recent_entries = 5
@@ -48,7 +48,9 @@ class Render_engine():
 		Process the waiting pages.
 		"""
 		self.master = master
-		self.busy = False
+		self.busy = False				# are we rendering now?
+		self.group_rebuild_list = []		# which groups need a rebuild?
+		
 		try:
 			self.conf=clutils.get_config()
 			print "conf shows:", self.conf.coLab_home
@@ -105,11 +107,12 @@ class Render_engine():
 			self.pending_renders = f.read().split('\n')	# split on new lines - last one - remove
 		except:
 			print "Oops?"
-			self.pending_renders = ['']
+			self.pending_renders = []
 		
 		
 		print "Render file list:", self.pending_renders
-		self.pending_renders.pop()
+		if len(self.pending_renders) != 0:
+			self.pending_renders.pop()	# the new line at the end of the last line creates a null entry - loose it.
 		self.refresh()
 
 		# Make sure we stop by once in a while to see how things are going....
@@ -120,16 +123,29 @@ class Render_engine():
 		Called every now and then to see what we're up to...
 		"""
 		print "Entered check."
-		try:
-			next_render = self.pending_renders.pop(0)
-		except:
+		if self.busy:
+			print "still busy..."
+			self.master.after(1000,self.check)	# every second should be sufficient...
+			return
+		
+		print "Length of pending_renders is:", len(self.pending_renders)
+		if len(self.pending_renders) == 0:
 			next_render = None
 			self.active_name.set("(None)")
+			# What we want to do here is first, rebuild all the involved
+			# groups, so the local pages are up to date, then for
+			# each a mirror, a rebuild - to process any comments - then
+			# another rebuild.   This does that - but for a bit of 
+			# simplicity, it does one more rebuild than it needs to...
+			for mirroring in [ False, True, True ]:
+				for group in self.group_rebuild_list:
+					print "rebuilding and uploading for group:", group, mirroring
+					rebuild_and_upload(group, mirror=mirroring )
 			return
-		else:	
-			self.active_name.set('--pending--')
-			
-			
+		else:
+			next_render = self.pending_renders.pop(0)
+
+
 		page = clclasses.Page()
 		# If we got here "offline", i.e., an abandoned render found in the 
 		# file, the let's set the rebuild/changed flags...
@@ -142,18 +158,20 @@ class Render_engine():
 			page.load(next_render)
 		except:
 			print "Something went wrong with the loading of 'next_render'"
+			return
 		
 		# Build the new display text...
 		active_text = page.desc_title + '\n'
 		page.base_size = page.media_size
 		active_text += "--pending---"
 		self.active_name.set(active_text)
+		self.busy = True
+		self.needs_rebuild = True
 		page_thread=threading.Thread(target=self.render_all, args=(page,))
 		page_thread.start()
 		self.refresh()
-		self.busy = True
 
-		#self.master.after(2000,self.check)
+		self.master.after(1000,self.check)	# just a sec...
 		
 	def refresh(self):
 		"""
@@ -208,9 +226,8 @@ class Render_engine():
 		# we're going to generate the media by manipulating
 		# page.media_size - but it's a good idea to set it
 		# back when we're done...
+
 		size_c = config.Sizes()
-		
-			
 		try:
 			os.chdir(page.home)
 		except OSError, info:
@@ -233,16 +250,12 @@ class Render_engine():
 					print "Removing media,", file, ", matching:", prefix
 					os.system('rm -fv ' + file)
 
-			
-			
-		toplist = []	# kludge alert - keep a list of the top list and shoot them later
-		
 		#
 		# Start at the current size and work our way down through the
 		# sizes to generate all the media sizes we want.
 		while True:
 			# Build a new bit of text based on the size change, marking the one
-			# we're doing now with an arror...
+			# we're doing now with an arrow...
 			active_text = page.desc_title + '\n'
 			size = page.base_size
 			while True:
@@ -255,36 +268,33 @@ class Render_engine():
 				if size == config.SMALLEST:
 					break
 			self.active_name.set(active_text)	# post the name....
-			# reeder this resolution...
+
+			# re-render this resolution...
 			print "Render-all, rendering:", page.media_size
 			top_bar = render_page(page)
-			toplist.append(top_bar)
 			print "Back from the render_page"
-			#self.top.grab_set()
-			top_bar.destroy()
-			page.media_size = size_c.next_size(page.media_size)
+			top_bar.destroy()		# seems to work better if we destroy the top bar here...
+
+			page.media_size = size_c.next_size(page.media_size)		# next?
 			if page.media_size == config.SMALLEST:
 				break
 		
 		print "Done - scheduling check in 100 ms"
 		page.media_size = page.base_size
-		self.busy = False
-		self.master.after(100, self.check)
+		#self.master.after(100, self.check)
 		# Need something here to keep things going...   
 		#self.top.configure(takefocus=True)
 		
 		print "Scheduling browser..."
 		local_url = "http://localhost/" + page.root
 		clSchedule.browse_url(local_url)
+		
+		self.group_rebuild_list.append(page.group)
+		print "Group rebuild list is:", self.group_rebuild_list
+		self.busy = False
 		#browse_thread = threading.Thread(clSchedule.browse_url, args=(local_url))
 		#browse_thread.start()
 		print "Done."
-		"""
-		for top_bar in toplist:
-			print "Killing old Top Bar"
-			top_bar.destroy()
-		#"""
-			
 		
 def render_page(page, media_size=None, max_samples_per_pixel=0):
 	"""
@@ -303,7 +313,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 		page.media_size = media_size
 		
 	print "render_page - size is:", media_size
-	sound_dest = os.path.join(page.home, page.soundfile)
+	sound_dest = os.path.join(page.home, 'coLab_local', page.localize_soundfile())
 	img_dest = os.path.join(page.home, page.soundgraphic)
 	#make_sound_image(page, sound_dest, img_dest, size, max_samples_per_pixel)
 	
@@ -397,7 +407,51 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	#page.top.update_idletasks()
 	#progressTop.destroy()
 	progressTop.update_idletasks()
-	return(progressTop)	# so we can get rid of it later...
+	return(progressTop)
+
+def rebuild_and_upload(group, mirror=True, opt="nope"):
+	"""
+	Simple interface to do the uploading.   We want the pages rebuilt
+	first, but we also need to rebuild after a mirror, in case any comments
+	were added since we last did this.  So: the plan is: 
+	rebuild, upload, rebuild, upload
+	"""
+	#
+	# Just do it twice...
+	print "Full rebuild and upload...   ", time, "time."
+	# For now...
+	# Used to pass a group name - still do from the "Refresh" button.
+	# A bit kludgy, but if the passed item does not have a coLab_home, 
+	# let's assume we have a group "name" and try to load it.
+	try:
+		group.coLab_home
+	except:
+		gname=group
+		print "WARNING: obsolescent call: group passed as a name:", gname
+		group = clclasses.Group(gname)
+		group.load()
+		
+	rebuild(group)
+	return
+	if mirror:
+		do_mirror(group.coLab_home)
+
+def do_mirror(coLab_home=None):
+		# Now that we have the paths, let's call the interarchy applescript
+		# to update the mirror
+		if coLab_home is None:
+			# I'll configure this when I get a chance....
+			sys.exit(1)	 # What were you thinking???
+
+		scriptpath = os.path.join(coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
+		osascript = "/usr/bin/osascript"
+		print "Mirror:", osascript, scriptpath
+		try:
+			subprocess.call([osascript, scriptpath])
+		except:
+			print "Mirror error: cannot continue."
+			sys.exit(1)
+
 
 def rebuild(g, mirror=False, opt="nope"):
 	"""
@@ -409,31 +463,17 @@ def rebuild(g, mirror=False, opt="nope"):
 	it's all loaded up).
 	"""
 	
-	# For now...
-	# Used to pass a group name - still do from the "Refresh" button.
-	# A bit kludgy, but if the passed item does not have a coLab_home, 
-	# let's assume we have a grup "name" and try to load it.
+	# As above, this is hopefully a temporary catch for older calls,
+	# that still call rebuild directly
 	try:
 		g.coLab_home
 	except:
 		gname=g 
+		print "WARNING: obsolecent call: group passed as a name:", gname
 		g = clclasses.Group(gname)
 		g.load()
 		
 	print "Rebuilding group object:", g.title
-	# Now that we have the paths, let's call the interarchy applescript
-	# to update the mirror
-	mirror = False
-	scriptpath = os.path.join(g.coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
-	osascript = "/usr/bin/osascript"
-	if mirror:
-		print "Mirror:", osascript, scriptpath
-		try:
-			subprocess.call([osascript, scriptpath])
-		except:
-			print "Mirror error: cannot continue."
-			sys.exit(1)
-		
 	
 	#
 	# At this point, we should have a populated group object, which includes
@@ -464,7 +504,7 @@ def rebuild(g, mirror=False, opt="nope"):
 		newpage = clutils.needs_update(pg.home, file='index.shtml', opt=opt)
 		if newpage:
 			# Update this page
-			pagegen(g, pg)
+			htmlgen.pagegen(g, pg)
 			
 			songdatafile=os.path.join(thissong.home, 'data')	# path to the song's data file
 			clutils.touch(songdatafile)		# touch the data file so we rebuild this song
@@ -594,23 +634,18 @@ def rebuild(g, mirror=False, opt="nope"):
 	#
 	# Generate the links from the list..
 	g.pagelist.sort(key=clclasses.createkey)
-	linkgen(g)	# build the included links for the each page
+	htmlgen.linkgen(g)	# build the included links for the each page
 	for song in g.songlist:
 		print "precheck:", g.name, song.name
 
-	songgen(g)	# build the song pages
+	htmlgen.songgen(g)	# build the song pages
 
-	homegen(g)	# The pages associated with the banner links...
-	newgen(g)
-	navgen(g)
-	archivegen(g)
-	helpgen(g)
+	htmlgen.homegen(g)	# The pages associated with the banner links...
+	htmlgen.newgen(g)
+	htmlgen.navgen(g)
+	htmlgen.archivegen(g)
+	htmlgen.helpgen(g)
 	print "Rebuild done."
-	
-	if mirror:
-		subprocess.call([osascript, scriptpath])
-		print "Upload/Mirror done."
-	#sys.exit(0)
 
 
 def main():

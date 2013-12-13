@@ -472,9 +472,24 @@ class Page:
 		we store the full path to the original so we
 		can later find or highlight it
 		"""
+		return self.localize(self.soundfile)
+
+	def localize_screenshot(self):
+		"""
+		Return the local path to the screenshot...
+		"""
+		return self.localize(self.screenshot)
+
+		
+	def localize(self, fullpath):
+		"""
+		Take a local value, and return the page local
+		path to it...
+		"""
 		# split it...
-		filename = os.path.split(self.soundfile)[1]
+		filename = os.path.split(fullpath)[1]
 		return os.path.join(self.home, 'coLab_local', filename)
+		
 class Song:
 	"""
 	A Song object contains the data associated with a generate song page

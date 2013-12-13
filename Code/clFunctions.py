@@ -41,20 +41,21 @@ class Data_row:
 	Basic layout is a row that has the name, a status cell,
 	and some kind of a gadget that presents/gathers data.
 	"""
-	def __init__(self, parent, text, member):
+	def __init__(self, editor, text, member):
 		"""
 		Set up the default values common to all rows...
 		"""
-		self.parent = parent
+		self.editor = editor
 		self.text = text
 		self.member = member
-		# Basic row / cell management
-		self.row = parent.row		# parent keeps track of row / column
-		parent.row += 1				# move the  parent row down one...
-		self.column = parent.column
+		# install the current value...
+		self.value = eval("self.editor.obj." + self.member)	# convert the variable name to its value# Basic row / cell management
+		self.row = editor.row		# editor keeps track of row / column
+		editor.row += 1				# move the  editor row down one...
+		self.column = editor.column
 		# initialization come to some / most / all
 		self.label = None
-		self.new = parent.new		# when true, items are ghosted / replaced on first key  
+		self.new = editor.new		# when true, items are ghosted / replaced on first key  
 		self.ok = not self.new		# new items are assumed to be not good yet, and vice-versa
 		
 		self.content = ""
@@ -94,8 +95,8 @@ class Entry_row(Data_row):
 	labels).   Also handles validation based on the values put into the 
 	class. Also marks the status and matching fields.
 	"""
-	def __init__(self, parent, text, member, width=15):
-		Data_row.__init__(self, parent, text, member)
+	def __init__(self, editor, text, member, width=15):
+		Data_row.__init__(self, editor, text, member)
 		
 		self.width = width
 		
@@ -106,7 +107,7 @@ class Entry_row(Data_row):
 		self.match = None	
 		self.match_text = ''		# used to recall the last bad match (equiv. file name, e.g.)	
 		self.match_color = '#666'
-		#self.new = parent.new		# when true, items are ghosted / replaced on first key  
+		#self.new = editor.new		# when true, items are ghosted / replaced on first key  
 		self.editable = True		# occasionally we get one (existing file name) that we don't want to edit...
 		
 		
@@ -123,13 +124,13 @@ class Entry_row(Data_row):
 		"""
 		if self.label is None:
 			# write the base label...
-			self.label = ttk.Label(self.parent.edit_frame, text=self.text+":", justify=tk.RIGHT)
+			self.label = ttk.Label(self.editor.edit_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 			self.nameVar = tk.StringVar()
 			# Now we build a string that is the name of the associated variable.   Then we use eval and exec to
 			# deal with it.
 			print "self.member", self.member
-			self.value = eval("self.parent.obj." + self.member)	# convert the variable name to its value
+			self.value = eval("self.editor.obj." + self.member)	# convert the variable name to its value
 			print "value", self.value
 			#print "ept: new?:", self.new
 			print "post:  my new is:", self.member, self.new
@@ -137,7 +138,7 @@ class Entry_row(Data_row):
 			# set up a small label between the title and the value to 
 			# display the status of the value...
 			self.statusVar = tk.StringVar()
-			self.status = ttk.Label(self.parent.edit_frame, textvariable=self.statusVar)
+			self.status = ttk.Label(self.editor.edit_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
 			if self.new:
 				self.set_status(None)
@@ -149,7 +150,7 @@ class Entry_row(Data_row):
 		# if not editable - just display as a label...
 		print "vobj - editable:", self.editable
 		if not self.editable:
-			self.widget = ttk.Label(self.parent.edit_frame, textvariable=self.nameVar, justify=tk.LEFT)
+			self.widget = ttk.Label(self.editor.edit_frame, textvariable=self.nameVar, justify=tk.LEFT)
 			self.widget.grid(row=self.row,column=self.column + 2, columnspan=3, sticky=tk.W)
 			self.nameVar.set(self.value)
 			#self.ok = True		# since we can't change it - it's good
@@ -160,7 +161,7 @@ class Entry_row(Data_row):
 			print "Ev_init: callback is:", self.callback
 			# Build a list: the call back registery and the subcodes, 
 			# then turn the list into a tuple to pass in...
-			l = [ self.parent.edit_frame.register(self.callback) ]		# first part is the registration of the call back.
+			l = [ self.editor.edit_frame.register(self.callback) ]		# first part is the registration of the call back.
 			#widget.destroy()
 			for sc in self.subcodes:
 				l.append(sc)
@@ -171,13 +172,13 @@ class Entry_row(Data_row):
 			if self.new:
 				fg = '#AAA'	# light gray
 			
-			self.widget = ttk.Entry(self.parent.edit_frame, textvariable=self.nameVar, width=self.width, foreground=fg,background='#e9e9e9', validate=self.validate, validatecommand=self.validatecommand )
+			self.widget = ttk.Entry(self.editor.edit_frame, textvariable=self.nameVar, width=self.width, foreground=fg,background='#e9e9e9', validate=self.validate, validatecommand=self.validatecommand )
 			print "v-obj widget created:", self.widget
 			self.widget.grid(row=self.row, column=self.column + 2, sticky=tk.W)
 			self.nameVar.set(self.value)
 						
 			self.matchVar = tk.StringVar()
-			self.match = tk.Label(self.parent.edit_frame, textvariable=self.matchVar, justify=tk.LEFT)
+			self.match = tk.Label(self.editor.edit_frame, textvariable=self.matchVar, justify=tk.LEFT)
 			self.match.grid(row=self.row, column=self.column + 3, rowspan=6, columnspan=2, sticky=tk.NW)		
 	
 
@@ -218,7 +219,7 @@ class Entry_row(Data_row):
 				self.widget.bell()
 				return False
 			
-		self.parent.changed = True	
+		self.editor.changed = True	
 		#--are we new?   If so, blank what's there, update the color, and replace with any addition
 		print "self.new:", self.new
 		self.match_text = ''
@@ -288,7 +289,8 @@ class Entry_row(Data_row):
 		"""
 		What it says: return the value of the Entry widget
 		"""
-		return(self.nameVar.get(), self.ok)
+		self.value = self.nameVar.get()
+		return (self.value, self.ok)
 	
 	def set(self, value):
 		self.value = value
@@ -306,11 +308,11 @@ class Text_row(Data_row):
 		"""
 		
 		# write the base label...
-		self.label = tk.Label(self.parent.edit_frame, text=self.text+":", justify=tk.RIGHT)
+		self.label = tk.Label(self.editor.edit_frame, text=self.text+":", justify=tk.RIGHT)
 		self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 		
 		# need a "sub-frame" to hold the desc. and scroll bar.
-		self.subframe = tk.LabelFrame(self.parent.edit_frame, relief=tk.GROOVE)
+		self.subframe = tk.LabelFrame(self.editor.edit_frame, relief=tk.GROOVE)
 		self.subframe.grid(row=self.row, column=self.column+2, columnspan=3, sticky=tk.W)
 		
 		self.widget = tk.Text(self.subframe, height=15, width=80, padx=5, pady=5, relief=tk.GROOVE, wrap=tk.WORD,bg='#ffffff', undo=True)
@@ -333,8 +335,8 @@ class Menu_row(Data_row):
 	Just put up an OptionMenu from the provided list..)
 	"""
 	
-	def __init__(self, parent, text, member):
-		Data_row.__init__(self, parent, text, member)
+	def __init__(self, editor, text, member):
+		Data_row.__init__(self, editor, text, member)
 		
 		self.default = None
 		self.titles = ('no-titles',)
@@ -348,7 +350,7 @@ class Menu_row(Data_row):
 		
 		if self.label is None:
 		# write the base label...
-			self.label = tk.Label(self.parent.edit_frame, text=self.text+":", justify=tk.RIGHT)
+			self.label = tk.Label(self.editor.edit_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 		else:
 			self.widget.destroy()
@@ -364,12 +366,12 @@ class Menu_row(Data_row):
 
 		self.gOpt.set(self.default)
 
-		self.widget = tk.OptionMenu(self.parent.edit_frame, self.gOpt, *self.titles, command=self.handler)
+		self.widget = tk.OptionMenu(self.editor.edit_frame, self.gOpt, *self.titles, command=self.handler)
 
 		self.widget.grid(column=self.column+2, row=self.row,  columnspan=3,sticky=tk.W)
 		
 		self.statusVar = tk.StringVar()
-		self.status = tk.Label(self.parent.edit_frame, textvariable=self.statusVar)
+		self.status = tk.Label(self.editor.edit_frame, textvariable=self.statusVar)
 		self.status.grid(row=self.row, column=self.column + 1)
 		if self.new:
 			self.set_status(None)
@@ -378,27 +380,28 @@ class Menu_row(Data_row):
 	
 		
 	def handle_menu(self, value):
-		#new_name = self.gOpt.get()		# not needed here, name is what we want.
+		#value = self.gOpt.get()	 # should be equivalent
 		
-		# if the menu item starts with a "-", it is an unacceptable value
-		self.set_status( value[0] != '-')
-		self.parent.changed = True	
-		
-		#time.sleep(4)
-		self.parent.read()
-	
-	def return_value(self):
-		"""
-		Return the OptionMenu value...
-		"""
-		value = self.gOpt.get()
-	
 		# if there's a dictionary - do a lookup...
 		try:
 			value = self.dict[value]
 		except:
 			pass
-		return(value, self.ok)
+		
+		self.value = value
+		# if the menu item starts with a "-", it is an unacceptable value
+		self.set_status( value[0] != '-')
+		self.editor.changed = True	
+		
+		#time.sleep(4)
+		#self.editor.read()
+	
+	def return_value(self):
+		"""
+		Return the OptionMenu value...
+		"""
+
+		return(self.value, self.ok)
 	
 	def set(self, value):
 		self.value = value
@@ -406,16 +409,17 @@ class Menu_row(Data_row):
 		self.post()
 
 class Resolution_menu_row(Menu_row):
-	def __init__(self, parent, text, member):
-		Menu_row.__init__(self, parent, text, member)
+	def __init__(self, editor, text, member):
+		Menu_row.__init__(self, editor, text, member)
 
 		l = []		# list of resolutions and their actual size
 		d = {}		# dictionary of strings to media_size names...
-		for resolution in parent.size_class.list():
-			string = resolution + " " + str(parent.size_class.sizeof(resolution))
+		for resolution in editor.size_class.list():
+			(width, height) = editor.size_class.sizeof(resolution)
+			string = resolution + ' (' + str(width) + 'x' + str(height) + ')' 
 			l.append(string)
 			d[string] = resolution
-			page = parent.obj
+			page = editor.obj
 			if resolution == page.media_size:
 				self.default = string
 			
@@ -424,14 +428,24 @@ class Resolution_menu_row(Menu_row):
 		#"""
 	def handle_menu(self, value):
 		"""
-		Reset the parent's size vars...
+		Reset the editor's size vars...
 		"""
-		prev_size = self.parent.size 
-		self.parent.size = self.parent.size_class.sizeof(self.dict[value])	
-		if prev_size != self.parent.size:
+		Menu_row.handle_menu(self, value)
+		
+		page = self.editor.obj
+		prev_size = page.media_size 
+		page.media_size = self.value
+		if prev_size != page.media_size:
 			print "Size has changed..."
-			self.parent.obj.needs_rebuild = True
-
+			page.needs_rebuild = True
+		
+	
+	def return_value(self):
+		"""
+		Menu return - but force ok to true - we're always right
+		"""
+		self.set_status(True)
+		Menu_row.return_value(self)
 	
 class Song_menu_row(Menu_row):
 	"""
@@ -441,14 +455,14 @@ class Song_menu_row(Menu_row):
 		
 		# if the menu item starts with a "-", it is an unacceptable value
 		self.set_status(ok=value[0] != '-')
-		self.parent.changed = True	
+		self.editor.changed = True	
 		
 		# Special case for a song:  reload the part list..
-		self.parent.obj.song = value
+		self.editor.obj.song = value
 		try:
-			group = self.parent.obj.group_obj
+			group = self.editor.obj.group_obj
 		except Exception as e:
-			print "------- No such group found as part of", self.parent.obj.value
+			print "------- No such group found as part of", self.editor.obj.value
 			print "---- fix  - for now, returning"
 			return
 		
@@ -457,9 +471,9 @@ class Song_menu_row(Menu_row):
 			print "No such song object found for:", value
 			
 		# build a part list...
-		self.parent.song_obj = song_obj
-		self.parent.obj.part = 'All'			# if a new song, use default part for now...
-		self.parent.part_obj.titles = self.parent.build_part_list()
+		self.editor.song_obj = song_obj
+		self.editor.obj.part = 'All'			# if a new song, use default part for now...
+		self.editor.part_obj.titles = self.editor.build_part_list()
 		
 		# Special case a song with only the default part as "OK"
 		print "testing the partlist..."
@@ -468,9 +482,9 @@ class Song_menu_row(Menu_row):
 			self.set_status(ok=True)
 			#time.sleep(2)
 		# set the new dictiony in place...
-		self.parent.part_obj.dict = self.parent.part_lookup
-		self.parent.part_obj.post()
-		self.parent.read()
+		self.editor.part_obj.dict = self.editor.part_lookup
+		self.editor.part_obj.post()
+		self.editor.read()
 		
 # a dictionary of menu options, short name mapped to longer name
 # longer name can contain replaceble string, e.g.  !type! 
@@ -485,8 +499,8 @@ class Graphic_row(Data_row):
 	Post a row with a title and a graphic...
 	and something to let us deal with it ("Change" button?)
 	"""
-	def __init__(self, parent, text, member, graphic_path):
-		Data_row.__init__(self, parent, text, member)
+	def __init__(self, editor, text, member, graphic_path):
+		Data_row.__init__(self, editor, text, member)
  
 		self.graphic_path = graphic_path
 	       
@@ -499,14 +513,14 @@ class Graphic_row(Data_row):
 		print "Graphic post"
 		if self.label is None:
 			# write the base label...
-			self.frame = self.parent.edit_frame
+			self.frame = self.editor.edit_frame
 			self.label = tk.Label(self.frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 
 			self.gOpt = tk.StringVar()
 		       
 			self.statusVar = tk.StringVar()
-			self.status = tk.Label(self.parent.edit_frame, textvariable=self.statusVar)
+			self.status = tk.Label(self.editor.edit_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
 		       
 	
@@ -538,8 +552,6 @@ class Graphic_row(Data_row):
 		self.post()
        
 
-			       
-		       
 	def return_value(self):
 		return(None, self.ok)
       
@@ -551,15 +563,15 @@ class Graphic_menu_row(Menu_row):
 	We get slightly tricky with the menu row, because we don't want
 	the label and status.
 	"""
-	def __init__(self, parent, text, member, graphic_path=None):
-		Menu_row.__init__(self, parent, '', member)
+	def __init__(self, editor, text, member, graphic_path=None):
+		Menu_row.__init__(self, editor, '', member)
 
 		self.graphic_path = graphic_path	# may be set by the derived class post method
-		self.parent.row += 1		# this one takes up 2 rows, one more than most
-		self.row = self.parent.row	# the menu part is the second row
+		self.editor.row += 1		# this one takes up 2 rows, one more than most
+		self.row = self.editor.row	# the menu part is the second row
 
 		
-		self.graphic_row = Graphic_row(self.parent, text, member, graphic_path)	# create second row for the menu
+		self.graphic_row = Graphic_row(self.editor, text, member, graphic_path)	# create second row for the menu
 		self.graphic_row.row = self.row - 1		# graphic appears in the row above.
 
 	def post(self):
@@ -613,7 +625,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		self.type = 'Sound'	# I know, init - but here: it's one line
 		# is there such a file?
 		#self.widget = cltkutils.graphic_element(self.frame)
-		page = self.parent.obj
+		page = self.editor.obj
 		self.graphic_path = os.path.join(page.home, page.soundthumbnail)
 		if not os.path.isfile(self.graphic_path):		# we need a backup file...
 			self.graphic_path = os.path.join(page.coLab_home, 'Resources', 'coLab-NoPageSound_tn.png')
@@ -641,11 +653,11 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 	def load(self):
 	
 		print "this is the sound file loader"
-		page = self.parent.obj
+		page = self.editor.obj
 		page.changed = True
 		page.needs_rebuild = True	
 		self.initialPath = "/Volumes/iMac 2TB/Music/"
-		self.filetypes = [ ('AIFF', '*.aiff')]
+		self.filetypes = [ ('AIFF', '*.aif'), ('AIFF', '*.aiff')]
 		# We need to keep the latest file path...
 		self.initialfile = page.soundfile
 		self.copy_soundfile = True
@@ -653,11 +665,11 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 
 	def reuse(self):
 		print "this is the sound file reloader"
-		page = self.parent.obj
+		page = self.editor.obj
 		page.changed = True
 		page.needs_rebuild = True	
 		self.initialPath = os.path.join(page.home, "coLab_local")
-		self.filetypes = [ ('AIFF', '*.aif')]
+		self.filetypes = [ ('AIFF', '*.aif'), ('AIFF', '*.aiff') ]
 		self.initialfile = os.path.join(self.initialPath, page.soundfile )
 		self.initialfile = page.localize_soundfile()
 		print"reuse: initial file:", self.initialfile
@@ -665,8 +677,8 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		self.file_load()
 
 	def file_load(self):
-		page = self.parent.obj
-		print "----File load - intial file:", self.initialfile
+		page = self.editor.obj
+		print "----File load - initial file:", self.initialfile
 		file_path = tkFileDialog.askopenfilename(initialdir=self.initialPath, defaultextension='.aif', title="Open AIFF sound file...", filetypes=self.filetypes, initialfile=self.initialfile)
 		if not file_path:
 			return
@@ -674,7 +686,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		self.ok = True
 		self.set_status( True)
 		page.soundfile = file_path
-		self.parent.set_member('soundfile', file_path)
+		self.editor.set_member('soundfile', file_path)
 
 		filename = os.path.split(file_path)[1]
 		
@@ -684,7 +696,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		sound_dest = os.path.join(page.home, destpath)
 		if self.copy_soundfile:
 			popup = cltkutils.Popup("Sound file:" + filename, "Copying...")
-			page = self.parent.obj
+			page = self.editor.obj
 							
 			try:
 				shutil.copy(file_path, sound_dest)
@@ -695,16 +707,16 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 				popup.destroy()
 			
 		page.duration = clAudio.get_audio_len(sound_dest)
-		self.parent.set_member('duration', str(page.duration))
-		#self.parent.duration_obj.nameVar.set(self.parent.obj.duration)
+		self.editor.set_member('duration', str(page.duration))
+		#self.editor.duration_obj.nameVar.set(self.editor.obj.duration)
 		
 		#page_thread=threading.Thread(target=rebuild.render_page, args=(page, media_size='Tiny', max_samples_per_pixel=100))
 		self.size_save = page.media_size
 		page.media_size = 'Tiny'	# for now - probably will define a "Preview" size
 		
 		"""  KLUDGE ALERT!!--------------------------------------------------------------"""
-		#self.parent.res_obj.ok = True
-		#self.parent.res_obj.set_status(True)
+		#self.editor.res_obj.ok = True
+		#self.editor.res_obj.set_status(True)
 		
 		# Set up a few vars to only generate the sound graphic..
 		use_save = page.use_soundgraphic
@@ -722,24 +734,28 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		page.changed = True
 		
 		if page.use_soundgraphic:		# note -this is probably duplicated -check that out    RBF
-			self.parent.set_member('screenshot', page.soundgraphic)
+			self.editor.set_member('screenshot', page.soundgraphic)
 			imagemaker.make_sub_images(page)
 			self.graphic_path =  os.path.join(page.home, page.soundthumbnail)
-			self.parent.post_member('screenshot')
+			self.editor.post_member('screenshot')
 		
 		self.post()
 		page.screenshot = page.soundgraphic     # probably not needed.
 		#page.graphic_row.post()
 
 	def return_value(self):
-		return(self.parent.obj.soundfile, self.ok)	# I know, a bit redundant...	
+		return(self.editor.obj.soundfile, self.ok)	# I know, a bit redundant...	
 		
 class Graphic_menu_row_screenshot(Graphic_menu_row):
+	"""
+	Change the graphic - either load a new image, 
+	or use the generated image from the sound.
+	"""
 	def post(self):
 		self.type = 'Graphic'
 		# is there such a file?
 		#self.widget = cltkutils.graphic_element(self.frame)
-		page = self.parent.obj
+		page = self.editor.obj
 		self.graphic_path = os.path.join(page.home, page.thumbnail)
 		if not os.path.isfile(self.graphic_path):		# we need a backup file...
 			self.graphic_path = os.path.join(page.coLab_home, 'Resources', 'coLab-NoPageImage_tn.png')
@@ -748,6 +764,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.default = "Change Graphic"
 		
 		Graphic_menu_row.post(self)
+		
 	def handle_menu(self, menustring):
 		action = self.dict[menustring]
 		print "Graphic file menu handler", action
@@ -758,7 +775,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		elif action is 'Adjust':
 			self.adjust()
 		elif action is 'UseSound':
-			self.usesound
+			self.usesound()
 		else:
 			print "Time to relax - or panic g", action
 	def load(self):
@@ -767,7 +784,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		"""
 
 		print "this is the screen shot loader..."
-		page = self.parent.obj
+		page = self.editor.obj
 		page.use_soundgraphic = False
 		page.changed = True
 		page.needs_rebuild = True	
@@ -782,13 +799,13 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 
 	def reuse(self):
 		print "this is the screen shot reloader..."
-		page = self.parent.obj
+		page = self.editor.obj
 		page.use_soundgraphic = False
 		page.changed = True
 		page.needs_rebuild = True	
 		self.initialPath = os.path.join(page.home, "coLab_local")
 		self.filetypes = [ ('PNG', '*.png'), ('JPEG', '*.jpg')]
-		self.initialfile="ScreenShot.png"
+		self.initialfile=page.screenshot
 		#self.file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.png', title="Open screen shot...", filetypes=filetypes, initialfile=initialfile)
 
 		print"reuse: initial file:", self.initialfile
@@ -796,8 +813,8 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.file_load()
 
 	def file_load(self):
-		page = self.parent.obj
-		
+		page = self.editor.obj
+		print "----File load - initial file:", self.initialfile
 		file_path = tkFileDialog.askopenfilename(initialdir=self.initialPath, defaultextension='.png', title="Select screen shot...", filetypes=self.filetypes, initialfile=self.initialfile)
 		if not file_path:
 			return
@@ -806,16 +823,20 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.ok = True
 		self.set_status( True)
 		filename = os.path.split(file_path)[1]
-		self.soundfile = filename
+		page.screenshot = file_path
+		self.editor.set_member('screenshot', file_path)
 		
 		destpath = os.path.join('coLab_local', filename)
 		
-		page.screenshot = destpath
-
+		image = Image.open(file_path)		# mostly we need the size....
+		width = image.size[0]	# save the width...
+		w_05 = width * 0.05		# 5% of width - possible starting point
+		w_95 = width - w_05		# 95 % if width - possible ending poin
+		
 		graphic_dest = os.path.join(page.home, destpath)
 		if self.copy_graphicfile:
 			popup = cltkutils.Popup("Sound file:" + filename, "Copying...")
-			page = self.parent.obj
+			page = self.editor.obj
 							
 			try:
 				shutil.copy(file_path, graphic_dest)
@@ -824,51 +845,35 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 				raise Exception
 			finally:
 				popup.destroy()
+				image = Image.open(graphic_dest)
+
+			page.xStart = w_05	# 5% and 95% are decent starting points...
+			page.xEnd = w_95
+		
+		# In any case, the end point should not be more than the width
+		if page.xEnd > width:
+			page.xEnd = w_95
 				
 		#
 		# use "open" to schedule preview - seems to do what we need....
+		prev_popup = cltkutils.Popup("Crop and Annotate", "Please crop to the size you want, add any annotations, the close and quit.")
+		prev_popup.t.geometry("-1-1")
 		try:
 				open = '/usr/bin/open'
 				subprocess.call([open, '-W', '-a', 'Preview.app',  graphic_dest])
 		except Exception as e:
 				print "Ooops - Exception", e, sys.exc_info()[0]
 				sys.exit(1)
+		prev_popup.destroy()
 
+		#if tkMessageBox.askyesno('Select Limits',"Do you need to set the left and right limits?", icon=tkMessageBox.QUESTION):
+
+		self.adjust(graphic_dest)	# Adjust the end poings...
+
+		#self.editor.post_member('screenshot')
+		self.graphic_path = os.path.join(self.editor.obj.home, self.editor.obj.thumbnail)
 		#
 		# Let's create the poster size and thumbnails
-		imagemaker.make_sub_images(page)
-		#self.post()
-		
-		if tkMessageBox.askyesno('Select Limits',"Do you need to set the left and right limits?", icon=tkMessageBox.QUESTION):
-				# Now - post the display sized object to let us enter the xStart, xEnd
-				image_file = os.path.join(page.home, page.graphic)
-				"""
-				#image = Image.open(image_file)
-				#image.show()
-				try:
-						open = '/usr/bin/open'  
-						subprocess.call([open, '-W', '-a', 'Preview.app', image_file])
-				except Exception as e:
-						print "Problem opening the image for limits", e, sys.exc_info()[0]
-						sys.exit(1)
-				#"""
-				graph_edit = clGraphEdit.GraphEdit(page, graphic_dest)
-				graph_edit.post()
-				#page.xStart = graph_edit.start_x
-				#page.xEnd = graph_edit.end_x
-				self.parent.set_member('xStart', graph_edit.start_x)
-				self.parent.set_member('xEnd', graph_edit.end_x)
-				
-				print "xStart, xEnd", self.parent.get_member('xStart'), self.parent.get_member('xEnd')
-				#self.parent.post_member('xStart')
-				#self.parent.post_member('xEnd')
-				self.parent.refresh()
-				
-		#self.parent.post_member('screenshot')
-		self.graphic_path = os.path.join(self.parent.obj.home, self.parent.obj.thumbnail)
-		self.post()
-			   	
-	
 		imagemaker.make_sub_images(page)	
 		page.needs_rebuild = True
 		page.changed = True
@@ -876,109 +881,49 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.post()
 		page.graphic_row.post()
 		
-	
+	def adjust(self, graphic=None):	
+		"""
+		Use the graphic edit class to set the start and end points...
+		"""
+		page = self.editor.obj
+		if graphic is None:
+			graphic = page.localize_screenshot()
+		# Now - post the display sized object to let us enter the xStart, xEnd
+		graph_edit = clGraphEdit.GraphEdit(page, graphic)
+		graph_edit.post()
+		#page.xStart = graph_edit.start_x
+		#page.xEnd = graph_edit.end_x
+		self.editor.set_member('xStart', graph_edit.start_x)
+		self.editor.set_member('xEnd', graph_edit.end_x)
+				
+		print "xStart, xEnd", self.editor.get_member('xStart'), self.editor.get_member('xEnd')
+
+		page.needs_rebuild = True
+		page.changed = True
+		#self.editor.post_member('xStart')
+		#self.editor.post_member('xEnd')
+		self.editor.refresh()
+
 	def usesound(self):
 		"""
 		Use the graphic built from the sound...
 		"""
 		print "Using the sound graphic..."
-		page = self.parent.obj
+		page = self.editor.obj
 		page.use_soundgraphic = True
-		self.parent.set_member('screenshot', page.soundgraphic)
+		#self.editor.set_member('graphic', page.soundgraphic)
 		imagemaker.make_sub_images(page)
-		self.graphic_path =  os.path.join(page.home, page.soundthumbnail)
-		self.parent.post_member('screenshot')
+		#self.graphic_path =  os.path.join(page.home, page.soundthumbnail)
+		#page.graphic = page.soundgraphic		# this *shouldn't be necessary, right?
+		#self.editor.post_member('graphic')
 		self.post()
-		
-	def return_value(self):
-		return(self.parent.obj.screenshot, self.ok)	# I know, a bit redundant...	
-
-'''
-class Graphic_row_soundfile(Graphic_row):
-	"""
-	Derived class - a button handler specific to the soundfile
-	"""
-	def button_handler(self):
-		print "this is the sound file button handler"
-		page = self.parent.obj
-		page.changed = True
-		page.needs_rebuild = True	
-		initialPath = "/Volumes/iMac 2TB/Music/"
-		filetypes = [ ('AIFF', '*.aif')]
-		initialfile = 'Stereo Mics_09.R.aif'
-
-		file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.aif', title="Open AIFF sound file...", filetypes=filetypes, initialfile=initialfile)
-		if not file_path:
-			return
-		
-		
-		self.ok = True
-		self.set_status( True)
-		filename = os.path.split(file_path)[1]
-		popup = cltkutils.Popup("Sound file:" + filename, "Copying...")
-		page = self.parent.obj
-		
-		filepath = os.path.join('coLab_local', filename)
-		
-		page.soundfile = filepath
-		sound_dest = os.path.join(page.home, filepath)
-						
-		try:
-			shutil.copy(file_path, sound_dest)
-		except Exception as e:
-			print "Failure copying", file_path, "to", sound_dest
-			raise Exception
-		finally:
-			popup.destroy()
-		
-		page.duration = clAudio.get_audio_len(sound_dest)
-		self.parent.set_member('duration', str(page.duration))
-		#self.parent.duration_obj.nameVar.set(self.parent.obj.duration)
-		
-		#page_thread=threading.Thread(target=rebuild.render_page, args=(page, media_size='Tiny', max_samples_per_pixel=100))
-		self.size_save = page.media_size
-		page.media_size = 'Tiny'	# for now - probably will define a "Preview" size
-		
-		"""  KLUDGE ALERT!!--------------------------------------------------------------"""
-		#self.parent.res_obj.ok = True
-		#self.parent.res_obj.set_status(True)
-		
-		# Set up a few vars to only generate the sound graphic..
-		use_save = page.use_soundgraphic
-		page.use_soundgraphic = True
-		page.needs_rebuild = False
-		# 
-		#page_thread=threading.Thread(target=self.render_and_post, args=(page, 'Tiny', 100))
-		#page_thread.start()
-		
-		rebuild.render_page(page, media_size='Tiny', max_samples_per_pixel=100)   # render as a preview...
-		page.use_soundgraphic = use_save
+		page.graphic_row.post()
 		page.needs_rebuild = True
-		"""
-		img_dest = os.path.join(self.parent.obj.home, self.parent.obj.soundgraphic)
-		#make_sound_image(self.parent.obj, sound_dest, img_dest)
-		self.graphic_path =  os.path.join(self.parent.obj.home, self.parent.obj.soundthumbnail)
-		max = 100 	# overview -no more than 100 sound frames (samples) per vertical pixel
-		page_thread=threading.Thread(target=make_sound_image, args=(self.parent, sound_dest, img_dest, self.parent.size, max))
-		page_thread.start()
-		#rebuild_page_edit(self)
-		"""
-	def render_and_post(self, page, media_size, max_samples_per_pixel):
-		"""
-		A routine to handle the last bit of the rendering - in the background, 
-		so we can see it (i.e. so we return to the main loop while building)
-		"""
-		#rebuild.render_page(page, 'Tiny', 100)	# probably always... but:
-		rebuild.render_page(page, media_size, max_samples_per_pixel)
-		self.parent.post_member('soundfile')
-		page.media_size = self.size_save 	# restore what was saved before we were called.
-		if page.use_soundgraphic:
-			page.graphic_row.button2_handler()
-			page.graphic_row.post()
+		page.changed = True
+		self.editor.refresh()
 		
 	def return_value(self):
-		return(self.parent.obj.soundfile, self.ok)	# I know, a bit redundant...
-#'''	
+		return(self.editor.obj.screenshot, self.ok)	# I know, a bit redundant...	
 
 class Select_edit():
 	"""
@@ -1060,7 +1005,7 @@ class Edit_screen:
 		self.obj.changed = False
 		self.obj.needs_rebuild = False
 		
-		object.editor = self	# so we can get back to the editor
+		object.parent = self	# so we can get back to the parent
 		
 		
 		
@@ -1145,8 +1090,8 @@ class Edit_screen:
 		print "Reading into obj.."
 		self.ok = True		# until we hear otherwise...
 		self.bad_list = []	# Keep track of the names that are not set well..
-		for item in self.editlist:
-			row_obj = self.editlist[item]
+		for item in self.editlist:		# editlist is a dictionary of member names -> edit row objects
+			row_obj = self.editlist[item]	# convert to a row object
 			print "item.member:", row_obj.member
 			(value, ok) = row_obj.return_value()
 			if not ok:
@@ -1367,8 +1312,16 @@ class Page_edit_screen(Edit_screen):
 		print
 		print "------------------"
 		print "Dump of page", self.obj.name
-		self.read()
-		print "Dump----------------"	
+		# Is there a name member (i.e., is this a new page?)
+		try:
+			(name, status)  = self.get_member('name').return_value()
+			print "Name is: ", name
+			self.obj.name = name
+			self.ok = status
+		except:
+			pass
+		
+		#print "Dump----------------"	
 		#print self.obj.dump()
 		print'---first home'
 		try:

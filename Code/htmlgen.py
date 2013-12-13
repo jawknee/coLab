@@ -233,9 +233,12 @@ def linkgen(group):
 			#
 			# Are these the links we saw last time?
 			print "Links for", q.name, "correct", prevName, p.name, "stored:", q.prevlink, q.nextlink
+			#"""
 			if prevName == q.prevlink and p.name == q.nextlink:
 				print "No link change for",  q.name
 			else:
+			#"""
+			#if True:
 				linkfile = os.path.join(currPath, 'links.html')
 				print "Creating linkfile", linkfile
 				try:

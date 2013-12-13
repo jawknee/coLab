@@ -313,7 +313,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 		page.media_size = media_size
 		
 	print "render_page - size is:", media_size
-	sound_dest = os.path.join(page.home, 'coLab_local', page.localize_soundfile())
+	sound_dest = page.localize_soundfile()
 	img_dest = os.path.join(page.home, page.soundgraphic)
 	#make_sound_image(page, sound_dest, img_dest, size, max_samples_per_pixel)
 	

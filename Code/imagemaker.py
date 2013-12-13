@@ -154,17 +154,20 @@ def make_sub_images(page, size=None):
 	Could/should be generalized for other objects.
 	"""
 	#  Screen shot
-	screenshot = os.path.join(page.home, page.screenshot)
+	if page.use_soundgraphic:
+		baseimage = os.path.join(page.home, page.soundgraphic)
+	else:
+		baseimage = page.localize_screenshot()
 	graphic = os.path.join(page.home, page.graphic)
 	thumbnail = os.path.join(page.home, page.thumbnail)
 	if size is None:
 		size = config.Sizes().sizeof(page.media_size)
 	#
 	try:
-		orig_image = Image.open(screenshot)
+		orig_image = Image.open(baseimage)
 		page.screenshot_width = orig_image.size[0]	# save the width...
 	except:
-		print "Error opening:", screenshot
+		print "Error opening:", base_image
 	else:
 		base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 		tn_image = orig_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
@@ -244,7 +247,12 @@ def make_images(page, prog_bar=None, media_size=None):
 
 	# Set up the base image that will be copied and overlaid as needed...
 	#
-	orig_image = Image.open(page.screenshot)
+	if page.use_soundgraphic:
+		image = page.soundgraphic
+	else:
+		image = page.screenshot
+
+	orig_image = Image.open(image)
 	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 
 	# use the pixels and duration to determine frames per second...

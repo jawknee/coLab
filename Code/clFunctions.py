@@ -122,11 +122,11 @@ class Entry_row(Data_row):
 		right (left justified).  An indicator sits in between (green check, orange ?, red X).
 		If an exclude list is given, it can be used by the validation routine.
 		"""
+		self.value_strVar = tk.StringVar()
 		if self.label is None:
 			# write the base label...
 			self.label = ttk.Label(self.editor.edit_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
-			self.nameVar = tk.StringVar()
 			# Now we build a string that is the name of the associated variable.   Then we use eval and exec to
 			# deal with it.
 			print "self.member", self.member
@@ -150,9 +150,9 @@ class Entry_row(Data_row):
 		# if not editable - just display as a label...
 		print "vobj - editable:", self.editable
 		if not self.editable:
-			self.widget = ttk.Label(self.editor.edit_frame, textvariable=self.nameVar, justify=tk.LEFT)
+			self.widget = ttk.Label(self.editor.edit_frame, textvariable=self.value_strVar, justify=tk.LEFT)
 			self.widget.grid(row=self.row,column=self.column + 2, columnspan=3, sticky=tk.W)
-			self.nameVar.set(self.value)
+			self.value_strVar.set(self.value)
 			#self.ok = True		# since we can't change it - it's good
 			self.set_status(ok=True)
 			print "non-edit _obj:", self.widget
@@ -172,10 +172,10 @@ class Entry_row(Data_row):
 			if self.new:
 				fg = '#AAA'	# light gray
 			
-			self.widget = ttk.Entry(self.editor.edit_frame, textvariable=self.nameVar, width=self.width, foreground=fg,background='#e9e9e9', validate=self.validate, validatecommand=self.validatecommand )
+			self.widget = ttk.Entry(self.editor.edit_frame, textvariable=self.value_strVar, width=self.width, foreground=fg,background='#e9e9e9', validate=self.validate, validatecommand=self.validatecommand )
 			print "v-obj widget created:", self.widget
 			self.widget.grid(row=self.row, column=self.column + 2, sticky=tk.W)
-			self.nameVar.set(self.value)
+			self.value_strVar.set(self.value)
 						
 			self.matchVar = tk.StringVar()
 			self.match = tk.Label(self.editor.edit_frame, textvariable=self.matchVar, justify=tk.LEFT)
@@ -204,6 +204,10 @@ class Entry_row(Data_row):
 					
 			elif how == 'focusout':
 				print "Focus Out: get rid of Match"
+				print "Would be:", would
+				if self.ok:
+					print "Setting ourselves to would."
+					self.set(would)
 				self.matchVar.set('')
 			return True
 		try:
@@ -231,11 +235,13 @@ class Entry_row(Data_row):
 				print "would is what", what
 			else:
 				would = ''
+			#would = ''
 			#self.widget.configure(fg='#000')
-			self.nameVar.set(would)
+			self.value_strVar.set(would)
 			fg='#000'	# black
 			#self.widget.configure(fg=fg)
 			self.widget.configure(foreground=fg, validate=self.validate, validatecommand=self.validatecommand )
+			self.widget.icursor(len(would))
 			self.new = False
 			r_code = False		# Reject the character - we've already set it in, above
 			
@@ -289,7 +295,8 @@ class Entry_row(Data_row):
 		"""
 		What it says: return the value of the Entry widget
 		"""
-		self.value = self.nameVar.get()
+		self.value = self.value_strVar.get()
+		print "Entry return value:", self.text, self.value, self.ok
 		return (self.value, self.ok)
 	
 	def set(self, value):
@@ -425,7 +432,8 @@ class Resolution_menu_row(Menu_row):
 			
 		self.titles = tuple(l)		# Convert to a tuple...
 		self.dict = d
-		#"""
+		self.ok = True				# always good...
+		
 	def handle_menu(self, value):
 		"""
 		Reset the editor's size vars...
@@ -445,20 +453,58 @@ class Resolution_menu_row(Menu_row):
 		Menu return - but force ok to true - we're always right
 		"""
 		self.set_status(True)
-		Menu_row.return_value(self)
+		return(self.value, self.ok)
 	
 class Song_menu_row(Menu_row):
 	"""
-	Derivative class - separate handler...
+	Derivative class - mostly for handling the changing part menu....
 	"""
+	'''   No currently needed - using parent class init
+	def __init__(self, editor, text, member):
+		Menu_row.__init__(self, editor, text, member)
+	'''
+	
+	def post(self):
+		#
+		# We need to derive a list of songs by 
+		# going into the page of the current editor, 
+		# then stepping through its parent Group for
+		# its song list..
+		l = []		# list of song titles (desc_title)
+		d = {}		# dictionary to convert desc_title to name
+		page = self.editor.obj		# in this context it's always a page (may validate that)
+		if self.editor.new:
+			l = ['-select song-']		# build a list of song names...
+		for i in page.group_obj.songlist:
+			l.append(i.desc_title)
+			d[i.desc_title] = i.name
+			if i.name == page.song:
+				self.song_obj = i		# remember this object
+		l.append('-New song-')
+			
+		self.titles = tuple (l)		# Convert to a tuple...
+		
+		try:
+			self.default = self.song_obj.desc_title
+		except:
+			pass
+		
+		self.dict = d
+		Menu_row.post(self)
+		
 	def handle_menu(self, value):
 		
 		# if the menu item starts with a "-", it is an unacceptable value
 		self.set_status(ok=value[0] != '-')
 		self.editor.changed = True	
+		songname = self.dict[value]
+		print "Song menu - handle_menu - songname, value", songname, value
+		
+		#page = self.editor.obj
+		self.editor.set_member('song', songname)
 		
 		# Special case for a song:  reload the part list..
-		self.editor.obj.song = value
+		#self.editor.obj.song = value
 		try:
 			group = self.editor.obj.group_obj
 		except Exception as e:
@@ -469,7 +515,6 @@ class Song_menu_row(Menu_row):
 		song_obj = group.find_song_title(value)
 		if song_obj == None:
 			print "No such song object found for:", value
-			
 		# build a part list...
 		self.editor.song_obj = song_obj
 		self.editor.obj.part = 'All'			# if a new song, use default part for now...
@@ -564,7 +609,7 @@ class Graphic_menu_row(Menu_row):
 	the label and status.
 	"""
 	def __init__(self, editor, text, member, graphic_path=None):
-		Menu_row.__init__(self, editor, '', member)
+		Menu_row.__init__(self, editor, text, member)
 
 		self.graphic_path = graphic_path	# may be set by the derived class post method
 		self.editor.row += 1		# this one takes up 2 rows, one more than most
@@ -846,7 +891,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			finally:
 				popup.destroy()
 				image = Image.open(graphic_dest)
-
+			# RBF:   these page references to xStart and xEnd should probably be local... (set_member sets them correctly)
 			page.xStart = w_05	# 5% and 95% are decent starting points...
 			page.xEnd = w_95
 		
@@ -854,7 +899,9 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		if page.xEnd > width:
 			page.xEnd = w_95
 				
-		#
+		self.editor.set_member('xStart', page.xStart)
+		self.editor.set_member('xEnd', page.xEnd)
+		
 		# use "open" to schedule preview - seems to do what we need....
 		prev_popup = cltkutils.Popup("Crop and Annotate", "Please crop to the size you want, add any annotations, the close and quit.")
 		prev_popup.t.geometry("-1-1")
@@ -941,7 +988,7 @@ class Select_edit():
 		self.tmpBox = tk.Toplevel()
 		#self.tmpBox.transient(self.parent.top)
 		
-		frame = tk.LabelFrame(master=self.tmpBox, relief=tk.GROOVE, text="Select " + self.name + " to Edit (Group: " + self.parent.current_groupname + ')', borderwidth=5)
+		frame = tk.LabelFrame(master=self.tmpBox, relief=tk.GROOVE, text="Select " + self.name + " to Edit (Group: " + self.parent.current_grouptitle + ')', borderwidth=5)
 		frame.lift(aboveThis=None)
 		frame.grid(ipadx=10, ipady=40, padx=15, pady=15)
 		# return the list...
@@ -969,6 +1016,7 @@ class Select_edit():
 		
 	def menu_callback(self, value):
 		print "called back we were", value
+
 		
 class Edit_screen:
 	"""
@@ -991,23 +1039,134 @@ class Edit_screen:
 			return
 		#parent.edit_lock = True
 		#new = False
-		print "PES: new:",new
+		print "Edit Screen: new:",new
 		self.parent = parent
 		self.object_type = 'Unset'
+		self.new = new
+		# let's do some verb determination now...
+		if self.new:
+			self.action = 'create'
+		else:
+			self.action = 'update'
+
 		
 		self.row=0
 		self.column=0
 		self.obj = object		# the object we're editing
-		self.new = new
 		self.ok = not new
 		self.edit_frame = None
 		self.song_obj = None
 		self.obj.changed = False
 		self.obj.needs_rebuild = False
 		
-		object.parent = self	# so we can get back to the parent
-		
-		
+		object.editor = self	# so we can get back to the parent
+
+		return
+	
+	
+	def make_new(self):
+	    """
+	    Create a new page or song - basically just returns a legal dir name
+	    Needs to not match anything in the exclusion list.   Limits characters
+	    to a small set.  
+	    """
+	    """
+	    self.editor = editor
+	    self.object = object
+	    self.sub_dir = sub_dir
+	    #"""
+	
+	    type = os.path.split(self.sub_dir)[1]           # last part of the sub_dir (Page, Song) is the type...
+	
+	    self.editTop = tk.Toplevel()
+	    self.editTop.transient(self.parent.top)
+	    self.editTop.title("coLab: New " + type)
+	    self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=self.new_text, borderwidth=5)
+	    self.edit_frame.lift(aboveThis=None)
+	    self.edit_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+	    self.edit_frame.grab_set()              # we are the only game in town...
+	
+	    # we first open, it it's new, with a simple window for the name...
+	
+	
+	    # get a little tricky - since we don't know the name yet - set a temp var in the 
+	    # object:  sub_dir so that we can pass this, plus the final name, to set_paths...
+	    self.obj.sub_dir = self.sub_dir
+	    clclasses.set_paths(self.obj, self.obj.sub_dir)
+	    #
+	    # Just a simple "one-row" page - the "name"
+	    row = Entry_row(self, "Name", "name", width=20)
+	    self.name_row = row
+	    # build the list of excluded names: the existing page list of the parent group...
+	    print "PES: obj, group", self.obj.name, self.obj.group_obj.name
+	
+	    row.exclude_list = self.exclude_list
+	    row.exclude_chars=' "/:'        # characters we don't want in file names...
+	    row.ignore_case = True
+	    row.new = self.new                              # as passed in
+	    row.editable = self.new         # don't edit a file name that's already been created...
+	    row.post()
+	    row.widget.focus_set()
+	    # cheat a little through u up quick descriptive label
+	    # later...  columnspan 2
+	
+	    self.row = 8            # push these buttons down out of the way...
+	    self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save_new).grid(column=3, row=self.row)  # add  command=
+	    self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
+	
+	    # stop and wait for the above window to return...
+	    self.editTop.wait_window(self.edit_frame)
+                
+
+	def save_new(self):
+		"""
+		Simplified save - just receives the page/song name, creates the 
+		directory, corrects the previously partial paths, and returns
+		to allow the rest of the edit to begin...
+		"""
+		row_obj = self.name_row		# recall the one row...
+
+		(value, ok) = row_obj.return_value()
+		if not ok:
+			self.quit_new()
+			
+		self.ok = ok
+		self.obj.name = value
+		print
+		print "------------------"
+		print "Creation of song/page", self.obj.name
+	
+		print "Dump----------------"	
+		#print self.obj.dump()
+		print'---first home'
+		# Add the new name to the so far partial paths...
+		try:
+			sub_dir = os.path.join(self.obj.sub_dir,  self.obj.name)
+			home_dir = os.path.join(self.obj.coLab_home, sub_dir)
+		except Exception as e:
+			print "Cannot build new page sub_dir", e, sys.exc_info()[0]
+			sys.exit(1)
+	
+		clclasses.set_paths(self.obj, sub_dir)		# Paths are now correct...
+		print "Pagehome:", self.obj.home
+		print "Pageroot:", self.obj.root
+
+	
+		# need to add this bit to the group's lists
+		self.obj.group_obj.songlist.append(self.obj)		# add the page name
+		self.obj.group_obj.songdict[self.obj.name] = self.obj	# name -> page obj
+		self.obj.create()				# build the page dir structure, base data page.
+		self.editTop.destroy()
+		#self.new = False
+		return							
+	
+	def quit_new(self):
+		"""
+		Handle the quit button from creating a new entity...
+		"""
+		self.editTop.destroy()
+		self.ok = False
+		return				
 		
 	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing no...
 		
@@ -1015,59 +1174,12 @@ class Edit_screen:
 		if self.edit_frame is not None:
 			print "---------------Destroy All Page Frames...---------"
 			self.edit_frame.destroy()
-	
+
 		# Set up a dictionary listing the row objects, etc. that have the 
 		# info we need.  By indexing by the "member" name - we can find the mas 
 		# needed - or step through the whole list.
 		self.editlist = dict()		
-		if self.new:
-			self.editTop = tk.Toplevel()
-			self.editTop.transient(self.parent.top)
-			self.editTop.title("coLab Edit")
-			self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=self.new_text, borderwidth=5)
-			self.edit_frame.lift(aboveThis=None)
-			self.edit_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 			
-			# we first open, it it's new, with a simple window for the name...
-			
-			
-			# get a little tricky - since we don't know the name yet - set a temp var in the 
-			# object:  sub_dir so that we can pass this, plus the final name, to set_paths...
-			self.obj.sub_dir = self.sub_dir
-			clclasses.set_paths(self.obj, self.obj.sub_dir)
-			#================
-			# Build page editor
-			#================
-			#
-			# Build a list of basically name/value pairs
-			# Each pair (e.g., title and entry widget), is added to a list, 
-			# on "save" we retrieve each
-			
-			#---- name - this is a file name so we need to be somewhat strict about characters
-			
-			# gather the names of all the pages to exclude (dir name)
-			row = Entry_row(self, "Name", "name", width=20)
-			# build the list of excluded names: the existing page list of the parent group...
-			print "PES: obj, group", self.obj.name, self.obj.group_obj.name
-
-			row.exclude_list = self.exclude_list
-			row.exclude_chars=' "/:'	# characters we don't want in file names...
-			row.ignore_case = True
-			row.new = self.new				# as passed in
-			row.editable = self.new		# don't edit a file name that's already been created...
-			row.post()
-			# cheat a little through u up quick descriptive label
-			# later...  columnspan 2
-			
-			self.editlist[row.member] =  row 		# just process this one item...
-			
-			self.row = 8		# push these buttons down out of the way...
-			self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save).grid(column=3, row=self.row)	# add  command=
-			self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
-			
-			# stop and wait for the above window to return...
-			self.editTop.wait_window(self.edit_frame)
-		
 		#
 		# Basically start over - this time with the name preset...
 		#time.sleep(1)		# Seems to be necessary for the window to die (is there a call for this?)
@@ -1076,7 +1188,9 @@ class Edit_screen:
 		self.editTop.transient(self.parent.top)
 		self.row=0
 		self.column=0
-		self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=self.obj.name + " (Group: " + self.parent.current_groupname + ')', bd=100, padx=10, pady=10, borderwidth=5)
+
+		rowtext = self.obj.name + " (Group: " + self.parent.current_grouptitle + ')'
+		self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=rowtext, bd=100, padx=10, pady=10, borderwidth=5)
 		self.edit_frame.lift(aboveThis=None)
 		self.edit_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
 		
@@ -1153,12 +1267,15 @@ class Page_edit_screen(Edit_screen):
 		self.size = self.size_class.sizeof(page.media_size)	
 		
 		if self.new:
-			self.new_text = "New Page (Group: " + self.parent.current_groupname + ')'
-			self.sub_dir = os.path.join('Group', self.parent.current_groupname, 'Page', )
+			self.new_text = "New Page (Group: " + self.parent.current_grouptitle + ')'
+			self.sub_dir = os.path.join('Group', self.parent.current_group.name, 'Page', )
 			self.exclude_list = []	# names to not allow for a new page
 			for nextpage in self.obj.group_obj.pagelist:
 				self.exclude_list.append(nextpage.name)
-				
+			self.make_new()	
+			if not self.ok:
+				return
+
 		self.setup()
 		
 		#---- Descriptive title, "unique", but flexible with case, spaces, etc...
@@ -1184,19 +1301,7 @@ class Page_edit_screen(Edit_screen):
 		#--- Resolution
 		#self.obj.song_obj = None
 		menu = Resolution_menu_row(self, "Resolution", "media_size")
-		"""
-		l = []		# list of resolutions and their actual size
-		d = {}		# dictionary of strings to media_size names...
-		for resolution in self.size_class.list():
-			string = resolution + " " + str(self.size_class.sizeof(resolution))
-			l.append(string)
-			d[string] = resolution
-			if resolution == page.media_size:
-				menu.default = string
-			
-		menu.titles = tuple(l)		# Convert to a tuple...
-		#"""
-		
+
 		self.editlist[menu.member] =  menu
 		menu.post()
 		menu.set_status(True)	# It's always good...
@@ -1248,25 +1353,8 @@ class Page_edit_screen(Edit_screen):
 
 		#self.obj.song_obj = None
 		menu = Song_menu_row(self, "Song", "song")
-		l = []		# list of song titles (desc_title)
-		d = {}		# dictionary to convert desc_title to name
-		if self.new:
-			l = ['-select song-']		# build a list of song names...
-		for i in self.obj.group_obj.songlist:
-			l.append(i.desc_title)
-			d[i.desc_title] = i.name
-			if i.name == self.obj.song:
-				self.song_obj = i		# remember this object
-		l.append('-New song-')
-			
-		menu.titles = tuple (l)		# Convert to a tuple...
 		
-		try:
-			menu.default = self.song_obj.desc_title
-		except:
-			pass
 		self.editlist[menu.member] =  menu
-		menu.dict = d
 		menu.post()
 			
 		#  Part - depends on the song selected.
@@ -1312,14 +1400,6 @@ class Page_edit_screen(Edit_screen):
 		print
 		print "------------------"
 		print "Dump of page", self.obj.name
-		# Is there a name member (i.e., is this a new page?)
-		try:
-			(name, status)  = self.get_member('name').return_value()
-			print "Name is: ", name
-			self.obj.name = name
-			self.ok = status
-		except:
-			pass
 		
 		#print "Dump----------------"	
 		#print self.obj.dump()
@@ -1328,16 +1408,14 @@ class Page_edit_screen(Edit_screen):
 			sub_dir = os.path.join('Group', self.obj.group, 'Page',  self.obj.name)
 			home_dir = os.path.join(self.obj.coLab_home, sub_dir)
 		except Exception as e:
-			print "Cannot build new page subdir", e, sys.exc_info()[0]
+			print "Cannot build new page sub_dir", e, sys.exc_info()[0]
 			sys.exit(1)
 	
 		clclasses.set_paths(self.obj, sub_dir)		# Paths are now correct...
 		print "Pagehome:", self.obj.home
 		print "Pageroot:", self.obj.root
 		
-		
-		""" KLUDGE ALERT- forcing self.ok to true to work around the resolution not getting set.... """
-		#self.ok = True
+		self.read()
 		
 		if not self.ok:
 			print "Still something wrong - see above"
@@ -1350,18 +1428,13 @@ class Page_edit_screen(Edit_screen):
 			tkMessageBox.showerror("There were problems...", message, parent=self.edit_frame, icon=tkMessageBox.ERROR)
 			return
 		
-		# I don't like this - I want a better method to determine if this is new or not...
-		if float(self.obj.duration) == 0.0:
-			action = 'create'
-		else:
-			action = 'update'
-		message = "This will " + action + " the page: " + self.obj.name
+		message = "This will " + self.action + " the page: " + self.obj.name
 		message += "\n\nOK?"
 		if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 			print "return"
 			return
 
-		if action == 'create':
+		if self.action == 'create':
 			# need to add this bit to the group's lists
 			self.obj.group_obj.pagelist.append(self.obj)		# add the page name
 			self.obj.group_obj.pagedict[self.obj.name] = self.obj	# name -> page obj
@@ -1395,15 +1468,15 @@ class Page_edit_screen(Edit_screen):
 		self.editTop.destroy()
 
 		
-def create_new_page(parent):
+def create_new_page(coLab_top):
 	"""
 	Does the initial setup to call the edit screen and leaves.
 	The rest is done there.
 	"""
 	
 	print "New page"
-	group_name = parent.current_groupname		# currently selected group
-	this_group = parent.current_group
+	group_name = coLab_top.current_grouptitle		# currently selected group
+	this_group = coLab_top.current_group
 	
 	print "My group is:", group_name, this_group.title
 	
@@ -1412,16 +1485,16 @@ def create_new_page(parent):
 	new_page = clclasses.Page(None)
 	new_page.group_obj = this_group
 	new_page.group = this_group.name
-	new_page.coLab_home = this_group.coLab_home		# just enough path to get us stared..
+	new_page.coLab_home = this_group.coLab_home		# just enough path to get us started..
 	
-	new_page.master = parent.master
-	parent.page = Page_edit_screen(parent, new_page, new=True)
+	new_page.master = coLab_top.master
+	coLab_top.editor = Page_edit_screen(coLab_top, new_page, new=True)
 	
 	
-def edit_page(parent):
+def edit_page(coLab_top):
 	print "edit Page"
 	
-	selector = Select_edit(parent, "pagelist", "desc_title", "Page")	# pick a page...
+	selector = Select_edit(coLab_top, "pagelist", "desc_title", "Page")	# pick a page...
 	print "ep hello"
 	selector.post()
 	print "ep post post"
@@ -1433,13 +1506,13 @@ def edit_page(parent):
 		return
 	print "Selected:", page.name, page.locked
 	#if page.locked:
-	#	parent.master.beep()
+	#	coLab_top.master.beep()
 	#	return
-	page.master = parent.master
-	parent.page = Page_edit_screen(parent, page, new=False)
+	page.master = coLab_top.master
+	coLab_top.editor = Page_edit_screen(coLab_top, page, new=False)
 
 
-def create_new_song(parent):
+def create_new_song(coLab_top):
 	print "new song"
 	"""
 	Does the initial setup to call the edit screen and leaves.
@@ -1447,8 +1520,8 @@ def create_new_song(parent):
 	"""
 	
 	print "New song"
-	group_name = parent.current_groupname		# currently selected group
-	this_group = parent.current_group
+	group_name = coLab_top.current_grouptitle		# currently selected group
+	this_group = coLab_top.current_group
 	
 	print "My group is:", group_name, this_group.title
 	
@@ -1459,14 +1532,14 @@ def create_new_song(parent):
 	new_song.group = this_group.name
 	new_song.coLab_home = this_group.coLab_home		# just enough path to get us stared..
 	
-	parent.song = Song_edit_screen(parent, new_song, new=True)
+	coLab_top.editor = Song_edit_screen(coLab_top, new_song, new=True)
 	
 	
-def edit_song(parent):
+def edit_song(coLab_top):
 
 	print "edit Song"
 	
-	selector = Select_edit(parent, "songlist", "desc_title", "Song")	# pick a song...
+	selector = Select_edit(coLab_top, "songlist", "desc_title", "Song")	# pick a song...
 	print "ep hello"
 	selector.post()
 	print "ep post post"
@@ -1478,7 +1551,7 @@ def edit_song(parent):
 		return
 	print "Selected:", song.name
 	
-	parent.page = Song_edit_screen(parent, song, new=False)	
+	coLab_top.editor = Song_edit_screen(coLab_top, song, new=False)	
 
 class Song_edit_screen(Edit_screen):
 	"""
@@ -1494,7 +1567,7 @@ class Song_edit_screen(Edit_screen):
 	"""
 	def __init__(self, parent, song, new=False):
 		Edit_screen.__init__(self, parent, song, new)
-		
+
 		print "hello"
 		if parent.edit_lock:
 			print "locked"  # (obviously more, later)
@@ -1506,11 +1579,14 @@ class Song_edit_screen(Edit_screen):
 		song.object_type = 'Song'
 		
 		if self.new:
-			self.new_text = "New Song (Group: " + self.parent.current_groupname + ')'
-			self.sub_dir = os.path.join('Group', self.parent.current_groupname, 'Song', )
+			self.new_text = "New Song (Group: " + self.parent.current_grouptitle + ')'
+			self.sub_dir = os.path.join('Group', self.parent.current_group.name, 'Song', )
 			self.exclude_list = []	# names to not allow for a new page
 			for nextsong in self.obj.group_obj.songlist:
 				self.exclude_list.append(nextsong.name)
+			self.make_new()	
+			if not self.ok:
+				return
 				
 		self.setup()
 
@@ -1576,7 +1652,7 @@ class Song_edit_screen(Edit_screen):
 			sub_dir = os.path.join('Group', self.obj.group, 'Song',  self.obj.name)
 			home_dir = os.path.join(self.obj.coLab_home, sub_dir)
 		except Exception as e:
-			print "Cannot build new page subdir", e, sys.exc_info()[0]
+			print "Cannot build new page sub_dir", e, sys.exc_info()[0]
 			sys.exit(1)
 	
 		clclasses.set_paths(self.obj, sub_dir)		# Paths are now correct...
@@ -1595,18 +1671,14 @@ class Song_edit_screen(Edit_screen):
 			return
 		
 		else:
-			if self.new:
-				action = 'create'
-			else:
-				action = 'update'
-			message = "This will " + action + " the song: " + self.obj.name
+			message = "This will " + self.action + " the song: " + self.obj.name
 			message += "\n\nOK?"
 			if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				print "return"
 				return
 	
 	
-			if action == 'create':
+			if self.action == 'create':
 				# need to add this bit to the group's lists
 				self.obj.group_obj.songlist.append(self.obj)		# add the page name
 				self.obj.group_obj.songdict[self.obj.name] = self.obj	# name -> page obj
@@ -1616,14 +1688,22 @@ class Song_edit_screen(Edit_screen):
 				return							# just create the dir and 1-entry data file - we only have the name so far
 						
 			# We're good - let's post this...
-			clclasses.convert_vars(self.obj)
-			self.obj.post()
-			#page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))
+			song = self.obj
+			clclasses.convert_vars(song)
+			song.post()
+
+			# Now rebuild the song...
+			song.editor = None
+			htmlgen.songgen(song.group_obj, song)
+			if song.needs_rebuild:
+				self.parent.render_engine.add_render(sub_dir)
+			#page.editor = self	# pass in the page, but reference this editor obj.
+			#page_thread=threading.Thread(target=rebuild.render_page, args=(page,))
 			#page_thread.start()
 			#rebuild_page_edit(self)
-			htmlgen.rebuild(self.obj.group_obj)		
-			self.editTop.destroy()
 			
+			self.editTop.destroy()		
+
 	def quit(self):
 		if self.obj.changed:
 			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"

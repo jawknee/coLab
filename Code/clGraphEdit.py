@@ -498,13 +498,13 @@ class GraphEdit:
 		if self.runtype == "Page":
 			page = self.parent
 	
-			page.parent.set_member('xStart', self.start_x)
-			page.parent.set_member('xEnd', self.end_x)
+			page.editor.set_member('xStart', self.start_x)
+			page.editor.set_member('xEnd', self.end_x)
 				
-			print "xStart, xEnd", page.parent.get_member('xStart'), page.parent.get_member('xEnd')
+			print "xStart, xEnd", page.editor.get_member('xStart'), page.editor.get_member('xEnd')
 			#self.parent.post_member('xStart')
 			#self.parent.post_member('xEnd')
-			page.parent.refresh()
+			page.editor.refresh()
 		#
 		# have the animation and button handler loops stop...
 		self.running = False

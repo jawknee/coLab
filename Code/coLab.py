@@ -100,7 +100,7 @@ class Colab():
         self.get_last_group()    # set the initial group, and load it...
         #self.set_group()        # update the internal group structure
         self.createMainWidgets()    # put the initial widgets up...
-        self.set_group_from_menu(menu_groupname="None")
+        self.set_group_from_menu(menu_grouptitle="None")
         #self.place_group_shot()
         self.master.mainloop()
 
@@ -111,36 +111,37 @@ class Colab():
         Retrieve the "current" group name from 
         ... some data structure... - for now:
         """
-        self.current_groupname = "Catharsis"
-        self.current_groupname = "Johnny's Music"
-        print "btw", self.current_groupname
+        self.current_grouptitle = "Catharsis"
+        self.current_grouptitle = "Johnny's Music"
+        self.current_grouptitle = "Test Group"
+        print "btw", self.current_grouptitle
         #print "and", self.hello
         
-    def set_group_from_menu(self, menu_groupname='None'):
+    def set_group_from_menu(self, menu_grouptitle='None'):
         """
         Retrieve the menu value and set that
         as the current group...
         """
         print "!  Click !---------------------------"
-        # Called with menu_groupname = None for initial setup...
-        if menu_groupname == "None":
-            menu_groupname = self.gOpt.get()
-        self.current_groupname = menu_groupname
+        # Called with menu_grouptitle = None for initial setup...
+        if menu_grouptitle == "None":
+            menu_grouptitle = self.gOpt.get()
+        self.current_grouptitle = menu_grouptitle
     
-        print "set_group_from_menu - setting current_groupname to", self.current_groupname
+        print "set_group_from_menu - setting current_grouptitle to", self.current_grouptitle
         self.set_group()
         
     def set_group(self):
         """
-        Make sure the group specified in self.current_groupname
+        Make sure the group specified in self.current_grouptitle
         is loaded and pointed to as the default.
         We keep a list of groups, which we load as they're referenced
         and a dictionary of  groups by dir name
         """
         try:
-            thisname = self.current_groupname
+            thisname = self.current_grouptitle
         except:
-            print "Fatal error: set_group called with no current_groupname set."
+            print "Fatal error: set_group called with no current_grouptitle set."
             sys.exit(1)
         
         group_dir = self.grouplistdict[thisname]
@@ -270,7 +271,7 @@ class Colab():
             print "got no titles"
             
         self.gOpt = tk.StringVar()
-        self.gOpt.set(self.current_groupname)
+        self.gOpt.set(self.current_grouptitle)
 
         self.groupOption = tk.OptionMenu(self.main_frame, self.gOpt, *groupTitles,command=self.set_group_from_menu)
 
@@ -387,7 +388,7 @@ class Colab():
         """
         Simple interface to the rebuild scripting...
         """
-        print "Refresh: ", self.current_groupname
+        print "Refresh: ", self.current_grouptitle
         rebuild.rebuild(self.current_group.name, mirror=True)
         clSchedule.browse_url(self.current_group.url_head)
         print "Refresh complete."

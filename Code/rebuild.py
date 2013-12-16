@@ -547,7 +547,7 @@ def rebuild(g, mirror=False, opt="nope"):
 
 	recent = os.path.join(g.home, 'Shared', 'mostrecent.html')
 	try:
-		f_recent = open(recent, 'w+')
+		f_recent = open(recent, 'w')
 	except IOError, info:
 		print "Error opening file:", recent, info
 

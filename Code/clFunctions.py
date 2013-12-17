@@ -351,6 +351,7 @@ class Menu_row(Data_row):
 		
 	def post(self):
 		print "Welcome menu-post"
+		print "self.default:", self.default 
 		
 		if self.default is None:
 			self.default = self.titles[0]	# use the first as a default...
@@ -371,6 +372,7 @@ class Menu_row(Data_row):
 		except:
 			self.gOpt = tk.StringVar()
 
+		print "Setting gOpt to: ", self.default
 		self.gOpt.set(self.default)
 
 		self.widget = tk.OptionMenu(self.editor.edit_frame, self.gOpt, *self.titles, command=self.handler)
@@ -383,7 +385,7 @@ class Menu_row(Data_row):
 		if self.new:
 			self.set_status(None)
 		else:
-			self.set_status(ok=True)
+			self.set_status(self.ok)
 	
 		
 	def handle_menu(self, value):
@@ -457,12 +459,14 @@ class Resolution_menu_row(Menu_row):
 	
 class Song_menu_row(Menu_row):
 	"""
-	Derivative class - mostly for handling the changing part menu....
+	Derivative class - mostly for handling the changing part menu whenever
+	the song changes...
 	"""
-	'''   No currently needed - using parent class init
+	'''   
+	# Not currently needed - using parent class init, but just in case...
 	def __init__(self, editor, text, member):
 		Menu_row.__init__(self, editor, text, member)
-	'''
+	#'''
 	
 	def post(self):
 		#
@@ -477,56 +481,82 @@ class Song_menu_row(Menu_row):
 			l = ['-select song-']		# build a list of song names...
 		for i in page.group_obj.songlist:
 			l.append(i.desc_title)
-			d[i.desc_title] = i.name
-			if i.name == page.song:
-				self.song_obj = i		# remember this object
-		l.append('-New song-')
+			d[i.desc_title] = i.name		# consider changing this to just the song object (i)
+			if i.name == self.default:
+				self.editor.song_obj = i		# remember this object
+		# Perhaps some day we'll add the option to create a new song here...		
+		#l.append('-New song-')		# maybe - but we're not ready for this yet...
 			
 		self.titles = tuple (l)		# Convert to a tuple...
 		
 		try:
-			self.default = self.song_obj.desc_title
+			self.default = self.editor.song_obj.desc_title
 		except:
 			pass
 		
 		self.dict = d
+		print "About to call Menu_row post with l / d:", l, d
 		Menu_row.post(self)
 		
 	def handle_menu(self, value):
-		
-		# if the menu item starts with a "-", it is an unacceptable value
-		self.set_status(ok=value[0] != '-')
-		self.editor.changed = True	
+		"""
+		Handle a change of the page's song - we need to mark\
+		the current song, and the new one as changed (needs_rebuild) as
+		well as rebuilding the part list and updating that.
+		"""
 		songname = self.dict[value]
-		print "Song menu - handle_menu - songname, value", songname, value
-		
-		#page = self.editor.obj
-		self.editor.set_member('song', songname)
-		
-		# Special case for a song:  reload the part list..
-		#self.editor.obj.song = value
+		page = self.editor.obj
+		if page.song == songname:
+			print "Didn't really change..."
+			# Didn't really change - all good...
+			return
+		# 
+		# We need to do a bit of backtracking   get the page's parent 
+		# group object, find the current song and mark it as needs rebuild...
 		try:
-			group = self.editor.obj.group_obj
+			group = page.group_obj
 		except Exception as e:
 			print "------- No such group found as part of", self.editor.obj.value
 			print "---- fix  - for now, returning"
 			return
+	
+		song_obj = group.find_song_by_title(value)
+		song_obj.needs_rebuild = True
+
+		# if the menu item starts with a "-", it is an unacceptable value
+		self.set_status(ok=value[0] != '-')	 # For now, if the song names doesn't start with '-', we're good to go 
+		self.editor.changed = True			# we may not need this....
+		self.default = songname
+		print "Song menu - handle_menu - songname, value", songname, value
 		
-		song_obj = group.find_song_title(value)
+		#page = self.editor.obj
+		self.editor.set_member('song', songname)
+		self.default = value
+		print "self.default:", self.default
+		self.post()
+		
+		song_obj = group.find_song_by_title(value)
 		if song_obj == None:
 			print "No such song object found for:", value
+		song_obj.needs_rebuild = True		# mark the new song as needing rebuild too..
 		# build a part list...
 		self.editor.song_obj = song_obj
 		self.editor.obj.part = 'All'			# if a new song, use default part for now...
-		self.editor.part_obj.titles = self.editor.build_part_list()
+		
+		part_obj = self.editor.part_obj			# we saved this away for just such an occasion...
+		part_obj.titles = self.editor.build_part_list()
 		
 		# Special case a song with only the default part as "OK"
 		print "testing the partlist..."
 		if song_obj.partlist == [ 'All'	]:
 			print "Partlist is just 'all'"
-			self.set_status(ok=True)
+			part_obj.set_status(ok=True)
+			self.editor.set_member('part', 'All')
+		else:
+			part_obj.set_status(ok=False)
+			print "Song object part list is vague:", song_obj.name, part_obj.ok
 			#time.sleep(2)
-		# set the new dictiony in place...
+		# set the new dictionary in place...
 		self.editor.part_obj.dict = self.editor.part_lookup
 		self.editor.part_obj.post()
 		self.editor.read()
@@ -1355,6 +1385,7 @@ class Page_edit_screen(Edit_screen):
 		menu = Song_menu_row(self, "Song", "song")
 		
 		self.editlist[menu.member] =  menu
+		menu.default = page.song
 		menu.post()
 			
 		#  Part - depends on the song selected.
@@ -1385,9 +1416,9 @@ class Page_edit_screen(Edit_screen):
 			part_dict = { 'All': 'All' }	# build the one common part
 		else:
 			part_name_list = self.song_obj.partlist
-			part_dict = self.song_obj.partname_dict		# convert short names to long
+			part_dict = self.song_obj.part_dict		# convert short names to long
 		
-		# RBF:  Check: I think the whole / partname thing can reduce to the partname (can html # tags have spaces?)
+		# map short and long names...
 		self.part_obj.default = part_dict[self.obj.part]
 		l = []
 		self.part_lookup = dict()
@@ -1629,7 +1660,7 @@ class Song_edit_screen(Edit_screen):
 			part_dict = { 'All': 'All' }	# build the one common part
 		else:
 			part_name_list = self.song_obj.partlist
-			part_dict = self.song_obj.partname_dict		# convert short names to long
+			part_dict = self.song_obj.part_dict		# convert short names to long
 		
 		# RBF:  Check: I think the whole / partname thing can reduce to the partname (can html # tags have spaces?)
 		self.part_obj.default = part_dict[self.obj.part]

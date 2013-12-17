@@ -263,7 +263,7 @@ class Group:
 			if song.name == song_name:
 				return(song) 
 		return(None)	# none found...
-	def find_song_title(self, song_title=None):
+	def find_song_by_title(self, song_title=None):
 		"""
 		Find by title...
 		"""
@@ -326,7 +326,7 @@ class Page:
 		
 		('project', "<unset>"),
 		('assoc_projects', ''),
-		('song', "<unset>"),			# descriptive tile of the current song..
+		('song', "<unset>"),			# name (parent dir)  of the current song..
 		('part', "All"),
 		('prevlink', "<unset>"),
 		('nextlink', "<unset>"),
@@ -547,10 +547,6 @@ class Song:
 		self.list = []
 		self.part_dict = {}
 
-		# RBF
-		print "******  init: name is:", self.name
-		#
-		# Create a dictionary of names of parts
 		self.partname_dict = {}
 		for i in range(len(self.partlist)):
 			print "Insertng name:", i, self.partlist[i], self.partnames[i]
@@ -620,7 +616,7 @@ class Song:
 		# build a part dictionary   shortname ->  longer name...
 		for i in range(len(self.partlist)):
 			print "Insertng name:", i, self.partlist[i], self.partnames[i]
-			self.partname_dict[self.partlist[i]] = self.partnames[i]
+			self.part_dict[self.partlist[i]] = self.partnames[i]
 
 	def create(self):
 		"""

@@ -149,6 +149,9 @@ class Render_engine():
 		page = clclasses.Page()
 		# If we got here "offline", i.e., an abandoned render found in the 
 		# file, the let's set the rebuild/changed flags...
+		# RBF - or at least check it...  if we ever actually carry along a 
+		# page object, and not just a path, then this might make sense...
+		# otherwise we'll always set it to true - which i s basically OK at this oint.
 		try:
 			page.needs_rebuild
 		except:
@@ -520,6 +523,9 @@ def rebuild(g, mirror=False, opt="nope"):
 			thissong.part_dict[pg.part] = []
 
 		thissong.part_dict[pg.part].append(pg)
+		
+		
+		#RBF:   This whole section above needs a good look pretty soon.
 
 	"""
 	print "Songs found:"
@@ -619,7 +625,7 @@ def rebuild(g, mirror=False, opt="nope"):
 			f_project.write('<br><span style="font-size: smaller;">')
 			dot = ''	# nothing for now...
 			for pt in sg.partlist:
-				title = sg.partname_dict[pt]
+				title = sg.part_dict[pt]
 				f_project.write(dot + '<a href="' + 
 					localURL + '/#' + pt + '" title="' + title + '">' +
 					pt + '</a>')

@@ -15,7 +15,7 @@ import math
 DISPLAY_SIZE = (640, 480)	
 # base size of the time boxes
 T_BOX_WIDE = 55
-T_BOX_HIGH = 35
+T_BOX_HIGH = 23
 # Sound graphic borders:
 SG_LEFT_BORDER = 30
 SG_RIGHT_BORDER = 10

@@ -152,16 +152,20 @@ class Render_engine():
 		# RBF - or at least check it...  if we ever actually carry along a 
 		# page object, and not just a path, then this might make sense...
 		# otherwise we'll always set it to true - which i s basically OK at this oint.
+		page.needs_rebuild = True
+		"""
 		try:
 			page.needs_rebuild
 		except:
 			page.needs_rebuild = True
 			
+		#"""
 		try:
 			page.load(next_render)
 		except:
 			print "Something went wrong with the loading of 'next_render'"
 			return
+		
 		
 		# Build the new display text...
 		active_text = page.desc_title + '\n'
@@ -458,12 +462,12 @@ def do_mirror(coLab_home=None):
 
 def rebuild(g, mirror=False, opt="nope"):
 	"""
-	Create and populate group object, adding page and
-	song objects, then create link, graphic text ad
-	other related items.
+	Takes a passed group object (or, for somewhat questionable
+	reasons - a group name, which is then loaded), 
 	
-	(Converting from rebuild_manual to no longer read the data -
-	it's all loaded up).
+	mirror specifies if the ftp (or other method) file mirror should 
+	be done, and the 'opt' var can be set to 'All' to force all
+	entities to be rebuilt (comes back from clutils.needs_update).
 	"""
 	
 	# As above, this is hopefully a temporary catch for older calls,
@@ -500,20 +504,22 @@ def rebuild(g, mirror=False, opt="nope"):
 	# as needed, index.shtml (data file change)
 	for pg in g.pagelist:
 		
-		print pg.name
+		print "Next page - name, song is:", pg.name, pg.song
 		thissong = g.songdict[pg.song]	# Song obj. for this page
 		# 
 		# and rebuild the html in that case...
-		newpage = clutils.needs_update(pg.home, file='index.shtml', opt=opt)
-		if newpage:
+		if clutils.needs_update(pg.home, file='index.shtml', opt=opt):    #  possibly:  or pg.needs_rebuild:
 			# Update this page
 			htmlgen.pagegen(g, pg)
-			
+			# this should be replaced - or at least enhanced by 
+			# checking existing song objects for the "needs_rebuild" option
 			songdatafile=os.path.join(thissong.home, 'data')	# path to the song's data file
 			clutils.touch(songdatafile)		# touch the data file so we rebuild this song
 
 		
-		# Create a dictionary for each song - each part points to a list of songs
+		# Create a dictionary for each song - each part points to a list of Pages,
+		# this is how we build the Song pages - indexed by part, showing the related
+		# pages.
 		
 		# Do we know this part yet?
 		try:
@@ -621,11 +627,11 @@ def rebuild(g, mirror=False, opt="nope"):
 		localURL = os.path.join(songURLbase, sg.name)
 		f_project.write('<li><a href="' + localURL + '/" title="' + sg.fun_title +
 			'">' + sg.desc_title + '</a>' )
-		if len(sg.part_dict) > 1:	# also list the parts
+		if len(sg.partname_dict) > 1:	# also list the parts
 			f_project.write('<br><span style="font-size: smaller;">')
 			dot = ''	# nothing for now...
 			for pt in sg.partlist:
-				title = sg.part_dict[pt]
+				title = sg.partname_dict[pt]
 				f_project.write(dot + '<a href="' + 
 					localURL + '/#' + pt + '" title="' + title + '">' +
 					pt + '</a>')

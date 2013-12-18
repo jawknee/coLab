@@ -151,7 +151,7 @@ class Colab():
             self.group_list
         except:
             print "New group list"
-            self.group_list = dict()    # new dictionary...
+            self.group_list = dict()    # new dictionary...        #RBF   this is a dict, not a list
          
         print "group_dir pre list test", group_dir   
         try:

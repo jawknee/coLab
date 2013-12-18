@@ -402,9 +402,6 @@ class Menu_row(Data_row):
 		self.set_status( value[0] != '-')
 		self.editor.changed = True	
 		
-		#time.sleep(4)
-		#self.editor.read()
-	
 	def return_value(self):
 		"""
 		Return the OptionMenu value...
@@ -448,6 +445,7 @@ class Resolution_menu_row(Menu_row):
 		if prev_size != page.media_size:
 			print "Size has changed..."
 			page.needs_rebuild = True
+			page.changed = True
 		
 	
 	def return_value(self):
@@ -482,7 +480,7 @@ class Song_menu_row(Menu_row):
 		for i in page.group_obj.songlist:
 			l.append(i.desc_title)
 			d[i.desc_title] = i.name		# consider changing this to just the song object (i)
-			if i.name == self.default:
+			if i.name == page.song:
 				self.editor.song_obj = i		# remember this object
 		# Perhaps some day we'll add the option to create a new song here...		
 		#l.append('-New song-')		# maybe - but we're not ready for this yet...
@@ -525,12 +523,14 @@ class Song_menu_row(Menu_row):
 
 		# if the menu item starts with a "-", it is an unacceptable value
 		self.set_status(ok=value[0] != '-')	 # For now, if the song names doesn't start with '-', we're good to go 
+		self.new = not self.ok
 		self.editor.changed = True			# we may not need this....
-		self.default = songname
+		
 		print "Song menu - handle_menu - songname, value", songname, value
 		
 		#page = self.editor.obj
 		self.editor.set_member('song', songname)
+		page.song = songname
 		self.default = value
 		print "self.default:", self.default
 		self.post()
@@ -1070,7 +1070,7 @@ class Edit_screen:
 		#parent.edit_lock = True
 		#new = False
 		print "Edit Screen: new:",new
-		self.parent = parent
+		self.parent = parent		# at this point, coLab_top
 		self.object_type = 'Unset'
 		self.new = new
 		# let's do some verb determination now...
@@ -1181,10 +1181,18 @@ class Edit_screen:
 		print "Pagehome:", self.obj.home
 		print "Pageroot:", self.obj.root
 
-	
+		self.object_type = self.obj.object_type
+		print "Save new - object type:", self.object_type
+		
+		# 
+		# A bit klunky for now but....
 		# need to add this bit to the group's lists
-		self.obj.group_obj.songlist.append(self.obj)		# add the page name
-		self.obj.group_obj.songdict[self.obj.name] = self.obj	# name -> page obj
+		if self.object_type == 'Page':
+			self.obj.group_obj.pagelist.append(self.obj)		# add the page name
+			self.obj.group_obj.pagedict[self.obj.name] = self.obj	# name -> page obj
+		elif self.object_type == 'Song':
+			self.obj.group_obj.songlist.append(self.obj)		# add the song name
+			self.obj.group_obj.songdict[self.obj.name] = self.obj	# name -> song obj
 		self.obj.create()				# build the page dir structure, base data page.
 		self.editTop.destroy()
 		#self.new = False
@@ -1273,6 +1281,30 @@ class Edit_screen:
 		Post the specified member...
 		"""
 		self.get_member(member).post()
+
+	def build_part_list(self):
+		"""
+		Use the song object to build the part list
+		and conversion dictionary (Long names are
+		displayed, simple names are stored.)
+		
+		Returns a tuple of long names ready to be assigned to an ObjectMenu for display
+		"""
+		if self.song_obj is None:
+			part_name_list = [ 'All' ]
+			partname_dict = { 'All': 'All' }	# build the one common part
+		else:
+			part_name_list = self.song_obj.partlist
+			partname_dict = self.song_obj.partname_dict		# convert short names to long
+		
+		# map short and long names...
+		self.part_obj.default = partname_dict[self.obj.part]
+		l = []
+		self.part_lookup = dict()
+		for i in part_name_list:
+			l.append(partname_dict[i])
+			self.part_lookup[partname_dict[i]] = i
+		return(tuple(l))
 		
 class Page_edit_screen(Edit_screen):
 	"""
@@ -1385,7 +1417,8 @@ class Page_edit_screen(Edit_screen):
 		menu = Song_menu_row(self, "Song", "song")
 		
 		self.editlist[menu.member] =  menu
-		menu.default = page.song
+		if self.action == 'update':
+			menu.default = page.song	# RBF: This is wrong  it gets fixed later, but....
 		menu.post()
 			
 		#  Part - depends on the song selected.
@@ -1403,30 +1436,7 @@ class Page_edit_screen(Edit_screen):
 		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
 	
 			
-	def build_part_list(self):
-		"""
-		Use the song object to build the part list
-		and conversion dictionary (Long names are
-		displayed, simple names are stored.)
-		
-		Returns a tuple of long names ready to be assigned to an ObjectMenu for display
-		"""
-		if self.song_obj is None:
-			part_name_list = [ 'All' ]
-			part_dict = { 'All': 'All' }	# build the one common part
-		else:
-			part_name_list = self.song_obj.partlist
-			part_dict = self.song_obj.part_dict		# convert short names to long
-		
-		# map short and long names...
-		self.part_obj.default = part_dict[self.obj.part]
-		l = []
-		self.part_lookup = dict()
-		for i in part_name_list:
-			l.append(part_dict[i])
-			self.part_lookup[part_dict[i]] = i
-		return(tuple(l))
-		
+
 	def save(self):
 		print
 		print "------------------"
@@ -1471,7 +1481,6 @@ class Page_edit_screen(Edit_screen):
 			self.obj.group_obj.pagedict[self.obj.name] = self.obj	# name -> page obj
 			self.obj.create()				# build the page dir structure, base data page.
 			self.editTop.destroy()
-			return							# just create the dir and 1-entry data file - we only have the name so far
 					
 		# We're good - let's post this...
 		clclasses.convert_vars(self.obj)
@@ -1646,30 +1655,6 @@ class Song_edit_screen(Edit_screen):
 		self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save).grid(column=3, row=self.row)	# add  command=
 		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
 		
-
-	def build_part_list(self):
-		"""
-		Use the song object to build the part list
-		and conversion dictionary (Long names are
-		displayed, simple names are stored.)
-		
-		Returns a tuple of long names ready to be assigned to an ObjectMenu for display
-		"""
-		if self.song_obj is None:
-			part_name_list = [ 'All' ]
-			part_dict = { 'All': 'All' }	# build the one common part
-		else:
-			part_name_list = self.song_obj.partlist
-			part_dict = self.song_obj.part_dict		# convert short names to long
-		
-		# RBF:  Check: I think the whole / partname thing can reduce to the partname (can html # tags have spaces?)
-		self.part_obj.default = part_dict[self.obj.part]
-		l = []
-		self.part_lookup = dict()
-		for i in part_name_list:
-			l.append(part_dict[i])
-			self.part_lookup[part_dict[i]] = i
-		return(tuple(l))
 		
 	def save(self):
 		print

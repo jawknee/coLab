@@ -86,7 +86,11 @@ def import_data(obj, path=None):
 		pass
 	
 	#self.set_paths(conf)
-
+	# A few state vars...  are we "clean"?
+	# RBF - maybe someday
+	#obj.changed = False
+	#obj.needs_rebuild = False
+	# Convert the import data into actual vars in the object...
 	for var in obj.varlist:
 		string = 'p.' + var	# var name from the file...
 		try:
@@ -127,7 +131,12 @@ def convert_vars(obj):
 				print "import_data, problem with conversion:", conversion, var
 				
 def import_list(parent, type):
-	
+	"""
+	Step through the "type" dirs... (Page, Song, etc.) 
+	load an object for each, while also building a list (objects)
+	and a dictionary to translate from the Page/Song name 
+	(dir name) to a pointer to the object.
+	"""
 	# Now, step into the pages dir and load up a list of pages
 	thisdir = os.path.join(parent.home, type)
 	print "import list dir:", thisdir
@@ -173,7 +182,7 @@ def import_list(parent, type):
 			
 		except IOError:
 			print "problem with", dir
-			continue
+			continue	# RBF: consider something serious here - exit even??
 		if parent.name != obj.group:
 			print "WARNING:  loading parent's name:", parent.name, "current group var:", obj.group
 		list.append(obj)
@@ -247,7 +256,8 @@ class Group:
 		print "self.name pre import", self.name
 		import_data(self)
 		print "self.name post import", self.name
-			
+		
+		# create translation dicts for 
 		(self.pagelist, self.pagedict) = import_list(self, 'Page')
 		for i in self.pagelist:
 			print "I've got a page in my list:", i.name
@@ -544,14 +554,9 @@ class Song:
 		set_init_vars(self, initdata)
 		#
 		# items not stored in the data file
-		self.list = []
-		self.part_dict = {}
+		self.list = []			# not clear this is used...   check it.
+		self.part_dict = {}		# used later to keep lists of pages, organized by what part they're associated with
 
-		self.partname_dict = {}
-		for i in range(len(self.partlist)):
-			print "Insertng name:", i, self.partlist[i], self.partnames[i]
-			self.partname_dict[self.partlist[i]] = self.partnames[i]
-	
 
 	def dump(self):
 		"""
@@ -613,10 +618,11 @@ class Song:
 		
 		import_data(self, path)
 
+		self.partname_dict = {}
 		# build a part dictionary   shortname ->  longer name...
 		for i in range(len(self.partlist)):
 			print "Insertng name:", i, self.partlist[i], self.partnames[i]
-			self.part_dict[self.partlist[i]] = self.partnames[i]
+			self.partname_dict[self.partlist[i]] = self.partnames[i]
 
 	def create(self):
 		"""

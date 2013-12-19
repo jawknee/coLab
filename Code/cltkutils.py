@@ -202,19 +202,28 @@ class Popup:
 	"""
 	A very simple way to put something on the screen that will disappear soon.
 	"""
-	def __init__(self, label="Info...", text="Pop-up!"):
+	def __init__(self, label="Info...", text="Pop-up!", nobutton=True):
+		"""
+		Pretty straight forward - the nobutton option is for pop ups 
+		that out outside the loop and won't get cycles (like using 
+		Preview to crop the graphics.
+		"""
 		print "Popup: creating popup, label:", label, "text:", text
 		self.t = tk.Toplevel()
 		self.t.transient()
 		self.t.title("File copy")
-		self.t.geometry('+95+95')
+		self.t.geometry('-1-1')
+		self.t.lift(aboveThis=None)
 		lf = tk.LabelFrame(master=self.t, relief=tk.GROOVE, text=label, borderwidth=5)
-		lf.lift(aboveThis=None)
 		lf.grid(ipadx=10, ipady=40, padx=25, pady=15)
 		f = tk.Frame(lf)
 		f.grid(row=0, column=0, sticky=tk.W)
 		ttk.Label(f, text=text).grid()
+		if not nobutton:	# kinda dig the language here...
+			ok_button = ttk.Button(f, text='OK', command=self.destroy)
+			ok_button.grid(row=1, column=0, sticky=tk.SE)
 		self.t.update()	 # Get the pop-up on the screen...
+		self.t.update_idletasks()
 		
 		 
 	def destroy(self):

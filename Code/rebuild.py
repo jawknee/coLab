@@ -80,7 +80,7 @@ class Render_engine():
 		
 		self.top = tk.Toplevel()
 		self.top.title("coLab Render Engine")
-		self.top.geometry("+1000+60")
+		self.top.geometry("+1200+80")
 		self.top.lift(self.master)
 		self.r_frame = tk.LabelFrame(self.top, text="coLab Render Engine", relief=tk.GROOVE)
 		self.r_frame.grid(padx=25, pady=25, ipadx=10, ipady=10)

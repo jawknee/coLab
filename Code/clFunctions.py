@@ -27,6 +27,7 @@ from PIL import Image
 
 import config
 import clclasses
+import clutils
 import cltkutils
 import clGraphEdit
 import clSchedule
@@ -708,8 +709,11 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		# set up the menu...   we always include load...
 		self.menulist = [ 'Load' ]
 		# if there are any legit sound files in coLab_local, add "reuse"
-		# (for now, just add it)
-		self.menulist.append('Reuse')	
+		colab_local = os.path.join(page.home, 'coLab_local')
+		if clutils.has_filetype(colab_local, ['.aif', '.aiff']):
+			self.menulist.append('Reuse')	
+
+		print "Graphic menu list:", self.menulist
 		self.default = "Change Sound File"
 		
 		Graphic_menu_row.post(self)
@@ -723,6 +727,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		elif action is 'Reuse':
 			self.reuse()
 		else:
+			self.post()
 			print "Time to relax - or panic s", action
 
 	def load(self):
@@ -734,7 +739,11 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		self.initialPath = "/Volumes/iMac 2TB/Music/"
 		self.filetypes = [ ('AIFF', '*.aif'), ('AIFF', '*.aiff')]
 		# We need to keep the latest file path...
-		self.initialfile = page.soundfile
+		if page.soundfile.startswith(self.initialPath):
+			init_file = page.soundfile[len(self.initialPath):]	# where we were within the starting path...
+		else:
+			init_file = os.path.split(page.soundfile)[1]	# just the file name
+		self.initialfile = init_file
 		self.copy_soundfile = True
 		self.file_load()
 
@@ -745,8 +754,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		page.needs_rebuild = True	
 		self.initialPath = os.path.join(page.home, "coLab_local")
 		self.filetypes = [ ('AIFF', '*.aif'), ('AIFF', '*.aiff') ]
-		self.initialfile = os.path.join(self.initialPath, page.soundfile )
-		self.initialfile = page.localize_soundfile()
+		self.initialfile = os.path.split(page.soundfile)[1]	# just the file name
 		print"reuse: initial file:", self.initialfile
 		self.copy_soundfile = False	# we already have it - just change the name...
 		self.file_load()
@@ -815,6 +823,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 			self.editor.post_member('screenshot')
 		
 		self.post()
+		page.graphic_row.post()
 		page.screenshot = page.soundgraphic     # probably not needed.
 		#page.graphic_row.post()
 
@@ -834,8 +843,19 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.graphic_path = os.path.join(page.home, page.thumbnail)
 		if not os.path.isfile(self.graphic_path):		# we need a backup file...
 			self.graphic_path = os.path.join(page.coLab_home, 'Resources', 'coLab-NoPageImage_tn.png')
-		self.menulist = [ 'UseSound', 'Load', 'Reuse', 'Adjust']
+		self.menulist = []	# build up the list of menu items based on context...
+		if page.soundfile != '':
+			self.menulist.append('UseSound')	# only offer this if a sound file is defined..
+		self.menulist.append('Load')			# we always have this...	
 		
+		colab_local = os.path.join(page.home, 'coLab_local')
+		if  clutils.has_filetype(colab_local, ['.png']):
+			self.menulist.append('Reuse')
+		
+		if page.screenshot != '' and not page.use_soundgraphic:
+			self.menulist.append('Adjust')
+			
+		print "Graphic menu list:", self.menulist
 		self.default = "Change Graphic"
 		
 		Graphic_menu_row.post(self)
@@ -852,6 +872,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		elif action is 'UseSound':
 			self.usesound()
 		else:
+			self.post()
 			print "Time to relax - or panic g", action
 	def load(self):
 		"""
@@ -865,7 +886,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		page.needs_rebuild = True	
 		self.initialPath = "/Users/Johnny/Desktop"
 		self.filetypes = [ ('PNG', '*.png'), ('JPEG', '*.jpg')]
-		self.initialfile="ScreenShot.png"
+		self.initialfile = os.path.split(page.screenshot)[1]
 		#self.file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.png', title="Open screen shot...", filetypes=filetypes, initialfile=initialfile)
 
 		# We need to keep the latest file path...
@@ -880,7 +901,8 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		page.needs_rebuild = True	
 		self.initialPath = os.path.join(page.home, "coLab_local")
 		self.filetypes = [ ('PNG', '*.png'), ('JPEG', '*.jpg')]
-		self.initialfile=page.screenshot
+		self.initialfile = os.path.split(page.screenshot)[1]
+
 		#self.file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.png', title="Open screen shot...", filetypes=filetypes, initialfile=initialfile)
 
 		print"reuse: initial file:", self.initialfile
@@ -894,6 +916,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		if not file_path:
 			return
 		
+		orig_filename = os.path.split(self.initialfile)[1]	# used to determine if we have the same file...
 		print "Graphic_menu_row_screenshot File path is:", file_path
 		self.ok = True
 		self.set_status( True)
@@ -902,11 +925,6 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.editor.set_member('screenshot', file_path)
 		
 		destpath = os.path.join('coLab_local', filename)
-		
-		image = Image.open(file_path)		# mostly we need the size....
-		width = image.size[0]	# save the width...
-		w_05 = width * 0.05		# 5% of width - possible starting point
-		w_95 = width - w_05		# 95 % if width - possible ending poin
 		
 		graphic_dest = os.path.join(page.home, destpath)
 		if self.copy_graphicfile:
@@ -920,18 +938,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 				raise Exception
 			finally:
 				popup.destroy()
-				image = Image.open(graphic_dest)
-			# RBF:   these page references to xStart and xEnd should probably be local... (set_member sets them correctly)
-			page.xStart = w_05	# 5% and 95% are decent starting points...
-			page.xEnd = w_95
-		
-		# In any case, the end point should not be more than the width
-		if page.xEnd > width:
-			page.xEnd = w_95
-				
-		self.editor.set_member('xStart', page.xStart)
-		self.editor.set_member('xEnd', page.xEnd)
-		
+	
 		# use "open" to schedule preview - seems to do what we need....
 		prev_popup = cltkutils.Popup("Crop and Annotate", "Please crop to the size you want, add any annotations, the close and quit.")
 		prev_popup.t.geometry("-1-1")
@@ -943,6 +950,32 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 				sys.exit(1)
 		prev_popup.destroy()
 
+		image = Image.open(graphic_dest)		# mostly we need the size....
+		width = image.size[0]	# save the width...
+		w_05 = int(width * 0.05)		# 5% of width - possible starting point
+		w_95 = int(width - w_05)		# 95 % if width - possible ending poin
+
+		# is this the same file?  (i.e., we just reselected it?)
+		if filename == orig_filename and not self.copy_graphicfile:	
+			print "Grhpic seems to be the same:  not changing...------------------", filename, orig_filename, self.copy_graphicfile
+			xStart = page.xStart
+			xEnd = page.xEnd
+		else:		# set the start/end to a reasonable guess
+			print "New grhpic ------------------------", graphic_dest, w_05, w_95
+			xStart = w_05	
+			xEnd = w_95
+			
+	
+		# In any case, the end point should not be more than the width
+		if xEnd > width:
+			xEnd = w_95
+				
+		# set into both the page values, and the editor (for now -editor will probably go away)
+		page.xStart = xStart
+		self.editor.set_member('xStart', xStart)
+		page.xEnd = xEnd
+		self.editor.set_member('xEnd', xEnd)
+	
 		#if tkMessageBox.askyesno('Select Limits',"Do you need to set the left and right limits?", icon=tkMessageBox.QUESTION):
 
 		self.adjust(graphic_dest)	# Adjust the end poings...
@@ -956,7 +989,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		page.changed = True
 		
 		self.post()
-		page.graphic_row.post()
+		#page.graphic_row.post()	# should be the same as the line above   RBF
 		
 	def adjust(self, graphic=None):	
 		"""
@@ -980,6 +1013,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		#self.editor.post_member('xStart')
 		#self.editor.post_member('xEnd')
 		self.editor.refresh()
+		
 
 	def usesound(self):
 		"""

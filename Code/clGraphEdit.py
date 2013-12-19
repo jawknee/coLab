@@ -12,6 +12,7 @@ import ttk
 from PIL import Image, ImageTk
 
 import clclasses
+import cltkutils
 
 class Button:
 	"""
@@ -155,6 +156,10 @@ class GraphEdit:
 		self.validate = 'all'
 		self.subcodes =  ('%d', '%S', '%P', '%V')
 		
+		info = "Use the arrows or grab the lines to set the start (green) and end (red) points."
+		#ttk.Label(i_frame, text=info, foreground="black", anchor=tk.SW, justify=tk.RIGHT).grid(column=0, row=0)
+		self.popup = cltkutils.Popup('Set Sound Start and End', info, nobutton=False)
+		
 	
 	def post(self):
 		"post the current canvas"	
@@ -198,9 +203,6 @@ class GraphEdit:
 		
 		i_frame = tk.Frame(self.top, bg="#e9e9e9", borderwidth=2, padx=10, pady=5)
 		
-		# Info window RBF: This is not done right...
-		info = "Use the arrows or grab the lines to set the start and end points."
-		ttk.Label(i_frame, text=info, foreground="black", anchor=tk.SW, justify=tk.RIGHT).grid(column=0, row=0)
 		
 		info_window = cnvs.create_window(x/2, y, height=control_height/2, anchor=tk.SE, window=i_frame)
 		# animated dashed lines for start and end
@@ -221,12 +223,7 @@ class GraphEdit:
 		
 		self.dash_line_list = [ self.start_line, self.end_line]
 		self.root.after(200, self.animate_lines)
-		#self.parent.after(200, self.line_move, cnvs, end_line)
-		# A little bit tricky here...    
-		# we don't want to return to the calling process until we're done...
-		# but all the work is being driven by the mainloop.  So...  we loop here
-		# waiting for word that the coast is clear...
-		
+
 		
 	def animate_lines(self):
 		"""
@@ -436,9 +433,9 @@ class GraphEdit:
 		ttk.Label(self.c_frame, text="Start", foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=1, row=0)
 		ttk.Label(self.c_frame, text=dash, foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=2, row=0)
 		
-		ttk.Label(self.c_frame, text=dash, foreground="red", anchor=tk.NW, justify=tk.CENTER).grid(column=3, row=0)
-		ttk.Label(self.c_frame, text="End", foreground="red", anchor=tk.NE, justify=tk.CENTER).grid(column=4,row=0)
-		ttk.Label(self.c_frame, text=dash, foreground="red", anchor=tk.NW, justify=tk.CENTER).grid(column=5, row=0)
+		ttk.Label(self.c_frame, text=dash, foreground="red", anchor=tk.NW, justify=tk.CENTER).grid(column=4, row=0)
+		ttk.Label(self.c_frame, text="End", foreground="red", anchor=tk.NE, justify=tk.CENTER).grid(column=5,row=0)
+		ttk.Label(self.c_frame, text=dash, foreground="red", anchor=tk.NW, justify=tk.CENTER).grid(column=6, row=0)
 		
 		# buttons...
 		self.button_list = [] 	# we do our own button handling - keep a list
@@ -450,14 +447,15 @@ class GraphEdit:
 		button = Button(self, type='inc', which='start', column=2, row=1)
 		self.button_list.append(button)
 		
-		button = Button(self, type='dec', which='end', column=3, row=1)
+		button = Button(self, type='dec', which='end', column=4, row=1)
 		self.button_list.append(button)
 		
-		button = Button(self, type='inc', which='end', column=5, row=1)
+		button = Button(self, type='inc', which='end', column=6, row=1)
 		self.button_list.append(button)
 		
 		# and a separate one for finishing up....
-		ttk.Button(self.c_frame, text='Done', command=self.quit_handler).grid(column=6, row=0)
+		# for now, we're sticking this in the middle in case we get stuck with a very tiny window.
+		ttk.Button(self.c_frame, text='Done', command=self.quit_handler).grid(column=3, row=0)
 		
 		
 		self.root.after(100, self.button_handler)
@@ -469,7 +467,7 @@ class GraphEdit:
 		self.endText = tk.StringVar()
 		self.endText.set(str(self.end_x))
 		#ttk.Entry(self.c_frame, width=6, textvariable=self.endText).grid(column=4, row=1)
-		ttk.Label(self.c_frame, width=6, textvariable=self.endText, anchor=tk.CENTER).grid(column=4, row=1)
+		ttk.Label(self.c_frame, width=6, textvariable=self.endText, anchor=tk.CENTER).grid(column=5, row=1)
 		self.c_frame.grid()
 	
 	def button_handler(self):
@@ -505,6 +503,8 @@ class GraphEdit:
 			#self.parent.post_member('xStart')
 			#self.parent.post_member('xEnd')
 			page.editor.refresh()
+
+		self.popup.t.destroy()
 		#
 		# have the animation and button handler loops stop...
 		self.running = False

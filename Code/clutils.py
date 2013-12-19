@@ -97,6 +97,26 @@ def touch(filename):
 	finally:
 		f.close()
 
+def has_filetype(path, typelist=[], min=1):
+	"""
+	return true if the given path has at least "min" files
+	that match the supplied type list
+	"""
+	try:
+		os.chdir(path)
+	except:
+		print "problem changing to", path
+		return False
+
+	count = 0
+	
+	for file in os.listdir('.'):
+		for type in typelist:
+			if file.endswith(type):
+				count += 1
+	print "has_filetype Found:", count
+	return count >= min
+
 class fontlib:
 	"""
 	A collection of paths.   Mostly to return the path to a named font,

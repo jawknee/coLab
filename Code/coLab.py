@@ -396,7 +396,7 @@ class Colab():
 		except:
 			pass
 		
-		headerpath = os.path.join(self.current_group.home, "Header.png")
+		headerpath = os.path.join(self.current_group.home, "Header_dk.png")
 		print "Title path:", headerpath
 		self.header = cltkutils.graphic_element(self.main_frame)
 		self.header.filepath = headerpath

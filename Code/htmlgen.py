@@ -22,12 +22,12 @@ import cldate
 
 #from clclasses import *
 import clclasses
+import clColors
 
 from headers import *
 import imagemaker
 
-tan = (196, 176, 160, 255)
-fill = tan
+fill = clColors.TAN
 
 # 
 # put these somewhere....
@@ -494,7 +494,9 @@ def homegen(group):
 	fontpath = fonts.fontpath('FoxboroScriptBold')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
+	imagemaker.make_text_graphic(page.fun_title, 'Title_dk.png', fontpath, fontsize=45, border=10, fill=clColors.COLAB_BLUE )
 	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=45, border=2, fill=fill )
+	imagemaker.make_text_graphic(page.desc_title, 'Header_dk.png', fontpath, fontsize=45, border=2, fill=clColors.COLAB_BLUE )
 	
 	# open the index file, dump the header, body, etc. into it...
 	try:

@@ -212,7 +212,7 @@ class Popup:
 		self.t = tk.Toplevel()
 		self.t.transient()
 		self.t.title("File copy")
-		self.t.geometry('-1-1')
+		self.t.geometry('+1800+80')
 		self.t.lift(aboveThis=None)
 		lf = tk.LabelFrame(master=self.t, relief=tk.GROOVE, text=label, borderwidth=5)
 		lf.grid(ipadx=10, ipady=40, padx=25, pady=15)

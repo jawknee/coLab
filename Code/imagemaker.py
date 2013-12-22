@@ -77,8 +77,7 @@ def calculate_fps(page):
 	# fps:  2 6 10 12 15 24 25 30 50 60 
 	# (we skip the fractional ones for now...)
 	
-	#fps_values = [ (1,10), (1,5), (1,4), (1,3), (1,2), (1,1),
-	fps_values = [ (1,1), 
+	fps_values = [ (1,10), (1,5), (1,4), (1,3), (1,2), (1,1),
 	      (2,1), (6,1), (10,1), (12,1), (15,1), (24,1), 
 	      (25,1), (30,1) ]  #  not using:   (50,1), (60,1) 
 	
@@ -112,8 +111,8 @@ def calculate_fps(page):
 	      anyway...
 	"""     
 	for (frames, seconds) in fps_values:
-		#fps = float(frames) / seconds
-		fps = frames
+		fps = float(frames) / seconds
+		#fps = frames
 		if fps >= pps:
 			break	# this is the one.
 	
@@ -135,6 +134,7 @@ def make_sound_image(page, prog_bar, sound, image, size, max_samp_per_pixel=0):
 	#img_gen_progbar.max = 600		# This needs to be calculated 
 	#img_gen_progbar.post()		# initial layout...   called in Sound_image.build()
 	
+	#max_samp_per_pixel = 100	# rbf
 	snd_image = Sound_image(sound, image, size, prog_bar, max_samp_per_pixel)
 	snd_image.build()	# separate - we may want to change a few things before the build...
 	page.soundthumbnail = "SoundGraphic_tn.png"
@@ -257,6 +257,7 @@ def make_images(page, prog_bar=None, media_size=None):
 
 	# use the pixels and duration to determine frames per second...
 	page.fps = calc_fps_val(page)
+	#page.editor.set_member('fps', page.fps)	#rbf ? for now, update the screen?
 	
 	
 

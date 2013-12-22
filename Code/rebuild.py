@@ -439,7 +439,7 @@ def rebuild_and_upload(group, mirror=True, opt="nope"):
 		group.load()
 		
 	rebuild(group)
-	return
+	#return
 	if mirror:
 		do_mirror(group.coLab_home)
 

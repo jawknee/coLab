@@ -331,18 +331,23 @@ def mk_page_synopsis(page, type='Default'):
 
 	return(this_entry)
 
-def songgen(group):
+def songgen(group, song=None):
 	"""
-	Using the song list in the passed group, rebuild those pages
+	Using the passed song, or the song list in the passed group, rebuild those pages
 	"""
+	if song is None:
+		songlist = group.songlist
+	else:
+		songlist = [ song ]
+		
 	# html horizontal rules...
 	hr_half = '<hr width=50%>'
 	hr_full = '<p><hr><p>'
 	
-	for song in group.songlist:
+	for song in songlist:
 		print "Song found in group:", group.name, song.name
 
-	for song in group.songlist:
+	for song in songlist:
 		print "Writing song page:", song.name
 		
 		song_dir = os.path.join(group.home, 'Song', song.name)	

@@ -356,8 +356,9 @@ class Page:
 		Output the data structure in data file ready output
 		"""
 		EOL = '"\n'
-
-		return( 'name="' + self.name + EOL +
+		encoding = "# -*- coding: utf-8 -*-"		# probably belongs as a config value...
+		return( encoding + '\n' +
+			'name="' + self.name + EOL +
 			'page_type="' + self.page_type + EOL +
 			'locked=' + str(self.locked) + '\n' +
 			'group="' + self.group + EOL +
@@ -564,8 +565,9 @@ class Song:
 		"""
 		EOL = '"\n'
 
-
-		return( 'name="' + self.name + EOL +
+		encoding = "# -*- coding: utf-8 -*-"		# probably belongs as a config value...
+		return( encoding + '\n' +
+			'name="' + self.name + EOL +
 			'group="' + self.group + EOL +
 			'desc_title="' + self.desc_title + EOL +
 			'fun_title="' + self.fun_title + EOL +

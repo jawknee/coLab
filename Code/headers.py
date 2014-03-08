@@ -116,6 +116,7 @@ class Html:
 		self.head = """<!DOCTYPE html>
 		    <html>
 			<head><title>!fun_title!</title>
+			<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
 			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			""" 

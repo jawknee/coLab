@@ -415,10 +415,13 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	size is a (width, height) tuple.
 	The fontfile var is the full path to a truetype font file.
 	(for now, size=12)
+	
+	We convert the string from what could be utf-8 (check this - other formats are possible)
+	to the ascii equivalent since most TrueType fonts don't support them.
 	"""
 	print "Font file is:", fontfile
 	font = ImageFont.truetype(fontfile, fontsize)
-
+	string = string.encode('ascii', 'ignore')	# decode any utf-8 chars - not handled well in mo
 	# create a temp image - just long enough to get the size of the text
 	size = (10,10)
 	box = Image.new('RGBA', size, color=clColors.XPARENT)

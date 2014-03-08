@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 	A attempt at...
 	A initial GUI front-end interface to the various

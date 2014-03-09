@@ -363,8 +363,8 @@ class Page:
 			'page_type="' + self.page_type + EOL +
 			'locked=' + str(self.locked) + '\n' +
 			'group="' + self.group + EOL +
-			'desc_title=u"' + self.desc_title + EOL +
-			'fun_title=u"' + self.fun_title + EOL +
+			'desc_title=u"' + self.desc_title.strip() + EOL +
+			'fun_title=u"' + self.fun_title.strip() + EOL +
 			'duration=' + str(self.duration) + '\n' +
 			'media_size="' + str(self.media_size) + EOL +
 			'screenshot="' + self.screenshot + EOL +
@@ -380,7 +380,7 @@ class Page:
 			'assoc_projects="' + self.assoc_projects + EOL +
 			'song="' + self.song + EOL +
 			'part="' + self.part + EOL +
-			'description=u"""' + self.description + '"""\n' +
+			'description=u"""' + self.description.strip() + '"""\n' +
 			'\n' +
 			'xStart=' + str(self.xStart) + '\n' +
 			'xEnd=' + str(self.xEnd) + '\n' +
@@ -570,15 +570,14 @@ class Song:
 		return( encoding + '\n' +
 			'name="' + self.name + EOL +
 			'group="' + self.group + EOL +
-			'desc_title=u"' + self.desc_title + EOL +
-			'fun_title=u"' + self.fun_title + EOL +
+			'desc_title=u"' + self.desc_title.strip() + EOL +
+			'fun_title=u"' + self.fun_title.strip() + EOL +
 			'\n' +
 			'project="' + self.project + EOL +
 			'assoc_projects="' + self.assoc_projects + EOL +
 			'partlist=' + str(self.partlist) + '\n' +
 			'partnames=' + str(self.partnames) + '\n' +
-			'description=u"""' + self.description +	
-			'"""\n' +
+			'description=u"""' + self.description.strip() + '"""\n' +
 		
 			'prevlink="' + self.prevlink + EOL +
 			'nextlink="' + self.nextlink + EOL +

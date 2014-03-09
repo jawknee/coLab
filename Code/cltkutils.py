@@ -197,7 +197,7 @@ class clOption_menu:
 		
 	def opt_string(self, member, eval_string):
 		value = eval('member' + '.' + eval_string)
-		return(str(value))
+		return(unicode(value))
  
 class Popup:
 	"""

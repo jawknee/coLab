@@ -136,6 +136,7 @@ def pagegen(group, page):
 	fonts = clutils.fontlib()	# maybe put this in the group?
 	#  RBF   This needs a rewrite....      
 	fontpath = fonts.fontpath('AenigmaScrawl')
+	#fontpath = fonts.fontpath('DejaVuSans-BoldOblique')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/VanDijAntD.ttf'
 	if clutils.needs_update('.', file='Title.png'):
 		imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=8, fill=fill, maxsize=(640,90) )

@@ -153,7 +153,8 @@ class fontlib:
 		'DomCasual': 'Resources/Fonts/Dom Casual/DomCasDReg.ttf',
 		'RageJoi': 'Resources/Fonts/Rage/RageJoiD.ttf',
 		'Rage': 'Resources/Fonts/Rage/RageD.ttf',
-		'AenigmaScrawl': 'Resources/Fonts/AenigmaScrawl/aescrawl.ttf'
+		'AenigmaScrawl': 'Resources/Fonts/AenigmaScrawl/aescrawl.ttf',
+		'DejaVuSans-BoldOblique': 'Resources/Fonts/dejavu-fonts-ttf-2.34/ttf/DejaVuSans-BoldOblique.ttf'
 		}
 
 	def fontpath(self,font):

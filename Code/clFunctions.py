@@ -921,12 +921,12 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.ok = True
 		self.set_status( True)
 		filename = os.path.split(file_path)[1]
-		page.screenshot = file_path
 		self.editor.set_member('screenshot', file_path)
 		
 		destpath = os.path.join('coLab_local', filename)
 		
 		graphic_dest = os.path.join(page.home, destpath)
+		page.screenshot = graphic_dest
 		if self.copy_graphicfile:
 			popup = cltkutils.Popup("Sound file:" + filename, "Copying...")
 			page = self.editor.obj

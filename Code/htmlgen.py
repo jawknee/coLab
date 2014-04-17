@@ -875,8 +875,11 @@ def helpgen(group):
 		The top of the left side bar shows the 
 		most recent activity.  The most recent
 		is at the bottom of the list.  
-		Pages marked <span style="color: ff2020; size: smaller;">New!</span>
-		have not been commented on.  Those marked <span style="size: smaller;">(u)</span>
+		Pages marked 
+		<span style="color: #ff2020; size: smaller;">New!</span>
+		are "new" (currently less than two weeks old) and
+		have not been commented on.  Those marked 
+		<span style="color: #14ff14; size: smaller;">(u)</span>
 		have been recently commented on (updated).
 		<li><b>Current Projects</b><br>
 		Below that are the current projects - presently 

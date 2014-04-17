@@ -23,10 +23,12 @@ import cltkutils
 import cldate
 import clclasses
 import clAudio
+import clColors
 import imagemaker
 import clSchedule
 import htmlgen
 # 
+NOT_NEW = 14 * 86500		# how old is not new... in seconds (two weeks?)
 # put these somewhere....
 num_recent_entries = 5
 num_project_entries = 10
@@ -578,12 +580,21 @@ def rebuild(g, mirror=False, opt="nope"):
 	for pg in g.pagelist[index:]:
 		print "times:", pg.createtime, pg.updatetime
 
-		flag = '<span style="font-size: smaller;'	# first part
-		if pg.updatetime == pg.createtime:
-			flag = flag + ' color: red;"> New!'
-		else:
-			flag = flag + '"> (u)'
-		flag = flag + '</span>'
+		# If the page is new or has been updated recently,
+		# then make a "mark"
+		age = cldate.epochtime(cldate.utcnow()) - cldate.epochtime(pg.updatetime)
+		print "Age is:", age
+
+		flag = ''		# any tag on the end of name...
+		if age < NOT_NEW:
+			flag = '<span style="font-size: smaller;'	# first part
+			if pg.updatetime == pg.createtime:
+				# is it really new?
+				flag = flag + ' color: red;"> New!'
+			else:
+				brgreen = clColors.htmlcolor(clColors.GREEN)	# use our brighter green
+				flag = flag + ' color: ' + brgreen + ';"> (u)'
+			flag = flag + '</span>'
 
 		localURL = os.path.join(pageURLbase, pg.name)
 		f_recent.write('<li><a href="' + localURL + '/" title="' + pg.fun_title +

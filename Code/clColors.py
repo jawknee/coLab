@@ -22,3 +22,13 @@ TAN = (196, 176, 160, 255)
 COLAB_BLUE = (0, 73, 141, 255)	# coLab Logo central color
 COLAB_HILITE = (175, 198, 219, 255)	# logo highlight 
 COLAB_SHADOW = (0, 25, 48, 255)		# and shadow
+
+def htmlcolor(color=BLACK):
+	'''
+	Convert the passed color in an html string
+	'''
+	hcolor='#'
+	for c in color[0:3]:	# skip the transparncy, if any
+		hcolor += '%02x' % c
+		
+	return hcolor

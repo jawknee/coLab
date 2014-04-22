@@ -6,6 +6,7 @@ cd ~/coLab/Group/
 glist="*"
 glist="Johnny"
 glist="SBP"
+glist="Catharsis"
 for group in $glist
 do
 	(

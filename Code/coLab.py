@@ -113,9 +113,9 @@ class Colab():
 		... some data structure... - for now:
 		"""
 		self.current_grouptitle = "Catharsis"
-		self.current_grouptitle = "Johnny's Music"
-		self.current_grouptitle = "Test Group"
-		self.current_grouptitle = "South Bay Philharmonic"
+		#self.current_grouptitle = "Johnny's Music"
+		#self.current_grouptitle = "Test Group"
+		#self.current_grouptitle = "South Bay Philharmonic"
 
 		print "btw", self.current_grouptitle
 		#print "and", self.hello
@@ -307,21 +307,21 @@ class Colab():
 		self.function_frame = f_frame
 		new_page_button = ttk.Button(f_frame, text="New Page", command=lambda: clFunctions.create_new_page(self))
 		new_page_button.grid(column=0, row=4)
-		edit_page_button = ttk.Button(f_frame, text="Edit Page", command=lambda: clFunctions.edit_page(self))
-		edit_page_button.grid(column=1, row=4)
+		#edit_page_button = ttk.Button(f_frame, text="Edit Page", command=lambda: clFunctions.edit_page(self))
+		#edit_page_button.grid(column=1, row=4)
 		# RBF: put a test in here - if no pages yet in this group, replace with a label. (are we refreshing? - I think not)
 		pagelist=self.current_group.pagelist
 		pagelist.sort(key=clclasses.createkey, reverse=True)
 		self.pg_option_menu = cltkutils.clOption_menu(f_frame, pagelist, 'desc_title', default='Edit Page', command=self.edit_page)
-		self.pg_option_menu.om.grid(column=1, row=5)
+		self.pg_option_menu.om.grid(column=1, row=4)
 		new_song_button = ttk.Button(f_frame, text="New Song", command=lambda: clFunctions.create_new_song(self))
 		new_song_button.grid(column=2, row=4)
-		edit_song_button = ttk.Button(f_frame, text="Edit Song", command=lambda: clFunctions.edit_song(self))
-		edit_song_button.grid(column=3, row=4)
+		#edit_song_button = ttk.Button(f_frame, text="Edit Song", command=lambda: clFunctions.edit_song(self))
+		#edit_song_button.grid(column=3, row=4)
 		songlist = self.current_group.songlist
 		songlist.sort(key=clclasses.createkey, reverse=True)
 		self.sg_option_menu = cltkutils.clOption_menu(f_frame, songlist, 'desc_title', default='Edit Song', command=self.edit_song)
-		self.sg_option_menu.om.grid(column=3, row=5)
+		self.sg_option_menu.om.grid(column=3, row=4)
 		
 	def edit_page(self, selection):
 		"""

@@ -79,7 +79,7 @@ EOF
 # so we put it all into vars, post the content to the and mail it to list.
 #   Convert any html &#xxx; characters...
 text_title=$(echo $desc_title | $coLab_home/bin/html_decode.py)
-export cLmail_subject="New: $text_title Comment"
+export cLmail_subject="coMment: $text_title"
 # hardcoded for now - header should move to .coLab.conf
 
 export cLmail_bodytext=$(cat <<-EOF

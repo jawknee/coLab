@@ -30,8 +30,8 @@ import htmlgen
 # 
 NOT_NEW = 14 * 86500		# how old is not new... in seconds (two weeks?)
 # put these somewhere....
-num_recent_entries = 5
-num_project_entries = 10
+num_recent_entries = 7
+num_project_entries = 20
 
 class Render_engine():
 	"""
@@ -441,7 +441,8 @@ def rebuild_and_upload(group, mirror=True, opt="nope"):
 		group.load()
 		
 	rebuild(group)
-	return
+	#return
+	
 	if mirror:
 		do_mirror(group.coLab_home)
 

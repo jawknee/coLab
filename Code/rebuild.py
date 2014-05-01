@@ -124,9 +124,9 @@ class Render_engine():
 		"""
 		Called every now and then to see what we're up to...
 		"""
-		print "Entered check."
+		#print "Entered check."
 		if self.busy:
-			print "still busy..."
+			#print "still busy..."
 			self.master.after(1000,self.check)	# every second should be sufficient...
 			return
 		
@@ -303,6 +303,9 @@ class Render_engine():
 		self.busy = False
 		#browse_thread = threading.Thread(clSchedule.browse_url, args=(local_url))
 		#browse_thread.start()
+		print "Scheduling browser..."			#  RBF!!   hardcoded URL
+		remote_url = "http://jawknee.com/" + page.root
+		clSchedule.browse_url(remote_url)
 		print "Done."
 		
 def render_page(page, media_size=None, max_samples_per_pixel=0):
@@ -388,7 +391,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	quitButton.grid()
 
 	if page.use_soundgraphic:
-		imagemaker.make_sound_image(page, snd_img_progbar, sound_dest, img_dest, media_size, max_samples_per_pixel)
+		imagemaker.make_sound_image(page, sound_dest, img_dest, media_size, snd_img_progbar, max_samples_per_pixel)
 
 	try:
 
@@ -452,6 +455,8 @@ def do_mirror(coLab_home=None):
 		if coLab_home is None:
 			# I'll configure this when I get a chance....
 			sys.exit(1)	 # What were you thinking???
+
+		return		# skip the auto-ftp for now...		
 
 		scriptpath = os.path.join(coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
 		osascript = "/usr/bin/osascript"

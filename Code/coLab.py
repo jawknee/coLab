@@ -114,7 +114,7 @@ class Colab():
 		"""
 		self.current_grouptitle = "Catharsis"
 		#self.current_grouptitle = "Johnny's Music"
-		#self.current_grouptitle = "Test Group"
+		self.current_grouptitle = "Test Group"
 		#self.current_grouptitle = "South Bay Philharmonic"
 
 		print "btw", self.current_grouptitle

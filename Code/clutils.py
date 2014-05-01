@@ -5,7 +5,9 @@
 
 import os
 import sys
+import string
 import imp
+import six
 
 def get_config(debug=False):
 	"""
@@ -97,10 +99,36 @@ def touch(filename):
 	finally:
 		f.close()
 
+def string_to_filename(title):
+	"""
+	Convert a passed string to a legal filename
+	"""
+	filename = ''	# start here - add chars as we go...
+	
+	if not isinstance(title, six.string_types):
+		print "ERROR:  string_to_filename - not a string", title
+		sys.exit(1)
+		
+	valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
+	blank_subst = '_'
+	other_subst = '-'
+
+	print "Valid chars:", valid_chars
+	for c in title:
+		if valid_chars.find(c) != -1:
+			filename += c
+		elif c.isspace():
+			filename += blank_subst
+		else:
+			filename += other_subst
+	return filename
+		
 def has_filetype(path, typelist=[], min=1):
 	"""
 	return true if the given path has at least "min" files
-	that match the supplied type list
+	that match the supplied type list.
+	Used to determine if we need look in a dir for a graphic (.png)
+	or audio (.aif, .aiff).
 	"""
 	try:
 		os.chdir(path)
@@ -178,6 +206,8 @@ class fontlib:
 
 
 if __name__ == "__main__":
+	for name in ['This', 'is a space', '?,()#&*?what??']:
+		print "string_to_filename:", string_to_filename(name)
 	print "testing get_config"
 	conf=get_config()
 	print "result:",  conf.coLab_url_head, conf.coLab_rel_head

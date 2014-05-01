@@ -34,7 +34,9 @@ import clColors
 
 
 #size = (width, height)
-
+poster_width = 640
+poster_height = 480
+poster_size = (poster_width, poster_height)
 tn_width = 160
 tn_height = 120
 tn_size = (tn_width, tn_height)
@@ -121,7 +123,7 @@ def calculate_fps(page):
 	return( (frames, seconds) )	# should account for max fps being enough...
 
 
-def make_sound_image(page, prog_bar, sound, image, size, max_samp_per_pixel=0):
+def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixel=0):
 	print "Creating image...", image
 	"""
 	soundimageTop = tk.Toplevel()
@@ -134,8 +136,11 @@ def make_sound_image(page, prog_bar, sound, image, size, max_samp_per_pixel=0):
 	#img_gen_progbar.max = 600		# This needs to be calculated 
 	#img_gen_progbar.post()		# initial layout...   called in Sound_image.build()
 	
-	#max_samp_per_pixel = 100	# rbf
-	snd_image = Sound_image(sound, image, size, prog_bar, max_samp_per_pixel)
+	# is we're not strict (and didn't pass in an alternate value)
+	# skip most samples....
+	if not page.strict_graphic and max_samp_per_pixel == 0:
+		max_samp_per_pixel = 250	# 
+	snd_image = Sound_image(sound, image, size, prog_bar, page.graphic_theme, max_samp_per_pixel)
 	snd_image.build()	# separate - we may want to change a few things before the build...
 	page.soundthumbnail = "SoundGraphic_tn.png"
 	
@@ -161,13 +166,14 @@ def make_sub_images(page, size=None):
 	graphic = os.path.join(page.home, page.graphic)
 	thumbnail = os.path.join(page.home, page.thumbnail)
 	if size is None:
-		size = config.Sizes().sizeof(page.media_size)
+		#size = config.Sizes().sizeof(page.media_size)
+		size = poster_size
 	#
 	try:
 		orig_image = Image.open(baseimage)
 		page.screenshot_width = orig_image.size[0]	# save the width...
 	except:
-		print "Error opening:", base_image
+		print "Error opening:", baseimage
 	else:
 		base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 		tn_image = orig_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
@@ -222,6 +228,7 @@ def make_images(page, prog_bar=None, media_size=None):
 	# the original.   The adjust factor is for 
 	# the time boxes.
 	#"""
+	
 	size_class = config.Sizes()
 	size = size_class.sizeof(media_size)
 	(width, height) = size
@@ -236,8 +243,9 @@ def make_images(page, prog_bar=None, media_size=None):
 	box_rect = [ (0,0), (box_width-1, box_height-1) ]
 	box_rect2 = [ (2,2), (box_width-3, box_height-3) ]
 
-	lbox_offset = (2, height - box_height - 2)
-	rbox_offset = (width - box_width - 2, height - box_height - 2)
+	h_adj = int(math.ceil(2 * adjust_factor))
+	lbox_offset = (2, height - box_height - h_adj)
+	rbox_offset = (width - box_width - 2, height - box_height - h_adj)
 
 	# create basic box...
 	box = Image.new('RGBA', box_size, color=clColors.PART_BLACK)
@@ -304,8 +312,9 @@ def make_images(page, prog_bar=None, media_size=None):
 	# change the colors of the cursor and 
 	# and the contrasting surround (mostly transparent)
 	if page.use_soundgraphic:
-		linecolor=clColors.MAIZE
-		offsetcolor=clColors.LOLITE
+		theme_colors = clColors.Themes(page.graphic_theme)
+		linecolor=theme_colors.cursor
+		offsetcolor=theme_colors.cursor_offset
 	else:
 		linecolor=clColors.BLACK
 		offsetcolor=clColors.HILITE
@@ -324,7 +333,7 @@ def make_images(page, prog_bar=None, media_size=None):
 		cursor_bot = height - int(config.SG_BOTTOM_BORDER * adjust_factor)
 	else:	#cursor is top to bottom
 		cursor_top = 0
-		cursor_bot = height - 1
+		cursor_bot = height - (1 / adjust_factor)
 
 	prog_bar.update(0)		# Reset the time to now...
 	#while fr <= frames:
@@ -543,7 +552,7 @@ class Sound_image():
 	Generates a standard (or other) sized png file.
 	"""
 	
-	def __init__(self, sound_file, image_file, media_size, prog_bar=None, max_samp_per_pixel=0):
+	def __init__(self, sound_file, image_file, media_size, prog_bar=None, theme='Default', max_samp_per_pixel=0):
 		"""
 		open the sound file and set the various internal vars.
 		"""
@@ -574,7 +583,8 @@ class Sound_image():
 		
 		self.samp_max = 1 << (self.sampwidth * 8 - 1)	# -1 because we're signed.  range is -samp_max(-1?) - +samp_max; 3 => -8388607 - 8388608
 		
-	
+		self.theme_colors = clColors.Themes(theme)
+		
 	def build(self):
 		"""
 		Build the image based on what we know...
@@ -601,6 +611,7 @@ class Sound_image():
 		# Set up min and max based on border size,
 		# and various factors and values
 		
+
 		self.size_class = config.Sizes()	# new size class for size fun...
 		size = self.size_class.sizeof(self.media_size)
 		(width, height) = size
@@ -612,7 +623,7 @@ class Sound_image():
 		lborder = int(config.SG_LEFT_BORDER * adjust_factor)
 		rborder = int(config.SG_RIGHT_BORDER * adjust_factor)
 		tborder = int(config.SG_TOP_BORDER * adjust_factor)
-		bborder = int(config.SG_BOTTOM_BORDER * adjust_factor)
+		bborder = int(config.SG_BOTTOM_BORDER * adjust_factor)	
 		print "Border constants set."
 		xmin = lborder
 		xmax = width - rborder 
@@ -622,7 +633,9 @@ class Sound_image():
 		# how "tall" is each sample in the range of values - account for the number of channels
 		levels_per_pixel = ( float(self.samp_max * 2) / (ymax - ymin + 1) ) * self.nchannels
 		
-		graphic = Image.new('RGBA', (width, height), color=clColors.PART_BLACK)
+		colors = self.theme_colors
+		#graphic = Image.new('RGBA', (width, height), color=clColors.PART_BLACK)
+		graphic = Image.new('RGBA', (width, height), color=colors.background)
 		graphic_draw = ImageDraw.Draw(graphic)
 		
 		# Draw the limit lines...
@@ -698,7 +711,10 @@ class Sound_image():
 		aud_frame_count = 0				# how many are we really reading?
 		last_samp = 0					# where were we last?
 		for v in range(num_xpix):		# Calculate min/max for each line in the graphic
-			self.prog_bar.update(v)
+			try:
+				self.prog_bar.update(v)
+			except:
+				pass	# if there's no bar, there's no problem
 
 			next_samp_num = int((v+1) * aud_frames_per_pixel)	# where are we reading to next?
 			for c in range(nchan):
@@ -730,7 +746,7 @@ class Sound_image():
 					val_squared = value * value
 					sum_sqrs[c] += val_squared	# squares
 
-					rms_tab[c][v] += val_squared / num_samps	# average of squares for this line
+					rms_tab[c][v] += ( val_squared / num_samps ) * aud_frame_skip	# average of squares for this line 
 					if value < min_tab[c][v]:
 						min_tab[c][v] = value
 
@@ -817,12 +833,12 @@ class Sound_image():
 				
 				if rms_display:
 					# as three - rms "middle" is darker
-					graphic_draw.line([(x,t_rms), (x,b_rms)], fill = clColors.DK_BLUE)
-					graphic_draw.line([(x,top), (x,t_rms)], fill = clColors.EL_BLUE)
-					graphic_draw.line([(x,b_rms), (x,bot)], fill = clColors.EL_BLUE)
+					graphic_draw.line([(x,t_rms), (x,b_rms)], fill =  colors.rms)
+					graphic_draw.line([(x,top), (x,t_rms)], fill = colors.wave)
+					graphic_draw.line([(x,b_rms), (x,bot)], fill = colors.wave)
 				else:
 					# as one line...
-					graphic_draw.line([(x,top), (x,bot)], fill = clColors.EL_BLUE)
+					graphic_draw.line([(x,top), (x,bot)], fill = colors.wave)
 					
 				# Draw the end points - mark any likely clip points
 				# Note these may not be explicit clips, since we are
@@ -837,7 +853,7 @@ class Sound_image():
 					tip_stretch = clip_stretch
 					#print "=====Clip!", s, c, max_tab[c][s], min_tab[c][s], max, min
 				else:
-					fill = clColors.HILITE
+					fill = colors.peak
 					tip_stretch	= 0
 				#graphic_draw.point([(x,top)], fill = fill)
 				graphic_draw.line([(x-tip_stretch,top), (x+tip_stretch,top)], fill = fill)
@@ -849,7 +865,7 @@ class Sound_image():
 					tip_stretch = clip_stretch	# allows us to highliging...
 					#print "-----Clip!", s, c, max_tab[c][s], min_tab[c][s], max, min
 				else:
-					fill = clColors.HILITE
+					fill = colors.peak
 				
 				#graphic_draw.point([(x,bot)], fill = fill)
 				graphic_draw.line([(x-tip_stretch,bot), (x+tip_stretch,bot)], fill = fill)
@@ -874,7 +890,8 @@ class Sound_image():
 		rms = 'rms(dB): '
 		offset = 'Bias(%): '
 		for c in range(nchan):
-			rms_val = 20. * math.log10( math.sqrt( sum_sqrs[c] / self.nframes ) / self.samp_max  )
+			rms_avg = math.sqrt( sum_sqrs[c] / (self.nframes / aud_frame_skip ) )
+			rms_val = 20. * math.log10( rms_avg / self.samp_max  )
 			
 			rms += comma + clist[c] +': %0.1f' % rms_val
 			#offset_val = 20 * math.log10( float(run_count[c]) / self.samp_max )
@@ -892,6 +909,9 @@ class Sound_image():
 		
 		top = 5		# yeah, I know - but it basically works everything else falls out of the equation
 		top_string = 'Headroom: %0.1fdB' % -headroom
+		if aud_frame_skip != 1:
+			top_string += ' (approx)'
+
 
 		
 		if self.size_class.is_larger_than(self.media_size, 'Small'):
@@ -1015,7 +1035,7 @@ def main():
 	
 	page.media_size = media_size
 	pic = img_base + "SoundGraphic.png"
-	Sound_image(snd, pic, media_size, prog_bar).build()
+	Sound_image(snd, pic, media_size, prog_bar, page.graphic_theme).build()
 
 	page.use_soundgraphic = True
 	

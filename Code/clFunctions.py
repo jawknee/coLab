@@ -33,6 +33,7 @@ import clGraphEdit
 import clSchedule
 import imagemaker
 import clAudio
+import clColors
 import rebuild
 import htmlgen
 
@@ -41,6 +42,21 @@ class Data_row:
 	Base class for the various rows that gather data.  
 	Basic layout is a row that has the name, a status cell,
 	and some kind of a gadget that presents/gathers data.
+	
+	Classes are looking like:
+	
+	Data_row
+		Entry_row
+		Text_row
+		Menu_row
+			Theme_menu_row
+			Resolution_menu_row
+			Song_menu_row
+			Graphic_row
+				Graphic_menu_row
+					Graphic_menu_row_soundfile
+					Graphic_menu_row_screenshot
+		
 	"""
 	def __init__(self, editor, text, member):
 		"""
@@ -86,8 +102,8 @@ class Data_row:
 		self.status.configure(foreground=color)
 		self.statusVar.set(txt)
 	
-
-			
+	
+		
 class Entry_row(Data_row):
 	"""
 	A class for an entry row in an edit panel.  Holds the info specific to
@@ -396,7 +412,7 @@ class Menu_row(Data_row):
 		try:
 			value = self.dict[value]
 		except:
-			pass
+			pass	# otherwise, just return the value
 		
 		self.value = value
 		# if the menu item starts with a "-", it is an unacceptable value
@@ -414,6 +430,35 @@ class Menu_row(Data_row):
 		self.value = value
 		self.ok = True
 		self.post()
+
+class Theme_menu_row(Menu_row):
+	def __init__(self, editor, text, member):
+		Menu_row.__init__(self, editor, text, member)
+
+		# we start with a theme object...
+		theme_obj = clColors.Themes(editor.obj.graphic_theme)
+			
+		self.titles = theme_obj.theme_names
+		self.default = theme_obj.theme
+		self.ok = True				# always good...
+		
+	def handle_menu(self, value):
+		"""
+		Reset the editor's size vars...
+		"""
+		Menu_row.handle_menu(self, value)
+		
+		print "Rebuild the thumbnail(s) as appropriate..."
+		self.editor.read()
+		
+	
+	def return_value(self):
+		"""
+		Menu return - but force ok to true - we're always right
+		"""
+		self.set_status(True)
+		return(self.value, self.ok)
+
 
 class Resolution_menu_row(Menu_row):
 	def __init__(self, editor, text, member):
@@ -645,7 +690,7 @@ class Graphic_menu_row(Menu_row):
 		self.graphic_path = graphic_path	# may be set by the derived class post method
 		self.editor.row += 1		# this one takes up 2 rows, one more than most
 		self.row = self.editor.row	# the menu part is the second row
-
+		self.status = None			# don't post a status for the menu
 		
 		self.graphic_row = Graphic_row(self.editor, text, member, graphic_path)	# create second row for the menu
 		self.graphic_row.row = self.row - 1		# graphic appears in the row above.
@@ -675,10 +720,10 @@ class Graphic_menu_row(Menu_row):
 		self.graphic_row.post()
 		
 		if self.new:
-			self.set_status(None)
+			self.set_status(ok=True)
 			self.new = False
 		else:
-			self.set_status(True)
+			self.set_status(ok=True)
 	
 	def set(self, value):
 		self.value = value
@@ -731,7 +776,9 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 			print "Time to relax - or panic s", action
 
 	def load(self):
-	
+		"""
+		Mostly just set up the initial path to the file...
+		"""
 		print "this is the sound file loader"
 		page = self.editor.obj
 		page.changed = True
@@ -748,6 +795,9 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		self.file_load()
 
 	def reuse(self):
+		"""
+		Similar to load - but point to where we keep the local files
+		"""
 		print "this is the sound file reloader"
 		page = self.editor.obj
 		page.changed = True
@@ -760,6 +810,9 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		self.file_load()
 
 	def file_load(self):
+		"""
+		Bring in the file we are pointing to in initialPath and initialfile...
+		"""
 		page = self.editor.obj
 		print "----File load - initial file:", self.initialfile
 		file_path = tkFileDialog.askopenfilename(initialdir=self.initialPath, defaultextension='.aif', title="Open AIFF sound file...", filetypes=self.filetypes, initialfile=self.initialfile)
@@ -767,7 +820,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 			return
 		
 		self.ok = True
-		self.set_status( True)
+		self.set_status(True)
 		page.soundfile = file_path
 		self.editor.set_member('soundfile', file_path)
 
@@ -789,6 +842,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 			finally:
 				popup.destroy()
 			
+		#  handle the duration...
 		page.duration = clAudio.get_audio_len(sound_dest)
 		self.editor.set_member('duration', str(page.duration))
 		#self.editor.duration_obj.nameVar.set(self.editor.obj.duration)
@@ -797,22 +851,21 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		self.size_save = page.media_size
 		page.media_size = 'Tiny'	# for now - probably will define a "Preview" size
 		
-		"""  KLUDGE ALERT!!--------------------------------------------------------------"""
-		#self.editor.res_obj.ok = True
-		#self.editor.res_obj.set_status(True)
 		
+		'''   Let's try a simpler way...
 		# Set up a few vars to only generate the sound graphic..
 		use_save = page.use_soundgraphic
 		page.use_soundgraphic = True
 		page.needs_rebuild = False
 		# 
-		#page_thread=threading.Thread(target=self.render_and_post, args=(page, 'Tiny', 100))
-		#page_thread.start()
 		
 		rendertop = rebuild.render_page(page, media_size='Tiny', max_samples_per_pixel=100)   # render as a preview...
 		rendertop.destroy()		# yeah, not too keen on this, but destroying the top window in in the routine causes a hang...
 		
 		page.use_soundgraphic = use_save
+		'''
+		img_dest = os.path.join(page.home, page.soundgraphic)
+		imagemaker.make_sound_image(page, sound_dest, img_dest, size='Tiny', max_samp_per_pixel=100)
 		page.needs_rebuild = True
 		page.changed = True
 		
@@ -961,7 +1014,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			xStart = page.xStart
 			xEnd = page.xEnd
 		else:		# set the start/end to a reasonable guess
-			print "New grhpic ------------------------", graphic_dest, w_05, w_95
+			print "New graphic ------------------------", graphic_dest, w_05, w_95
 			xStart = w_05	
 			xEnd = w_95
 			
@@ -1081,7 +1134,57 @@ class Select_edit():
 	def menu_callback(self, value):
 		print "called back we were", value
 
+					
+class Check_button():
+	"""
+	A class to display a check button - simpler than the Row classes, 
+	this is presumed to drop into an existing row somewhere.
+	
+	As the others, supplies  return_vakue, and set methods.
+	Does not supply "post", the self.widget opject can be 
+	
+	if text is a list, two values:  [ unpressed-text, pressed-text ]
+	(Not yet implemented)
+	
+	Returns: True or False (is button pressed?)
 		
+	"""
+	def __init__(self, parent, text='Button', member='unsetbutton', value=False):
+		
+		self.parent = parent
+		self.text = text
+		self.member = member
+		self.value = value
+		
+		self.row = 1			# default - leaves room  in row/column 0
+		self.column = 1
+		self.sticky = tk.NW
+		
+		self.new = True		# button pressed or changed?
+		
+		self.controlvar = tk.IntVar()
+		self.widget = ttk.Checkbutton(parent, text=self.text, variable=self.controlvar)
+
+	def post(self):
+		"""
+		Simply use grid to post it, 
+		then set the var
+		"""
+		self.widget.grid(row=self.row, column=self.column, sticky=self.sticky)
+		self.controlvar.set(self.value)
+		
+	def return_value(self):
+		"""
+		What it says: return the value of the Entry widget
+		"""
+		self.value = self.controlvar.get()
+		return (self.value, True)
+	
+	def set(self, value):
+		self.value = value
+		self.new = False
+		#self.post()
+
 class Edit_screen:
 	"""
 	Base class for the Page, Song and whatever future
@@ -1240,7 +1343,12 @@ class Edit_screen:
 		self.ok = False
 		return				
 		
-	def setup(self):		# RBF: at least check to see if we ever call  this - I'm guessing no...
+	def setup(self):	
+		'''
+		Handle initial setup duties for an edit object,
+		open the top-level edit frame, etc....
+		arguably could be part of __init__
+		'''
 		
 		print "-----------Setup called!"
 		if self.edit_frame is not None:
@@ -1254,7 +1362,6 @@ class Edit_screen:
 			
 		#
 		# Basically start over - this time with the name preset...
-		#time.sleep(1)		# Seems to be necessary for the window to die (is there a call for this?)
 		self.editTop = tk.Toplevel()
 		self.obj.top = self.editTop.winfo_toplevel()
 		self.editTop.transient(self.parent.top)
@@ -1402,7 +1509,7 @@ class Page_edit_screen(Edit_screen):
 		menu.post()
 		menu.set_status(True)	# It's always good...
 		menu.ok = True
-		"""  Major Kludge Alert - this is just get create page working...  track this down!!!!!!!"""
+		"""  RBF:  Major Kludge Alert - this is just get create page working...  track this down!!!!!!!"""
 		self.res_obj = menu
 
 		#---- Sound file...
@@ -1411,13 +1518,26 @@ class Page_edit_screen(Edit_screen):
 		self.editlist[row.member] =  row
 		row.post()
 		
+		#---- Strict Mode
+		bonus_frame = ttk.Frame(self.edit_frame)
+		bonus_frame.grid(row=self.row-2, column=3, sticky=tk.NW)
+
+		button = Check_button(bonus_frame, text='Strict Graphics (slower)', member='strict_graphic', value=self.obj.strict_graphic)
+		button.post()
+		self.editlist[button.member] = button
 		
 		#---- Duration - display only ...
 		row = Entry_row(self, "Duration", "duration", width=8)
 		row.editable = False
+		row.ok = None
 		self.editlist[row.member] =  row
 		row.post()
 		self.duration_obj = row
+		
+		#----- graphic theme (color scheme)
+		menu = Theme_menu_row(self, 'Theme', 'graphic_theme')		
+		self.editlist[menu.member] = menu
+		menu.post()
 		
 		#---- graphic file...
 		# (new version, menu based)

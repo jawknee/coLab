@@ -324,6 +324,8 @@ class Page:
 		('graphic', "ScreenShot.png"),
 		('thumbnail', "ScreenShot_tn.png"),
 		('use_soundgraphic', False),
+		('strict_graphic', True),
+		('graphic_theme', 'Default'),
 		('soundfile', ""),
 		('soundgraphic', os.path.join("coLab_local", "SoundGraphic.png")),
 		('soundthumbnail', "SoundGraphic_tn.png"),
@@ -370,9 +372,11 @@ class Page:
 			'screenshot="' + self.screenshot + EOL +
 			'graphic="' + self.graphic + EOL +
 			'thumbnail="' + self.thumbnail + EOL +
-			'use_soundgraphic=' + str(self.use_soundgraphic) + '\n'
+			'use_soundgraphic=' + str(self.use_soundgraphic) + '\n' +
 			'\n' +
 			'soundfile="' + self.soundfile + EOL +
+			'strict_graphic=' + str(self.strict_graphic) + '\n' +
+			'graphic_theme="' + self.graphic_theme + EOL +
 			'soundgraphic="' + self.soundgraphic + EOL +
 			'soundthumbnail="' + self.soundthumbnail + EOL +
 			'\n' +

@@ -53,9 +53,9 @@ class Data_row:
 			Resolution_menu_row
 			Song_menu_row
 			Graphic_row
-				Graphic_menu_row
-					Graphic_menu_row_soundfile
-					Graphic_menu_row_screenshot
+			Graphic_menu_row
+				Graphic_menu_row_soundfile
+				Graphic_menu_row_screenshot
 		
 	"""
 	def __init__(self, editor, text, member):
@@ -74,25 +74,37 @@ class Data_row:
 		self.label = None
 		self.new = editor.new		# when true, items are ghosted / replaced on first key  
 		self.ok = not self.new		# new items are assumed to be not good yet, and vice-versa
+		self.editable = True		# occasionally we get one (existing file name) that we don't want to edit...
 		
 		self.content = ""
 	
 	def set(self, value):
 		self.value = value
 		self.new = False
-		self.set_status(self.ok)
+		if self.editable:
+			self.post_status()
+		else:
+			self.post_status(False)
 		self.post()
 		
-	def set_status(self, ok = None):
+	def post_status(self, ok=None):
 		"""
 		Set the status of the widget - log the state, and update
 		the status column, should work for most/all row classes...
+		If nothing / None is passed in, use the row's current status.
 		"""
-		self.ok = ok
+		print "Post_status: ", self.member, self.ok, self.editable
+		if not self.editable:	# not editable, no status - takes prio
+			ok = None
+		elif ok is None:
+			ok = self.ok
+		else:
+			self.ok = ok
+		# None means don't display any, other Good/Bad
 		if ok is None:
 			color = '#a73'
 			txt = ' - '
-		if ok:
+		elif ok:
 			color = '#2f2'	# bright green
 			txt = 'OK'
 		else:
@@ -125,7 +137,6 @@ class Entry_row(Data_row):
 		self.match_text = ''		# used to recall the last bad match (equiv. file name, e.g.)	
 		self.match_color = '#666'
 		#self.new = editor.new		# when true, items are ghosted / replaced on first key  
-		self.editable = True		# occasionally we get one (existing file name) that we don't want to edit...
 		
 		
 		# Validation callback parameters
@@ -139,8 +150,8 @@ class Entry_row(Data_row):
 		right (left justified).  An indicator sits in between (green check, orange ?, red X).
 		If an exclude list is given, it can be used by the validation routine.
 		"""
-		self.value_strVar = tk.StringVar()
 		if self.label is None:
+			self.value_strVar = tk.StringVar()
 			# write the base label...
 			self.label = ttk.Label(self.editor.edit_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
@@ -158,9 +169,9 @@ class Entry_row(Data_row):
 			self.status = ttk.Label(self.editor.edit_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
 			if self.new:
-				self.set_status(None)
+				self.post_status(None)
 			else:
-				self.set_status(ok=True)
+				self.post_status(ok=True)
 		else:
 			self.widget.destroy()
 		
@@ -171,7 +182,7 @@ class Entry_row(Data_row):
 			self.widget.grid(row=self.row,column=self.column + 2, columnspan=3, sticky=tk.W)
 			self.value_strVar.set(self.value)
 			#self.ok = True		# since we can't change it - it's good
-			self.set_status(ok=True)
+			self.post_status()
 			print "non-edit _obj:", self.widget
 		else:
 			
@@ -265,7 +276,8 @@ class Entry_row(Data_row):
 		print "Would is:", would
 		#-- zero length?  
 		if  len(would) == 0:
-			self.set_status(ok = False)
+			self.ok = False
+			self.post_status()
 			print "Bad-==========-Zero length"
 			self.match_text = ''
 			self.post_match()
@@ -295,7 +307,8 @@ class Entry_row(Data_row):
 					self.match_text += item + '\n'
 		#
 		# Post the status and the matching text, if any
-		self.set_status(good)			
+		self.ok = good
+		self.post_status()
 		self.post_match()
 		return r_code	
 			
@@ -316,12 +329,6 @@ class Entry_row(Data_row):
 		print "Entry return value:", self.text, self.value, self.ok
 		return (self.value, self.ok)
 	
-	def set(self, value):
-		self.value = value
-		self.new = False
-		self.set_status(True)
-		self.post()
-		
 class Text_row(Data_row):
 	"""
 	A class for a text row in an edit panel.    Very simple
@@ -334,7 +341,11 @@ class Text_row(Data_row):
 		# write the base label...
 		self.label = tk.Label(self.editor.edit_frame, text=self.text+":", justify=tk.RIGHT)
 		self.label.grid(row=self.row,column=self.column, sticky=tk.E)
-		
+		# set up a small label between the title and the value to 
+		# display the status of the value...
+		self.statusVar = tk.StringVar()
+		self.status = ttk.Label(self.editor.edit_frame, textvariable=self.statusVar)
+		self.status.grid(row=self.row, column=self.column + 1)
 		# need a "sub-frame" to hold the desc. and scroll bar.
 		self.subframe = tk.LabelFrame(self.editor.edit_frame, relief=tk.GROOVE)
 		self.subframe.grid(row=self.row, column=self.column+2, columnspan=3, sticky=tk.W)
@@ -377,11 +388,15 @@ class Menu_row(Data_row):
 		# write the base label...
 			self.label = tk.Label(self.editor.edit_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
+			# set up a small label between the title and the value to 
+			# display the status of the value...
+			self.statusVar = tk.StringVar()
+			self.status = ttk.Label(self.editor.edit_frame, textvariable=self.statusVar)
+			self.status.grid(row=self.row, column=self.column + 1)
 		else:
 			self.widget.destroy()
-
-
 		self.post_menu()
+		self.post_status()
 			
 	def post_menu(self):
 		try:
@@ -399,10 +414,6 @@ class Menu_row(Data_row):
 		self.statusVar = tk.StringVar()
 		self.status = tk.Label(self.editor.edit_frame, textvariable=self.statusVar)
 		self.status.grid(row=self.row, column=self.column + 1)
-		if self.new:
-			self.set_status(None)
-		else:
-			self.set_status(self.ok)
 	
 		
 	def handle_menu(self, value):
@@ -412,24 +423,19 @@ class Menu_row(Data_row):
 		try:
 			value = self.dict[value]
 		except:
-			pass	# otherwise, just return the value
+			pass		# otherwise, just return the value
 		
 		self.value = value
 		# if the menu item starts with a "-", it is an unacceptable value
-		self.set_status( value[0] != '-')
+		self.post_status( value[0] != '-')
 		self.editor.changed = True	
 		
 	def return_value(self):
 		"""
 		Return the OptionMenu value...
 		"""
-
 		return(self.value, self.ok)
 	
-	def set(self, value):
-		self.value = value
-		self.ok = True
-		self.post()
 
 class Theme_menu_row(Menu_row):
 	def __init__(self, editor, text, member):
@@ -456,7 +462,7 @@ class Theme_menu_row(Menu_row):
 		"""
 		Menu return - but force ok to true - we're always right
 		"""
-		self.set_status(True)
+		self.post_status(True)
 		return(self.value, self.ok)
 
 
@@ -477,7 +483,7 @@ class Resolution_menu_row(Menu_row):
 			
 		self.titles = tuple(l)		# Convert to a tuple...
 		self.dict = d
-		self.ok = True				# always good...
+		self.ok = None				# calulated
 		
 	def handle_menu(self, value):
 		"""
@@ -498,7 +504,7 @@ class Resolution_menu_row(Menu_row):
 		"""
 		Menu return - but force ok to true - we're always right
 		"""
-		self.set_status(True)
+		self.post_status(True)
 		return(self.value, self.ok)
 	
 class Song_menu_row(Menu_row):
@@ -568,7 +574,7 @@ class Song_menu_row(Menu_row):
 		song_obj.needs_rebuild = True
 
 		# if the menu item starts with a "-", it is an unacceptable value
-		self.set_status(ok=value[0] != '-')	 # For now, if the song names doesn't start with '-', we're good to go 
+		self.post_status(ok=value[0] != '-')	 # For now, if the song names doesn't start with '-', we're good to go 
 		self.new = not self.ok
 		self.editor.changed = True			# we may not need this....
 		
@@ -596,10 +602,10 @@ class Song_menu_row(Menu_row):
 		print "testing the partlist..."
 		if song_obj.partlist == [ 'All'	]:
 			print "Partlist is just 'all'"
-			part_obj.set_status(ok=True)
+			part_obj.post_status(ok=True)
 			self.editor.set_member('part', 'All')
 		else:
-			part_obj.set_status(ok=False)
+			part_obj.post_status(ok=False)
 			print "Song object part list is vague:", song_obj.name, part_obj.ok
 			#time.sleep(2)
 		# set the new dictionary in place...
@@ -618,7 +624,11 @@ OPT_MENU_DICT = { 'Load': 'Load a new !type! file...',
 class Graphic_row(Data_row):
 	"""
 	Post a row with a title and a graphic...
-	and something to let us deal with it ("Change" button?)
+	The member is a file name, and that file is displayed, if it exists,
+	otherwise a default is shown. 
+	Maybe associated with a graphic menu row that modifies the file and
+	possibly other options.
+	
 	"""
 	def __init__(self, editor, text, member, graphic_path):
 		Data_row.__init__(self, editor, text, member)
@@ -661,15 +671,13 @@ class Graphic_row(Data_row):
 		self.graph_el.post()    
 	       
 		if self.new:
-			self.set_status(None)
 			self.new = False
-		else:
-			self.set_status(True)
+		self.post_status()
        
 	def set(self, value):
 		self.value = value
 		self.new = False
-		self.set_status(ok=True)
+		self.post_status(ok=self.ok)
 		self.post()
        
 
@@ -690,7 +698,7 @@ class Graphic_menu_row(Menu_row):
 		self.graphic_path = graphic_path	# may be set by the derived class post method
 		self.editor.row += 1		# this one takes up 2 rows, one more than most
 		self.row = self.editor.row	# the menu part is the second row
-		self.status = None			# don't post a status for the menu
+		self.ok = None			# don't post a status for the menu
 		
 		self.graphic_row = Graphic_row(self.editor, text, member, graphic_path)	# create second row for the menu
 		self.graphic_row.row = self.row - 1		# graphic appears in the row above.
@@ -719,16 +727,19 @@ class Graphic_menu_row(Menu_row):
 		self.graphic_row.graphic_path = self.graphic_path
 		self.graphic_row.post()
 		
+		'''
 		if self.new:
-			self.set_status(ok=True)
+			self.post_status(ok=True)
 			self.new = False
 		else:
-			self.set_status(ok=True)
+			self.post_status(ok=True)
+		#'''
+		self.post_status(None)	# the menu has no status
 	
 	def set(self, value):
 		self.value = value
 		self.new = False
-		self.set_status(ok=True)
+		self.post_status(ok=None)
 		self.post()
 	
 
@@ -760,7 +771,6 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 
 		print "Graphic menu list:", self.menulist
 		self.default = "Change Sound File"
-		
 		Graphic_menu_row.post(self)
 
 	def handle_menu(self, menustring):
@@ -819,8 +829,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		if not file_path:
 			return
 		
-		self.ok = True
-		self.set_status(True)
+		self.graphic_row.post_status(True)
 		page.soundfile = file_path
 		self.editor.set_member('soundfile', file_path)
 
@@ -881,7 +890,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		#page.graphic_row.post()
 
 	def return_value(self):
-		return(self.editor.obj.soundfile, self.ok)	# I know, a bit redundant...	
+		return(self.editor.obj.soundfile, self.graphic_row.ok)	# I know, a bit redundant...	
 		
 class Graphic_menu_row_screenshot(Graphic_menu_row):
 	"""
@@ -971,8 +980,6 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		
 		orig_filename = os.path.split(self.initialfile)[1]	# used to determine if we have the same file...
 		print "Graphic_menu_row_screenshot File path is:", file_path
-		self.ok = True
-		self.set_status( True)
 		filename = os.path.split(file_path)[1]
 		self.editor.set_member('screenshot', file_path)
 		
@@ -992,6 +999,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			finally:
 				popup.destroy()
 	
+		self.post_status(ok=True)
 		# use "open" to schedule preview - seems to do what we need....
 		prev_popup = cltkutils.Popup("Crop and Annotate", "Please crop to the size you want, add any annotations, the close and quit.")
 		prev_popup.t.geometry("-1-1")
@@ -1084,10 +1092,11 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		page.graphic_row.post()
 		page.needs_rebuild = True
 		page.changed = True
+		self.graphic_row.post_status(ok=True)
 		self.editor.refresh()
 		
 	def return_value(self):
-		return(self.editor.obj.screenshot, self.ok)	# I know, a bit redundant...	
+		return(self.editor.obj.screenshot, self.graphic_row.ok)
 
 class Select_edit():
 	"""
@@ -1161,6 +1170,7 @@ class Check_button():
 		self.sticky = tk.NW
 		
 		self.new = True		# button pressed or changed?
+		self.editable = True
 		
 		self.controlvar = tk.IntVar()
 		self.widget = ttk.Checkbutton(parent, text=self.text, variable=self.controlvar)
@@ -1301,7 +1311,7 @@ class Edit_screen:
 		self.obj.name = value
 		print
 		print "------------------"
-		print "Creation of song/page", self.obj.name
+		print "Creation of song/page", self.obj.name, self.ok
 	
 		print "Dump----------------"	
 		#print self.obj.dump()
@@ -1387,7 +1397,7 @@ class Edit_screen:
 			row_obj = self.editlist[item]	# convert to a row object
 			print "item.member:", row_obj.member
 			(value, ok) = row_obj.return_value()
-			if not ok:
+			if row_obj.editable and not ok:
 				self.ok = False
 				self.bad_list.append(row_obj.text)
 			
@@ -1507,8 +1517,8 @@ class Page_edit_screen(Edit_screen):
 
 		self.editlist[menu.member] =  menu
 		menu.post()
-		menu.set_status(True)	# It's always good...
-		menu.ok = True
+		menu.ok = None		# always good....
+		menu.post_status()	
 		"""  RBF:  Major Kludge Alert - this is just get create page working...  track this down!!!!!!!"""
 		self.res_obj = menu
 
@@ -1529,7 +1539,6 @@ class Page_edit_screen(Edit_screen):
 		#---- Duration - display only ...
 		row = Entry_row(self, "Duration", "duration", width=8)
 		row.editable = False
-		row.ok = None
 		self.editlist[row.member] =  row
 		row.post()
 		self.duration_obj = row

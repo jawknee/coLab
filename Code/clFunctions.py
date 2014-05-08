@@ -1479,6 +1479,7 @@ class Page_edit_screen(Edit_screen):
 		self.size_class = config.Sizes()
 		self.size = self.size_class.sizeof(page.media_size)	
 		
+		#'''
 		if self.new:
 			self.new_text = "New Page (Group: " + self.parent.current_grouptitle + ')'
 			self.sub_dir = os.path.join('Group', self.parent.current_group.name, 'Page', )
@@ -1488,7 +1489,7 @@ class Page_edit_screen(Edit_screen):
 			self.make_new()	
 			if not self.ok:
 				return
-
+		#'''
 		self.setup()
 		
 		#---- Descriptive title, "unique", but flexible with case, spaces, etc...

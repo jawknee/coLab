@@ -299,14 +299,15 @@ class Page:
 
 	"""
 	
-	def __init__(self, name='temp'):
+	def __init__(self, name=None):
 		"""
 		We create an initial set of variables from the variable, value pairs.
 		This lets us also create a master variable list which we can use to 
 		merge values from the data files
 		"""
+
 		if name is None:
-			self.name = "(Page: must be unique)"
+			self.name = 'ProtoPage'
 		else:
 			self.name = name
 		timenow=cldate.utcnow()

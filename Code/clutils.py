@@ -102,6 +102,12 @@ def touch(filename):
 def string_to_filename(title):
 	"""
 	Convert a passed string to a legal filename
+	This is overly strict.  We only allow alphanumeric,
+	'_', and '.'.  Spaces are changed to '_' all others 
+	to '-'.  We toss any additional substitutions, and 
+	force the first char to be an alphanum.  This could
+	easily create a non-unique file name from a unique 
+	string - so additional testing needs to be done.
 	"""
 	filename = ''	# start here - add chars as we go...
 	
@@ -112,16 +118,53 @@ def string_to_filename(title):
 	valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
 	blank_subst = '_'
 	other_subst = '-'
+	skip_subs = True		# used to prevent multiple subs, or starting with one...
 
-	print "Valid chars:", valid_chars
 	for c in title:
+		# regular character (alphanumeric?)
 		if valid_chars.find(c) != -1:
 			filename += c
-		elif c.isspace():
+			skip_subs = False
+			continue
+		# at this point, it's not a valid char, skip or sub
+		if skip_subs:
+			continue
+		skip_subs = True
+		if c.isspace():
 			filename += blank_subst
 		else:
 			filename += other_subst
+
+	if len(filename) == 0:
+		filename = 'GenName'	# generated/generic name - fail "safe"
 	return filename
+
+def string_to_unique(title, dir=None):
+	'''
+	Turn any arbitrary string into a legal and
+	unique file name.
+	
+	Use strong_to_filename, then look in dir
+	to see if it exists, if so - start adding
+	numbers to the end until it is unique.
+	'''
+	if not os.path.isdir(dir):
+		print "Fatal error - string to unique, not a dir:", dir
+		sys.exit(1)
+		
+	basename = string_to_filename(title)
+	
+	basepath = os.path.join(dir, basename)
+	extra = ''		# first try the base name...
+	count = 1
+	while os.path.isfile(basepath + extra):
+		extra = "_%d" % count
+		print "extra:", extra
+		count += 1
+		
+	return basename + extra
+
+	
 		
 def has_filetype(path, typelist=[], min=1):
 	"""

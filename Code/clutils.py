@@ -103,11 +103,13 @@ def string_to_filename(title):
 	"""
 	Convert a passed string to a legal filename
 	This is overly strict.  We only allow alphanumeric,
-	'_', and '.'.  Spaces are changed to '_' all others 
-	to '-'.  We toss any additional substitutions, and 
-	force the first char to be an alphanum.  This could
-	easily create a non-unique file name from a unique 
-	string - so additional testing needs to be done.
+	'-', '_', and '.'.  Of all others, spaces are changed 
+	to '_' all others to '-'.  We toss any additional substitutions, 
+	and force the first char to be an alphanum, unless an
+	explicit '-', '_', or '.'. 
+	
+	Likely to be used by string_to_unique to append a
+	number as needed.
 	"""
 	filename = ''	# start here - add chars as we go...
 	
@@ -115,7 +117,10 @@ def string_to_filename(title):
 		print "ERROR:  string_to_filename - not a string", title
 		sys.exit(1)
 		
-	valid_chars = "-_.%s%s" % (string.ascii_letters, string.digits)
+	alnum_chars = "%s%s" % (string.ascii_letters, string.digits)
+	other_valid = "-_."		# valid, after the first character
+	valid_chars = alnum_chars
+
 	blank_subst = '_'
 	other_subst = '-'
 	skip_subs = True		# used to prevent multiple subs, or starting with one...
@@ -125,6 +130,9 @@ def string_to_filename(title):
 		if valid_chars.find(c) != -1:
 			filename += c
 			skip_subs = False
+			if other_valid:		# was this the first?
+				valid_chars += other_valid
+				other_valid = False
 			continue
 		# at this point, it's not a valid char, skip or sub
 		if skip_subs:
@@ -144,7 +152,7 @@ def string_to_unique(title, dir=None):
 	Turn any arbitrary string into a legal and
 	unique file name.
 	
-	Use strong_to_filename, then look in dir
+	Use string_to_filename, then look in dir
 	to see if it exists, if so - start adding
 	numbers to the end until it is unique.
 	'''

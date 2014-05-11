@@ -93,7 +93,7 @@ class Data_row:
 		the status column, should work for most/all row classes...
 		If nothing / None is passed in, use the row's current status.
 		"""
-		print "Post_status: ", self.member, self.ok, self.editable
+		print "Post_status: (name, self.ok, passed ok, editable):", self.member, self.ok, ok, self.editable
 		if not self.editable:	# not editable, no status - takes prio
 			ok = None
 		elif ok is None:
@@ -113,7 +113,13 @@ class Data_row:
 			
 		self.status.configure(foreground=color)
 		self.statusVar.set(txt)
-	
+		
+	def read(self):
+		'''
+		Just a stub for items that don't need to implement a read
+		(graphic menus, e.g.)
+		'''
+		return
 	
 		
 class Entry_row(Data_row):
@@ -614,7 +620,7 @@ class Song_menu_row(Menu_row):
 		self.editor.read()
 		
 # a dictionary of menu options, short name mapped to longer name
-# longer name can contain replaceble string, e.g.  !type! 
+# longer name can contain replaceable string, e.g.  !type! 
 OPT_MENU_DICT = { 'Load': 'Load a new !type! file...', 
  				  'Reuse': 'Reuse a previous/existing !type! file...',
 				  'UseSound': 'Use the Sound Graphic (above)',
@@ -1187,14 +1193,21 @@ class Check_button():
 		"""
 		What it says: return the value of the Entry widget
 		"""
-		self.value = self.controlvar.get()
+		self.read()
 		return (self.value, True)
 	
 	def set(self, value):
 		self.value = value
 		self.new = False
 		#self.post()
-
+		
+	def read(self):
+		'''
+		read the button
+		'''
+		self.value = self.controlvar.get()
+		return
+	
 class Edit_screen:
 	"""
 	Base class for the Page, Song and whatever future
@@ -1410,6 +1423,7 @@ class Edit_screen:
 		
 	def refresh(self):
 		for i in self.editlist:
+			self.editlist[i].read()
 			self.editlist[i].post()
 	
 	def get_member(self, member):
@@ -1456,6 +1470,20 @@ class Edit_screen:
 			l.append(partname_dict[i])
 			self.part_lookup[partname_dict[i]] = i
 		return(tuple(l))
+		
+	def quit(self):
+		'''
+		Quit button handler - 
+		if no changes, just quit.   If changes, or new,
+		then return 
+		'''
+		
+		if self.obj.changed or self.new:
+			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
+			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
+				return
+
+		self.editTop.destroy()
 		
 class Page_edit_screen(Edit_screen):
 	"""
@@ -1635,7 +1663,7 @@ class Page_edit_screen(Edit_screen):
 		
 		message = "This will " + self.action + " the page: " + self.obj.name
 		message += "\n\nOK?"
-		if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
+		if u'no' == tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 			print "return"
 			return
 
@@ -1663,13 +1691,14 @@ class Page_edit_screen(Edit_screen):
 		
 		self.editTop.destroy()
 			
-			
+		'''
 	def quit(self):
 		if self.obj.changed:
 			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
 			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
 				return(None)
 		self.editTop.destroy()
+		'''
 
 		
 def create_new_page(coLab_top):
@@ -1884,13 +1913,6 @@ class Song_edit_screen(Edit_screen):
 			
 			self.editTop.destroy()		
 
-	def quit(self):
-		if self.obj.changed:
-			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
-			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
-				return
-		self.editTop.destroy()
-		
 
 	
 #------ interface to main routine...

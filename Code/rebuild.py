@@ -139,7 +139,8 @@ class Render_engine():
 			# each a mirror, a rebuild - to process any comments - then
 			# another rebuild.   This does that - but for a bit of 
 			# simplicity, it does one more rebuild than it needs to...
-			for mirroring in [ False, True, True ]:
+			#for mirroring in [ False, True, True ]:
+			for mirroring in [ True ]:	# for now...
 				for group in self.group_rebuild_list:
 					print "rebuilding and uploading for group:", group, mirroring
 					rebuild_and_upload(group, mirror=mirroring )

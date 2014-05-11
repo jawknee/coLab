@@ -456,13 +456,14 @@ def do_mirror(coLab_home=None):
 			# I'll configure this when I get a chance....
 			sys.exit(1)	 # What were you thinking???
 
-		return		# skip the auto-ftp for now...		
+		#return		# skip the auto-ftp for now...		
 
 		scriptpath = os.path.join(coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
 		osascript = "/usr/bin/osascript"
 		print "Mirror:", osascript, scriptpath
 		try:
-			subprocess.call([osascript, scriptpath])
+			pid = subprocess.Popen([osascript, scriptpath]).pid
+			print "do_mirror - mirror pid is:", pid
 		except:
 			print "Mirror error: cannot continue."
 			sys.exit(1)

@@ -76,8 +76,6 @@ class Data_row:
 		self.ok = not self.new		# new items are assumed to be not good yet, and vice-versa
 		self.editable = True		# occasionally we get one (existing file name) that we don't want to edit...
 		
-		self.content = ""
-	
 	def set(self, value):
 		self.value = value
 		self.new = False
@@ -116,10 +114,21 @@ class Data_row:
 		
 	def read(self):
 		'''
-		Just a stub for items that don't need to implement a read
-		(graphic menus, e.g.)
+		This may actually be an 'error' - this method needs to be
+		implemented specifically to all sub classes...
+		For now: return None and not ok...
 		'''
-		return
+		print ">>>>>>   Generic read: method needs to be replaced...", self.member
+		return(None, False)	
+
+	def return_value(self):
+		"""
+		Call read to update the values - and return them
+		(some derived classes may do it differently)
+		"""
+		self.read()
+		return (self.value, self.ok)
+	
 	
 		
 class Entry_row(Data_row):
@@ -327,13 +336,13 @@ class Entry_row(Data_row):
 		self.matchVar.set(self.match_text)
 		self.match.lift(aboveThis=None)
 				
-	def return_value(self):
+	def read(self):
 		"""
-		What it says: return the value of the Entry widget
+		Pull the value out of the widget...
 		"""
 		self.value = self.value_strVar.get()
-		print "Entry return value:", self.text, self.value, self.ok
-		return (self.value, self.ok)
+		print "Entry read:", self.text, self.value, self.ok
+		return 
 	
 class Text_row(Data_row):
 	"""
@@ -358,17 +367,18 @@ class Text_row(Data_row):
 		
 		self.widget = tk.Text(self.subframe, height=15, width=80, padx=5, pady=5, relief=tk.GROOVE, wrap=tk.WORD,bg='#ffffff', undo=True)
 		self.widget.grid(row=0, column=0, sticky=tk.W)
-		self.widget.insert('1.0', self.content)
+		self.widget.insert('1.0', self.value)
 		# vertical scroll bar...
 		self.scrollY = tk.Scrollbar(self.subframe, orient=tk.VERTICAL, command=self.widget.yview)
 		self.scrollY.grid(row=0, column=1, sticky=tk.N+tk.S)
 		self.widget.configure(yscrollcommand=self.scrollY.set)
 		
-	def return_value(self):
+	def read(self):
 		"""
 		Just return the text.
 		"""
-		return(self.widget.get('1.0', 'end'), True)
+		self.value = self.widget.get('1.0', 'end')
+		self.ok = len(self.value) > 0 	# any non-null entry is ok....
 	
 	
 class Menu_row(Data_row):
@@ -379,19 +389,16 @@ class Menu_row(Data_row):
 	def __init__(self, editor, text, member):
 		Data_row.__init__(self, editor, text, member)
 		
-		self.default = None
+		self.default = None		# used o force a menu to a specific value
+		self.value = None		# actual value - displayed if default is not set
 		self.titles = ('no-titles',)
 		self.handler = self.handle_menu
 		
 	def post(self):
 		print "Welcome menu-post"
-		print "self.default:", self.default 
 		
-		if self.default is None:
-			self.default = self.titles[0]	# use the first as a default...
-		
-		if self.label is None:
 		# write the base label...
+		if self.label is None:
 			self.label = tk.Label(self.editor.edit_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 			# set up a small label between the title and the value to 
@@ -410,8 +417,16 @@ class Menu_row(Data_row):
 		except:
 			self.gOpt = tk.StringVar()
 
-		print "Setting gOpt to: ", self.default
-		self.gOpt.set(self.default)
+		if self.default is not None:
+			value = self.default
+		else:
+			if self.value is not None:
+				value = self.value
+			else:
+				value = self.titles[0]	# use the first as a default...
+		
+		print "Setting gOpt to: ", value
+		self.gOpt.set(value)
 
 		self.widget = tk.OptionMenu(self.editor.edit_frame, self.gOpt, *self.titles, command=self.handler)
 
@@ -421,27 +436,51 @@ class Menu_row(Data_row):
 		self.status = tk.Label(self.editor.edit_frame, textvariable=self.statusVar)
 		self.status.grid(row=self.row, column=self.column + 1)
 	
-		
-	def handle_menu(self, value):
-		#value = self.gOpt.get()	 # should be equivalent
-		
+	def lookup(self, value):
+		'''
+		Convert the value based on the dictionary...
+		if none - or not known, return the passed value.
+		'''
 		# if there's a dictionary - do a lookup...
 		try:
 			value = self.dict[value]
 		except:
 			pass		# otherwise, just return the value
+		return value
+			
+	def handle_menu(self, value):
+		#value = self.gOpt.get()	 # should be equivalent
+		
+		value = self.lookup(value)	# convert from displayed to "actual"
 		
 		self.value = value
 		# if the menu item starts with a "-", it is an unacceptable value
 		self.post_status( value[0] != '-')
 		self.editor.changed = True	
+			
+	def read(self):
+		'''
+		get the menu value.   At this point, it would 
+		always just be self.value - since that's generally set
+		by handle menu - but for now - let's just note if they
+		don't match
+		'''
+		
+		value = self.gOpt.get()
+		value = self.lookup(value)	# convert from displayed to "actual"
+
+		if value != self.value:
+			print "Menu read - mismatch in values:", value, self.value
+		self.value = value
 		
 	def return_value(self):
 		"""
-		Return the OptionMenu value...
+		Menu return - but force ok to true - we're always right
 		"""
+		self.post_status(True)
+		self.read()
 		return(self.value, self.ok)
-	
+
 
 class Theme_menu_row(Menu_row):
 	def __init__(self, editor, text, member):
@@ -451,7 +490,7 @@ class Theme_menu_row(Menu_row):
 		theme_obj = clColors.Themes(editor.obj.graphic_theme)
 			
 		self.titles = theme_obj.theme_names
-		self.default = theme_obj.theme
+		self.value = theme_obj.theme
 		self.ok = True				# always good...
 		
 	def handle_menu(self, value):
@@ -463,13 +502,6 @@ class Theme_menu_row(Menu_row):
 		print "Rebuild the thumbnail(s) as appropriate..."
 		self.editor.read()
 		
-	
-	def return_value(self):
-		"""
-		Menu return - but force ok to true - we're always right
-		"""
-		self.post_status(True)
-		return(self.value, self.ok)
 
 
 class Resolution_menu_row(Menu_row):
@@ -505,14 +537,6 @@ class Resolution_menu_row(Menu_row):
 			page.needs_rebuild = True
 			page.changed = True
 		
-	
-	def return_value(self):
-		"""
-		Menu return - but force ok to true - we're always right
-		"""
-		self.post_status(True)
-		return(self.value, self.ok)
-	
 class Song_menu_row(Menu_row):
 	"""
 	Derivative class - mostly for handling the changing part menu whenever
@@ -994,7 +1018,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		graphic_dest = os.path.join(page.home, destpath)
 		page.screenshot = graphic_dest
 		if self.copy_graphicfile:
-			popup = cltkutils.Popup("Sound file:" + filename, "Copying...")
+			popup = cltkutils.Popup("Sound file:" + filename, "Copying...") 
 			page = self.editor.obj
 							
 			try:
@@ -1005,10 +1029,9 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			finally:
 				popup.destroy()
 	
-		self.post_status(ok=True)
 		# use "open" to schedule preview - seems to do what we need....
-		prev_popup = cltkutils.Popup("Crop and Annotate", "Please crop to the size you want, add any annotations, the close and quit.")
-		prev_popup.t.geometry("-1-1")
+		prev_popup = cltkutils.Popup("Crop and Annotate", "Please crop to the size you want, add any annotations, then close and quit.")
+		#prev_popup.t.geometry("-1-1")
 		try:
 				open = '/usr/bin/open'
 				subprocess.call([open, '-W', '-a', 'Preview.app',  graphic_dest])
@@ -1045,17 +1068,20 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 	
 		#if tkMessageBox.askyesno('Select Limits',"Do you need to set the left and right limits?", icon=tkMessageBox.QUESTION):
 
-		self.adjust(graphic_dest)	# Adjust the end poings...
+		self.adjust(graphic_dest)	# Adjust the end points...
 
 		#self.editor.post_member('screenshot')
 		self.graphic_path = os.path.join(self.editor.obj.home, self.editor.obj.thumbnail)
 		#
 		# Let's create the poster size and thumbnails
 		imagemaker.make_sub_images(page)	
+
+		self.post()
+		page.graphic_row.post()
 		page.needs_rebuild = True
 		page.changed = True
-		
-		self.post()
+		self.graphic_row.post_status(ok=True)
+		self.editor.refresh()
 		#page.graphic_row.post()	# should be the same as the line above   RBF
 		
 	def adjust(self, graphic=None):	
@@ -1075,10 +1101,12 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 				
 		print "xStart, xEnd", self.editor.get_member('xStart'), self.editor.get_member('xEnd')
 
+		self.post()
+		page.needs_rebuild = True
+		page.graphic_row.post()
 		page.needs_rebuild = True
 		page.changed = True
-		#self.editor.post_member('xStart')
-		#self.editor.post_member('xEnd')
+		self.graphic_row.post_status(ok=True)
 		self.editor.refresh()
 		
 
@@ -1189,13 +1217,6 @@ class Check_button():
 		self.widget.grid(row=self.row, column=self.column, sticky=self.sticky)
 		self.controlvar.set(self.value)
 		
-	def return_value(self):
-		"""
-		What it says: return the value of the Entry widget
-		"""
-		self.read()
-		return (self.value, True)
-	
 	def set(self, value):
 		self.value = value
 		self.new = False
@@ -1207,6 +1228,10 @@ class Check_button():
 		'''
 		self.value = self.controlvar.get()
 		return
+
+	def return_value(self):
+		self.read()
+		return(self.value, True)
 	
 class Edit_screen:
 	"""
@@ -1408,8 +1433,8 @@ class Edit_screen:
 		self.bad_list = []	# Keep track of the names that are not set well..
 		for item in self.editlist:		# editlist is a dictionary of member names -> edit row objects
 			row_obj = self.editlist[item]	# convert to a row object
-			print "item.member:", row_obj.member
 			(value, ok) = row_obj.return_value()
+			print "item.member:", row_obj.member, value, ok
 			if row_obj.editable and not ok:
 				self.ok = False
 				self.bad_list.append(row_obj.text)
@@ -1537,7 +1562,7 @@ class Page_edit_screen(Edit_screen):
 		#---- Description: text object
 		row = Text_row(self, "Description", "description")
 		self.editlist[row.member] =  row
-		row.content = self.obj.description
+		row.value = self.obj.description
 		row.post()
 		
 		#--- Resolution
@@ -1841,7 +1866,7 @@ class Song_edit_screen(Edit_screen):
 		#---- Description: text object
 		row = Text_row(self, "Description", "description")
 		self.editlist[row.member] =  row
-		row.content = self.obj.description
+		row.value = self.obj.description
 		row.post()
 		
 		#"""

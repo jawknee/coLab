@@ -189,6 +189,7 @@ class GraphEdit:
 		if self.top is None:
 			self.top = cnvs
 			
+		self.top.geometry('+1+1')
 		cnvs.grid()
 		
 		self.image_id = cnvs.create_image(self.offset, self.offset, image=self.photo, state=tk.DISABLED, anchor=tk.NW)

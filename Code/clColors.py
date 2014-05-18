@@ -47,6 +47,13 @@ CLAY = (96, 40, 30, 255)
 OCHRE = (204, 119, 34, 255)
 LIME = (191, 255, 0, 255)
 AQUA = (0, 255, 255, 255)	# cyan
+# Tree / Leaf
+DK_BROWN = (40, 20, 0, 255)
+DK_GREEN = (0, 45, 0, 255)
+MED_GREEN = (20, 160, 20, 255)
+LT_GREEN = (64, 255, 96, 255)
+GREEN_WHITE = (128, 255, 192, 255)
+SKY_BLUE = (128, 128, 255, 255)
 
 COLAB_BLUE = (0, 73, 141, 255)	# coLab Logo central color
 COLAB_HILITE = (175, 198, 219, 255)	# logo highlight 
@@ -57,7 +64,7 @@ def htmlcolor(color=BLACK):
 	Convert the passed color in an html string
 	'''
 	hcolor='#'
-	for c in color[0:3]:	# skip the transparncy, if any
+	for c in color[0:3]:	# skip the transparency, if any
 		hcolor += '%02x' % c
 		
 	return hcolor
@@ -82,8 +89,10 @@ class Themes:
 					[ 'Fire', PART_BLACK, DK_RED, ORANGE, BRIGHT_YELLOW, EL_BLUE, LOLITE],
 					[ 'Iced', DK_BLUE,  ICE_BLUE1, ICE_BLUE2, WHITE, BRIGHT_RED, XPARENT],
 					[ 'Beam', DARK_X_GRAY, DEEP_BLUE, GREEN, WHITE, YELLOW, XPARENT], 
-					[ 'Desert', DESERT_GOLD, DESERT_BROWN, DESERT_ORANGE, DESERT_TAN, DESERT_DARK, LOLITE],
-					[ 'Nola', CLAY, EGGPLANT, LIME, AQUA, BLACK, XPARENT]
+					[ 'Sand', DESERT_GOLD, DESERT_BROWN, DESERT_ORANGE, DESERT_TAN, DESERT_DARK, LOLITE],
+					[ 'Nola', CLAY, EGGPLANT, LIME, AQUA, BLACK, XPARENT],
+					[ 'Tree', DK_BROWN, DK_GREEN, MED_GREEN, GREEN_WHITE, EL_BLUE, XPARENT],
+					[ 'Leaf', DK_GREEN, LT_GREEN, MED_GREEN, GREEN_WHITE, EL_BLUE, XPARENT]
 					]
 		
 		self.theme_names = []

@@ -203,7 +203,7 @@ class Popup:
 	"""
 	A very simple way to put something on the screen that will disappear soon.
 	"""
-	def __init__(self, label="Info...", text="Pop-up!", nobutton=True):
+	def __init__(self, label="Info...", text="Pop-up!", nobutton=True, geometry="+1800+80"):
 		"""
 		Pretty straight forward - the nobutton option is for pop ups 
 		that out outside the loop and won't get cycles (like using 
@@ -213,10 +213,10 @@ class Popup:
 		self.t = tk.Toplevel()
 		self.t.transient()
 		self.t.title("File copy")
-		self.t.geometry('+1800+80')
+		self.t.geometry(geometry)
 		self.t.lift(aboveThis=None)
 		lf = tk.LabelFrame(master=self.t, relief=tk.GROOVE, text=label, borderwidth=5)
-		lf.grid(ipadx=10, ipady=40, padx=25, pady=15)
+		lf.grid(ipadx=10, ipady=40, padx=5, pady=5)
 		f = tk.Frame(lf)
 		f.grid(row=0, column=0, sticky=tk.W)
 		ttk.Label(f, text=text).grid()

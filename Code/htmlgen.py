@@ -841,32 +841,12 @@ def helpgen(group):
 	doesn't make sense, you have a question or a comment, feel
 	free to enter something below.
 	<p>
-	<h4>Known problem with Windows 8 / Internet Explorer 10:</h4>
-	Both IE10 and IE9 are notoriously picky about playing html5 video,
-	which is how the newer pages here are presented.   All other 
-	browsers and platforms I've tested have worked, including IE8 and
-	earlier.   
+	<h4>Issues with Internet Explorer?</h4>
+	As far as I know - I've resolved the problem with newer
+	versions of IE - it was a configuration issue with my ISP.
 	<p>
-	The symptom is a "poster" graphic (no counters in the lower corners)
-	 and the error:
-	 <p>
-	<tt>Error: Unsupported video type or invalid file path</tt>
-	<p>
-	For IE10, what seems to work is:
-	
-	<ul>
-	   <li>Press f12<br>
-	      This should bring up a window along the bottom of the browser.
-	      
-	   <li>Locate "Browser Mode:" near the middle of the new area's title bar.
-	      Select:   <tt>Internet Explorer 10 Compatibility Mode</tt>  
-	   <li>You may also need to set Document Mode: to <tt>Internet Explorer 7 standards</tt>
-	</ul>
-	If this works, you should see a line under the player that says: 
-	<p>
-	<tt><i>Your browser does not support html5 - using mp4 plug-in</i></tt>
-	<p>
-	Which means you're in fallback mode, which should work.  It's working on my virtual Windows 8 with IE10.
+	If you have a problem playing the media files on <i>any platform</i>,
+	<a href="mailto:coLab_dude@jawknee.com?subject=coLab Playback Issues">I'm interested in hearing about it.</a>
 	
 	<p>
 	<h4>Some highlights:</h4>

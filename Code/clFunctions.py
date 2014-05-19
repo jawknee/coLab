@@ -500,7 +500,17 @@ class Theme_menu_row(Menu_row):
 		Menu_row.handle_menu(self, value)
 		
 		print "Rebuild the thumbnail(s) as appropriate..."
-		self.editor.read()
+		page = self.editor.obj
+		page.graphic_theme = self.value		# 
+		popup = cltkutils.Popup('Rebuilding thumbnail...', 'Rebuilding to theme:\n'+self.value, geometry="+500+500")
+		img_dest = os.path.join(page.home, page.soundgraphic)
+		sound_file = os.path.join(page.home, page.localize_soundfile())
+		imagemaker.make_sound_image(page, sound_file, img_dest, size='Tiny', max_samp_per_pixel=100)
+		imagemaker.make_sub_images(page)
+		popup.destroy()
+		page.needs_rebuild = True
+		page.changed = True
+		self.editor.refresh()
 		
 
 
@@ -864,10 +874,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		self.editor.set_member('soundfile', file_path)
 
 		filename = os.path.split(file_path)[1]
-		
 		destpath = os.path.join('coLab_local', filename)
-		
-
 		sound_dest = os.path.join(page.home, destpath)
 		if self.copy_soundfile:
 			popup = cltkutils.Popup("Sound file:" + filename, "Copying...")

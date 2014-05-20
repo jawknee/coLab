@@ -54,7 +54,7 @@ class Html:
 		body = body.replace('!coLabRoot!', group.coLab_root)
 
 		if media:
-			body += '<center><img src="Title.png" class="fundesc" alt="' + page.fun_title + '">'
+			body += '\t<img src="Title.png" class="fundesc" alt="' + page.fun_title + '">'
 			
 			# base the name of the media insert on the page type
 			media_insert = eval('self.media_insert_' + page.page_type)
@@ -62,7 +62,9 @@ class Html:
 			# well as the fallback "Small" version in the html5 version..
 			media_insert = media_insert.replace("!name!", page.name) 
 			body += media_insert.replace("!html5-source-lines!", self.gen_html5_source(page.name, page.media_size))
-			body += '</center>'
+			# do we include the video controls?
+			body += self.video_controls
+			body += self.media_tail
 
 		return(body)
 
@@ -117,71 +119,42 @@ class Html:
 		    <html>
 			<head><title>!fun_title!</title>
 			<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_VidAutoTest.css">
 			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			""" 
 
 		self.head_insert_html5 = ''
 		
-		self.head_insert_orig="""<script src="http://www.apple.com/library/quicktime/scripts/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
-		<script src="http://www.apple.com/library/quicktime/scripts/qtp_library.js" language="JavaScript" type="text/javascript"></script>
-		<link href="http://www.apple.com/library/quicktime/stylesheets/qtp_library.css" rel="StyleSheet" type="text/css" />
-		"""
-	
 		self.media_insert_html5="""
-			<center>
-			<video  poster="ScreenShot.png" width="640" height="530" controls>
-			<!-- The following line is replaced the full complement of html5 video
-			      codecs for this page... -->
+			<div id="video-container">		
+			<!video  id="video" poster="ScreenShot.png" width="640" height="530" controls>
+			<video  id="video" poster="ScreenShot.png" width="640" height="530">
+			<!-- The following line is replaced with the full complement of html5 video codecs for this page... -->
 			 !html5-source-lines!
-			<!--  Older - replaced by the line above...
-			  <source src="!name!-media-!media_size!.webm" type='video/webm; codecs="vp8.0, vorbis"'>
-			  <source src="!name!-media-!media_size!.mp4" type='video/mp4'>
-			 --> 
 			  <!-- Fall back for non-html5 browsers, (WinXP/IE8, e.g.) simple mp4 embed tag -->
 			  <br>
 			  <embed src="!name!-media-Small.mp4" autostart="false" height="500" width="640" /><br>
 			  <font size=-2>
 			  <i>Your browser does not support html5 - using mp4 plug-in</i>
 			  </font>
-			  <p>
 			</video>
-			</center>
 		"""
-		self.media_insert_orig="""
-			<script type="text/javascript"><!--
-					QT_WritePoster_XHTML('Click to Play', '!name!-poster.jpg',
-							'!name!.mov',
-							'640', '496', '',
-							'controller', 'true',
-							'autoplay', 'true',
-							'bgcolor', 'black',
-							'scale', 'aspect');
-			//-->
-			</script>
-			<noscript>
-			<object width="640" height="496" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-					<param name="src" value="!name!-poster.jpg" />
-					<param name="href" value="!name!.mov" />
-					<param name="target" value="myself" />
-					<param name="controller" value="false" />
-					<param name="autoplay" value="false" />
-					<param name="scale" value="aspect" />
-					<embed width="640" height="496" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"
-							src="!name!-poster.jpg"
-							href="!name!.mov"
-							target="myself"
-							controller="false"
-							autoplay="false"
-							scale="aspect">
-					</embed>
-			</object>
-			</noscript>
-		"""
-	
+		self.media_tail="""</div> <! video-container>\n"""
+		
+		# optional controls
+		self.video_controls="""
+		<!-- Video Controls -->
+		  <div id="video-controls">
+			<button type="button" id="play-pause">Play</button>
+			<input type="range" id="seek-bar" value="0">
+			<button type="button" id="mute">Mute</button>
+			<input type="range" id="volume-bar" min="0" max="1" step="0.1" value="1">
+			<button type="button" id="full-screen">Full-Screen</button>
+		 </div> <! video-controls>
+		 """
+
 		self.banner = """	
 			<div class="banner" > <! start of banner>
-			<!center>	 
 					<table width=80% border=0 cellpadding=0 class="banner_txt">
 					  <td align="center" ><a href="!groupURL!/index.shtml" title="Always a nice place to go...">Home</a></td>
 	
@@ -190,7 +163,6 @@ class Html:
 					  <td align="center" ><a href="!groupURL!/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
 					  <td align="center" ><a href="!groupURL!/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
 					</tr></table>
-			<!/center>
 			<br>
 			</div>	<! end of banner>
 		"""	
@@ -199,6 +171,7 @@ class Html:
 		self.body = """
 			</head>
 			<body>
+			<script src="script.js"></script>
 			<!--   Menu Header -->
 			<div id="container" style="height: 100%; width: 100%; overflow: hidden;">
 			<div class="sidebar_l">
@@ -209,10 +182,10 @@ class Html:
 			<div class="sidebar_r">
 			<!--#include virtual="!groupURL!/Shared/rightbar.html" -->
 			</div> <! End right sidebar>
-			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> <! logo>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
+			<! end logo>
 			""" + self.banner + """	
-			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
-			<p>
+			<div id="Content" class="main" style="height: 97%; overflow: auto ">
 		"""
 
 	
@@ -223,12 +196,11 @@ class Html:
 		
 		<form method=POST action="/coLab/bin/postcomments.cgi">
 		Your name: <input type="text" name="Commenter" ><br>
-		<center>
 		<input type="hidden" name="page" value="!name!">
 		<input type="hidden" name="desc_title" value="!desc_title!">
 		<textarea name="Text" rows=7 cols=80></textarea>
 		<br>
-		</center>
+
 		<input type="submit" value="Add your comment">
 		</form>
 		<p><hr><p>
@@ -236,10 +208,9 @@ class Html:
 		<!--#include virtual="Comments.log" -->
 		<p>
 		<br>
-		<center>
-		&copy; Catharsis Studios West 2013
-		<p>
-		</center>
+		<div class=copyright>
+		&copy; Catharsis Studios West 2014
+		</div><! end of copyright>
 		<!--#include virtual="links.html" -->
 		<p>&nbsp;<p>
 		</td></tr></table>
@@ -249,7 +220,6 @@ class Html:
 		</div>	<! middle content>
 		</div>	<! container >
 
-		</center>
 		</body>
 		</html>
 		"""

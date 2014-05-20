@@ -531,7 +531,7 @@ class Resolution_menu_row(Menu_row):
 			
 		self.titles = tuple(l)		# Convert to a tuple...
 		self.dict = d
-		self.ok = None				# calulated
+		self.ok = None				# calculated
 		
 	def handle_menu(self, value):
 		"""

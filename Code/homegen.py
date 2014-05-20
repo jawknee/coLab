@@ -136,9 +136,8 @@ def genHome(name):
 		</center>
 	<div class="maintext">
 
-	<h2 class=fundesc>""" + P.title + """</h2>
-	<font color=a0b0c0>""" + P.description + "<p><i>" + P.create + """</i><p>
-	<p>"""
+	<h2 class=fundesc>""" + P.title + """</h2>""" + P.description + "<p><i>" + 
+	P.create + """</i><p> <p>"""
 
 	CommentLog="Comments.log" 
 

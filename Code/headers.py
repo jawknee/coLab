@@ -38,7 +38,7 @@ class Html:
 				
 			head += head_insert
 			#head = head + self.head_insert
-
+		head += '\n'	# always nice to have one at the end
 		return(head)
 
 
@@ -65,7 +65,7 @@ class Html:
 			# do we include the video controls?
 			body += self.video_controls
 			body += self.media_tail
-
+			body += self.gen_geometry_tags(page)
 		return(body)
 
 	def emit_tail(self,page):
@@ -111,6 +111,48 @@ class Html:
 			print "Next size:", size
 		return(sources)
 
+	def gen_geometry_tags(self, page):
+		'''
+		Generates a series of hidden input tags to specify
+		the geometry so the javascript can calculate what to 
+		with the positioning clicks.
+		'''
+		sizes = config.Sizes()	
+		# what is the width of the page display?
+		(pgview_width, pgview_height) = sizes.sizeof(config.BASE_SIZE)
+		(media_width, media_height) = sizes.sizeof(page.media_size)
+		# for page - x-axis scale is all we need...
+		# calculate offset - center media in the <div>
+		xOffset = config.MAIN_LEFT_EDGE 
+		
+		geo_html =  '<!-- info about X-coordinates -->\n'
+		geo_html += '  <!-- page view info -->\n'
+		if page.use_soundgraphic:
+			# there is no screen shot - use the media size...
+			pgview_scale = float(media_width) / pgview_width
+			# open loop alert: calculating the image borders as per imagemaker...
+			adjust_factor = sizes.calc_adjust(media_height) 
+			xStart = int(config.SG_LEFT_BORDER * adjust_factor) 
+			xEnd = int(media_width - ( config.SG_RIGHT_BORDER * adjust_factor) )
+		else:
+			pgview_scale = float(page.screenshot_width) / pgview_width
+			xStart = int( page.xStart )
+			xEnd = int( page.xEnd )
+
+		geo_html += '    <input type="hidden" id="xOffset" value="' + str(xOffset) + '">\n'
+		geo_html += '    <input type="hidden" id="xStart" value="' + str(xStart) + '">\n'
+		geo_html += '    <input type="hidden" id="xEnd" value="' + str(xEnd) + '">\n'
+		geo_html += '    <input type="hidden" id="pageScale" value="' + str(pgview_scale) + '">\n'
+		geo_html += '  <!-- media info (fullscreen) -->\n'
+		geo_html += '    <input type="hidden" id="duration" value="' + str(page.duration) + '">\n'
+		geo_html += '    <input type="hidden" id="media_width" value="' + str(media_width) + '">\n'
+		geo_html += '    <input type="hidden" id="media_height" value="' + str(media_height) + '">\n'
+		geo_html += '    <input type="hidden" id="media_start" value="' + str(page.xStart) + '">\n'
+		geo_html += '    <input type="hidden" id="media_end" value="' + str(page.xEnd) + '">\n'
+
+		return geo_html
+
+		 
 	def __init__(self):
 		#
 		# the html content for the head and body sections
@@ -124,10 +166,50 @@ class Html:
 			""" 
 
 		self.head_insert_html5 = ''
+	
+		self.banner = """	
+			<div class="banner" > <! start of banner>
+					<table width=80% border=0 cellpadding=0 class="banner_txt">
+					  <td align="center" ><a href="!groupURL!/index.shtml" title="Always a nice place to go...">Home</a></td>
+	
+					  <td align="center" ><a href="!groupURL!/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+					  <td align="center" ><a href="!groupURL!/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
+					  <td align="center" ><a href="!groupURL!/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
+					  <td align="center" ><a href="!groupURL!/Shared/Help/index.shtml" title="Hopefully, the help you need.">Help</a></td>
+					</tr></table>
+			<br>
+			</div>	<! end of banner>
+		"""	
+	
+		# substitute !coLabRoot! with that...	
+		self.body = """
+			</head>
+			<body>
+			<script src="/coLab/Resources/video_engine.js"></script>
+
+			<!--   Menu Header -->
+			<div id="container" style="height: 100%; width: 100%; overflow: hidden;">
+			<div class="sidebar_l">
+			<!--#include virtual="!groupURL!/Shared/mostrecent.html" -->
+			<p><hr><P>
+			<!--#include virtual="!groupURL!/Shared/projectlist.html" -->
+			</div> <! End sidebar>
+			<div class="sidebar_r">
+			<!--#include virtual="!groupURL!/Shared/rightbar.html" -->
+			<p id="info">Info here</p>	
+			</div> <! End right sidebar>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
+			<! end logo>
+			""" + self.banner + """	
+			<div id="Content" class="main" style="height: 97%; overflow: auto ">
+		"""
+	
+		self.media_insert_orig=''	# just in case we ever need to render an "orig" page...
 		
 		self.media_insert_html5="""
 			<div id="video-container">		
 			<!video  id="video" poster="ScreenShot.png" width="640" height="530" controls>
+			<div id="clickdiv">
 			<video  id="video" poster="ScreenShot.png" width="640" height="530">
 			<!-- The following line is replaced with the full complement of html5 video codecs for this page... -->
 			 !html5-source-lines!
@@ -138,6 +220,7 @@ class Html:
 			  <i>Your browser does not support html5 - using mp4 plug-in</i>
 			  </font>
 			</video>
+		</div><! end click div>
 		"""
 		self.media_tail="""</div> <! video-container>\n"""
 		
@@ -145,48 +228,19 @@ class Html:
 		self.video_controls="""
 		<!-- Video Controls -->
 		  <div id="video-controls">
-			<button type="button" id="play-pause">Play</button>
+		    <span title="Play/Pause">
+				<button type="button" id="play-pause">P</button>
+			</span>
 			<input type="range" id="seek-bar" value="0">
-			<button type="button" id="mute">Mute</button>
+		    <span title="Mute/Unmute">
+				<button type="button" id="mute">M</button>
+			</span>
 			<input type="range" id="volume-bar" min="0" max="1" step="0.1" value="1">
-			<button type="button" id="full-screen">Full-Screen</button>
+		    <span title="FullScreen">
+				<button type="button" id="full-screen">FS</button>
+			</span>
 		 </div> <! video-controls>
 		 """
-
-		self.banner = """	
-			<div class="banner" > <! start of banner>
-					<table width=80% border=0 cellpadding=0 class="banner_txt">
-					  <td align="center" ><a href="!groupURL!/index.shtml" title="Always a nice place to go...">Home</a></td>
-	
-					  <td align="center" ><a href="!groupURL!/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
-					  <td align="center" ><a href="!groupURL!/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
-					  <td align="center" ><a href="!groupURL!/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
-					  <td align="center" ><a href="!groupURL!/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
-					</tr></table>
-			<br>
-			</div>	<! end of banner>
-		"""	
-	
-		# substitute !coLabRoot! with that...	
-		self.body = """
-			</head>
-			<body>
-			<script src="script.js"></script>
-			<!--   Menu Header -->
-			<div id="container" style="height: 100%; width: 100%; overflow: hidden;">
-			<div class="sidebar_l">
-			<!--#include virtual="!groupURL!/Shared/mostrecent.html" -->
-			<p><hr><P>
-			<!--#include virtual="!groupURL!/Shared/projectlist.html" -->
-			</div> <! End sidebar>
-			<div class="sidebar_r">
-			<!--#include virtual="!groupURL!/Shared/rightbar.html" -->
-			</div> <! End right sidebar>
-			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
-			<! end logo>
-			""" + self.banner + """	
-			<div id="Content" class="main" style="height: 97%; overflow: auto ">
-		"""
 
 	
 	

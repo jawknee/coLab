@@ -325,7 +325,7 @@ class Page:
 		('graphic', "ScreenShot.png"),
 		('thumbnail', "ScreenShot_tn.png"),
 		('use_soundgraphic', False),
-		('strict_graphic', True),
+		('strict_graphic', False),
 		('graphic_theme', 'Default'),
 		('soundfile', ""),
 		('soundgraphic', os.path.join("coLab_local", "SoundGraphic.png")),
@@ -610,7 +610,8 @@ class Song:
 			self.group_obj = cltkutils.getGroup()
 			self.group = self.group_obj.name
 			#self.group = "SBP"
-			#self.group= "Johnny"
+			#self.group= "Catharsis"
+			self.group= "Johnny"
 			print "Note: override: group =", self.group_obj, self.group
 
 		song_dir = os.path.join('Group', self.group, 'Song', self.name)

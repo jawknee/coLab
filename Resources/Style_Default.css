@@ -50,7 +50,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .main { position: absolute; top: 24px; left: 204px;  width: 700px; 
 	font-family:Georgia; 
 	background-color: #151515;
-	background-image: url('http://jawknee.com/coLab/Resources/P1Black2.png');
+	background-image: url('/coLab/Resources/P1Black2.png');
 	color: #a0b0c0; }
 
 .main h2 { color: #c0b0a0; }
@@ -58,7 +58,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .main h4 { color: #c0b0a0; }
 .main table { color: #a0b0c0; 
 	background-color: #151515;
-	background-image: url('http://jawknee.com/coLab/Resources/P1Black2.png');
+	background-image: url('/coLab/Resources/P1Black2.png');
 	}
 .main table h2 { color: #c0b0a0; }
 

@@ -178,9 +178,10 @@ def pagegen(group, page):
 
 	
 	content = """
-		</center>
 	<p>
+	<! Start links...>
 	<!--#include virtual="links.html" -->
+	<! ...end links.>
 	<div class="maintext">
 	<br>
 	<!-- gittin' a little tricky w/alignment... -->

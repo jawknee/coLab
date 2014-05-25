@@ -11,8 +11,6 @@ import math
 # sizes and classes to define the various resolutions
 # Define the graphical sizes
 
-# size of the inline html
-DISPLAY_SIZE = (640, 480)	
 # base size of the time boxes
 T_BOX_WIDE = 55
 T_BOX_HIGH = 23
@@ -22,6 +20,20 @@ SG_RIGHT_BORDER = 10
 SG_TOP_BORDER = 25
 SG_BOTTOM_BORDER = 25
 
+#--------------------------------------
+# Coordinates 
+#--------------------------------------
+# These are "constants" that are related to formatting
+# that is in the current .css files (currently:
+# /coLab/Resources/Style_VidAutoTest.css - soon to 
+# change).
+MAIN_LEFT_EDGE = 228	# 204 + 208
+MAIN_WIDTH = 700
+
+#
+#--------------------------------------
+# Size Definitions
+#--------------------------------------
 # a list of tuples, each member defines a size, starting at
 # the largest, going to the smallest, then a 2-tuple of
 # (width, height), the next size in the sequence. 
@@ -111,7 +123,7 @@ class Sizes:
 		
 def main():
 	print "Colab config"
-	print "Display size:", DISPLAY_SIZE
+	print "Base size:", BASE_SIZE
 	for size in SIZE_LIST:
 		print "Size", size[0], 'is:', size[1]
 	s = Sizes()

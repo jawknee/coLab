@@ -337,7 +337,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	title = "New Page Generation: " + page.desc_title + ' (' + media_size + ')'
 	render_frame = tk.LabelFrame(master=progressTop, relief=tk.GROOVE, text=title, borderwidth=5)
 	render_frame.lift(aboveThis=None)
-	render_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
+	render_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
 	
 	size_c = config.Sizes()
 	(width, height) = size_c.sizeof(media_size)
@@ -390,6 +390,23 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	f4.grid(row=3, column=0, sticky=tk.E)
 	quitButton = ttk.Button(f4, text="Quit", command=progressTop.quit)
 	quitButton.grid()
+	page.desc_title + ' (' + media_size + ')'
+
+	# create a label area with some helpful info...
+	infotext =  '\nPage:\t' + page.desc_title +  '\n' 	
+	infotext +=	'Size:\t' + media_size + ' (' + str(width) + ',' + str(height) + ')\n'
+	infotext += 'Duration:\t' + '%.3f' % page.duration + ' seconds\n'
+	infotext += 'fps:\t' + str(fps) + '\n' 
+	infotext += 'frames:\t' + str(frames) + '\n'
+	infotext += 'Graphic:\t'
+	if page.use_soundgraphic:
+		infotext += "Sound Graphic"
+	else:
+		infotext += "Screenshot"
+	infotext += '\n'
+
+	info = tk.Label(render_frame, text=infotext, justify=tk.LEFT)
+	info.grid(row=4, column=0)
 
 	if page.use_soundgraphic:
 		imagemaker.make_sound_image(page, sound_dest, img_dest, media_size, snd_img_progbar, max_samples_per_pixel)

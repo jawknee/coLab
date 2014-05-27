@@ -169,6 +169,9 @@ def make_sub_images(page, size=None):
 		#size = config.Sizes().sizeof(page.media_size)
 		size = poster_size
 	#
+	# "Screenshot" / Poster image
+	# Either a screen shot or a generated image, make a pair
+	# of poster images for the video tag
 	try:
 		orig_image = Image.open(baseimage)
 		page.screenshot_width = orig_image.size[0]	# save the width...
@@ -180,6 +183,29 @@ def make_sub_images(page, size=None):
 		base_image.save(graphic, 'PNG')
 		tn_image.save(thumbnail, 'PNG')
 		print "make_sub_images:", graphic, thumbnail
+		
+		resourcedir = os.path.join(page.coLab_home, 'Resources')
+		for postertype in [ 'Start', 'Waiting']:
+			overlayname = 'Poster' + postertype + "Overlay.png"
+			poster_path = os.path.join(page.home, 'Poster_' + postertype + '.png')
+			overlaypath = os.path.join(resourcedir, overlayname)
+			try:
+				over_image = Image.open(overlaypath).convert('RGBA')
+			except IOError, info:
+				print "Cannot open poser image", overlaypath, info
+			else:
+				# could resize here - but I'd rather see it something changes...
+				#
+				# Now we gotta git a bit tricky since PIL doesn't support alpha compositing...
+				r, g, b, a = over_image.split()
+				overlay_rgb = Image.merge('RGB', (r,g,b))
+				mask = Image.merge('L', (a,))
+
+				poster_image = base_image.copy()		# new copy of the base...
+				poster_image.paste(overlay_rgb, (0,0), mask)
+				poster_image.save(poster_path, 'PNG')
+
+		
 		del orig_image
 		
 	soundgraph = os.path.join(page.home, page.soundgraphic)

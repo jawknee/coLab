@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+		    <html>
+			<head><title>Click! coLab News: May 26, 2014</title>
+			<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
+			
+			</head>
+			<body>
+			
+			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
+		
+		</center>
+
+	<div class="maintext">
+	<font color=a0b0c0>
+	<img src="/coLab/Resources/Icons/News.png" alt="New!" align=left valign=top>
+	<h1>Click!</h1>
+	<font size=-1><i>May 26, 2014</i></font><br>
+	The new coLab <i><b>Click!</b></i> feature is now working!
+	<p>
+	You can now simply click anywhere in a graphic playing in a coLab web page
+	and the audio will move to that location.   No more fiddling with a scroll bar
+	that may not even show you where you are or that can be very difficult to locate
+	precisely.
+	<p>
+	In addition, the 
+	<i><b>Click!</b></i> 
+	feature also works in fullscreen mode in <i>some</i> browsers.   To make this work
+	I'm using javascript to capture screen events from the video.  Some browsers simply 
+	do not pass those clicks out.  But in those cases, you can still play, pause, and
+	locate the audio with the usual controls.
+	<p>
+	Here is a list of supported features by platform and browser:
+	<p>
+	<center>
+	<table border=4 cellpadding=10>
+	<tr><th><img src="/coLab/Resources/CoLab_Logo3D_sm.png" alt="coLab"></th>
+	  <th>Page <i>Click!</i></th><th>Fullscreen<a href="#fn1">*</a></th><th>Fullscreen <i>Click!</i></th></tr>
+	<tr><td colspan=4 align=center>Current Desktop/Latop</td></tr>
+	<tr>
+	<th>Firefox<br>(All platforms)</th>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+        </tr>
+	<th>Google Chrome<br>(Mac, Linux, Windows 8.1)</th>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+        </tr>
+	<th>Safari<br>(Mac only)</th>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="ff2020"><i><b>No.</b></i></font</td>
+        </tr>
+	<th>Internet Explorer 11<br>(Windows 8.1)</th>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+        </tr>
+	<th>Opera<br>(All platforms)</th>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="ff2020"><i><b>No.</b></i></font</td>
+        </tr>
+	<tr><td colspan=4 align=center>Older Desktop/Laptop (if different than current)</td></tr>
+	<th>Internet Explorer 10<br>(Windows 8)</th>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="ff2020"><i><b>No!</b></i></font</td>
+	 	<td align=center><font color="ff2020"><i><b>No.</b></i></font</td>
+        </tr>
+	<th>Internet Explorer 9, and earlier<a href="#fn2">**</a><br>(Windows XP, etc.)</th>
+	 	<td align=center><font color="ff2020"><i><b>No.</b></i></font</td>
+	 	<td align=center><font color="ff2020"><i><b>No.</b></i></font</td>
+	 	<td align=center><font color="ff2020"><i><b>No.</b></i></font</td>
+        </tr>
+	<th>Google Chrome<br>(Windows 8)</th>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="ff2020"><i><b>No.</b></i></font</td>
+        </tr>
+	<tr><td colspan=4 align=center>Mobile Devices</td></tr>
+	<th>iPad<br>(Tested: 4)</th>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="ff2020"><i><b>No.</b></i></font</td>
+        </tr>
+	<th>Android<br>(Tested: Nexus)</th>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b></i></font</td>
+	 	<td align=center><font color="20ff20"><i><b>Yes!</b><a href="#fn3">***</a></i></font</td>
+        </tr>
+
+	</table>
+	<table width=70% border=0><tr><td> <!  just to help with  alignment >
+	<a name="fn1"></a>
+	<br><i>*Because <b>Click!</b> necessarily captures the mouse-clicks / screen
+	taps that used to go to the on-board video player, browsers or devices that 
+	do not support
+	the "Fullscreen API" (Application Programming Interface) 
+	can <b>not</b> even go into full screen.  Windows Internet Explorer
+	10 is known to not support this feature.  I have confirmed that IE11
+	does work as expected.
+	<p><hr width=50%><p>
+	<a name="fn2"></a>
+	**Support of legacy Windows browsers, which I was happy to get working,
+	is pretty much dead at this point.   Then again, so is Windows XP.
+	<p><hr width=50%><p>
+	<a name="fn3"></a>
+	***While the Android browser does all fullscreen, my code is not yet
+	correctly calculating the location...  yet.
+
+	</i>
+	</td></tr></table>
+	</center>
+	<p>
+	The clear winner here is Firefox, with Google Chrome a close second.
+	<p><hr><p>
+
+	<h2>Future Plans</h2>
+	I'm very happy with how this has turned out.  I find I very quickly settle into
+	clicking on the graphic to go to where I want.  So much so, that when debugging
+	issues with <u>webm</u> playback, I kept clicking in the VLC player window...
+	but to no avail.
+	<p>
+	Assuming this work well across platforms, there are some changes I'm considering,
+	
+	<h3>Simplfy the Control Bar</h3>
+	There really is no need for the "range bar" any more, it's really much 
+	easier to just click on the graphic.   There's also very little need for
+	the mute button.   Since there's not really much to watch, unless you're
+	also listening - the mute button is really more likely to cause confusion
+	than to be useful.
+	<p>
+	I'm wondering if there's really even a need for the volume button.  
+	There <i>is no volume slider</i> in the IE10 media player due to a bug
+	(I've confirmed this).   I just don't see the need for a separate 
+	volume control when the computers have graphical and keyboard controls
+	already (and possibly volume on your speakers).
+
+	<h3>Then what?</h3>
+	Well - getting rid of al the controls except for Play/Pause
+	and Fullscreen frees up a lot of real estate.   My first though
+	is a series of "programmable" buttons that could be use to 
+	navigate directly to some part of the song.  Not clear
+	yet the best way to implement that - but I'll think about it.
+
+	<h3>The User Interface</h3>
+	The 
+	<i><b>Click!</b></i> 
+	part of the interface is pretty simply.   Clicking on the screen moves
+	playback to that point and resumes/begins play back from that point.
+	This works pretty well, but in full screen, if there are no controls,
+	there is no way to stop playback (well, you can click past the end
+	and the playback will end 1/4 second later).
+	<p>
+	I've thought of implementing some form of a double-click or click-and-hold
+	option.   One thing I'm thinking of is to click and hold and get a pop-up
+	menu that would let you select a location, possibly a range, and create
+	a link that could be shared or assigned to an existing button.
+	<p>
+	These are a ways out - but are possibilities.   Let me know!
+	<p>
+	As you may have noticed, I've also made some changes to the usr
+	interface.  Besides creating custom buttons for the control bar,
+	I've also created a new "poster" - the initial screen the player 
+	puts up before the video starts to play.  Since the initial click
+	is only to start playing and not to locate (in part because the 
+	poster seldom matches the actual video - intentionally, see below)
+	the new poster explains what's up and gives an indication that 
+	you have not started playing - particularly helpful if you go
+	to full screen immediately.
+	<p>
+	But I noted that Chrome will often show the poster image when it's locating
+	to a different part of the video - sometimes in a very long piece for
+	several seconds.   Throwing up the initial screen would be confusing.
+	Javascript to the rescue - as soon as the player get's going I modify 
+	the poster to another image.   Hopefully the "wait" hand is not too
+	creepy.
+	<p>
+	Speaking of creepy hands, yes, those are mine in the play and pause buttons
+	and in the full screen (though the initial one is likely to be replaced soon)
+	and of course, in the poster screens.   I'm particularly proud of the
+	button the initial screen...   made it myself (Poser Pro 2014 - some 
+	cylinders, chrome texturing and nearby lighting - I do love living in the
+	future).  I tried duplicating the look of the coLab logo in the text...
+	it looks OK - but it may be harder to read than it needs to be.
+	Easy enough to change later.
+	<p>
+	I've also added a rudimentary "News" feature - I can now easily create
+	"news" items for each group, or coLab-wide that show up on the right
+	side bar.
+
+
+	<h2>Details...</h2>
+	As noted above, some browsers support some features - but luckily, all
+	work in a predictable way.   One odd thing I discovered in Chrome and Firefox
+	was that after one or two clicks, the video would break, <i>very</i> badly
+	often looking like a light blue curtain blowing in the breeze.  Generally, 
+	after a few seconds (minutes on the very long videos), the screen would 
+	return to normal.   
+	<p>
+	At first I suspected something I was doing with the controls, but I discovered
+	that the existing pages, when played on a broswer using <u>webm</u>, that 
+	moving the controller would do the same think.
+	I suspect some issue with my <u>webm</u> encoding, 
+	but it seems straight forward and works just fine in VLC.  
+	<p>
+	So - I resurrected the <u>ogg</u> format.  I dropped it because the video
+	files were typically 8x-10x or even more, the size of the other 
+	two <u>webm</u> and <u>mp4/h.264</u>. I've gotten the size 
+	of the <u>ogg</u> files down to <i>only</i> 2x - 3x the size of the
+	other two (they're generally close - and neither is always larger or smaller).
+	<p>
+	This fixes the problems in Chrome and Firefox.  (Though, there is another 
+	option with Chrome - see below).  But now Opera has issues:  
+	It has the same problem with <u>webm</u> (video breakup), it doesn't play
+	the video from the <u>ogg</u> file.   While I can manipulate this somewhat 
+	with the order I present the source - I'm simply not going to loose much
+	sleep over Opera support.
+
+
+	<h2>Implementation</h2>
+	The concept here is actually fairly straight-forward.  The colab vidoes
+	work becuase of the new &lt;video&gt; tag defined in the html5 specification.
+	This allows a number of source files to be provided to the browser, and
+	it picks the one it wants from that list.  All modern browsers now support
+	audio and video playback without the use of "plug-ins". (yay!)
+	<p>
+	Each browser's media player supplies the usual controls for play, pause,
+	mute, volume, position in the playback, and fullscreen mode.
+	<p>
+	Many browsers also allow a simple click to start and stop the player.
+	<p>
+	The controls can be turned of in the &lt;video&gt; tag, in which case
+	there needs to be an alternate method to drive the player.  Luckily,
+	there control functions for these features.  Unfortunately, not 
+	all of these are implemented - most notably, the Fullscreen API
+	in IE10.  
+	<p>
+	But beyond that - the javascript (video_engine.js) that I've written
+	(based initially on Matt West's work 
+	<a href="http://blog.teamtreehouse.com/building-custom-controls-for-html5-videos">here</a>),
+	Gathers up the various bits of clicking, does some trickiness to figure out
+	where that click is (trickier than it might seem - as there are different sizes
+	made available and no way to know in advance which will be chosen) and ultimately
+	calculates a number: the desired location in the video in seconds - and simply 
+	tells the video player to go there.
+	<p>
+	Simple, right?
+	<p>
+	<i>One thing I found interesting:</i><br>
+	There are basically two classes of browsers and media.   What one might call 
+	commercial and open source.   They would play out like this:
+	<center>
+	<table border=4 cellpadding=10>
+	<tr><th><img src="/coLab/Resources/CoLab_Logo3D_sm.png" alt="coLab"></th>
+	<th>Browsers</th><th>Video Containers: codecs: video audio</th>
+	</tr>
+	<tr><th>Commercial</th><td>Internet Explorer<br>Safari</td><td>mp4: h.264, avc</td><tr>
+	<tr><th>Open Source</th><td>Firefox<br>Chrome<br>Opera</td><td>webm: vp8, vorbis<br>ogg: theora, vorbis</br></td></tr>
+	</table>
+	</center>
+	<p>
+	The commerial <u>mp4</u> format, has licensing requirements which the open source players cannot or are not willing to
+	pay, and the makers commercial browsers (Micrsoft and Apple) claim they don't trust the open source formats.
+	<p>
+	Fair enough.
+	<p>
+	But I found a couple of oddities.   For one, given the option of all three formats, Google Chrome is 
+	quite happy with <u>mp4</u> and plays it much better than it plays <u>webm</u>  its own format.
+	This is not a huge surprise - Google as said it may remove <u>mp4</u> support, but there's an
+	awful lot of content out the that Chrome would not be able to play if the did.
+	<p>
+	The surprise was Firefox on windows.   It choose mp4 - and does quite nicely with it.  
+	<p>
+	OK - that may only be interesting to a very few people - but I did put it near the end.
+	<p>
+	Just wait to see what's next...
+
+
+	<h2>Known Problems</h2>
+	Other than the various bits that aren't supported, the only bugs I'm aware of are:
+	
+	1) In Android in full screen mode, the locations are not calculated correctly - 
+	I'll look into that.
+
+	<p>
+	2) If multiple generated waveform videos (as opposed to screenshots) are provided 
+	and the "expected" one is not chosen, the alignment will be off a bit as the
+	the start and end points (as well as the time boxes and text on the top and bottom)
+	are not scaled at the same proportion as the whole video; a readable box in a 
+	320x240 (supported but not used) video, looks downright comical in a Super-HD
+	(2560x1440) video - and in the the reverse, what looks good in HD, is unreadable
+	in the small size.   I use the square root of the ratio, and since I haven't
+	pushed that calcuation out into the javascript (still thinking about it...),
+	there's a small chance of a small error in the clicking, mostly near the 
+	beginning and end.
+	<p>
+	3) Not really a problem - but I've dumped a LOT of debug info into the 
+	right side bar - I think I'll keep some of that.   Very easy to change, 
+	get rid of.  (Might even make it a "live" option to turn on/off.)
+
+	</font>
+	</div>
+
+	</body>
+	</html>
+		

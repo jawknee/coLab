@@ -91,19 +91,29 @@ class Html:
 		<source src="!name!-media-!media_size!.mp4" type='video/mp4'>
 		"""
 		print "gen_html5_source:", name, size
+		
+		# a list of source type / info pairs...
+		# order matters: if specified: mp4, ogg, webm   then:
+		# 		chrome picks up mp4  (doesn't break up like webm)
+		#		firefox picks up ogg (doesn't break up like webm)
+		#		opera picks up webm (doesn't seem to actually play the video in ogg)
+		# Safari and IE will pick up mp4 an in any case - oddly, firefox on windows seems
+		# to also pickup mp4 - who knew?
+		# media type, codec info
+		""" ( 'ogg', 'theora, vorbis'), """
+		sourceinfo = [ 
+			( 'mp4', 'avc1.42E01E, mp4a.40.2'), 
+			( 'webm', 'vp8.0, vorbis')
+			]
 		sources = '\n'
 		t3 = '\t' * 3	# 3 tabs - makes the html easier to read....
 		size_c = config.Sizes()
 		while size != config.SMALLEST:	# Stop when we get to the smallest size...
-			# add webm...  (First because Chrome will pick up the mp4 if it finds it first,
-			# and it does better with webm)
-			sources += t3 +'<source src="' + name + '-media-' + size + '.webm" '	# first part
-			sources += """type='video/webm; codecs="vp8.0, vorbis"'>\n"""		# type=  portion
-			# add mp4...
-			sources += t3 + '<source src="' + name + '-media-' + size + '.mp4" '	# first part
-			sources += """type='video/mp4'>\n"""	# type= portion
-			# We may want to consider:
-			#sources += """type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>"""
+			for media_info in sourceinfo:
+				(type, codecs) = media_info
+				sources += t3 + '<source src="' + name + '-media-' + size + '.' + type + '"'	# first part
+				sources += "type='video/" + type + '; codecs="' + codecs + '''"'/>\n'''	
+			
 			# Now - move down to the next size...
 			size = size_c.next_size(size)
 			if size is None:
@@ -130,12 +140,14 @@ class Html:
 		if page.use_soundgraphic:
 			# there is no screen shot - use the media size...
 			pgview_scale = float(media_width) / pgview_width
+			screenshot_width = "None"
 			# open loop alert: calculating the image borders as per imagemaker...
 			adjust_factor = sizes.calc_adjust(media_height) 
 			xStart = int(config.SG_LEFT_BORDER * adjust_factor) 
 			xEnd = int(media_width - ( config.SG_RIGHT_BORDER * adjust_factor) )
 		else:
 			pgview_scale = float(page.screenshot_width) / pgview_width
+			screenshot_width = page.screenshot_width
 			xStart = int( page.xStart )
 			xEnd = int( page.xEnd )
 
@@ -143,6 +155,7 @@ class Html:
 		geo_html += '    <input type="hidden" id="xStart" value="' + str(xStart) + '">\n'
 		geo_html += '    <input type="hidden" id="xEnd" value="' + str(xEnd) + '">\n'
 		geo_html += '    <input type="hidden" id="pageScale" value="' + str(pgview_scale) + '">\n'
+		geo_html += '    <input type="hidden" id="screenshotWidth" value="' + str(screenshot_width) + '">\n'
 		geo_html += '  <!-- media info (fullscreen) -->\n'
 		geo_html += '    <input type="hidden" id="duration" value="' + str(page.duration) + '">\n'
 		geo_html += '    <input type="hidden" id="media_width" value="' + str(media_width) + '">\n'
@@ -195,6 +208,8 @@ class Html:
 			<!--#include virtual="!groupURL!/Shared/projectlist.html" -->
 			</div> <! End sidebar>
 			<div class="sidebar_r">
+			<!--#include virtual="/coLab/Resources/News.html" -->
+			<!--#include virtual="!groupURL!/Shared/News.html" -->
 			<!--#include virtual="!groupURL!/Shared/rightbar.html" -->
 			<p id="info">Info here</p>	
 			</div> <! End right sidebar>
@@ -208,9 +223,8 @@ class Html:
 		
 		self.media_insert_html5="""
 			<div id="video-container">		
-			<!video  id="video" poster="ScreenShot.png" width="640" height="530" controls>
 			<div id="clickdiv">
-			<video  id="video" poster="ScreenShot.png" width="640" height="530">
+			<video  id="video" poster="Poster_Start.png" width="640" height="530">
 			<!-- The following line is replaced with the full complement of html5 video codecs for this page... -->
 			 !html5-source-lines!
 			  <!-- Fall back for non-html5 browsers, (WinXP/IE8, e.g.) simple mp4 embed tag -->

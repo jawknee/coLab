@@ -49,12 +49,12 @@ input_opts="-y -r $fps -i $overlay_dir/Frame-%05d.png -i"
 
 # output streams...
 # Webm
-webm_opts="-codec:v libvpx  -crf 30 -b:v 500k -codec:a libvorbis -qscale:a 5 -threads 3 -r $fps $pagedir/$name-media-$media_size.webm"
-#webm_opts="-codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5 -threads 3 -r $fps $pagedir/$name-media-$media_size.webm"
-mp4_opts="-codec:v libx264 -preset faster -crf 30 -movflags faststart -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 -b:a 192k -r $fps $pagedir/$name-media-$media_size.mp4"
-#mp4_opts="-codec:v libx264 -preset faster -tune stillimage -crf 30 -movflags faststart -pix_fmt yuv420p -threads 3 -codec:a aac -strict -2 -b:a 192k -r $fps $pagedir/$name-media-$media_size.mp4"
-#mp4_opts="-codec:v libx264 -profile:v baseline -movflags faststart -pix_fmt yuv420p -threads 3 -codec:a aac -strict -2 -r $fps $pagedir/$name-media-$media_size.mp4"
+webm_opts="-codec:v libvpx  -crf 20 -b:v 500k  -auto-alt-ref 1 -lag-in-frames 1 -codec:a libvorbis -qscale:a 5 -threads 2 -r $fps $pagedir/$name-media-$media_size.webm"
+mp4_opts="-codec:v libx264 -preset faster -crf 30 -movflags faststart -pix_fmt yuv420p  -threads 2 -codec:a aac -strict -2 -b:a 192k -r $fps $pagedir/$name-media-$media_size.mp4"
 
+ogg_opts="-r $fps -flags:v qscale -qscale:v 1 -codec:v libtheora -codec:a libvorbis -qscale:a 6 -threads 2 $pagedir/$name-media-$media_size.ogg"
+
+# use these to turn off one or more gnerators
 #unset ogg_opts webm_opts
 unset ogg_opts 
 #unset webm_opts
@@ -67,7 +67,7 @@ ogg:	$ogg_opts
 webm:	$webm_opts
 mp4:	$mp4_opts
 EOF
-$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts 2>&1 | tr -u '\r' '\n'
+$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts $ogg_opts 2>&1 | tr -u '\r' '\n'
 rc=$?
 echo "$ffmpeg has completed with return code: $rc"
 exit $rc
@@ -75,6 +75,12 @@ exit $rc
 
 
 # earlier attempts
+#ogg_opts="-r $fps -flags:v qscale -global_quality:v "10*QP2LAMBDA" -codec:v libtheora -s 640x480 -acodec libvorbis -b:a 320k -threads 2 $pagedir/$name-media-$media_size.ogg"
+#mp4_opts="-codec:v libx264 -preset faster -tune stillimage -crf 30 -movflags faststart -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 -b:a 192k -r $fps $pagedir/$name-media-$media_size.mp4"
+#mp4_opts="-codec:v libx264 -profile:v baseline -movflags faststart -pix_fmt yuv420p -threads 3 -codec:a aac -strict -2 -r $fps $pagedir/$name-media-$media_size.mp4"
+#webm_opts="-codec:v libvpx  -crf 30 -b:v 500k -codec:a libvorbis -qscale:a 5 -threads 3 -r $fps $pagedir/$name-media-$media_size.webm"
+#webm_opts="-codec:v libvpx  -crf 30 -b:v 900k -auto-alt-ref 1 -lag-in-frames 4 -codec:a libvorbis -qscale:a 5 -threads 3 -r $fps $pagedir/$name-media-$media_size.webm"
+#webm_opts="-codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5 -threads 3 -r $fps $pagedir/$name-media-$media_size.webm"
 #mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -preset slow -movflags faststart -pix_fmt yuv420p -threads 3 -codec:a aac -strict -2 $pagedir/$name-media.mp4"
 #mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -level 3 $pagedir/$name-media.mp4"
 #mp4_opts="-r $fps -s 640x480 -codec:v libx264 -profile:v baseline -level 3 $pagedir/$name-media.mp4"

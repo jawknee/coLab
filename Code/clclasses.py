@@ -7,6 +7,7 @@
 import os
 import sys
 import imp
+import copy
 import cldate
 import clutils
 import cltkutils
@@ -265,6 +266,8 @@ class Group:
 		(self.songlist, self.songdict) = import_list(self, 'Song')
 		for i in self.songlist:
 			print "I've got a song in my list:", i.name
+		# Make a copy for reference purposes (mostly to see what values have changed)
+		self.prev = copy.copy(self)
 	
 	def find_song(self, song_name=None):
 		"""
@@ -434,7 +437,9 @@ class Page:
 			#self.group_obj.load()
 			
 		import_data(self)
-		
+
+		# Make a copy for reference purposes (mostly to see what values have changed)
+		self.prev = copy.copy(self)
 
 
 	def post(self):

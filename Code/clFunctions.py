@@ -1081,7 +1081,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.graphic_path = os.path.join(self.editor.obj.home, self.editor.obj.thumbnail)
 		#
 		# Let's create the poster size and thumbnails
-		imagemaker.make_sub_images(page)	
+		imagemaker.make_sub_images(self.obj)
 
 		self.post()
 		page.graphic_row.post()
@@ -1442,6 +1442,8 @@ class Edit_screen:
 			row_obj = self.editlist[item]	# convert to a row object
 			(value, ok) = row_obj.return_value()
 			print "item.member:", row_obj.member, value, ok
+			prev_value = eval ("self.obj.prev." + row_obj.member)
+			print "previous value: ", prev_value
 			if row_obj.editable and not ok:
 				self.ok = False
 				self.bad_list.append(row_obj.text)
@@ -1658,7 +1660,8 @@ class Page_edit_screen(Edit_screen):
 		#"""
 		self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save).grid(column=3, row=self.row)	# add  command=
 		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
-	
+
+		imagemaker.make_sub_images(page)
 			
 
 	def save(self):

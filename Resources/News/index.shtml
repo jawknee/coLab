@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+		    <html>
+			<head><title>Help</title>
+			<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
+			
+			</head>
+			<body>
+			<!--   Menu Header -->
+			<div id="container" style="height: 100%; width: 100%; overflow: hidden;">
+			<div class="sidebar_l">
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/mostrecent.html" -->
+			<p><hr><P>
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/projectlist.html" -->
+			</div> <! End sidebar>
+			<div class="sidebar_r">
+			<!--#include virtual="/coLab/Group/Catharsis/Shared/rightbar.html" -->
+			</div> <! End right sidebar>
+			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> <! logo>
+				
+			<div class="banner" > <! start of banner>
+			<!center>	 
+					<table width=80% border=0 cellpadding=0 class="banner_txt">
+					  <td align="center" ><a href="/coLab/Group/Catharsis/index.shtml" title="Always a nice place to go...">Home</a></td>
+	
+					  <td align="center" ><a href="/coLab/Group/Catharsis/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+					  <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
+					  <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
+					  <td align="center" ><a href="/coLab/Group/Catharsis/Shared/Help/index.shtml" tgitle="Hopefully, the help you need.">Help</a></td>
+					</tr></table>
+			<!/center>
+			<br>
+			</div>	<! end of banner>
+			
+			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
+		
+		</center>
+
+	<div class="maintext">
+	<img src="Title.png"><br>
+	<font color=a0b0c0>
+	Hopefully the interface is reasonbly intuitive.  If something
+	doesn't make sense, you have a question or a comment, feel
+	free to enter something below.
+	<p>
+	<h4>Issues with Internet Explorer?</h4>
+	As far as I know - I've resolved the problem with newer
+	versions of IE - it was a configuration issue with my ISP.
+	<p>
+	If you have a problem playing the media files on <i>any platform</i>,
+	<a href="mailto:coLab_dude@jawknee.com?subject=coLab Playback Issues">I'm interested in hearing about it.</a>
+	
+	<p>
+	<h4>Some highlights:</h4>
+	<ul>
+		<li><b>Recent Updates</b><br>
+		The top of the left side bar shows the 
+		most recent activity.  The most recent
+		is at the bottom of the list.  
+		Pages marked 
+		<span style="color: #ff2020; size: smaller;">New!</span>
+		are "new" (currently less than two weeks old) and
+		have not been commented on.  Those marked 
+		<span style="color: #14ff14; size: smaller;">(u)</span>
+		have been recently commented on (updated).
+		<li><b>Current Projects</b><br>
+		Below that are the current projects - presently 
+		these are songs - project support is planned.
+		You can link directly to a song, or part of one
+		by clicking there.
+		<li><b>Links</b><br>
+		Each content page is linked in a chain to all the other
+		pages.   These are currently chronological by creation
+		date.
+		<li><b>Archive</b><br>
+		Beyond that - the most useful item is probably the 
+		Archive link in the top nav bar. The Archive page will show 
+		every page, in chronological order, most recent first.
+	</ul>
+	<p>
+	Hope that helps.
+	<p><hr>
+	<p><i>2014-05-11T18:45:28.549321</i><p>
+		<hr>
+		Enter your comments here:<br>
+		
+		<form method=POST action="/coLab/bin/postcomments.cgi">
+		Your name: <input type="text" name="Commenter" ><br>
+		<center>
+		<input type="hidden" name="page" value="Help">
+		<input type="hidden" name="desc_title" value="Help">
+		<textarea name="Text" rows=7 cols=80></textarea>
+		<br>
+		</center>
+		<input type="submit" value="Add your comment">
+		</form>
+		<p><hr><p>
+		<h3>Comments:</h3>
+		<!--#include virtual="Comments.log" -->
+		<p>
+		<br>
+		<center>
+		&copy; Catharsis Studios West 2013
+		<p>
+		</center>
+		<!--#include virtual="links.html" -->
+		<p>&nbsp;<p>
+		</td></tr></table>
+		<font size=1>
+		Page type: orig
+		</font>
+		</div>	<! middle content>
+		</div>	<! container >
+
+		</center>
+		</body>
+		</html>
+		

@@ -14,6 +14,7 @@
 
 import os
 import sys
+import logging
 import time
 
 import Tkinter as tk
@@ -62,9 +63,9 @@ class Colab():
 		
 		try:
 			self.conf=clutils.get_config()
-			print "conf shows:", self.conf.coLab_home
+			logging.info ("conf shows: %s", self.conf.coLab_home)
 		except ImportError:
-			print "Cannot find config."
+			logging.error("Cannot find config.")
 			sys.exit(1)		# fatal...
 		
 		self.home = self.conf.coLab_home   # can be overridden - not currently anticipated
@@ -75,7 +76,7 @@ class Colab():
 			self.master.option_readfile(option_file, 80)
 			#self.top.option_add('background', '#66a') 
 		except:
-			print "Error reading optionfile:", option_file
+			logging.error("Error reading optionfile: %s", option_file)
 			sys.exit(1)
 			
 			
@@ -113,26 +114,24 @@ class Colab():
 		... some data structure... - for now:
 		"""
 		self.current_grouptitle = "Catharsis"
-		#self.current_grouptitle = "Johnny's Music"
-		self.current_grouptitle = "Test Group"
+		self.current_grouptitle = "Johnny's Music"
+		#self.current_grouptitle = "Test Group"
 		#self.current_grouptitle = "South Bay Philharmonic"
 
-		print "btw", self.current_grouptitle
-		#print "and", self.hello
-		#self.set_group()
+		logging.info("Default group:  %s", self.current_grouptitle)
 		
 	def set_group_from_menu(self, menu_grouptitle='None'):
 		"""
 		Retrieve the menu value and set that
 		as the current group...
 		"""
-		print "!  Click !---------------------------"
+		logging.info("!  Click !---------------------------")
 		# Called with menu_grouptitle = None for initial setup...
 		if menu_grouptitle == "None":
 			menu_grouptitle = self.gOpt.get()
 		self.current_grouptitle = menu_grouptitle
 	
-		print "set_group_from_menu - setting current_grouptitle to", self.current_grouptitle
+		logging.info("set_group_from_menu - setting current_grouptitle to %s", self.current_grouptitle)
 		self.set_group()
 		
 	def set_group(self):
@@ -145,31 +144,32 @@ class Colab():
 		try:
 			thisname = self.current_grouptitle
 		except:
-			print "Fatal error: set_group called with no current_grouptitle set."
+			logging.error("Fatal error: set_group called with no current_grouptitle set.")
 			sys.exit(1)
 		
 		group_dir = self.grouplistdict[thisname]
-		print "set_group: group_dir", group_dir, "group name", thisname
+		logging.info("set_group: group_dir %s, group name: %s", group_dir, thisname)
+
 		# Do we know about this group yet - i.e., is it loaded?
 		try:	# do we even have the list yet?
 			self.group_list
 		except:
-			print "New group list"
+			logging.info("New group list")
 			self.group_list = dict()	# new dictionary...		#RBF   this is a dict, not a list
 		 
-		print "group_dir pre list test", group_dir   
+		logging.info("group_dir pre list test %s", group_dir)
 		try:
 			self.current_group = self.group_list[thisname]
 		except KeyError:
-			print "Nope - don't know group", thisname, "loading now..."
+			logging.info("Nope - don't know group %s loading now...", thisname)
 			#try:
-			print "group_dir pre pre group inst", group_dir 
+			logging.info("group_dir pre pre group inst: %s", group_dir)
 			self.current_group = clclasses.Group(group_dir)
-			print "group_dir post group Inst.", group_dir, self.current_group.name
+			logging.info("group_dir post group Inst - dir: %s, name %s", group_dir, self.current_group.name)
 			self.current_group.load()				
-			print "group_dir post group load", group_dir, self.current_group.name
+			logging.info("group_dir post group load - dir: %s, name: %s", group_dir, self.current_group.name)
 			self.group_list[thisname] = self.current_group
-			print "This group name:", self.current_group.name
+			logging.info("This group name: %s", self.current_group.name)
 			#except Exception as e:
 			#	print "Internal Failure: cannot load ", thisname, sys.exc_info()[0], e
 			#	sys.exit(0)
@@ -191,9 +191,9 @@ class Colab():
 			self.display_group_list()
 			self.place_logo()
 		except TypeError, info:
-			print "TypeError:", info
+			logging.warning("TypeError: %s", info)
 		except Exception as e:
-			print "Initialization Failed", sys.exc_info()[0], e
+			logging.warning( "Initialization Failed" + info,exc_info=True)
 			raise SystemError
 
 		# do a few of the simpler ones here...
@@ -229,7 +229,7 @@ class Colab():
 		msg += "Note: 'coLab' is a trademark or other property of various entities.\n\n"
 		msg += "I'm just using it for now.   Stay tuned for MusiCoLab."
 		tkMessageBox.showinfo("About coLab...", msg)
-		print "how's this?"
+		logging.info("how's this?")
 	
 	def load_group_list(self):
 		"""
@@ -237,12 +237,12 @@ class Colab():
 		the groups until they're called.
 		"""
 		group_dir = os.path.join(self.conf.coLab_home, 'Group')
-		print "new cd:", group_dir
+		logging.info("new cd: %s", group_dir)
 		try:
 			os.chdir(group_dir)
 		except:
-			print "Cannot get to dir:", group_dir
-			print "Fatal"
+			logging.error("Cannot get to dir: %s", group_dir)
+			logging.error("Fatal")
 			raise IOError()
 		# build a dictionary of names to directory names.
 		self.grouplistdict = dict()		# clean dictionary..
@@ -250,20 +250,20 @@ class Colab():
 			# Step through each, try to import from a data file -if it works, 
 			# and there's a tile - we're in - otherwise skip
 			datapath = os.path.join(dir, 'data')
-			print "Checking:", datapath
+			logging.info("Checking: %s", datapath)
 			
 			try:
 				data = imp.load_source('', datapath)
 				#os.remove(datafile + 'c')
 			except:			# if any thing goes wrong - just skip ahead...
-				#print "no good - skipping", datapath, sys.exc_info()[0]
+				logging.warning("no good - skipping %s", datapath,exc_info=True)
 				continue		
 				
 			if not data.title:		# no title - no play...
 				continue
 			# ok - we've got a dir and a title - setup the next entry.
 			self.grouplistdict[data.title] = dir	# for converting a title to a dir name
-			print "self.grouplistdict of", data.title, "is:", self.grouplistdict[data.title]
+			logging.info("self.grouplistdict of %s is %s", data.title, self.grouplistdict[data.title])
 		
 	def display_group_list(self):
 		"""
@@ -276,7 +276,7 @@ class Colab():
 		try:
 			groupTitles = tuple(self.grouplistdict.keys())
 		except:
-			print "got no titles"
+			logging.warning("got no titles", exc_info=True)
 			
 		self.gOpt = tk.StringVar()
 		self.gOpt.set(self.current_grouptitle)
@@ -291,12 +291,12 @@ class Colab():
 		"""
 		Place the buttons (and now, menus)  that drive the main process
 		"""
-		print "function buttons"
+		logging.info("function buttons")
 		# Do we have a local frame, if so, destroy it, other 
 		try:
 			self.function_frame.destroy()   
 		except:
-			print "musta not been a function_frame..."
+			logging.info("musta not been a function_frame...")
 			pass
 
 		#parent = self.main_frame
@@ -328,19 +328,19 @@ class Colab():
 		Handler for the function menus, above.   Call the right thing...
 		"""
 		
-		print "Greetings from page editor... our selection:", selection
+		logging.info("Greetings from page editor... our selection: %s", selection)
 
 		page = self.pg_option_menu.return_value()
 		self.function_buttons()	
 		if page is None:
-			print "None selected."
+			logging.info("None selected.")
 			return
-		print "page is:", page
-		print "Selection, type:", page.name
+		logging.info("page is: %s", page)
+		logging.info("Selection, type: %s", page.name)
 		#clFunctions.edit_page(self)
-		print "edit Page"
+		logging.info("edit Page")
 		
-		print "Selected:", page.name, page.locked
+		logging.info("Selected: name: %s locked: %s", page.name, page.locked)
 		#if page.locked:
 		#	coLab_top.master.beep()
 		#	return
@@ -352,7 +352,7 @@ class Colab():
 		"""
 		Handler for song edit - create a song editor...
 		"""
-		print "Greetings from song editor... our selection:", selection
+		logging.info("Greetings from song editor... our selection: %s", selection)
 
 		song = self.sg_option_menu.return_value()
 		self.function_buttons()	
@@ -373,13 +373,13 @@ class Colab():
 		
 		snapshot_name = 'SnapShot_tn.png'
 		
-		print "Current group.name", self.current_group.name
+		logging.info("Current group.name: %s", self.current_group.name)
 		imgpath = os.path.join(self.current_group.home, "Shared", snapshot_name)
 		if not os.path.exists(imgpath):
 			imgpath = os.path.join(self.conf.coLab_home, 'Resources', "coLab-NoGroupSnap.png")
 
 			
-		print "Image path:", imgpath
+		logging.info("Image path: %s", imgpath)
 		try:
 			self.snapshot.destroy()
 		except:
@@ -400,7 +400,7 @@ class Colab():
 			pass
 		
 		headerpath = os.path.join(self.current_group.home, "Header_dk.png")
-		print "Title path:", headerpath
+		logging.info("Title path: %s", headerpath)
 		self.header = cltkutils.graphic_element(self.main_frame)
 		self.header.filepath = headerpath
 		self.header.row=0
@@ -437,7 +437,7 @@ class Colab():
 		logo_name = 'CoLab_Logo3D_sm.png'	# let's extract this at some point...
 
 		logo_path = os.path.join(self.conf.coLab_home, 'Resources', logo_name)
-		print "logo path:", logo_path
+		logging.info("logo path: %s", logo_path)
 		self.logo = cltkutils.graphic_element(self.main_frame)
 		self.logo.filepath = logo_path
 		self.logo.row=0
@@ -448,17 +448,17 @@ class Colab():
 		"""
 		Simple interface to the rebuild scripting...
 		"""
-		print "Refresh: ", self.current_grouptitle
+		logging.info("Refresh: %s", self.current_grouptitle)
 		rebuild.rebuild(self.current_group.name, mirror=True)
 		clSchedule.browse_url(self.current_group.url_head)
-		print "Refresh complete."
+		logging.info("Refresh complete.")
 		
 		
 	def my_quit(self):
 		"""
 		Let's check to see what's left hanging if/when someone quits.
 		"""
-		print "Time to quit."
+		logging.info("Time to quit.")
 
 		self.master.quit()
 		
@@ -474,7 +474,7 @@ Create the root and pass it into the Colab class (master)
 """
 
 def main():
-	print "Colab Main"
+	logging.info("Colab Main")
 	root = tk.Tk()
 	
 	w=Colab(root)

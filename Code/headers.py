@@ -4,6 +4,7 @@
 
 """
 
+import logging
 import config
 
 class Html:

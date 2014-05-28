@@ -6,6 +6,7 @@
 """
 import os
 import sys
+import logging
 import imp
 import copy
 import cldate
@@ -18,8 +19,8 @@ def set_init_vars(obj, initdata):
 	Take the var/value pairs passed as a list in initdata
 	and put them into the object along with a varlist
 	"""
-	print "Entering set_init_vars..."
-	print "Object:", obj.name
+	logging.info("Entering set_init_vars...")
+	logging.info("Object: %s", obj.name)
 
 	obj.varlist = []
 	for (varname, value) in initdata:
@@ -43,7 +44,7 @@ def set_paths(obj,sub_dir):
 	try:
 		conf=clutils.get_config()
 	except ImportError:
-		print "Cannot find config."
+		logging.error("Cannot find config.")
 		sys.exit(1)
 
 	# populate the object's paths based on the subdir passed, 
@@ -74,16 +75,16 @@ def import_data(obj, path=None):
 		datafile = os.path.join(obj.home, 'data')
 
 	p = ''
-	print "Enter import_data for:", obj.name, "path", datafile
+	logging.info("Enter import_data for: %s, path: %s", obj.name,  datafile)
 	try:
 		p = imp.load_source('',datafile)
 		os.remove(datafile + 'c')
 	except IOError, info:
-		print "Import problem with", datafile, info
+		logging.warning("Import problem with %s", datafile, exc_info=True)
 		#raise IOError
 
 	try:
-		print "name from import:", p.name
+		logging.info("name from import: %s", p.name)
 	except:
 		pass
 	
@@ -98,7 +99,7 @@ def import_data(obj, path=None):
 		try:
 			val = eval(string)
 		except AttributeError, info:
-			print "No file value for:", var, info
+			logging.warning("No file value for: %s, %s, ", string, info, exc_info=True)
 			continue
 		# value changed, deal with it...
 		string = 'obj.' + var + ' = val'
@@ -120,7 +121,7 @@ def convert_vars(obj):
 			#print 'Floating', var
 			conversion = "float"
 		if var in obj.timevars:
-			print "Converting", var
+			logging.info("Converting %s", var)
 			conversion = "cldate.string2utc"
 		if var in obj.intvars:
 			conversion = "int"
@@ -130,7 +131,7 @@ def convert_vars(obj):
 			try:
 				exec(string)
 			except:
-				print "import_data, problem with conversion:", conversion, var
+				logging.warning("import_data, problem with conversion: %s, var: %s", conversion, var, exc_info=True)
 				
 def import_list(parent, type):
 	"""
@@ -141,16 +142,16 @@ def import_list(parent, type):
 	"""
 	# Now, step into the pages dir and load up a list of pages
 	thisdir = os.path.join(parent.home, type)
-	print "import list dir:", thisdir
+	logging.info("import list dir: %s", thisdir)
 	try:
 		os.chdir(thisdir)
 	except:
-		print "Cannot get to dir:", thisdir
-		print "Fatal"
+		logging.warning("Cannot get to dir: %s", thisdir, exc_info=True)
+		logging.error("Fatal")
 		raise ImportError()
 		
 	# Now step through the dirs  (and files - rejecting them...).
-	print "Import list: parent, type", parent.name, type
+	logging.info("Import list: parent: %s, type: %s", parent.name, type)
 	
 	list = []
 	dict = {}
@@ -160,7 +161,7 @@ def import_list(parent, type):
 		# is a dir with a 'data' file in it...  ok for now...
 		nexthome = os.path.join(thisdir, item)
 		datafile = os.path.join(nexthome, 'data')
-		print "import_list nexthome,datafile", nexthome, datafile
+		logging.info("import_list nexthome: %s, datafile: %s", nexthome, datafile)
 		
 		if not os.path.exists(datafile):
 			continue	# not a page...
@@ -170,23 +171,23 @@ def import_list(parent, type):
 		elif type == 'Song':
 			obj = Song(item)
 			
-		print "Import_list: set_paths, type, nexthome", type, nexthome, 
+		logging.info("Import_list: set_paths, type: %s, nexthome: %s", type, nexthome )
 		
 		obj.group = parent.name
 		obj.group_obj = parent		# a pointer to the parent
 		sub_dir = os.path.join('Group', parent.name, type, item)
-		print "Set_paths:", obj.name, sub_dir
+		logging.info("Set_paths: %s %s", obj.name, sub_dir)
 		set_paths(obj, sub_dir)	
 
 		try:
-			print "Loading: obj:",obj.name, obj.group_obj.name, obj.home
+			logging.info("Loading: obj: %s, gr.name: %s, objhome: %s",obj.name, obj.group_obj.name, obj.home)
 			obj.load()
 			
 		except IOError:
-			print "problem with", dir
+			logging.warning("problem with %s", dir, exc_info=True)
 			continue	# RBF: consider something serious here - exit even??
 		if parent.name != obj.group:
-			print "WARNING:  loading parent's name:", parent.name, "current group var:", obj.group
+			logging.warning("WARNING:  loading parent's name: %s, current group var: %s", parent.name, obj.group)
 		list.append(obj)
 		dict[obj.name] = obj
 		#  RBF:   this appears that it should be replaced with sub_dir = os.path.join('Page', page.name) / set_paths(page, sub_dir)
@@ -226,17 +227,17 @@ class Group:
 		self.floatvars = []
 		self.intvars = []
 		try:
-			print "name, self. ", name, self.name
+			logging.info("name, self. %s - %s", name, self.name)
 		except:
 			pass
 		self.name = name
 		try:
-			print "name, self. ", name, self.name
+			logging.info("name, self. %s - %s", name, self.name)
 		except:
 			pass
 		set_init_vars(self, initdata)
 		try:
-			print "name, self. ", name, self.name
+			logging.info("name, self. %s - %s", name, self.name)
 		except:
 			pass
 		#
@@ -255,17 +256,17 @@ class Group:
 		#
 		# Load a generic object from the file, then transfer the items 
 		# to the current Group object
-		print "self.name pre import", self.name
+		logging.info("self.name pre import: %s", self.name)
 		import_data(self)
-		print "self.name post import", self.name
+		logging.info("self.name post import: %s", self.name)
 		
 		# create translation dicts for 
 		(self.pagelist, self.pagedict) = import_list(self, 'Page')
 		for i in self.pagelist:
-			print "I've got a page in my list:", i.name
+			logging.info("I've got a page in my list: %s", i.name)
 		(self.songlist, self.songdict) = import_list(self, 'Song')
 		for i in self.songlist:
-			print "I've got a song in my list:", i.name
+			logging.info("I've got a song in my list: %s", i.name)
 		# Make a copy for reference purposes (mostly to see what values have changed)
 		self.prev = copy.copy(self)
 	
@@ -422,14 +423,14 @@ class Page:
 				page_dir = os.path.join('Group', self.group, 'Page', self.name)
 				set_paths(self.page_dir)
 			except Exception as e:
-				print "Cannot build page paths"	
+				logging.warning("Cannot build page paths %s", page_dir,  exc_info=True)
 		else:
-			print "Page load path passed in:", path
+			logging.info("Page load path passed in: %s", path)
 			set_paths(self, path)
 			
 			# Kludge alert:  this is not OS independent - should use sys calls...
 			# the second piece of "path" should be the group
-			print "About to split:", path
+			logging.info("About to split: %s", path)
 			self.group = path.split('/')[1]
 			self.name = path.split('/')[3]
 			# probably running offline - load the object too...
@@ -451,13 +452,13 @@ class Page:
 			Object variables persist.
 		"""
 
-		print "post: page path", self.home
+		logging.info("post: page path: %s", self.home)
 		data = os.path.join(self.home, 'data')
 
 		try: 
 			dfile = open(data, 'w+')	
 		except IOError, info:
-			print "post: Problem opening", data, info
+			logging.info("post: Problem opening: %s", data, exc_info=True)
 			raise
 
 		dfile.write(self.dump())
@@ -478,8 +479,8 @@ class Page:
 				os.makedirs(localdir)
 	
 			except OSError, info:
-				print "Path:", localdir, "problem:", info
-				print "Try again."
+				logging.warning("Path: %s", localdir, exc_info=True)
+				logging.warning("Try again.")
 				sys.exit(1)
 	
 		# create a stub for the data file...
@@ -533,7 +534,7 @@ class Song:
 		merge values from the data files
 		"""
 		
-		print "New init song - name:", name
+		logging.info("New init song - name: %s", name)
 		timenow=cldate.utcnow()
 		# varname, value pairs...
 		initdata = [
@@ -617,7 +618,7 @@ class Song:
 			#self.group = "SBP"
 			#self.group= "Catharsis"
 			self.group= "Johnny"
-			print "Note: override: group =", self.group_obj, self.group
+			logging.info("Note: override: group = %s - %s", self.group_obj, self.group)
 
 		song_dir = os.path.join('Group', self.group, 'Song', self.name)
 		set_paths(self, song_dir)
@@ -626,7 +627,7 @@ class Song:
 			try:
 				path = self.home
 			except NameError, info:
-				print "load: NE", info
+				logging.warning("load: NE", exc_info=True)
 				sys.exit(1)
 		
 		import_data(self, path)
@@ -634,7 +635,7 @@ class Song:
 		self.partname_dict = {}
 		# build a part dictionary   shortname ->  longer name...
 		for i in range(len(self.partlist)):
-			print "Insertng name:", i, self.partlist[i], self.partnames[i]
+			logging.info("Inserting name: inx: %d, list: %s name:%s", i, self.partlist[i], self.partnames[i])
 			self.partname_dict[self.partlist[i]] = self.partnames[i]
 
 	def create(self):
@@ -652,8 +653,8 @@ class Song:
 				os.makedirs(localdir)
 	
 			except OSError, info:
-				print "Path:", localdir, "problem:", info
-				print "Try again."
+				logging.warning("Path: %s", localdir, exc_info=True)
+				logging.error("Try again.")
 				sys.exit(1)
 	
 		# create a stub for the data file...
@@ -671,20 +672,20 @@ class Song:
 			Object variables presist.
 		"""
 
-		print "post: page path", self.home
+		logging.info("post: page path: %s", self.home)
 		data = os.path.join(self.home, 'data')
 
 		try: 
 			dfile = open(data, 'w+')	
 		except IOError, info:
-			print "post: Problem opening", data, info
+			logging.warning("post: Problem opening: %s", data, exc_info=True)
 			raise
 
 		dfile.write(self.dump())
 		dfile.close()
 
 def main():
-	print "Welcome to classes..."
+	logging.info("Welcome to classes...")
 	
 	"""
 	
@@ -692,7 +693,7 @@ def main():
 	g.load(group)
 
 	for p in g.pagelist:
-		print "got page:", p.name, p.desc_title, p.fun_title
+		logging.info("got page: %s, %s, %s", p.name, p.desc_title, p.fun_title)
 	"""
 
 if __name__ == '__main__':

@@ -10,6 +10,7 @@
 
 import os
 import sys
+import logging
 import datetime	
 import imp	# to input the data file
 import shutil
@@ -136,8 +137,7 @@ def genHome(name):
 		</center>
 	<div class="maintext">
 
-	<h2 class=fundesc>""" + P.title + """</h2>""" + P.description + "<p><i>" + 
-	P.create + """</i><p> <p>"""
+	<h2 class=fundesc>""" + P.title + """</h2>""" + P.description + "<p><i>" + P.create + """</i><p> <p>"""
 
 	CommentLog="Comments.log" 
 

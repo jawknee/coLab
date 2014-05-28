@@ -5,6 +5,7 @@
 
 import os
 import sys
+import logging
 import string
 import imp
 import six

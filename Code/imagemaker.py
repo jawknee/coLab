@@ -5,9 +5,11 @@
 	scrolling line...
 """
 
-import aifc
-import sys
 import os
+import sys
+import logging
+
+import aifc
 import math
 import threading
 import time

@@ -9,6 +9,7 @@
 
 import os
 import sys
+import logging
 import subprocess
 # temp?
 import time

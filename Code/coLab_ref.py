@@ -7,6 +7,7 @@
 
 import os
 import time
+import logging
 
 import Tkinter as tk
 import tkFileDialog

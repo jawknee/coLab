@@ -3,6 +3,7 @@
 	coLab config: globals and such
 	
 """
+import logging
 import math
 
 #--------------------------------------

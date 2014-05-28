@@ -4,6 +4,7 @@
 """
 
 import os
+import logging
 import subprocess
 import fcntl
 import select

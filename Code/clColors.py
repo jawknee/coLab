@@ -3,6 +3,8 @@
 Color definitions for coLab.
 """
 
+import logging
+
 
 # Colors....
 XPARENT = (0,0,0,0)

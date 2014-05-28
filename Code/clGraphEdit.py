@@ -4,7 +4,7 @@ An interface to the Tkinter canvas widget,
 Allow, at least at first - selection of the
 start and end points.
 """
-
+import logging
 import time
 
 import Tkinter as tk

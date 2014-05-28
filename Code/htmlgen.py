@@ -13,6 +13,7 @@
 
 import os
 import sys
+import logging
 import imp	# to input the data file
 import shutil
 import subprocess

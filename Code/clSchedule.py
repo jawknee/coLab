@@ -3,6 +3,7 @@ Various routines to schedule applications
 """
 import os
 import sys
+import logging
 import subprocess
 open_app = '/usr/bin/open'
 

@@ -2,8 +2,9 @@
 """
 	A quick, one-off to generate graphics of the current fonts...
 """
-import sys
 import os
+import sys
+import logging
 
 from PIL import Image
 from PIL import ImageDraw

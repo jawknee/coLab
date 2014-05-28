@@ -13,6 +13,7 @@
 """
 import os
 import sys
+import logging
 import shutil
 import subprocess
 

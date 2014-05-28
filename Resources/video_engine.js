@@ -54,27 +54,31 @@ window.onload = function() {
 	
 
 	//  First - let's find our full screen requester...
-	var fullscreenProperty = 'unset';
 	if (video.requestFullscreen) {
-		var fullscreenRequester = function () { video.requestFullscreen(); }	// Generic
 		fullscreenMode = "Generic";
-		fullscreenProperty = document.fullscreenEnabled;
+		var fullscreenRequester = function () { video.requestFullscreen(); }	// Generic
+		var fullscreenElement = document.fullscreenElement;
+		var fullscreenEnabled = document.fullscreenEnabled;
 	} else if (video.mozRequestFullScreen) {
-		var fullscreenRequester = function () { video.mozRequestFullScreen(); } // Firefox
 		fullscreenMode = "Mozilla";
-		fullscreenProperty = document.mozFullScreenEnabled;
+		var fullscreenRequester = function () { video.mozRequestFullScreen(); } // Firefox
+		var fullscreenElement = document.mozFullScreenElement;
+		var fullscreenEnabled = document.mozFullScreenEnabled;
 	} else if (video.webkitRequestFullscreen) {
-		var fullscreenRequester = function () { video.webkitRequestFullscreen(); } // Chrome and Safari
 		fullscreenMode = "Webkit";
-		fullscreenProperty = document.webkitFullscreenEnabled;
+		var fullscreenRequester = function () { video.webkitRequestFullscreen(); } // Chrome and Safari
+		var fullscreenElement = document.webkitFullscreenElement;
+		var fullscreenEnabled = document.webkitFullscreenEnabled;
 	} else if (video.webkitEnterFullScreen) {
-		var fullscreenRequester = function () { video.webkitEnterFullScreen(); } // Chrome and Safari
 		fullscreenMode = "iOS";
-		fullscreenProperty = document.fullscreenEnabled;  //  NO!  only a place holder
+		var fullscreenRequester = function () { video.webkitEnterFullScreen(); } // Chrome and Safari
+		var fullscreenElement = document.fullscreenElement;  //  NO!  only a place holder
+		var fullscreenEnabled = document.fullscreennabled;  //  NO!  only a place holder
 	} else if (video.msRequestFullscreen) {
-		var fullscreenRequester = function () { video.msRequestFullscreen(); } // MS / IE
 		fullscreenMode = "Microsoft";
-		fullscreenProperty = document.msFullscreenEnabled;
+		var fullscreenRequester = function () { video.msRequestFullscreen(); } // MS / IE
+		var fullscreenElement = document.msFullscreenElement;
+		var fullscreenEnabled = document.msFullscreenEnabled;
 	} else {
 		fullscreenMode = "None";
 	}
@@ -146,9 +150,9 @@ window.onload = function() {
 
 	function setFSButton() {
 		if (fullscreenMode == "None" ) {
-			fullScreenButton.innerHTML = '<img src="/coLab/Resources/Icons/NoFullScreen_24x24xp_01.png" alt="Mute">';
+			fullScreenButton.innerHTML = '<img src="/coLab/Resources/Icons/NoFullscreen_Gray_24x24xp.png" alt="Fullscreen Unavailable">';
 		} else {
-			fullScreenButton.innerHTML = '<img src="/coLab/Resources/Icons/FullScreen_24x24xp_01.png" alt="Unmute">';
+			fullScreenButton.innerHTML = '<img src="/coLab/Resources/Icons/Fullscreen_Gray_24x24xp.png" alt="Fullscreen">';
 		}
 	}
 
@@ -286,7 +290,7 @@ window.onload = function() {
 		video.volume = volumeBar.value;
 	});
 
-
+	/*
 	// Entering fullscreen mode
 	function handleFullscreen (event) {
 	    	var state = document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen;
@@ -306,53 +310,52 @@ window.onload = function() {
 	video.addEventListener('webkitfullscreenchange', handleFullscreen, false );
 	video.addEventListener('mozfullscreenchange', handleFullscreen, false );	// Doesn't work... handled in video.click
 	video.addEventListener('fullscreenchange', handleFullscreen, false );
+	*/
 
 	function checkFullscreenMode () {
-		//
-		// Some special handling for Mozilla - it does not appear to be 
-		// using mozfullscreenchange - so we test for it here...
+		// 
+		// Can we do this generically?   Apparently not...
+		/*
+		if ( fullscreenElement &&  fullscreenElement.nodeName == 'VIDEO'  ) {
+			element = fullscreenElement.nodeName;
+			msg = 'Your ' + fullscreenMode + ' video is playing in fullscreen - element ' + element ;
+			fullscreenStatus = 'FullscreenOn';
+		} else {
+			msg = 'Your ' + fullscreenMode + ' video is playing in pageview ';
+			fullscreenStatus = 'FullscreenOff';
+			setPlayButton();
+		}
+		console.log(msg);
+		return;
+		*/
+		// The screenchange events are not happening consistently - so far now, we test each time
+		// we get a click...
+		// 
+		// Some special handling each style of browser...
+		// We set fullscreenState to a Boolean - and then the fullscreenStatus string from there...
 		if ( fullscreenMode == "Generic" ) {
-			if ( document.fullscreenElement &&  document.fullscreenElement.nodeName == 'VIDEO'  ) {
-				console.log('Your Generic video is playing in fullscreen');
-				fullscreenStatus = 'FullscreenOn';
-			} else {
-				console.log('Your Generic video is playing in pageview');
-				fullscreenStatus = 'FullscreenOff';
-				setPlayButton();
-			}
+			var fullscreenState = document.fullscreenElement &&  document.fullscreenElement.nodeName == 'VIDEO';
 		}
 		if ( fullscreenMode == 'Mozilla' ) {
-			if ( document.mozFullScreenElement && document.mozFullScreenElement.nodeName == 'VIDEO') {
-				console.log('Your Mozilla video is playing in fullscreen');
-				fullscreenStatus = 'FullscreenOn';
-			} else {
-				console.log('Your Mozilla video is playing in pageview');
-				fullscreenStatus = 'FullscreenOff';
-				setPlayButton();
-			}
+			var fullscreenState = document.mozFullScreenElement && document.mozFullScreenElement.nodeName == 'VIDEO';
 		}
 	
 		if ( fullscreenMode == 'Webkit' ) {
-			if ( document.webkitFullscreenElement &&  document.webkitFullscreenElement.nodeName == 'VIDEO'  ) {
-				console.log('Your webkit video is playing in fullscreen');
-				fullscreenStatus = 'FullscreenOn';
-			} else {
-				console.log('Your webkit video is playing in pageview');
-				fullscreenStatus = 'FullscreenOff';
-				setPlayButton();
-			}
+			fullscreenState =  document.webkitFullscreenElement &&  document.webkitFullscreenElement.nodeName == 'VIDEO';
 		}
 		// And likewise with Microsoft / IE
 		if ( fullscreenMode == 'Microsoft' ) {
-			if ( document.msFullscreenElement &&  document.msFullscreenElement.nodeName == 'VIDEO'  ) {
-				console.log('Your MS/IE video is playing in fullscreen');
-				fullscreenStatus = 'FullscreenOn';
-			} else {
-				console.log('Your MS/IE video is playing in pageview');
-				fullscreenStatus = 'FullscreenOff';
-				setPlayButton();
-			}
+			var fullscreenState = document.msFullscreenElement &&  document.msFullscreenElement.nodeName == 'VIDEO';
+		}	
+		if ( fullscreenState ) {
+			fullscreenStatus = 'FullscreenOn';
+		} else {
+			fullscreenStatus = 'FullscreenOff';
+			setPlayButton();
 		}
+
+		msg = "Your " + fullscreenMode + " browser is playing status: " + fullscreenStatus;
+		console.log(msg);
 	}
 
 
@@ -434,6 +437,7 @@ window.onload = function() {
 		//
 		// check the full screen mode....
 		checkFullscreenMode();
+		console.log("Returned fullscreenStatus: " + fullscreenStatus);
 
 		// we may have dropped out of full screen mode - if so, and this
 		// was a document click, ignore it and wait for the next click to handle it...

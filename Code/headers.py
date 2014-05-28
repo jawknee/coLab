@@ -174,10 +174,11 @@ class Html:
 		    <html>
 			<head><title>!fun_title!</title>
 			<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_VidAutoTest.css">
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_VidAuto.css">
 			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			""" 
 
+		self.head_insert_orig = ''
 		self.head_insert_html5 = ''
 	
 		self.banner = """	
@@ -211,7 +212,7 @@ class Html:
 			<!--#include virtual="/coLab/Resources/News.html" -->
 			<!--#include virtual="!groupURL!/Shared/News.html" -->
 			<!--#include virtual="!groupURL!/Shared/rightbar.html" -->
-			<p id="info">Info here</p>	
+			<p id="info"></p>	<! A paragraph for displaying...  info from javascript.>
 			</div> <! End right sidebar>
 			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
 			<! end logo>

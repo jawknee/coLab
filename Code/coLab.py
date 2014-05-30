@@ -113,7 +113,7 @@ class Colab():
 		"""
 		self.current_grouptitle = "Catharsis"
 		self.current_grouptitle = "Johnny's Music"
-		self.current_grouptitle = "Test Group"
+		#self.current_grouptitle = "Test Group"
 		print "btw", self.current_grouptitle
 		#print "and", self.hello
 		#self.set_group()

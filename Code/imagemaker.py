@@ -82,7 +82,8 @@ def calculate_fps(page):
 	# (we skip the fractional ones for now...)
 	
 	fps_values = [ (1,10), (1,5), (1,4), (1,3), (1,2), (1,1),
-	      (2,1), (6,1), (10,1), (12,1), (15,1), (24,1), 
+	      (2,1), (3,1), (4,1), 
+	      (6,1), (10,1), (12,1), (15,1), (24,1), 
 	      (25,1), (30,1) ]  #  not using:   (50,1), (60,1) 
 	
 	size_class = config.Sizes()

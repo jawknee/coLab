@@ -271,7 +271,7 @@ window.onload = function() {
 
 		// Update the slider value
 		seekBar.value = value;
-		postInfo("update");
+		//postInfo("update");
 	});
 
 	// when video completes, change the play button to "play"

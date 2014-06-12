@@ -5,9 +5,9 @@
 cd ~/coLab/Group/
 glist="*"
 glist="Johnny"
-glist="SBP"
-glist="Catharsis"
-glist="Johnny SBP Catharsis Test"
+#glist="SBP"
+#glist="Catharsis"
+#glist="Johnny SBP Catharsis Test"
 for group in $glist
 do
 	(

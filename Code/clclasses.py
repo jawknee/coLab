@@ -121,7 +121,8 @@ def convert_vars(obj):
 			#print 'Floating', var
 			conversion = "float"
 		if var in obj.timevars:
-			logging.info("Converting %s", var)
+			#logging.info("Converting %s", var)
+			logging.warning("Converting %s", var)		# RBF---------
 			conversion = "cldate.string2utc"
 		if var in obj.intvars:
 			conversion = "int"

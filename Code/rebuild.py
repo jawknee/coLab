@@ -397,7 +397,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	infotext =  '\nPage:\t' + page.desc_title +  '\n' 	
 	infotext +=	'Size:\t' + media_size + ' (' + str(width) + ',' + str(height) + ')\n'
 	infotext += 'Duration:\t' + '%.3f' % page.duration + ' seconds\n'
-	infotext += 'fps:\t' + str(fps) + '\n' 
+	infotext += 'fps:\t' + imagemaker.calc_fps_string(page) + '\n' 
 	infotext += 'frames:\t' + str(frames) + '\n'
 	infotext += 'Graphic:\t'
 	if page.use_soundgraphic:

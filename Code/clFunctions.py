@@ -1449,7 +1449,7 @@ class Edit_screen:
 			except:
 				logging.warning("No .prev member object:  %s." % row_obj.member)
 			else:
-				logging.info("previous value: " + prev_value)
+				logging.info("previous value: " + str(prev_value))
 				
 			if row_obj.editable and not ok:
 				self.ok = False

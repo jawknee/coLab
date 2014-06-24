@@ -247,6 +247,9 @@ class Group:
 		# These are not saved to the file - don't add to the varlist...
 		self.pagelist = []
 		self.songlist = []
+		# Create a "previous" version (possibly overwritten in "load") for comparisons
+		self.prev = copy.copy(self)
+
 
 	def load(self):	
 		"""
@@ -277,6 +280,7 @@ class Group:
 		for i in self.songlist:
 			logging.info("I've got a song in my list: %s", i.name)
 		# Make a copy for reference purposes (mostly to see what values have changed)
+		self.prev = None	# (remove any previous "prev")
 		self.prev = copy.copy(self)
 	
 	def find_song(self, song_name=None):
@@ -367,6 +371,8 @@ class Page:
 		self.intvars = [ 'xStart', 'xEnd', 'screenshot_width' ]
 
 		set_init_vars(self, initdata)
+		# Create a "previous" version (possibly overwritten in "load") for comparisons
+		self.prev = copy.copy(self)
 
 	def dump(self):
 		"""
@@ -449,6 +455,7 @@ class Page:
 		import_data(self)
 
 		# Make a copy for reference purposes (mostly to see what values have changed)
+		self.prev = None	# (remove any previous "prev")
 		self.prev = copy.copy(self)
 
 	def post(self):
@@ -577,6 +584,8 @@ class Song:
 		# items not stored in the data file
 		self.list = []			# not clear this is used...   check it.
 		self.part_dict = {}		# used later to keep lists of pages, organized by what part they're associated with
+		# Create a "previous" version (possibly overwritten in "load") for comparisons
+		self.prev = copy.copy(self)
 
 
 	def dump(self):
@@ -646,6 +655,7 @@ class Song:
 			logging.info("Inserting name: inx: %d, list: %s name:%s", i, self.partlist[i], self.partnames[i])
 			self.partname_dict[self.partlist[i]] = self.partnames[i]
 		# make a copy so we can tell if we've been changed, etc...
+		self.prev = None	# (remove any previous "prev")
 		self.prev = copy.copy(self)
 	def create(self):
 		"""

@@ -249,6 +249,8 @@ class Colab():
 		for dir in (os.listdir('.')):
 			# Step through each, try to import from a data file -if it works, 
 			# and there's a tile - we're in - otherwise skip
+			if dir == '.DS_Store':	# yeah, mac specific, but just skipp it...
+				continue
 			datapath = os.path.join(dir, 'data')
 			logging.info("Checking: %s", datapath)
 			

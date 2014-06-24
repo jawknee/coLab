@@ -109,7 +109,7 @@ class Render_engine():
 			f = open(self.render_list_file)
 			self.pending_renders = f.read().split('\n')	# split on new lines - last one - remove
 		except:
-			print "Oops?"
+			logging.info("No pending renders file.")
 			self.pending_renders = []
 		
 		

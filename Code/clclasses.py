@@ -13,6 +13,8 @@ import cldate
 import clutils
 import cltkutils
 
+import imagemaker	# RBF:  remove once remake kludge is gone
+
 
 def set_init_vars(obj, initdata):
 	"""
@@ -99,7 +101,7 @@ def import_data(obj, path=None):
 		try:
 			val = eval(string)
 		except AttributeError, info:
-			logging.warning("No file value for: %s, %s, ", string, info, exc_info=True)
+			logging.info("No file value for: %s, %s, ", string, info, exc_info=True)
 			continue
 		# value changed, deal with it...
 		string = 'obj.' + var + ' = val'
@@ -122,7 +124,7 @@ def convert_vars(obj):
 			conversion = "float"
 		if var in obj.timevars:
 			#logging.info("Converting %s", var)
-			logging.warning("Converting %s", var)		# RBF---------
+			logging.info("Converting %s", var)		# RBF---------
 			conversion = "cldate.string2utc"
 		if var in obj.intvars:
 			conversion = "int"
@@ -265,6 +267,12 @@ class Group:
 		(self.pagelist, self.pagedict) = import_list(self, 'Page')
 		for i in self.pagelist:
 			logging.info("I've got a page in my list: %s", i.name)
+			# RBF:   Rebuild the poster files - this needs to be a button /option at some point...
+			'''  Uncomment (add "#") to rebuild all posters...
+			if i.page_type == 'html5':
+				logging.warning("Rebuilding poster images...")
+				imagemaker.make_sub_images(i)
+			#'''
 		(self.songlist, self.songdict) = import_list(self, 'Song')
 		for i in self.songlist:
 			logging.info("I've got a song in my list: %s", i.name)
@@ -422,7 +430,7 @@ class Page:
 		if path is None:
 			try:
 				page_dir = os.path.join('Group', self.group, 'Page', self.name)
-				set_paths(self.page_dir)
+				set_paths(self, page_dir)
 			except Exception as e:
 				logging.warning("Cannot build page paths %s", page_dir,  exc_info=True)
 		else:
@@ -442,7 +450,6 @@ class Page:
 
 		# Make a copy for reference purposes (mostly to see what values have changed)
 		self.prev = copy.copy(self)
-
 
 	def post(self):
 		"""
@@ -638,7 +645,8 @@ class Song:
 		for i in range(len(self.partlist)):
 			logging.info("Inserting name: inx: %d, list: %s name:%s", i, self.partlist[i], self.partnames[i])
 			self.partname_dict[self.partlist[i]] = self.partnames[i]
-
+		# make a copy so we can tell if we've been changed, etc...
+		self.prev = copy.copy(self)
 	def create(self):
 		"""
 		This could be part of post - but I want to 

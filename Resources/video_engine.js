@@ -166,17 +166,17 @@ window.onload = function() {
 
 	setFSButton();
 
-	// If set to the "Poster_Start.png" value, change
-	// the poster to "Poster_Wait.png"
-	function updatePoster() {
-
+	// Set the poster to a new value, based on the string passed in:
+	// Poser_<poster_type>.png
+	function updatePoster(poster_type) {
 		var currentPoster = document.getElementById("video").poster;
 		path = currentPoster.split('/');
 		poster = path.pop()
 		console.log("Update Poster: " + currentPoster + ' - ' + poster);
-		if ( poster == "Poster_Start.png" ) {
-			video.poster = "Poster_Waiting.png" ;
-		}
+		poster_name = "Poster_" + poster_type + ".png";
+		video.poster = poster_name;
+
+
 		currentPoster = document.getElementById("video").poster;
 		console.log("New poster? " + currentPoster);
 	}
@@ -185,7 +185,7 @@ window.onload = function() {
 	//  start the video playing 
 	function playIt() {
 		if ( playStatus == "Initial") {
-			updatePoster();
+			updatePoster('Waiting');
 		}
 		video.play();
 		playStatus = "Playing";
@@ -489,6 +489,7 @@ window.onload = function() {
 		// if we've just started, the first click starts us off...
 		if ( playStatus == "Initial") {
 			postInfo("Initial Click down");
+			updatePoster('Pressed');
 			return;
 		} 
 		//

@@ -1443,9 +1443,14 @@ class Edit_screen:
 			row_obj = self.editlist[item]	# convert to a row object
 			(value, ok) = row_obj.return_value()
 			print "item.member:", row_obj.member, value, ok
-			#  prev -not completely working yet....
-			#prev_value = eval ("self.obj.prev." + row_obj.member)
-			#print "previous value: ", prev_value
+			#  prev  value - have we changed...?
+			try:	# this is not working yet....
+				prev_value = eval ("self.obj.prev." + row_obj.member)
+			except:
+				logging.warning("No .prev member object:  %s." % row_obj.member)
+			else:
+				logging.info("previous value: " + prev_value)
+				
 			if row_obj.editable and not ok:
 				self.ok = False
 				self.bad_list.append(row_obj.text)

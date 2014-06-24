@@ -188,7 +188,7 @@ def make_sub_images(page, size=None):
 		print "make_sub_images:", graphic, thumbnail
 		
 		resourcedir = os.path.join(page.coLab_home, 'Resources')
-		for postertype in [ 'Start', 'Waiting']:
+		for postertype in [ 'Start', 'Pressed', 'Waiting']:
 			overlayname = 'Poster' + postertype + "Overlay.png"
 			poster_path = os.path.join(page.home, 'Poster_' + postertype + '.png')
 			overlaypath = os.path.join(resourcedir, overlayname)

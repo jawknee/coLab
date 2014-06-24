@@ -4,10 +4,11 @@
 #
 cd ~/coLab/Group/
 glist="*"
+glist="Test"
 glist="Johnny"
 #glist="SBP"
 #glist="Catharsis"
-#glist="Johnny SBP Catharsis Test"
+glist="Johnny SBP Catharsis Test"
 for group in $glist
 do
 	(

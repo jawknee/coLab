@@ -4,7 +4,7 @@ window.onload = function() {
 	// 	Initial Assignments
 	// ----------------------------------------
 	// Status
-	var playStatus = "Initial";
+	var playStatus = "Initial";	// values: "Initial", "Playing", "Paused", or "Ended"
 	var clickStatus = "Ready";	// values: "Ready", "Down", or "Waiting"
 	var fullscreenStatus = "Initial";
 	var fullscreenMode = "unset";
@@ -135,8 +135,8 @@ window.onload = function() {
 			playButton.innerHTML = '<img src="/coLab/Resources/Icons/Play_24x24xp_02.png" alt="Play">';
 			//  also handle full screen where we don't have control...
 			if ( playStatus == 'Paused' && video.paused == true ) {
-				video.style.cursor = 'wait';
-				//video.style.cursor = "url('http://localhost/coLab/Resources/Cursor/Arrow.cur'), 'wait'";
+				//video.style.cursor = 'wait';
+				video.style.cursor = "url(/coLab/Resources/Cursors/pause_3D.gif), url(/coLab/Resources/Cursors/pause_3D.cur), wait";
 			}
 		} else {
 			playButton.innerHTML = '<img src="/coLab/Resources/Icons/Pause_24x24xp_01.png" alt="Pause">';
@@ -390,7 +390,7 @@ window.onload = function() {
 	// Two each, mousedown and mouse up...
 	//
 	// video - this is the one we want, if we can get it
-	// mousedown
+	// mouse down
 	video.addEventListener('mousedown', function(e) {
 		console.log("video mousedown" + clickType);
 		eventlist += 'v';
@@ -401,7 +401,7 @@ window.onload = function() {
 		postInfo("Video MouseDown");
 		}, false);
 
-	// mousedown
+	// mouse up
 	video.addEventListener('mouseup', function(e) {
 		console.log("video mouseup" + clickType);
 		eventlist += 'vu';
@@ -413,7 +413,7 @@ window.onload = function() {
 		}, false);
 
 	//  div - possibly redundant   secondary to video
-	// mousedown
+	// mouse down
 	clickdiv.addEventListener('mousedown', function(e) {
 		console.log("div mousedown" + clickType);
 		eventlist += 'd';
@@ -426,7 +426,7 @@ window.onload = function() {
 		}
 		postInfo("Div MouseDown");
 		}, false);
-	// mousedown
+	// mouse up
 	clickdiv.addEventListener('mouseup', function(e) {
 		console.log("div mouseup" + clickType);
 		eventlist += 'cu';
@@ -485,13 +485,21 @@ window.onload = function() {
 		lastxclick = event.clientX;
 		lastyclick = event.clientY;
 
-		console.log("MouseDown Out - click status: " + clickStatus);
+		console.log("MouseDown In - click status: " + clickStatus);
+		console.log("playStatus: " + playStatus);
 		// if we've just started, the first click starts us off...
 		if ( playStatus == "Initial") {
 			postInfo("Initial Click down");
 			updatePoster('Pressed');
 			return;
 		} 
+		// if we're paused... then just start playing from here...
+		if ( playStatus == "Paused" ) {
+			clickStatus = "Ready";	 // ignore the mouse up...
+			playIt();
+			return;	
+		}
+			
 		//
 		// check the full screen mode....
 		checkFullscreenMode();
@@ -505,25 +513,28 @@ window.onload = function() {
 
 		currentLocation = whereAreWe();
 
-		// Pause the video
-		//pauseIt();
-		video.pause();		// stop, but don't chance the interface...
-		//  move to the click..
-		video.currentTime = currentLocation;
 
 		//   if we're not waiting for a second click...  set a time out..
 		if ( clickStatus == "Ready") {
 			var timeout=500;	// half a second..
 			window.setTimeout(clickTimeout, timeout);
+			// Pause the video
+			//pauseIt();
+			//video.pause();		// stop, but don't change the interface...
+			//  move to the click..
+			//video.currentTime = currentLocation;
+			//video.play();
 			clickStatus = "Down";
 		} else if ( clickStatus == "Waiting" ) { // second click - pause
+			console.log("Second click - pause...");
 			pauseIt();
+			//video.currentTime = currentLocation;
 			clickStatus = "Ready";
 		}
 		console.log("MouseDown Out - click status: " + clickStatus);
 
 	}
-	// Mouse down...
+	// Mouse up...
 	function handleMouseUp (event) {
 		console.log("MouseUp In - click status: " + clickStatus);
 		// if we've just started, the first click starts us off...
@@ -542,7 +553,8 @@ window.onload = function() {
 		if ( clickStatus == "Down" ) {
 			// let's start playing...  but indicate we're 
 			// waiting for a possible second click..
-			// we may want to locate as well, in we're dragging...
+			// we may want to locate as well, if we're dragging...
+			video.currentTime = currentLocation;
 			playIt();
 			clickStatus = "Waiting";
 		}
@@ -629,7 +641,7 @@ window.onload = function() {
 		} else if ( time > maxtime ) {
 			time = maxtime;
 		}
-		console.log ("---Time---\nOffset: "  + offset.toString() +
+		console.log ("---whereAreWe---\nOffset: "  + offset.toString() +
 			"\nStart: " + start.toString() +
 			"\nEnd: " + end.toString() +
 			"\nxval: " + xval.toString() +

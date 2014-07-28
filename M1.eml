@@ -1,0 +1,46 @@
+Return-Path: <jawknee@sonic.net>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on d.spam.sonic.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-105.0 required=4.0 tests=ALL_TRUSTED,RP_MATCHES_RCVD,
+	SNF4SA,USER_IN_WHITELIST autolearn=disabled version=3.4.0
+X-Spam-SNF-Result: 0 (Standard White Rules)
+X-Spam-MessageSniffer-Scan-Result: 
+X-Spam-MessageSniffer-Rules: 
+	0-0-0-1902-c
+X-Spam-GBUdb-Analysis:  0, 69.12.210.141, Ugly c=1 p=-0.487495 Source Normal
+Received: from l.mx.sonic.net (l.mx.sonic.net [69.12.210.141])
+	by a.spam.sonic.net (8.14.4/8.14.4) with ESMTP id s691o0ve006277
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <jawknee@lds.sonic.net>; Tue, 8 Jul 2014 18:50:00 -0700
+Received: from c.mail.sonic.net (c.mail.sonic.net [64.142.111.80])
+	by l.mx.sonic.net (8.14.9/8.14.4) with ESMTP id s691o0Xa031230
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <colab_mail3@jawknee.com>; Tue, 8 Jul 2014 18:50:00 -0700
+Received: from [10.19.103.4] (64.2.3.195.ptr.us.xo.net [64.2.3.195])
+	(authenticated bits=0)
+	by c.mail.sonic.net (8.14.9/8.14.9) with ESMTP id s691nv5k029905
+	(version=TLSv1/SSLv3 cipher=AES128-SHA bits=128 verify=NOT)
+	for <colab_mail3@jawknee.com>; Tue, 8 Jul 2014 18:49:58 -0700
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+Subject: colab 3 - no bcc
+From: Johnny Klonaris <jawknee@sonic.net>
+In-Reply-To: <7C739FCE-C33A-42E5-A060-BFF81236AE76@sonic.net>
+Date: Tue, 8 Jul 2014 18:49:56 -0700
+Content-Transfer-Encoding: 7bit
+Message-Id: <B523D7E8-3471-472E-AF8C-9996BCC2305D@sonic.net>
+References: <7C739FCE-C33A-42E5-A060-BFF81236AE76@sonic.net>
+To: colab_mail3@jawknee.com
+X-Mailer: Apple Mail (2.1878.6)
+X-Sonic-ID: C;TvmTVAsH5BGzv02zUc16mQ== M;5B4eVQsH5BGzv02zUc16mQ==
+X-Sonic-Spam-Details: 0.0/5.0 by cerberusd
+X-Orthrus: tar= grey=no co=US os=Linux/3.1-3.10/33002 spf=none dkim=none
+
+OK - at this point we need to nail it down.
+On Jul 7, 2014, at 7:53 PM, Johnny Klonaris <jawknee@sonic.net> wrote:
+
+> And this one?
+> 
+> -jk
+> 
+

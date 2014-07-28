@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#
+# quick procmail test
+(
+ echo "--- start"
+ cat
+ echo "--- end $(date)"
+) >> /home/j/jawknee/public_html/coLab/logs/colab_mail.log

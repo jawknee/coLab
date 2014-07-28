@@ -1,0 +1,7 @@
+# place holder for procmail scripting for colab_mail@sonic.net
+VERBOSE=ON
+LOGDIR=$HOME/.procmail-logs
+LOGFILE=$LOGDIR/log.`date +%y-%m-%d`
+:0 c:colab_mail
+* ^To.*jawknee@jawknee.com
+| $HOME/public_html/coLab/Code/quicktest

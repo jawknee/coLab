@@ -1,25 +1,23 @@
 #!/usr/bin/env python
-"""
-	Raw html clumps that are used in various places...
-
-"""
+""" Raw html clumps that are used in various places... """
 
 import logging
 import config
 
 class Html:
-	"""
-	An html object contains the headers, with substitutions marked with '!', (e.g.,
+	""" An object contains the various html headers  
+	
+	Most a place to hold bits of html with substitutions marked with '!', (e.g.,
 	!desc_title!).
 
 	Methods are provided for emitting the various parts of most types of web pages.
 	
-	NOTE: __init__() method is a long string of string assignments - and is declared below.
-	
+	NOTE: __init__() method is a long collection of string assignments - and is declared below
+	for readability.
 	"""
+
 	def emit_head(self, page, media=True):
-		"""
-		Emit a head element, with (default) or w/o a media insert
+		""" Emit a head element, with (default) or w/o a media insert
 
 		Does not close out the head (emit_body does)
 		"""
@@ -44,8 +42,7 @@ class Html:
 
 
 	def emit_body(self, group, page, media=True):
-		"""
-		Emit a body element, optionally  including the media segment.
+		""" Emit a body element, optionally including the media segment.
 		
 		Requires both a group and a page (only requires group for paths, so
 		duplicating the paths in the pages may not be a bad thing)
@@ -70,9 +67,7 @@ class Html:
 		return(body)
 
 	def emit_tail(self,page):
-		"""
-		Send out the last bit of the page...
-		"""
+		""" Send out the last bit of the page... """
 		
 		# Replace tags...
 		tail = self.tail.replace('!name!', page.name)
@@ -83,10 +78,11 @@ class Html:
 		return(tail)	# ...and done.
 
 	def gen_html5_source(self, name, size):
-		"""
-		This script generates a number of html5 video source lines, based on the
+		""" Generate the html5 video source
+		
+		This function generates a number of html5 video source lines, based on the
 		size.  It works its way down the list of sizes, generating the codecs
-		set up.
+		that are being used.
 		
 		<source src="!name!-media-!media_size!.webm" type='video/webm; codecs="vp8.0, vorbis"'>
 		<source src="!name!-media-!media_size!.mp4" type='video/mp4'>
@@ -123,11 +119,12 @@ class Html:
 		return(sources)
 
 	def gen_geometry_tags(self, page):
-		'''
+		""" Generate "hidden" tags to pass info to javascript
+
 		Generates a series of hidden input tags to specify
-		the geometry so the javascript can calculate what to 
-		with the positioning clicks.
-		'''
+		the geometry and other items so the javascript can calculate 
+		what to with the positioning clicks.
+		"""
 		sizes = config.Sizes()	
 		# what is the width of the page display?
 		(pgview_width, pgview_height) = sizes.sizeof(config.BASE_SIZE)
@@ -136,7 +133,7 @@ class Html:
 		# calculate offset - center media in the <div>
 		xOffset = config.MAIN_LEFT_EDGE 
 		
-		geo_html =  '<!-- info about X-coordinates -->\n'
+		geo_html = '<!-- info about X-coordinates -->\n'
 		geo_html += '  <!-- page view info -->\n'
 		if page.use_soundgraphic:
 			# there is no screen shot - use the media size...

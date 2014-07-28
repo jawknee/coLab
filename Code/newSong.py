@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-#
-# Create a new song...
-#
+""" Create a new song...
+
+This is the old manual script, not used on coLab
+"""
+
 import os
 import sys
 import cldate

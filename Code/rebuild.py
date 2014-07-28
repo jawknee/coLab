@@ -1,12 +1,9 @@
 #!/usr/bin/env python
-"""
-	Rebuild the links, side bar, and anything else
-	needing routine maintenance.
+""" Rebuild the links, side bar, and anything else needing routine maintenance.
 
 	We're (currently) passed the name of a group and 
 	rebuild the content found there.
 """
-
 import os
 import sys
 import logging
@@ -35,16 +32,16 @@ num_recent_entries = 7
 num_project_entries = 20
 
 class Render_engine():
-	"""
-	A class to allow us to render pages in the background.
+	""" A class to allow us to render pages in the background.
+
 	A file contains a list of page dirs that need to be
 	rendered (relative to home / colab_home).  The rebuild_page method then calls render_page
 	for each page - and each resolution needed.
 	"""
 	
 	def __init__(self, master, render_list_file=None):
-		"""
-		Open the initial window if not already set.  
+		""" Open the initial window if not already set.  
+
 		Note this is a separate loop from the main edit
 		as it can run offline.
 		
@@ -72,9 +69,9 @@ class Render_engine():
 		self.init()
 		
 	def init(self):
-		"""
-		Continue the opening of the "initial" frame.  By separating
-		this from the main init, we can call it from other methods
+		""" Continue the opening of the "initial" frame.  
+		
+		By separating this from the main init, we can call it from other methods
 		to reopen the render frame in case someone has terminated it.
 		"""
 		# Have we created the render master window?   if not, do so...
@@ -122,9 +119,8 @@ class Render_engine():
 		self.master.after(2000,self.check)
 	
 	def check(self):	
-		"""
-		Called every now and then to see what we're up to...
-		"""
+		""" Called every now and then to see what we're up to... """
+
 		#print "Entered check."
 		if self.busy:
 			#print "still busy..."
@@ -151,11 +147,14 @@ class Render_engine():
 
 
 		page = clclasses.Page()
-		# If we got here "offline", i.e., an abandoned render found in the 
-		# file, the let's set the rebuild/changed flags...
-		# RBF - or at least check it...  if we ever actually carry along a 
-		# page object, and not just a path, then this might make sense...
-		# otherwise we'll always set it to true - which i s basically OK at this oint.
+		"""
+		If we got here "offline", i.e., an abandoned render found in the 
+		file, the let's set the rebuild/changed flags...
+
+		RBF - or at least check it...  if we ever actually carry along a 
+		page object, and not just a path, then this might make sense...
+		otherwise we'll always set it to true - which is basically OK at this point.
+		"""
 		page.needs_rebuild = True
 		"""
 		try:
@@ -164,6 +163,7 @@ class Render_engine():
 			page.needs_rebuild = True
 			
 		#"""
+
 		try:
 			page.load(next_render)
 		except:
@@ -185,9 +185,8 @@ class Render_engine():
 		self.master.after(1000,self.check)	# just a sec...
 		
 	def refresh(self):
-		"""
-		Update the strings based on the current state of things....
-		"""
+		""" Update the strings based on the current state of things.... """
+
 		print "Greetings from refresh"
 		# create a Page class - load it up to the title, 
 		# build the titles from that...
@@ -204,9 +203,8 @@ class Render_engine():
 		
 	
 	def add_render(self, path):
-		""" 
-		Add the passed path to the render list
-		"""
+		""" Add the passed path to the render list """
+
 		print "Add_render: just called with:", path
 		self.init()
 		self.pending_renders.append(path)
@@ -229,15 +227,15 @@ class Render_engine():
 		print "My render_list is:", self.render_list_file
 	
 	def render_all(self, page):
-		"""
-		Calls render_page for each of the media sizes 
+		""" Calls render_page for each of the media sizes 
+
 		that relate to the page's specified size.
 		"""
+
 		# Save the size - we've already posted the size, and
 		# we're going to generate the media by manipulating
 		# page.media_size - but it's a good idea to set it
 		# back when we're done...
-
 		size_c = config.Sizes()
 		try:
 			os.chdir(page.home)
@@ -311,10 +309,10 @@ class Render_engine():
 		print "Done."
 		
 def render_page(page, media_size=None, max_samples_per_pixel=0):
-	"""
-	Interface to the routines to render a page.  By passing in size,
-	it only renders that size - presumably for a preview.  Max samples/pixel
-	can be set some number (100?) to speed up the generation of the 
+	""" Interface to the routines to render a page.  
+	
+	By passing in size, it only renders that size - presumably for a preview.  
+	Max samples/pixel can be set some number (100?) to speed up the generation of the 
 	soundfile image - again, for previews. 
 	
 	This routine can be called from the interactive (clFunctions) section
@@ -441,10 +439,10 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	return(progressTop)
 
 def rebuild_and_upload(group, mirror=True, opt="nope"):
-	"""
-	Simple interface to do the uploading.   We want the pages rebuilt
-	first, but we also need to rebuild after a mirror, in case any comments
-	were added since we last did this.  So: the plan is: 
+	""" Simple interface to do the uploading.   
+	
+	We want the pages rebuilt first, but we also need to rebuild after a mirror, 
+	in case any comments were added since we last did this.  So: the plan is: 
 	rebuild, upload, rebuild, upload
 	"""
 	#
@@ -469,35 +467,36 @@ def rebuild_and_upload(group, mirror=True, opt="nope"):
 		do_mirror(group.coLab_home)
 
 def do_mirror(coLab_home=None):
-		# Now that we have the paths, let's call the interarchy applescript
-		# to update the mirror
-		if coLab_home is None:
-			# I'll configure this when I get a chance....
-			sys.exit(1)	 # What were you thinking???
+	""" call interarchy to do the ftp / upload / mirror """
 
-		#return		# skip the auto-ftp for now...		
+	# Now that we have the paths, let's call the interarchy applescript
+	# to update the mirror
+	if coLab_home is None:
+		# I'll configure this when I get a chance....
+		sys.exit(1)	 # What were you thinking???
 
-		scriptpath = os.path.join(coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
-		osascript = "/usr/bin/osascript"
-		print "Mirror:", osascript, scriptpath
-		try:
-			pid = subprocess.Popen([osascript, scriptpath]).pid
-			print "do_mirror - mirror pid is:", pid
-		except:
-			print "Mirror error: cannot continue."
-			sys.exit(1)
+	#return		# skip the auto-ftp for now...		
 
+	scriptpath = os.path.join(coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
+	osascript = "/usr/bin/osascript"
+	print "Mirror:", osascript, scriptpath
+	try:
+		pid = subprocess.Popen([osascript, scriptpath]).pid
+		print "do_mirror - mirror pid is:", pid
+	except:
+		print "Mirror error: cannot continue."
+		sys.exit(1)
 
 def rebuild(g, mirror=False, opt="nope"):
-	"""
+	""" rebuilt a group page
+
 	Takes a passed group object (or, for somewhat questionable
-	reasons - a group name, which is then loaded), 
+	reasons - a group name) which is then loaded,
 	
 	mirror specifies if the ftp (or other method) file mirror should 
 	be done, and the 'opt' var can be set to 'All' to force all
 	entities to be rebuilt (comes back from clutils.needs_update).
 	"""
-	
 	# As above, this is hopefully a temporary catch for older calls,
 	# that still call rebuild directly
 	try:
@@ -510,11 +509,11 @@ def rebuild(g, mirror=False, opt="nope"):
 		
 	print "Rebuilding group object:", g.title
 	
-	#
-	# At this point, we should have a populated group object, which includes
-	# the group specific items as well as a list of pages, a
-	# list of songs, (and eventually, probably projects)
-	#
+	"""
+	At this point, we should have a populated group object, which includes
+	the group specific items as well as a list of pages, a
+	list of songs, (and eventually, probably projects)
+	"""
 	# debug - print them out...	
 	for s in g.pagelist:
 		print "group->page", s.name
@@ -527,11 +526,11 @@ def rebuild(g, mirror=False, opt="nope"):
 
 	song_dict = {}	# a dictionary of songs we've created:  song name -> song object
 
-
-	# step through the pages in creation order, rebuilding link files and, 
-	# as needed, index.shtml (data file change)
+	"""
+	step through the pages in creation order, rebuilding link files and, 
+	as needed, index.shtml (data file change)
+	"""
 	for pg in g.pagelist:
-		
 		print "Next page - name, song is:", pg.name, pg.song
 		thissong = g.songdict[pg.song]	# Song obj. for this page
 		# 
@@ -543,12 +542,12 @@ def rebuild(g, mirror=False, opt="nope"):
 			# checking existing song objects for the "needs_rebuild" option
 			songdatafile=os.path.join(thissong.home, 'data')	# path to the song's data file
 			clutils.touch(songdatafile)		# touch the data file so we rebuild this song
-
 		
-		# Create a dictionary for each song - each part points to a list of Pages,
-		# this is how we build the Song pages - indexed by part, showing the related
-		# pages.
-		
+		"""
+		Create a dictionary for each song - each part points to a list of Pages,
+		this is how we build the Song pages - indexed by part, showing the related
+		pages.
+		"""
 		# Do we know this part yet?
 		try:
 			thispart = thissong.part_dict[pg.part]
@@ -558,10 +557,9 @@ def rebuild(g, mirror=False, opt="nope"):
 
 		thissong.part_dict[pg.part].append(pg)
 		
-		
 		#RBF:   This whole section above needs a good look pretty soon.
 
-	"""
+	"""  old debug code...
 	print "Songs found:"
 	for songname in song_dict:
 		print "Song:", songname
@@ -584,7 +582,6 @@ def rebuild(g, mirror=False, opt="nope"):
 	"""
 	Build the most recent list, typically included on the left sidebar...
 	"""
-
 	recent = os.path.join(g.home, 'Shared', 'mostrecent.html')
 	try:
 		f_recent = open(recent, 'w')
@@ -592,7 +589,7 @@ def rebuild(g, mirror=False, opt="nope"):
 		print "Error opening file:", recent, info
 
 	# a quick header...
-	f_recent.write("""<!-- Shared "most-recent" list generated by """ + sys.argv[0] + \
+	f_recent.write("""<!-- Shared "most-recent" list generated by """ + sys.argv[0] + 
 		" on " + cldate.now() + 
 		""" --> <h4>Recent Updates</h4> <ul> """)
 
@@ -637,7 +634,6 @@ def rebuild(g, mirror=False, opt="nope"):
 	"""
 	Similarly, build the Song/Project link
 	"""
-
 	project = os.path.join(g.home, 'Shared', 'projectlist.html')
 	try:
 		f_project = open(project, 'w+')
@@ -698,7 +694,8 @@ def rebuild(g, mirror=False, opt="nope"):
 
 
 def main():
-	"""
+	"""  older debug code...
+	
 	# Name of the group...
 	try:
 		group = sys.argv[1]

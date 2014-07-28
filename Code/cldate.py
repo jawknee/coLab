@@ -1,12 +1,10 @@
 #!/usr/bin/env python
-"""
-	various routines for converting, importing and displaying dates
-
-"""
-import logging
+""" various routines for converting, importing and displaying dates """
 
 from datetime import datetime, timedelta
 from dateutil import tz
+
+import logging
 
 HERE = tz.tzlocal()
 UTC = tz.gettz('UTC')
@@ -16,11 +14,7 @@ LONG_FMT="%Y-%m-%d %I:%M:%S %p %Z"
 
 
 def format(time, format, frzone, tozone):
-
-	"""
-	convewt naive time from/to the passed time zones,
-	and return as a formatted string
-	"""
+	""" called by next routines, returns a data string """
 	orig_time=time.replace(tzinfo=frzone)
 	new_time=orig_time.astimezone(tozone)
 	return(new_time.strftime(format))
@@ -39,26 +33,21 @@ def utc2string(time):
 	return(time.strftime(IFMT))
 
 def epochtime(time):
-	"""
-	Total seconds since the epoch - for sorting
-	"""
+	""" Total seconds since the epoch - for sorting """
 	epoch = datetime.utcfromtimestamp(0)
 	delta = time - epoch
 	return delta.days*86400+delta.seconds
 
 def now():
-	"""
-	Quick, easy way to get a time string
-	"""
+	""" Quick, easy way to get a time string """
 	return (datetime.now().isoformat())
 
 def utcnow():
-	"""
-	UTC as a datetime object
-	"""
+	""" UTC as a datetime object """
 	return (datetime.utcnow())
 
 def main():
+	""" some tests for the above... """
 	
 	now=datetime.utcnow()	 # naive utc time
 	print "utc2short:", utc2short(now)

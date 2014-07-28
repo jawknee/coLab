@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-"""
-	coLab config: globals and such
-	
-"""
+""" coLab config: globals and such """
+
 import logging
 import math
 
@@ -57,6 +55,7 @@ BASE_SIZE = 'Small'		# what the main "page" is generated with...
 SMALLEST = 'Tiny'		# the smallest size used 
 
 class Sizes:
+	""" A class to let us manage the various media sizes """
 	def __init__(self):
 		self.size_d = dict()
 		self.next_d = dict()
@@ -69,40 +68,34 @@ class Sizes:
 				break
 			
 	def list(self):
-		"""
-		A simple generator of the size names
-		"""
+		""" A simple generator of the size names """
 		for name in self.names:
 			yield name
+
 	def sizeof(self, name):
-		""" Return the size tuple (width, height)
-		"""
+		""" Return the size tuple (width, height) """
 		return (self.size_d[name])
+
 	def next_size(self, name):
-		""" What's the next size down?
-		"""
+		""" What's the next size down? """
 		return(self.next_d[name])
+
 	def calc_scale(self, height):
-		"""
-		returns the ratio of the passed height to the
-		BASE size (above)
-		"""
+		""" returns the ratio of the passed height to the BASE size (above) """
 		base_height = self.sizeof(BASE_SIZE)[1]	# we only care about the height...
 		return(float(height)/base_height)
 	
 	def calc_adjust(self, height):
-		"""
-		returns a modified adjustment
-		where a pure ratio is too much.
+		""" returns a modified adjustment where a pure ratio is too much.
+
 		Currently: sqrt of calc_scale
 		"""
 		return(math.sqrt(self.calc_scale(height)))
 	
 	def is_smaller_than(self, s1, s2):
-		"""
-		Method of returning if a size, s1, is smaller
-		than another, s2.  Since the sizes are stored
-		largest first, the logic is reversed.
+		""" Method of returning if a size, s1, is smaller than another, s2.  
+		
+		Since the sizes are stored largest first, the logic is reversed.
 		"""
 		try:
 			return self.names.index(s1) > self.names.index(s2)
@@ -110,15 +103,11 @@ class Sizes:
 			print "Sizes class invalid sizes:", s1, s2
 			raise ValueError('Invalid Size')
 	def is_larger_than(self,s1,s2):
-		"""
-		Convenient notation for the reverse...
-		"""
+		""" Convenient notation for the reverse... """
 		return not self.is_smaller_than(s1, s2)			
 	
 	def get_screensize(self):
-		"""
-		This won't work yet - it's a reference for later
-		"""
+		""" This won't work yet - it's a reference for later """
 		screen_width = root.winfo_screenwidth()
 		screen_height = root.winfo_screenheight() 	
 		

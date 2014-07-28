@@ -1,7 +1,13 @@
 #!/usr/bin/env python
-"""
+""" Convert "special" characters to meta
+
 	Read from stdin, write to stdout, fixing various
-	charcters as needed...
+	characters as needed...
+	
+	Rather than symbolic, number equivalents are used
+	this simplifies the conversion back.  New lines
+	are converted to '<br>'.
+	
 """
 
 import sys

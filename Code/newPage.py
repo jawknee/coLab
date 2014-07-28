@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-#
-# Create a new page...
-#
+""" Create a new page... 
+
+This is the old manual script - not used by coLab
+"""
+
 import os
 import sys
 import cldate
@@ -10,7 +12,6 @@ import clclasses
 import cltkutils
 
 import imagemaker
-
 
 def get_input(var, preprompt):
 	"""

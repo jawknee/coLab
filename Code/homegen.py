@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
-"""
-	Create Home page for a Domain
+""" Create Home page for a Domain
 
-	Passed in the Domain name and create the index.shtml in that dir.
+Passed in the Domain name and create the index.shtml in that dir.
 
-
+Not currently used - replaced by htmlgen.homegen
 """
 
 import os
@@ -14,6 +13,7 @@ import logging
 import datetime	
 import imp	# to input the data file
 import shutil
+
 import coLabUtils
 
 def genHome(name):

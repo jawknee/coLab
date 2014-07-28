@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""
-	A quick one-off to supply the current UTC in ISO-8601
-"""
+""" A quick one-off to supply the current UTC in ISO-8601 """
 import datetime
 
 def main():

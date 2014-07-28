@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""
-	Helpful tools..
-"""
+""" Helpful tools.. """
 
 import os
 import sys
@@ -11,24 +9,25 @@ import imp
 import six
 
 def get_config(debug=False):
-	"""
-		Look in the likely places for a .coLab.conf file - return 
-		the contents as an object.
-		
-		This allows paths to be set differently on different installations.
+	""" Get the colab config...
 
-		Returns a conf object with these members:
-		
-		Current coLab vars:
-		coLab_url_head		absolute URL   (e.g. http://localhost/coLab )
-		coLab_root			how to get to here from local root (e.g. /coLab )
-		coLab_home 			absolute file path (e.g. /Users/Johnny/dev/coLab )
+	Look in the likely places for a .coLab.conf file - return 
+	the contents as an object.
+	
+	This allows paths to be set differently on different installations.
+
+	Returns a conf object with these members:
+	
+	Current coLab vars:
+	coLab_url_head		absolute URL   (e.g. http://localhost/coLab )
+	coLab_root			how to get to here from local root (e.g. /coLab )
+	coLab_home 			absolute file path (e.g. /Users/Johnny/dev/coLab )
 	"""
 
 	# locations in the order we want to search...
 	dnf="DidNoTfIndaFile"
 	locations=('.', os.path.expanduser("~/coLab"), "../coLab", "../../coLab", "~/coLab", dnf)
-
+	debug = True
 	for loc in locations:
 		file = loc + "/.coLab.conf"
 		if debug:
@@ -54,12 +53,11 @@ def get_config(debug=False):
 	
 
 def needs_update(path, file="index.shtml", opt='nope'):
-	"""
-	return True of False if the current directory 
-	needs to be updated - e.g., the data file is
-	newer than the index.shtml.  The flag allows
-	the "All" flag to be passed in and returned,
-	cleans up the code on the calling side
+	""" return True of False if the current directory needs to be updated 
+	
+	- e.g., the data file is newer than the index.shtml.  The flag allows
+	the "All" flag to be passed in and returned, cleans up the code on the 
+	calling side
 	"""
 	if opt == 'All':
 		return True
@@ -94,6 +92,7 @@ def needs_update(path, file="index.shtml", opt='nope'):
 		return False
 
 def touch(filename):
+	""" touch the file..."""
 	f = file(filename, 'a')
 	try:
 		os.utime(filename, None)
@@ -101,8 +100,8 @@ def touch(filename):
 		f.close()
 
 def string_to_filename(title):
-	"""
-	Convert a passed string to a legal filename
+	""" Convert a passed string to a legal filename
+
 	This is overly strict.  We only allow alphanumeric,
 	'-', '_', and '.'.  Of all others, spaces are changed 
 	to '_' all others to '-'.  We toss any additional substitutions, 
@@ -110,7 +109,8 @@ def string_to_filename(title):
 	explicit '-', '_', or '.'. 
 	
 	Likely to be used by string_to_unique to append a
-	number as needed.
+	number as needed to create a legal and unique 
+	file name.
 	"""
 	filename = ''	# start here - add chars as we go...
 	
@@ -149,14 +149,12 @@ def string_to_filename(title):
 	return filename
 
 def string_to_unique(title, dir=None):
-	'''
-	Turn any arbitrary string into a legal and
-	unique file name.
+	""" Turn any arbitrary string into a legal and unique file name.
 	
 	Use string_to_filename, then look in dir
 	to see if it exists, if so - start adding
 	numbers to the end until it is unique.
-	'''
+	"""
 	if not os.path.isdir(dir):
 		print "Fatal error - string to unique, not a dir:", dir
 		sys.exit(1)
@@ -176,9 +174,9 @@ def string_to_unique(title, dir=None):
 	
 		
 def has_filetype(path, typelist=[], min=1):
-	"""
-	return true if the given path has at least "min" files
-	that match the supplied type list.
+	""" return true if the given path has at least "min" matchin files
+
+	Matches the patterns in typelist 
 	Used to determine if we need look in a dir for a graphic (.png)
 	or audio (.aif, .aiff).
 	"""
@@ -198,9 +196,11 @@ def has_filetype(path, typelist=[], min=1):
 	return count >= min
 
 class fontlib:
-	"""
+	""" A class to let us manage our fonts
+
 	A collection of paths.   Mostly to return the path to a named font,
 	but also can return the list of fonts / paths.
+	Needs a rewrite to actually scan the library and build the list.
 	"""
 	def __init__(self, conf=None):
 		self.conf = conf
@@ -238,8 +238,8 @@ class fontlib:
 		}
 
 	def fontpath(self,font):
-		"""
-		Return the path to the passed font,
+		""" Return the path to the passed font,
+
 		return the default if no match.
 		"""
 		try:
@@ -250,12 +250,10 @@ class fontlib:
 		return path
 
 	def list(self):
-		"""
-		Return the list of fonts
-		"""
+		""" prints the list of fonts """
+		# is this used??? - doesn't look like it...
 		for name in self.fontdict:
 			print name, self.fontdict[name]
-
 
 if __name__ == "__main__":
 	for name in ['This', 'is a space', '?,()#&*?what??']:

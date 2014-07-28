@@ -1,23 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-	classes for defining the various data file formats
+""" classes for defining the various colab data file formats """
 
-"""
 import os
 import sys
 import logging
 import imp
 import copy
+
 import cldate
 import clutils
 import cltkutils
 
 import imagemaker	# RBF:  remove once remake kludge is gone
 
-
 def set_init_vars(obj, initdata):
-	"""
+	""" Process the var/value pairs
+
 	Take the var/value pairs passed as a list in initdata
 	and put them into the object along with a varlist
 	"""
@@ -32,17 +31,19 @@ def set_init_vars(obj, initdata):
 		obj.varlist.append(varname)
 
 	for var in obj.varlist:
-		string= 'obj.' + var
+		string = 'obj.' + var
 		value = eval(string)
 		#print "init: var:", var, " is: ", value
 
 def set_paths(obj,sub_dir):
+	""" set path variables for locations
 
-	# load in the site data to get started...
-	# coLab_url_head	- head to the ext web site (e.g., http://...)
-	# coLab_root		- url to the local structure (e.g., /coLab )
-	# coLab_home		- local fs location of coLab home
-	#
+	load in the site data to get started...
+	 coLab_url_head	- head to the ext web site (e.g., http://...)
+	 coLab_root		- url to the local structure (e.g., /coLab )
+	 coLab_home		- local fs location of coLab home
+	"""
+
 	try:
 		conf=clutils.get_config()
 	except ImportError:
@@ -207,9 +208,10 @@ class Group:
 	Data associated with a group
 	"""
 	def __init__(self, name):
-		"""
-		Set the initial values for the group structure, using
-		a varlist so we can keep track of what we've got.
+		""" Set the initial values for the group structure 
+		
+		set up the initial data - from a list,
+		varlist, so we can keep track of what we've got.
 		"""
 		timenow=cldate.utcnow()
 		#
@@ -252,8 +254,9 @@ class Group:
 
 
 	def load(self):	
-		"""
-		Load the group data - starting at the local coLab root, 
+		""" Load the group data from data file
+		
+		Starting at the local coLab root, 
 		and also load all associated pages
 		"""
 		

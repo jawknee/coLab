@@ -1,13 +1,12 @@
 #!/usr/bin/env python
-"""
-	Create a Web dir based on the name passed.
+""" Create a Web dir based on the name passed.
 
-	Passed a simple name, creates a file <name>.html
-	and populates it with the necessary content to 
-	display the web page.
+Passed a simple name, creates a file <name>.html
+and populates it with the necessary content to 
+display the web page.
 
-	Creates a header, includes the apple specific head content,
-	body content including the media block and any comments.
+Creates a header, includes the apple specific head content,
+body content including the media block and any comments.
 
 """
 
@@ -20,8 +19,6 @@ import subprocess
 
 import clutils
 import cldate
-
-#from clclasses import *
 import clclasses
 import clColors
 
@@ -37,8 +34,8 @@ num_project_entries = 10
 
 
 def check_comments(obj):
-	"""
-	Make sure there's a comments file, if not, seed it.
+	""" Make sure there's a comments file, if not, seed it. 
+
 	Also touch the links.html to prevent include errors
 
 	Obj can be a page or group - must have a .name 
@@ -65,9 +62,10 @@ def check_comments(obj):
 			print "Error creating", file
 
 def tagstrip(string,subs='\n',tag=''):
-	"""
-	Remove html tags - and arbitrarily replace them with a
-	new line (default).  Suffix allows for specific tags
+	""" Remove html tags 
+	
+	- and arbitrarily replace them with a
+	new line (default).  tag var allows for specific tags
 	to be removed.  e.g. 'a'
 
 	Recursive - each call pulls out the next tag...
@@ -83,9 +81,12 @@ def tagstrip(string,subs='\n',tag=''):
 	return ( string[:i] + subs + tagstrip(string[next:], subs) ) 
 	
 def smartsub(string,length):
-	"""
-	Return a substring that is based on the passed length,
+	""" Return a substring that is based on the passed length,
+
 	but modified up to 10% to find either a space, or period.
+
+	Used to take arbitrary text and make a synopsis of the 
+	approx. length
 	"""
 
 	slen = len(string)
@@ -108,6 +109,7 @@ def smartsub(string,length):
 
 
 def mk_dur_string(dur):
+	"""  convert duration into a time string """
 	if dur != "":
 		mins = int(dur / 60)
 		seconds = dur - (mins * 60)
@@ -121,10 +123,7 @@ def mk_dur_string(dur):
 	return(timestr)
 
 def pagegen(group, page):
-	"""
-		Passed the name of the group and page, rebuilds
-		the index.shtml 
-	"""
+	""" Passed the name of the group and page, rebuilds the index.shtml """
 
 	try:
 		os.chdir(page.home)
@@ -203,10 +202,11 @@ def pagegen(group, page):
 	return()
 
 def linkgen(group):
-	# set up for the first and last links - cheat a bit - add a fake
-	# page to the end of the list named "Archive" 
-	#
-	# A bit tricky...   append the list with a fake page: "Archive"
+	""" set up prev / next links for the left side bar
+
+	for the first and last links - cheat a bit - add a fake
+	page to the end of the list named "Archive" 
+	"""
 	p = clclasses.Page('null')
 	p.name = "Archive"
 	p.root = os.path.join(group.root, 'Shared', 'Archive')
@@ -286,8 +286,8 @@ def linkgen(group):
 	group.pagelist.pop()	# remove that fake "Archive" page
 
 def mk_page_synopsis(page, type='Default'):
-	"""
-	Create a short synopsis with the thumbnail, description, etc.)
+	""" Create a short synopsis with the thumbnail, description, etc.
+
 	Type can be used to alter the format a bit
 	"""
 	if page.thumbnail != '':
@@ -335,7 +335,8 @@ def mk_page_synopsis(page, type='Default'):
 	return(this_entry)
 
 def songgen(group, song=None):
-	"""
+	""" rebuild a song page, or list of pages
+	
 	Using the passed song, or the song list in the passed group, rebuild those pages
 	"""
 	if song is None:
@@ -348,10 +349,7 @@ def songgen(group, song=None):
 	hr_full = '<p><hr><p>'
 	
 	for song in songlist:
-		print "Song found in group:", group.name, song.name
-
-	for song in songlist:
-		print "Writing song page:", song.name
+		print "Writing song page:", song.name, group.name
 		
 		song_dir = os.path.join(group.home, 'Song', song.name)	
 
@@ -478,11 +476,7 @@ def songgen(group, song=None):
 	return()
 	
 def homegen(group):
-	"""
-	Generates the top group level home page...
-	"""
-
-
+	""" Generates the top group level home page... """
 	try:
 		os.chdir(group.home)
 	except OSError,info:
@@ -513,11 +507,9 @@ def homegen(group):
 		print "Failure opening ", index, info
 		exit(1)
 
-
 	html = Html()	# create an html object that contains the html strings...
 	# 
 	# output the pieces of the page...
-	#
 	outfile.write(html.emit_head(page, media=False))
 
 	outfile.write(html.emit_body(group, page, media=False))
@@ -545,9 +537,7 @@ def homegen(group):
 
 
 def newgen(group):
-	"""
-	Generate a simple "what's new" page
-	"""
+	""" Generate a simple "what's new" page """
 
 	shared = os.path.join(group.home, 'Shared', 'WhatsNew')
 
@@ -615,10 +605,7 @@ def newgen(group):
 
 
 def navgen(group):
-	"""
-	Generate a simple "navigation" 
-	"""
-
+	""" Generate a simple "navigation" """
 	nav = os.path.join(group.home, 'Shared', 'Nav')
 
 	try:
@@ -702,10 +689,7 @@ def navgen(group):
 
 
 def archivegen(group):
-	"""
-	Generate an archive of the various pages...
-	"""
-
+	""" Generate an archive of the various pages... """ 
 	archive = os.path.join(group.home, 'Shared', 'Archive')
 
 	try:
@@ -785,9 +769,7 @@ def archivegen(group):
 
 
 def helpgen(group):
-	"""
-	Generate a simple help page place holder (for now)
-	"""
+	""" Generate a simple help page place holder (for now) """
 
 	help = os.path.join(group.home, 'Shared', 'Help')
 

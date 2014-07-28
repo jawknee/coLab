@@ -27,7 +27,7 @@ def get_config(debug=False):
 	# locations in the order we want to search...
 	dnf="DidNoTfIndaFile"
 	locations=('.', os.path.expanduser("~/coLab"), "../coLab", "../../coLab", "~/coLab", dnf)
-
+	debug = True
 	for loc in locations:
 		file = loc + "/.coLab.conf"
 		if debug:

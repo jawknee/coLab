@@ -8,15 +8,16 @@ functionality as needed.
 Rework structure to support a "post()" function at most levels.
 The function should be recallable as needed.
 
+Debug output method
 
 Important:
-Fix long song video generation.
+Done? Fix long song video generation.
 
 Chunks:
 
 Add a set() function to clFunctions  row objects.
 
-Convert the row object list from a list to a dict.
+Done? Convert the row object list from a list to a dict.
 
 Menu / MenuBar is broken- doesn't appear to have been done correctly - fix it!
 

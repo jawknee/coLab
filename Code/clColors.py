@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """ Color definitions for coLab. 
 
-Various color definitions both specific and symbolic (e.g., HILITE).
+Various color definitions both specific and symbolic (e.g., WHITE, HILITE).
 
 Colors are 4-tuples:  (red, green, blue, alpha)   where each is 0-255
 A routine (html_color) to emit the html rgb string

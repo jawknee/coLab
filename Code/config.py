@@ -48,6 +48,8 @@ SIZE_LIST = [
 			( 'Medium', (960, 720), "Small"),
 			( 'Small', (640, 480), "Tiny"),
 			( 'Tiny', (320, 240), "Micro"),
+			( 'Micro', (160, 120), None)
+			]
 
 BASE_SIZE = 'Small'		# what the main "page" is generated with...
 SMALLEST = 'Tiny'		# the smallest size used 

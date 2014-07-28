@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-"""
-	Some scripting to create a series of 
+""" Create images for video
+
+    Some scripting to create a series of 
 	images that will be the movie of the 
 	scrolling line...
 """

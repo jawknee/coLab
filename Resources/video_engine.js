@@ -1,3 +1,37 @@
+// parseUri 1.2.2
+// (c) Steven Levithan <stevenlevithan.com>
+// MIT License
+
+function parseUri (str) {
+	var	o   = parseUri.options,
+		m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
+		uri = {},
+		i   = 14;
+
+	while (i--) uri[o.key[i]] = m[i] || "";
+
+	uri[o.q.name] = {};
+	uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
+		if ($1) uri[o.q.name][$1] = $2;
+	});
+
+	return uri;
+};
+
+parseUri.options = {
+	strictMode: false,
+	key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
+	q:   {
+		name:   "queryKey",
+		parser: /(?:^|&)([^&=]*)=?([^&]*)/g
+	},
+	parser: {
+		strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+		loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+	}
+};
+// main code for handling coLab functions...
+//
 window.onload = function() {
 
 	// ----------------------------------------
@@ -11,6 +45,8 @@ window.onload = function() {
 	var lastxclick = -1;
 	var lastyclick = -1;
 	var currentLocation = 0.;
+	var baseURL = document.URL
+	var parse = parseUri(baseURL);
 
 	// Video
 	var video = document.getElementById("video");
@@ -54,8 +90,7 @@ window.onload = function() {
 	var dur = parseFloat(duration);
 	var mdwide = parseInt(mediaWidth);
 	
-
-	//  First - let's find our full screen requester...
+	//  now - let's find our full screen requester...
 	if (video.requestFullscreen) {
 		fullscreenMode = "Generic";
 		var fullscreenRequester = function () { video.requestFullscreen(); }	// Generic
@@ -86,6 +121,32 @@ window.onload = function() {
 	}
 
 	// ----------------------------------------
+	//      URL parsing...
+	// ----------------------------------------
+	// URL "query" values 
+	if ( parse.queryKey.time ) {
+		timeArray = parse.queryKey.time.split(':');
+		console.log("Time array: " + timeArray[0]);
+		if ( timeArray[1] ) {	// minutes were specified...
+			startTime = parseFloat(timeArray[0]) * 60. + parseFloat(timeArray[1]);
+		} else {
+			startTime = parseFloat(timeArray[0]); 	// seconds only...
+		}
+	} else {
+		startTime = 0.0;
+	}
+	console.log("Start time: " + startTime.toFixed(3));
+	if ( startTime != 0.0 ) {
+		//
+		playIt();	// if nothing else, get off that initial screen...
+		pauseIt();
+		video.currentTime = startTime;
+		pauseIt();
+	
+	}
+	//
+	//
+	// ----------------------------------------
 	// 	Info output...
 	// ----------------------------------------
 
@@ -102,7 +163,13 @@ window.onload = function() {
 		}
 
 		infoString += "<b>video Source:</b> " + video.currentSrc.split('/').pop() + '<br>';
+		infoString += "<b>URL:</b> " + baseURL + '<br>';
+		infoString += "<b>host:</b> " + parse.host + '<br>';
+		infoString += "<b>query:</b> " + parse.query + '<br>';
+		infoString += "<b>time:</b> " + parse.queryKey.time + '<br>';
+		infoString += "<b>starttime:</b> " + startTime.toFixed(3) + '<br>';
 		infoString += "<b>videoWidth:</b> " + video.videoWidth.toString() + '<br>';
+		/*
 		infoString += "<b>videoDurtn:</b> " + video.duration.toFixed(3) + '<br>';
 		infoString += "<b>ActualDurtn:</b> " + dur.toFixed(3) + '<br>';
 
@@ -119,6 +186,7 @@ window.onload = function() {
 		infoString += "Fullscreen Mode: " + fullscreenMode + '<br>';
 		infoString += "<b>Click Type:</b> " + clickType + '<br>';
 		//infoString += "<b>Event Name:</b> " + eventlist + '<br>'; 
+		*/
 
 		infoText.innerHTML = infoString;
 	}
@@ -200,6 +268,16 @@ window.onload = function() {
 		video.pause();
 		playStatus = "Paused";
 		setPlayButton();
+	}
+
+	// or toggle...
+	function togglePlayPause() {
+		// typically a space character:  toggle play status...
+		if ( playStatus == "Playing" ) {
+			pauseIt();
+		} else {
+			playIt();
+		}
 	}
 
 
@@ -301,6 +379,21 @@ window.onload = function() {
 		video.volume = volumeBar.value;
 	});
 
+	// Event listeners so we know when we're inside the video...
+	// Need this because key events all come from the top level doc
+	console.log("Adding hover events...");
+        video.addEventListener("mouseover", function() {
+                // indicate we are hovering over the video box...
+                videoOver = true;
+                console.log("Over the video...");
+        }, false);
+                
+        video.addEventListener("mouseout", function() {
+                // indicate we are leaving the video box...
+                videoOver = false;
+                console.log("Out of the video...");
+        }, false);
+
 	/*
 	// Entering fullscreen mode
 	function handleFullscreen (event) {
@@ -370,6 +463,28 @@ window.onload = function() {
 	}
 
 
+	// ----------------------------------------
+	// 	Keys...
+	// ----------------------------------------
+	// What to do with key presses...
+	// for now: only the video object, and we're only 
+	// handling <space>
+	//
+	document.addEventListener('keydown', function(e) {
+		console.log("Greetings from on key down document... " + e.srcElement);
+		if ( ! videoOver ) {
+			return;
+		}
+		if (! e) {
+			console.log("Alternate event");
+			e = window.event;
+		}
+		if (e.keyCode == 32) {
+			console.log("got a space");
+			togglePlayPause();
+			return false;
+		}
+		}, true);
 
 	// ----------------------------------------
 	// 	CLICK!
@@ -493,12 +608,14 @@ window.onload = function() {
 			updatePoster('Pressed');
 			return;
 		} 
+		/*
 		// if we're paused... then just start playing from here...
 		if ( playStatus == "Paused" ) {
 			clickStatus = "Ready";	 // ignore the mouse up...
 			playIt();
 			return;	
 		}
+		*/
 			
 		//
 		// check the full screen mode....
@@ -554,7 +671,9 @@ window.onload = function() {
 			// let's start playing...  but indicate we're 
 			// waiting for a possible second click..
 			// we may want to locate as well, if we're dragging...
-			video.currentTime = currentLocation;
+			if ( playStatus != "Paused" ) {
+				video.currentTime = currentLocation;
+			}
 			playIt();
 			clickStatus = "Waiting";
 		}
@@ -573,6 +692,7 @@ window.onload = function() {
 			pauseIt();
 			video.currentTime = currentLocation;
 			postInfo("Timeout - paused");
+			// this is where we do a pull-down....
 		}
 		clickStatus = "Ready";	// ignore (for now) the next mouse up...
 		console.log("Click timeout Out - clickStatus = " + clickStatus);

@@ -28,9 +28,10 @@ fi
 
 if [ -z "$cLmail_return" ]
 then
-	cLmail_return="catharsis@jawknee.com"
+	cLmail_return="colab_mail@jawknee.com"
 fi
 
+cLmail_addresses="$cLmail_addresses $cLmail_return"
 MailBoundary="coLabMailBoundary"
 
 cat <<-EOF |

@@ -27,5 +27,9 @@ Old
 Old/*
 
 Resources/Fonts.tar
+Resources/Fonts.prev
+Resources/Fonts.prev/*
+Resources/Fonts.old
+Resources/Fonts.old/*
 
 *.swp

@@ -27,10 +27,30 @@
 	<p>
 	In addition, the 
 	<i><b>Click!</b></i> 
-	feature also works in fullscreen mode in <i>some</i> browsers.   To make this work
+	feature also works in fullscreen mode on most (non-Apple) browsers.   To make this work
 	I'm using javascript to capture screen events from the video.  Some browsers simply 
 	do not pass those clicks out.  But in those cases, you can still play, pause, and
 	locate the audio with the usual controls.
+
+	<center><table width=70% border=2 cellpadding=10><tr><td>
+	<b><i>Click!</i></b> - Current behavior*
+	<p>
+	<i>When playing:</i> A click will locate to the 
+	position in the song corresponding
+	to the mouse pointer and continue playing from there.  A double
+	click or click-and-hold will cause playback to pause at that location.
+	<p>
+	<i>When paused:</i> A click will play from the <i>paused</i> location.   Double click  
+	or click-and-hold will pause, moving to the mouse pointer
+	location, the same as when playing.
+	<p>
+	Also when the pointer is over the graphic, or in full screen mode, the space bar toggles
+	between play and pause. (May also scroll the browser window:
+	working on that)
+	<p>
+	<i>*Subject to change - you better believe it!
+
+	</td></tr></table></center>
 	<p>
 	Here is a list of supported features by platform and browser:
 	<p>
@@ -114,7 +134,7 @@
 	is pretty much dead at this point.   Then again, so is Windows XP.
 	<p><hr width=50%><p>
 	<a name="fn3"></a>
-	***While the Android browser does all fullscreen, my code is not
+	***While the Android browser does allow fullscreen, my code is not
 	correctly calculating the location...  yet.
 
 	</i>
@@ -130,7 +150,8 @@
 	issues with <u>webm</u> playback, I kept clicking in the VLC player window...
 	but to no avail.
 	<p>
-	Assuming this work well across platforms, there are some changes I'm considering,
+	Assuming this works well across platforms, there are some
+	changes I'm considering...
 	
 	<h3>Simplfy the Control Bar</h3>
 	There really is no need for the "range bar" any more, it's really much 
@@ -161,14 +182,14 @@
 	there is no way to stop playback (well, you can click past the end
 	and the playback will end 1/4 second later).
 	<p>
-	I've thought of implementing some form of a double-click or click-and-hold
-	option.   One thing I'm thinking of is to click and hold and get a pop-up
+	I've recently implemented a simple form of a double-click / click-and-hold
+	option.   One thing I'm thinking of is to use click-and-hold to get a pop-up
 	menu that would let you select a location, possibly a range, and create
 	a link that could be shared or assigned to an existing button.
 	<p>
 	These are a ways out - but are possibilities.   Let me know!
 	<p>
-	As you may have noticed, I've also made some changes to the usr
+	As you may have noticed, I've also made some changes to the user
 	interface.  Besides creating custom buttons for the control bar,
 	I've also created a new "poster" - the initial screen the player 
 	puts up before the video starts to play.  Since the initial click
@@ -188,15 +209,15 @@
 	Speaking of creepy hands, yes, those are mine in the play and pause buttons
 	and in the full screen (though the initial one is likely to be replaced soon)
 	and of course, in the poster screens.   I'm particularly proud of the
-	button the initial screen...   made it myself (Poser Pro 2014 - some 
-	cylinders, chrome texturing and nearby lighting - I do love living in the
+	button on the initial screen...   made it myself (Poser Pro 2014 - some 
+	cylinders, brass texturing and nearby lighting - I do love living in the
 	future).  I tried duplicating the look of the coLab logo in the text...
 	it looks OK - but it may be harder to read than it needs to be.
 	Easy enough to change later.
 	<p>
 	I've also added a rudimentary "News" feature - I can now easily create
 	"news" items for each group, or coLab-wide that show up on the right
-	side bar.
+	sidebar.
 
 
 	<h2>Details...</h2>

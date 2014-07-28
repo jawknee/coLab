@@ -296,7 +296,6 @@ def make_images(page, prog_bar=None, media_size=None):
 	page.fps = calc_fps_val(page)
 	#page.editor.set_member('fps', page.fps)	#rbf ? for now, update the screen?
 	
-	
 
 	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
 
@@ -318,8 +317,8 @@ def make_images(page, prog_bar=None, media_size=None):
 		xEnd = int(width - config.SG_RIGHT_BORDER * adjust_factor)
 	else:	# compensate for the actual size of the screenshot image...
 		scale_factor = float(width) / page.screenshot_width		
-		xPos = page.xStart * scale_factor
-		xEnd = page.xEnd * scale_factor
+		xPos = int(page.xStart * scale_factor)
+		xEnd = int(page.xEnd * scale_factor)
 	
 	secs_long = float(page.duration)
 	xLen = xEnd - xPos
@@ -516,7 +515,8 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	
 	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/ArabBruD.ttf')
-	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
+	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
+	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitalDream.ttf'
 	font_size = int(10 * adjust_factor)
 	font = ImageFont.truetype(fontpath, font_size)
 	res_string = str(width) + " x " + str(height)
@@ -907,7 +907,7 @@ class Sound_image():
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DomCasDReg.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DomCasDReg.ttf'
 		# RBF: Convert this to not have a full path
-		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
+		fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
 		font_size = int( 18 * adjust_factor)
 		font = ImageFont.truetype(fontpath, font_size)	
 	

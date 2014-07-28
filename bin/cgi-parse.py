@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""
+""" convert cgi-bin info into assignments
+
 	Convert the cgi-bin info on stdin to assignment statements 
 	that can be used in most contexts
 """

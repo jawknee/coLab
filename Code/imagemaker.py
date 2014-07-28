@@ -573,18 +573,19 @@ def signed2int(s):
         return(value)
 
 class Sound_image():
-	"""
-	Take an arbitary sound file (well - .aiff for now) 
-	and turn it into a base image for the page.
-	Should:
-	Handles 1 or more channels, 8, 16, or 24 bit (whatever sample size the file has)
+	""" Take a sound file and convert into a base image
+
+	Take an arbitary sound file (well - .aiff for now) and turn it into a base image for the page.
+
+	Should handle:
+	 - 1 or more channels, 8, 16, or 24 bit (whatever sample size the file has)
+	 - arbitrary bit depth
+	 - arbitrary sample rate (not quite yet)
+
 	Generates a standard (or other) sized png file.
 	"""
-	
 	def __init__(self, sound_file, image_file, media_size, prog_bar=None, theme='Default', max_samp_per_pixel=0):
-		"""
-		open the sound file and set the various internal vars.
-		"""
+		""" open the sound file and set the various internal vars. """
 		print "Beginning Sound file open..."
 		
 		try:
@@ -597,12 +598,14 @@ class Sound_image():
 		self.image_file = image_file
 		self.media_size = media_size
 		self.prog_bar = prog_bar
-		# max samp/pixel let's us process hour long audio quickly for preview. 
-		# Setting to some value (e.g., 100) approximates that many sample per
-		# vertical line(horizontal pixel) vs, the 60,000 or so in the hour recording
-		# for preview, it can reduce the render time from 20 minutes to less than 5 seconds
-		# with reasonable accuracy, but should be set to 0 for final versions in order to
-		# get accurate clipping, rms and other values.
+		"""
+		max samp/pixel let's us process hour long audio quickly for preview. 
+		Setting to some value (e.g., 100) approximates that many sample per
+		vertical line (horizontal pixel) vs, the 60,000 or so in the hour recording.
+		For preview, it can reduce the render time from 20 minutes to less than 5 seconds
+		with reasonable accuracy, but should be set to 0 for final versions in order to
+		get accurate clipping, rms and other values.
+		"""
 		self.max_samp_per_pixel = max_samp_per_pixel	# set to zero for no skipping.
 		
 		self.nchannels = self.aud.getnchannels()
@@ -615,8 +618,7 @@ class Sound_image():
 		self.theme_colors = clColors.Themes(theme)
 		
 	def build(self):
-		"""
-		Build the image based on what we know...
+		""" Build the image based on what we know...
 		
 		Using the size and borders, plus the attributes of the 
 		audio file (# chan, sample size, length) we map a number
@@ -639,7 +641,6 @@ class Sound_image():
 		"""
 		# Set up min and max based on border size,
 		# and various factors and values
-		
 
 		self.size_class = config.Sizes()	# new size class for size fun...
 		size = self.size_class.sizeof(self.media_size)
@@ -695,10 +696,13 @@ class Sound_image():
 		nchan = self.nchannels
 		w = self.sampwidth
 		
-		# Build the min_tab, max_tab, and rms_tab "arrays".   These are lists of lists. 
-		# The tables are lists of lists - by channel, and then by vertical line.
-		# The number of lists for each is the number of channels in the audio.    Each of 
-		# those list entries is a list of num_xpix values, min or max for that channel.
+		"""
+		Build the min_tab, max_tab, and rms_tab "arrays".   
+
+		These tables are lists of lists - by channel, and then by vertical line.
+		The number of lists for each is the number of channels in the audio.    Each of 
+		those list entries is a list of num_xpix values, min or max for that channel.
+		"""
 		
 		# tables are lists of min/max/etc pre channel, per line
 		min_tab = []
@@ -751,10 +755,12 @@ class Sound_image():
 				max_tab[c].append(-self.samp_max)	# seed with min...
 				rms_tab[c].append(0.0)
 				
-			# aud_frame_data is a string of characters:  the number 
-			# of samples x sample width(w) (bytes) x # channels
-			# We turn group of "w" sample bytes into a signed
-			# int and do the math...
+			"""
+			aud_frame_data is a string of characters:  the number 
+			of samples x sample width(w) (bytes) x # channels
+			We turn group of "w" sample bytes into a signed
+			int and do the math...
+			"""
 			num_samps = next_samp_num - last_samp
 			chunk_offset = last_samp * w * nchan		# where does the next chunk (vertical line) start
 			#aud_frame_data = self.aud.readframes(num_samps)
@@ -801,12 +807,14 @@ class Sound_image():
 			pass
 			
 		self.aud.close()
-		# At this point we have the min and max arrays, and an overall
-		# min and max.   Calculate the ratio of max to full scale, calculate
-		# in dBFS and emit the graphics, normalized.
+		"""
+		At this point we have the min and max arrays, and an overall
+		min and max.   Calculate the ratio of max to full scale, calculate
+		in dBFS and emit the graphics, normalized.
 		
-		# Might want this to be per channel - for now it's global
-		# We want the furthest excursion, min or max
+		Might want this to be per channel - for now it's global
+		We want the furthest excursion, min or max
+		"""
 	
 		max_xcrsn = max		# maximum excursion
 		if -min > max+1:	# '+1' prevents -0.0
@@ -856,7 +864,6 @@ class Sound_image():
 				b_rms = int(rms_center + rms_offset)
 				# or...
 				
-			
 				# temp - may make this an option at some point...
 				rms_display = True
 				
@@ -869,11 +876,15 @@ class Sound_image():
 					# as one line...
 					graphic_draw.line([(x,top), (x,bot)], fill = colors.wave)
 					
-				# Draw the end points - mark any likely clip points
-				# Note these may not be explicit clips, since we are
-				# looking at the graphic data, not the audio data
-				# but it's a decent measure...
-				# RBF:   Fix this!   Should only be real sping..
+				"""
+				Draw the end points - mark any likely clip points
+				(Note - we can only detect max values - they may or may
+				not be a clip.   
+				
+				Future:  if there is only one "clip" per channel, we
+				may want to assume it's a normalized clip and not get
+				quite so excited.
+				"""
 				
 				clip_stretch = 1 + int(adjust_factor*adjust_factor)
 				#if eff_ratio == 1 and top == centers[c] - chan_ht / 2:
@@ -999,9 +1010,8 @@ class Sound_image():
 		
 import coLab		
 def main():
-	"""
-	Some old, now obsolete tests are below - for now - just run the top level.
-	"""
+	""" Some old, now obsolete tests are below - for now - just run the top level. """
+
 	#------ interface to main routine...
 
 	"""
@@ -1079,15 +1089,9 @@ def main():
 	
 	sys.exit(0)
 	
-	
-	
-	
-	
-	
 	p = clclasses.Page('imagemakerTest')
 	p.xStart = 10
 	p.xEnd = 470
-
 
 	p.duration = .01	# start small (seconds) but get big fast...
 

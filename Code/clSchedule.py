@@ -1,6 +1,9 @@
+""" Various routines to schedule applications 
+
+Let's us start a few programs like MAMP Pro, and
+open a browser.
 """
-Various routines to schedule applications
-"""
+
 import os
 import sys
 import logging

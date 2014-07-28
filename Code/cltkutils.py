@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-	A attempt at...
-	A initial GUI front-end interface to the various
-	tasks required for creating and managing coLab.
+""" Some useful tools for dealing with graphic objects 
+
+Some items like:
+Progress_bar --  a class to ease setting up tkinter progress bars
+graphic_element -- a function to put up an image
+Popup	-- a class for Popups...
 """
 
 import os

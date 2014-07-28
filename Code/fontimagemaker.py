@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""
-	A quick, one-off to generate graphics of the current fonts...
-"""
+""" A tool to generate a graphic to show the available fonts """
 import os
 import sys
 import logging

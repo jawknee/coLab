@@ -1,10 +1,14 @@
 #!/usr/bin/env python
-"""
-Color definitions for coLab.
+""" Color definitions for coLab. 
+
+Various color definitions both specific and symbolic (e.g., HILITE).
+
+Colors are 4-tuples:  (red, green, blue, alpha)   where each is 0-255
+A routine (html_color) to emit the html rgb string
+A Themes class to let us create a number of color schemes
 """
 
 import logging
-
 
 # Colors....
 XPARENT = (0,0,0,0)
@@ -83,9 +87,12 @@ class Themes:
 		if theme == "Default":
 			theme = DEFAULT_THEME
 		
-		#	define the themes with:
-		#	background, rms, wave, peak, cursor, cursor_offset (possibly text, lines, etc)
-		#  I don't like the way I'm doing this - needs rework...
+		"""
+		define the themes with:
+		  name,	background, rms, wave, peak, cursor, cursor_offset (possibly text, lines, etc)
+
+		I don't like the way I'm doing this - needs rework... 
+		"""
 		themelist = [
 					[ 'Blue', PART_BLACK, DEEP_BLUE, EL_BLUE, WHITE, MAIZE, LOLITE],
 					[ 'Fire', PART_BLACK, DK_RED, ORANGE, BRIGHT_YELLOW, EL_BLUE, LOLITE],

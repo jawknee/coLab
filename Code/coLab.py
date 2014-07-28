@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-	CoLab - a music collaboration tool.
+""" coLab - a music collaboration tool.
 	
 	This tool is the front end used to create the coLab web site.
-	It take input of audio files (currently .aiff) and optionally
-	graphics (typically a screen shot) and builds the various pages
+	It takes input of audio files (currently .aiff) and optionally
+	graphics (typically a screen shot) and builds the web various pages
 	and links to allow for musical collaboration.
 	
 	Makes extensive use of the Tkinter and PIL (Python Imaging Library)
 	functions.
+	
+	It is currently designed to be a single program - starting with this module.
 """
 
 import os
@@ -33,9 +34,7 @@ import clSchedule
 import rebuild
 
 class Colab():
-	"""
-	Basic class for the colab front end - holder of the main window and
-	basic methods. 
+	""" Basic class for the colab front end - holder of the main window and basic methods. 
 	
 	It all starts here.  The "top" element is the root of the Tkinter GUI.
 	It holds the graphic elements, as well as the basic methods for performing
@@ -50,10 +49,13 @@ class Colab():
 	"""
 	
 	def __init__(self, master=None):
-		"""
-		Create a frame instance, populate it with the various gadgets
-		to drive this beast, and populate a group list as they're called up.
-		As each group is selected, update the title and snapshot graphics, 
+		""" Create a frame instance, populate it with the various gadgets.
+		
+		We step through the data structure, finding the groups, and loading the 
+		current one (groups are currently loaded when first referenced). 
+		The group data are then added or modified as directed by the buttons.
+		
+		As each group is selected, we update the title and snapshot graphics, 
 		and the corresponding data and editing objects...
 		"""
 		# Get the system wide config - find the local config file and 
@@ -109,9 +111,11 @@ class Colab():
 		# some sort of a GUI loop here...
 		
 	def get_last_group(self):
-		"""
-		Retrieve the "current" group name from 
-		... some data structure... - for now:
+		""" returns the name of the last used group
+		
+		 Retrieve the "current" group name from 
+		... some data structure... - for now, 
+		we just hard code it until we have the data laid out.
 		"""
 		self.current_grouptitle = "Catharsis"
 		self.current_grouptitle = "Johnny's Music"
@@ -121,10 +125,7 @@ class Colab():
 		logging.info("Default group:  %s", self.current_grouptitle)
 		
 	def set_group_from_menu(self, menu_grouptitle='None'):
-		"""
-		Retrieve the menu value and set that
-		as the current group...
-		"""
+		""" Retrieve the menu value and set that as the current group name """
 		logging.info("!  Click !---------------------------")
 		# Called with menu_grouptitle = None for initial setup...
 		if menu_grouptitle == "None":
@@ -135,11 +136,14 @@ class Colab():
 		self.set_group()
 		
 	def set_group(self):
-		"""
+		""" point to the group object
+		
 		Make sure the group specified in self.current_grouptitle
-		is loaded and pointed to as the default.
+		is loaded and displayed.   If we haven't yet, 
+		load the group.	
+		
 		We keep a list of groups, which we load as they're referenced
-		and a dictionary of  groups by dir name
+		and a dictionary of groups by dir name (group name).
 		"""
 		try:
 			thisname = self.current_grouptitle
@@ -177,9 +181,7 @@ class Colab():
 		self.function_buttons()
         
 	def createMainWidgets(self):
-		"""
-		Put up the main, initial set of widgets
-		"""
+		""" Put up the main, initial set of widgets """
 		self.master.title('coLab')
 		#self.master.configure(bg=self.bg)
 		self.master.lift(aboveThis=None)
@@ -220,8 +222,7 @@ class Colab():
 		self.quitButton = ttk.Button(self.main_frame, text="Quit", command=self.my_quit).grid(column=9, row=9)
 		
 	def __aboutHandler(self):
-		"""
-		Let's do a nice little pop-up saying who we are and what we do....
+		""" Let's do a nice little pop-up saying who we are and what we do....
 		
 		(eventually)
 		"""
@@ -232,9 +233,9 @@ class Colab():
 		logging.info("how's this?")
 	
 	def load_group_list(self):
-		"""
-		Load up the names of the groups...   we don't actually load
-		the groups until they're called.
+		""" Load up the names of the groups...  
+		
+		we don't actually load the groups until they're called.
 		"""
 		group_dir = os.path.join(self.conf.coLab_home, 'Group')
 		logging.info("new cd: %s", group_dir)
@@ -268,10 +269,10 @@ class Colab():
 			logging.info("self.grouplistdict of %s is %s", data.title, self.grouplistdict[data.title])
 		
 	def display_group_list(self):
-		"""
-		Provide the current list of groups.  We want to display
-		the title, but return the directory name.   We create
-		a dictionary as we go, which will convert the title
+		""" Update the menu to display lists...
+		 
+		We want to display the title, but return the directory name.   
+		We create a dictionary as we go, which will convert the title
 		to the dir name.
 		"""
 		
@@ -290,9 +291,7 @@ class Colab():
 		
 	
 	def function_buttons(self):
-		"""
-		Place the buttons (and now, menus)  that drive the main process
-		"""
+		""" Place the buttons (and now, menus)  that drive the main process """
 		logging.info("function buttons")
 		# Do we have a local frame, if so, destroy it, other 
 		try:
@@ -410,32 +409,10 @@ class Colab():
 		self.header.columnspan=3
 		self.header.post()
 		
-		
-		# and yet again - for the "Title /subtitle"
-		"""
-		try:
-			self.subtitle.clear()
-		except:
-			pass
-		subtitlepath = os.path.join(self.current_group.home, "Title.png")
-		print "Title path:", subtitlepath
-		self.subtitle = cltkutils.graphic_element(self.main_frame)
-		self.subtitle.filepath = subtitlepath
-		self.subtitle.row=1
-		self.subtitle.column=1
-		self.subtitle.columnspan=3
-		self.subtitle.post()
-		
-		"""
-		
-		#blank=tk.Label(self.main_frame, text="							  ", justify=tk.CENTER).grid(row=1, column=1, columnspan=3)
-		#blank.grid_forget()
 		self.subtitle_str.set(self.current_group.subtitle)
-		#self.subtitle=tk.Label(self.main_frame, text=self.current_group.subtitle, justify=tk.CENTER).grid(row=1, column=1, columnspan=3)
-		
-		
 			
 	def place_logo(self):
+		""" Place the logo on the frame """
 		logo_name = 'CoLab_Logo3D_sm.png'	# let's extract this at some point...
 
 		logo_path = os.path.join(self.conf.coLab_home, 'Resources', logo_name)
@@ -447,17 +424,15 @@ class Colab():
 		self.logo.post()
 		
 	def refresh_group(self):
-		"""
-		Simple interface to the rebuild scripting...
-		"""
+		""" Simple interface to the rebuild scripting... """
 		logging.info("Refresh: %s", self.current_grouptitle)
 		rebuild.rebuild(self.current_group.name, mirror=True)
 		clSchedule.browse_url(self.current_group.url_head)
 		logging.info("Refresh complete.")
 		
-		
 	def my_quit(self):
-		"""
+		""" handle user quit
+		
 		Let's check to see what's left hanging if/when someone quits.
 		"""
 		logging.info("Time to quit.")
@@ -470,12 +445,12 @@ def task(obj,bar):
 	obj.after(50, task, obj,bar)
 
 
-"""
-Just enough to get us started...   
-Create the root and pass it into the Colab class (master)
-"""
 
 def main():
+	""" Just enough to get us started...  
+	 
+	Create the root and pass it into the Colab class (master)
+	"""
 	logging.info("Colab Main")
 	root = tk.Tk()
 	

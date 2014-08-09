@@ -516,8 +516,8 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	
 	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/ArabBruD.ttf')
-	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
-	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitalDream.ttf'
+	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
+	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitalDream.ttf'
 	font_size = int(10 * adjust_factor)
 	font = ImageFont.truetype(fontpath, font_size)
 	res_string = str(width) + " x " + str(height)
@@ -919,7 +919,7 @@ class Sound_image():
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DomCasDReg.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DomCasDReg.ttf'
 		# RBF: Convert this to not have a full path
-		fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
+		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
 		font_size = int( 18 * adjust_factor)
 		font = ImageFont.truetype(fontpath, font_size)	
 	

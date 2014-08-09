@@ -8,6 +8,7 @@ import logging
 import imp
 import copy
 
+import config
 import cldate
 import clutils
 import cltkutils
@@ -375,7 +376,7 @@ class Page:
 		
 		# set up a number of buttons
 		# add to the init data, and the floatvars
-		numbut = 10
+		numbut = config.NUM_BUTS
 		initdata.append( ("numbuts", numbut) )
 		for i in range(1, numbut+1):
 			locvar = "Loc_%02d" % i

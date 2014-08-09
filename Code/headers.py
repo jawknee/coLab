@@ -63,6 +63,7 @@ class Html:
 			# do we include the video controls?
 			body += self.video_controls
 			body += self.media_tail
+			body += self.gen_locbutton_tags(page)
 			body += self.gen_geometry_tags(page)
 		return(body)
 
@@ -117,6 +118,30 @@ class Html:
 				break
 			print "Next size:", size
 		return(sources)
+
+	def gen_locbutton_tags(self, page):
+		""" Generate "hidden" tags to pass button info to javascript
+		
+		Location (float seconds) and description (string) 
+		to describe the locator buttons.
+		"""
+		loc_html = """
+			<!-- Locator button info -->
+				<input type="hidden" id="numbut" value="%d">\n""" % config.NUM_BUTS
+		for i in range(1, config.NUM_BUTS+1):
+			varname = "Loc_%02d" % i
+			value = eval('page.' + varname)
+			loc_html += """
+				<input type="hidden" id="%s" value="%f">""" % (varname, value)
+			value = eval('page.' + varname + '_desc')
+			loc_html += """
+				<input type="hidden" id="%s_desc" value="%s">""" % (varname, value)
+
+
+		loc_html += """
+			<!-- End loccator button info -->
+			"""
+		return loc_html
 
 	def gen_geometry_tags(self, page):
 		""" Generate "hidden" tags to pass info to javascript
@@ -285,7 +310,7 @@ class Html:
 		</body>
 		</html>
 		"""
-	def emit_loc_buttons(self,numbuttons=10):
+	def emit_loc_buttons(self,numbuttons=config.NUM_BUTS):
 		""" Generate some buttons
 
 		Simple for now - these will likely be modified by the javascript

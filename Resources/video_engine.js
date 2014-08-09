@@ -202,7 +202,8 @@ window.onload = function() {
 	//  functions to set the icons into the buttons...
 	function setPlayButton() {
 		if ( video.paused == true ) {
-			playButton.innerHTML = '<img src="/coLab/Resources/Icons/Play_24x24xp_02.png" alt="Play">';
+			//playButton.innerHTML = '<img src="/coLab/Resources/Icons/Play_24x24xp_02.png" alt="Play">';
+			playButton.innerHTML = '<img src="/coLab/Resources/Icons/Play_24x24btn_03.png" alt="Play">';
 			//  also handle full screen where we don't have control...
 			if ( playStatus == 'Paused' && video.paused == true ) {
 				//video.style.cursor = 'wait';

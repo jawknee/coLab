@@ -5,6 +5,10 @@ import logging
 import math
 
 #--------------------------------------
+# Interface descriptions
+#--------------------------------------
+NUM_BUTS = 10	# number of locator buttons
+#--------------------------------------
 # Resolution 
 #--------------------------------------
 # sizes and classes to define the various resolutions

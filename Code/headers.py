@@ -244,19 +244,14 @@ class Html:
 		    <span title="Play/Pause">
 				<button type="button" id="play-pause">P</button>
 			</span>
-			<input type="range" id="seek-bar" value="0">
-		    <span title="Mute/Unmute">
-				<button type="button" id="mute">M</button>
-			</span>
+			""" + self.emit_loc_buttons() + """
 			<input type="range" id="volume-bar" min="0" max="1" step="0.1" value="1">
 		    <span title="FullScreen">
 				<button type="button" id="full-screen">FS</button>
 			</span>
 		 </div> <! video-controls>
 		 """
-
-	
-	
+		 
 		self.tail = """
 		<hr>
 		Enter your comments here:<br>
@@ -290,6 +285,22 @@ class Html:
 		</body>
 		</html>
 		"""
+	def emit_loc_buttons(self,numbuttons=10):
+		""" Generate some buttons
+
+		Simple for now - these will likely be modified by the javascript
+		"""
+		loc_string="""
+			<span title="Locators">"""
+		for button in range(1, numbuttons+1):
+			loc_string += """
+				<button type="locbutton" id="Loc%02d">%d</button>""" % ( button, button)
+		loc_string += """
+			</span>"""
+		return loc_string	
+			
+		
+
 
 def main():
 	""" test gen_html5_sources"""

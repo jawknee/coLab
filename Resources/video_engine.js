@@ -56,11 +56,11 @@ window.onload = function() {
 
 	// Buttons
 	var playButton = document.getElementById("play-pause");
-	var muteButton = document.getElementById("mute");
+	//var muteButton = document.getElementById("mute");
 	var fullScreenButton = document.getElementById("full-screen");
 
 	// Sliders
-	var seekBar = document.getElementById("seek-bar");
+	//var seekBar = document.getElementById("seek-bar");
 	var volumeBar = document.getElementById("volume-bar");
 	
 	// info
@@ -156,11 +156,13 @@ window.onload = function() {
 			'<b>Current:</b> ' + video.currentTime.toFixed(3) + '<br>' +
 			'<b>Message:</b> ' + msg + '<br>' +
 			'<b>Volume:</b> ' + video.volume.toString() + '<br>' ;
+		/*
 		if ( video.muted ) {
 			infoString += '<b>Muted</b><br>'
 		} else {
 			infoString += '<b>Not Muted</b><br>'
 		}
+		*/
 
 		infoString += "<b>video Source:</b> " + video.currentSrc.split('/').pop() + '<br>';
 		infoString += "<b>URL:</b> " + baseURL + '<br>';
@@ -214,6 +216,7 @@ window.onload = function() {
 
 	setPlayButton();
 
+	/*
 	function setMuteButton() {
 		if (video.muted == false) {
 			muteButton.innerHTML = '<img src="/coLab/Resources/Icons/Unmuted_24x24xp_02.png" alt="Mute">';
@@ -223,6 +226,7 @@ window.onload = function() {
 	}
 
 	setMuteButton();
+	*/
 
 	function setFSButton() {
 		if (fullscreenMode == "None" ) {
@@ -300,6 +304,7 @@ window.onload = function() {
 	});
 
 	// Event listener for the mute button
+	/*
 	muteButton.addEventListener("click", function() {
 		if (video.muted == false) {
 			// Mute the video
@@ -314,7 +319,7 @@ window.onload = function() {
 		setMuteButton();
 		postInfo("Mute pressed.");
 	});
-
+	*/
 
 	// Event listener for the full-screen button
 	fullScreenButton.addEventListener("click", function() {
@@ -333,6 +338,7 @@ window.onload = function() {
 
 
 	// Event listener for the seek bar
+	/*
 	seekBar.addEventListener("change", function() {
 		// Calculate the new time
 		currentLocation = video.duration * (seekBar.value / 100);
@@ -351,6 +357,7 @@ window.onload = function() {
 		seekBar.value = value;
 		postInfo("update");
 	});
+	*/
 
 	// when video completes, change the play button to "play"
 	video.addEventListener("ended", function () {
@@ -363,6 +370,7 @@ window.onload = function() {
 
 
 	// Pause the video when the seek handle is being dragged
+	/*
 	seekBar.addEventListener("mousedown", function() {
 		pauseIt();
 	});
@@ -372,6 +380,7 @@ window.onload = function() {
 		video.play();
 		setPlayButton();
 	});
+	*/
 
 	// Event listener for the volume bar
 	volumeBar.addEventListener("change", function() {

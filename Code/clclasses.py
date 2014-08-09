@@ -372,6 +372,16 @@ class Page:
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = [ 'duration' ]
 		self.intvars = [ 'xStart', 'xEnd', 'screenshot_width' ]
+		
+		# set up a number of buttons
+		# add to the init data, and the floatvars
+		numbut = 10
+		initdata.append( ("numbuts", numbut) )
+		for i in range(1, numbut+1):
+			locvar = "Loc_%02d" % i
+			initdata.append( (locvar, 0.0) )	# var, val tuple
+			self.floatvars.append(locvar)
+			initdata.append( (locvar+'_desc', 'Unset'))
 
 		set_init_vars(self, initdata)
 		# Create a "previous" version (possibly overwritten in "load") for comparisons
@@ -419,8 +429,19 @@ class Page:
 			'\n' +
 			'createtime="' + cldate.utc2string(self.createtime) + EOL +
 			'updatetime="' + cldate.utc2string(self.updatetime) + EOL +
-			'\n'
+			'\n' + self.dump_locs()
 			)
+	def dump_locs(self):
+		""" Output the button info...
+		"""
+		but_str = "numbuts=%d\n" % self.numbuts
+		for i in range(1, self.numbuts+1):
+			locvar = "Loc_%02d" % i
+			locval = eval("self." + locvar)
+			but_str += locvar + "=" + str(locval) + '\n'
+			but_str += locvar + '_desc="' + eval("self." + locvar + "_desc") + '"\n'
+		
+		return but_str
 
 	def load(self, path=None):
 		"""

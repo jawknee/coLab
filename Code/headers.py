@@ -129,7 +129,7 @@ class Html:
 			<!-- Locator button info -->
 				<input type="hidden" id="numbut" value="%d">\n""" % config.NUM_BUTS
 		for i in range(1, config.NUM_BUTS+1):
-			varname = "Loc_%02d" % i
+			varname = "Loc_%d" % i
 			value = eval('page.' + varname)
 			loc_html += """
 				<input type="hidden" id="%s" value="%f">""" % (varname, value)
@@ -319,7 +319,7 @@ class Html:
 			<span title="Locators">"""
 		for button in range(1, numbuttons+1):
 			loc_string += """
-				<button type="locbutton" id="Loc%02d">%d</button>""" % ( button, button)
+				<button type="locbutton" id="Loc%d">%d</button>""" % ( button, button)
 		loc_string += """
 			</span>"""
 		return loc_string	

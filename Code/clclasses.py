@@ -379,7 +379,7 @@ class Page:
 		numbut = config.NUM_BUTS
 		initdata.append( ("numbuts", numbut) )
 		for i in range(1, numbut+1):
-			locvar = "Loc_%02d" % i
+			locvar = "Loc_%d" % i
 			initdata.append( (locvar, 0.0) )	# var, val tuple
 			self.floatvars.append(locvar)
 			initdata.append( (locvar+'_desc', 'Unset'))
@@ -437,7 +437,7 @@ class Page:
 		"""
 		but_str = "numbuts=%d\n" % self.numbuts
 		for i in range(1, self.numbuts+1):
-			locvar = "Loc_%02d" % i
+			locvar = "Loc_%d" % i
 			locval = eval("self." + locvar)
 			but_str += locvar + "=" + str(locval) + '\n'
 			but_str += locvar + '_desc="' + eval("self." + locvar + "_desc") + '"\n'

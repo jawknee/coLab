@@ -56,11 +56,20 @@ window.onload = function() {
 
 	// Buttons
 	var playButton = document.getElementById("play-pause");
-	//var muteButton = document.getElementById("mute");
+	var muteButton = document.getElementById("mute");
 	var fullScreenButton = document.getElementById("full-screen");
+	// Locator buttons...
+	var locatorText = document.getElementById("locators");
+	var numButs = document.getElementById("numbut");
+	if (  numButs ) {
+		numButs = numButs.value;
+	} else {
+		numButs = 0;
+	}
+	var locatorTextString = "";
 
 	// Sliders
-	//var seekBar = document.getElementById("seek-bar");
+	var seekBar = document.getElementById("seek-bar");
 	var volumeBar = document.getElementById("volume-bar");
 	
 	// info
@@ -156,13 +165,12 @@ window.onload = function() {
 			'<b>Current:</b> ' + video.currentTime.toFixed(3) + '<br>' +
 			'<b>Message:</b> ' + msg + '<br>' +
 			'<b>Volume:</b> ' + video.volume.toString() + '<br>' ;
-		/*
+		
 		if ( video.muted ) {
 			infoString += '<b>Muted</b><br>'
 		} else {
 			infoString += '<b>Not Muted</b><br>'
 		}
-		*/
 
 		infoString += "<b>video Source:</b> " + video.currentSrc.split('/').pop() + '<br>';
 		infoString += "<b>URL:</b> " + baseURL + '<br>';
@@ -217,7 +225,7 @@ window.onload = function() {
 
 	setPlayButton();
 
-	/*
+	if ( muteButton ) {	
 	function setMuteButton() {
 		if (video.muted == false) {
 			muteButton.innerHTML = '<img src="/coLab/Resources/Icons/Unmuted_24x24xp_02.png" alt="Mute">';
@@ -227,7 +235,7 @@ window.onload = function() {
 	}
 
 	setMuteButton();
-	*/
+	}
 
 	function setFSButton() {
 		if (fullscreenMode == "None" ) {
@@ -283,8 +291,89 @@ window.onload = function() {
 		} else {
 			playIt();
 		}
+		return
 	}
 
+	// ----------------------------------------
+	//      Location Buttons - set them up
+	// ----------------------------------------
+	function handleLocButton(e) {
+		// find event - probably overkill, from: 
+		// http://www.quirksmode.org/js/events_properties.html
+		var targ;
+		if (!e) var e = window.event;
+		if (e.target) targ = e.target;
+		else if (e.srcElement) targ = e.srcElement;
+		if (targ.nodeType == 3) // defeat Safari bug
+			targ = targ.parentNode;
+		
+		/*	Handy for debugging...
+		Array.prototype.slice.call(targ.attributes).forEach(function(item) {
+			console.log(item.name + ': '+ item.value);
+		});
+		*/
+
+		var btnID = targ.getAttribute("id");
+		locID = btnID.replace("LocBtn", "Loc_");	// change name to loc ID
+		var locDesc = document.getElementById(locID + "_desc").value;
+		if ( locDesc !== 'Unset' ) {
+			var locValstring = document.getElementById(locID).value;
+			var timeOffset = parseFloat(locValstring);
+			video.currentTime = timeOffset;
+		}
+
+		console.log("BtnID:" + btnID);
+		console.log("Time: " + timeOffset.toFixed(3) );
+	}
+	//
+	// Set up each button - putting a number (or "-" if not
+	// set) into each button, and build the locations 
+	// text as we go.   Finally - add a handler for each.
+	for (i = 1; i <= numButs; i++) {
+		if ( locatorTextString == '' ) {
+			locatorTextString = "<b>Locations:</b><br>";
+		}
+		locatorText.innerHTML = locatorTextString;
+		var locVar = "Loc_" + i.toString();
+		console.log("locvar " + locVar);
+		var locValstring = document.getElementById(locVar).value;
+		var locVal = parseFloat(locValstring);
+		console.log ("loc val " + locVal.toString());
+		locVar += "_desc"
+		console.log("locvar " + locVar);
+		var locDesc = document.getElementById(locVar).value;
+		var buttonTextString = locDesc + " (" + locVal.toFixed(3) +  ")";
+
+		if ( locDesc == 'Unset' ) {
+			btnType="dash";	//  use use a "-" if no value...
+		} else {
+			btnType=i.toFixed(0);
+		}
+		//  set the text for the side bar...
+		console.log ("loc desc " + locDesc);
+		var btnID = "LocBtn" + i.toString();
+
+
+		if ( locDesc !== 'Unset' ) {
+			//locatorTextString += '<button type="button" id="' + btnID + '" title="' + btnType + '"/>';
+			locatorTextString += btnType + ". "
+			locatorTextString += buttonTextString + "<br>"
+			locatorText.innerHTML = locatorTextString;
+		}
+
+		// Load up the image for this button - also pass the buttonID in - since we're more likely to 
+		// click on the "image" than the button.
+		var buttonGraphic = "/coLab/Resources/Icons/Numerals/Button_" + btnType + ".png";
+		var locButton = document.getElementById(btnID);
+		console.log("bg:" + buttonGraphic + "- bts: " + buttonTextString + " id: " + btnID);
+		locButton.innerHTML = '<img src="' + buttonGraphic + '" title="' +
+			buttonTextString + '" id="' + btnID + '" >';
+		//  while we're at it - let's set up the even handler for each button...
+		locButton.addEventListener("click", function(e) {
+			handleLocButton(e);
+			});
+
+	}
 
 	// ----------------------------------------
 	// 	Event Listeners
@@ -305,7 +394,7 @@ window.onload = function() {
 	});
 
 	// Event listener for the mute button
-	/*
+	if ( muteButton ) {
 	muteButton.addEventListener("click", function() {
 		if (video.muted == false) {
 			// Mute the video
@@ -320,7 +409,7 @@ window.onload = function() {
 		setMuteButton();
 		postInfo("Mute pressed.");
 	});
-	*/
+	}
 
 	// Event listener for the full-screen button
 	fullScreenButton.addEventListener("click", function() {
@@ -339,7 +428,7 @@ window.onload = function() {
 
 
 	// Event listener for the seek bar
-	/*
+	if ( seekBar ) {
 	seekBar.addEventListener("change", function() {
 		// Calculate the new time
 		currentLocation = video.duration * (seekBar.value / 100);
@@ -358,7 +447,7 @@ window.onload = function() {
 		seekBar.value = value;
 		postInfo("update");
 	});
-	*/
+	}
 
 	// when video completes, change the play button to "play"
 	video.addEventListener("ended", function () {
@@ -371,7 +460,7 @@ window.onload = function() {
 
 
 	// Pause the video when the seek handle is being dragged
-	/*
+	if ( seekBar ) {
 	seekBar.addEventListener("mousedown", function() {
 		pauseIt();
 	});
@@ -381,7 +470,7 @@ window.onload = function() {
 		video.play();
 		setPlayButton();
 	});
-	*/
+	}
 
 	// Event listener for the volume bar
 	volumeBar.addEventListener("change", function() {

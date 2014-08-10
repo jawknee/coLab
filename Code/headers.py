@@ -235,6 +235,8 @@ class Html:
 			<!--#include virtual="/coLab/Resources/News.html" -->
 			<!--#include virtual="!groupURL!/Shared/News.html" -->
 			<!--#include virtual="!groupURL!/Shared/rightbar.html" -->
+			<p id="locators"></p>
+			<hr><br>
 			<p id="info"></p>	<! A paragraph for displaying...  info from javascript.>
 			</div> <! End right sidebar>
 			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
@@ -319,7 +321,7 @@ class Html:
 			<span title="Locators">"""
 		for button in range(1, numbuttons+1):
 			loc_string += """
-				<button type="locbutton" id="Loc%d">%d</button>""" % ( button, button)
+				<button type="button" id="LocBtn%d">%d</button>""" % ( button, button)
 		loc_string += """
 			</span>"""
 		return loc_string	

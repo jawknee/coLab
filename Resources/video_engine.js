@@ -2,7 +2,7 @@
 //
 // Sets up and manages various control functions related to playing
 // the video and going into fullscreen mode.  Also handles the 
-// Click! option to click anywhere on a graphic and hvae the
+// Click! option to click anywhere on a graphic and have the
 // video play from that location.
 //
 // Uses parseUri - included below.

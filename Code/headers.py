@@ -318,7 +318,7 @@ class Html:
 		Simple for now - these will likely be modified by the javascript
 		"""
 		loc_string="""
-			<span title="Locators">"""
+			<span>"""
 		for button in range(1, numbuttons+1):
 			loc_string += """
 				<button type="button" id="LocBtn%d">%d</button>""" % ( button, button)

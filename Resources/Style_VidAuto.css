@@ -147,6 +147,7 @@ button {
 	-moz-border-radius: 3px;
 	-o-border-radius: 3px;
 	border-radius: 3px;
+	box-shadow: 2px 2px 0 #870 inset, -3px -3px 0 #870 inset, 5px 5px 0 #444 inset, 6px 6px 6px rgba(0,0,0,0.6) ;
 }
 
 
@@ -160,7 +161,11 @@ button:hover {
 }
 
 #volume-bar {
-	width: 60px;
+	width: 50px;
+	background: rgba(192, 192, 255, 0.2);
+	color: #870
+	outline: none;
+	box-shadow: 6px 6px 6px rgba(0,0,0,0.6) ;
 }
 
 /*	this may help with the Android scaling - but so far it seems to 

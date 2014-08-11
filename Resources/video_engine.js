@@ -1,36 +1,11 @@
-// parseUri 1.2.2
-// (c) Steven Levithan <stevenlevithan.com>
-// MIT License
-
-function parseUri (str) {
-	var	o   = parseUri.options,
-		m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
-		uri = {},
-		i   = 14;
-
-	while (i--) uri[o.key[i]] = m[i] || "";
-
-	uri[o.q.name] = {};
-	uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
-		if ($1) uri[o.q.name][$1] = $2;
-	});
-
-	return uri;
-};
-
-parseUri.options = {
-	strictMode: false,
-	key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
-	q:   {
-		name:   "queryKey",
-		parser: /(?:^|&)([^&=]*)=?([^&]*)/g
-	},
-	parser: {
-		strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
-		loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
-	}
-};
 // main code for handling coLab functions...
+//
+// Sets up and manages various control functions related to playing
+// the video and going into fullscreen mode.  Also handles the 
+// Click! option to click anywhere on a graphic and hvae the
+// video play from that location.
+//
+// Uses parseUri - included below.
 //
 window.onload = function() {
 
@@ -71,6 +46,7 @@ window.onload = function() {
 	// Sliders
 	var seekBar = document.getElementById("seek-bar");
 	var volumeBar = document.getElementById("volume-bar");
+	displayAttrById("volume-bar");
 	
 	// info
 	var infoText = document.getElementById("info");
@@ -320,6 +296,7 @@ window.onload = function() {
 			var locValstring = document.getElementById(locID).value;
 			var timeOffset = parseFloat(locValstring);
 			video.currentTime = timeOffset;
+			playIt();
 		}
 
 		console.log("BtnID:" + btnID);
@@ -353,18 +330,19 @@ window.onload = function() {
 		console.log ("loc desc " + locDesc);
 		var btnID = "LocBtn" + i.toString();
 
+		var locButton = document.getElementById(btnID);
 
 		if ( locDesc !== 'Unset' ) {
 			//locatorTextString += '<button type="button" id="' + btnID + '" title="' + btnType + '"/>';
 			locatorTextString += btnType + ". "
 			locatorTextString += buttonTextString + "<br>"
 			locatorText.innerHTML = locatorTextString;
+			locButton.title = buttonTextString;
 		}
 
 		// Load up the image for this button - also pass the buttonID in - since we're more likely to 
 		// click on the "image" than the button.
 		var buttonGraphic = "/coLab/Resources/Icons/Numerals/Button_" + btnType + ".png";
-		var locButton = document.getElementById(btnID);
 		console.log("bg:" + buttonGraphic + "- bts: " + buttonTextString + " id: " + btnID);
 		locButton.innerHTML = '<img src="' + buttonGraphic + '" title="' +
 			buttonTextString + '" id="' + btnID + '" >';
@@ -873,3 +851,47 @@ window.onload = function() {
 		return time;
 	}
 }
+
+function displayAttrById (id) {
+	//   let's see what attributes this element has...
+	var element = document.getElementById(id);
+	
+	console.log("displayAttrById: attr for: " + id);
+	Array.prototype.slice.call(element.attributes).forEach(function(item) {
+		console.log(item.name + ': '+ item.value);
+	});
+};
+
+// parseUri 1.2.2
+// (c) Steven Levithan <stevenlevithan.com>
+// MIT License
+
+function parseUri (str) {
+	var	o   = parseUri.options,
+		m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
+		uri = {},
+		i   = 14;
+
+	while (i--) uri[o.key[i]] = m[i] || "";
+
+	uri[o.q.name] = {};
+	uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
+		if ($1) uri[o.q.name][$1] = $2;
+	});
+
+	return uri;
+};
+
+parseUri.options = {
+	strictMode: false,
+	key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
+	q:   {
+		name:   "queryKey",
+		parser: /(?:^|&)([^&=]*)=?([^&]*)/g
+	},
+	parser: {
+		strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+		loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+	}
+};
+

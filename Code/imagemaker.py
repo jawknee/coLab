@@ -37,7 +37,7 @@ import cltkutils
 import clSchedule
 import clAudio
 import clColors
-
+import clutils	# for fonts - pull if fonts move to their own module
 
 #size = (width, height)
 poster_width = 640
@@ -239,6 +239,8 @@ def make_images(page, prog_bar=None, media_size=None):
 	to the factor - based on the "BASE_SIZE":
 	square root of the ratio.
 	"""
+	
+	fontclass = clutils.FontLib()	# this needs to be done at initialization   RBF
 
 	print "make_images: page.home:", page.home
 
@@ -304,8 +306,10 @@ def make_images(page, prog_bar=None, media_size=None):
 	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
 
 	#font = ImageFont.truetype('../Resources/Fonts/data-latin.ttf', 18)
-	fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
+	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
+	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/QuartBolD.ttf')
+	fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
 	fontsize = int(12 * adjust_factor)
 	font = ImageFont.truetype(fontpath, fontsize)
 
@@ -517,10 +521,12 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	
 	(width, height) = size
 	
-	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
+	fontclass = clutils.FontLib()	# this needs to be done at initialization   RBF
+	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/ArabBruD.ttf')
-	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
-	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitalDream.ttf'
+	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
+	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitalDream.ttf'
+	fontpath = fontclass.return_fontpath('Digitaldream.ttf')
 	font_size = int(10 * adjust_factor)
 	font = ImageFont.truetype(fontpath, font_size)
 	res_string = str(width) + " x " + str(height)
@@ -645,6 +651,8 @@ class Sound_image():
 		"""
 		# Set up min and max based on border size,
 		# and various factors and values
+
+		fontclass = clutils.FontLib()	# this needs to be done at initialization   RBF
 
 		self.size_class = config.Sizes()	# new size class for size fun...
 		size = self.size_class.sizeof(self.media_size)
@@ -922,7 +930,8 @@ class Sound_image():
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DomCasDReg.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DomCasDReg.ttf'
 		# RBF: Convert this to not have a full path
-		fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
+		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
+		fontpath = fontclass.return_fontpath('DomCasDReg.ttf')
 		font_size = int( 18 * adjust_factor)
 		font = ImageFont.truetype(fontpath, font_size)	
 	

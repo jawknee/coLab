@@ -124,6 +124,7 @@ def mk_dur_string(dur):
 
 def pagegen(group, page):
 	""" Passed the name of the group and page, rebuilds the index.shtml """
+	fonts = clutils.FontLib()	# this needs to be done at initialization   RBF
 
 	try:
 		os.chdir(page.home)
@@ -133,17 +134,21 @@ def pagegen(group, page):
 		sys.exit(1)
 
 	# make the title graphic...
-	fonts = clutils.fontlib()	# maybe put this in the group?
 	#  RBF   This needs a rewrite....      
-	fontpath = fonts.fontpath('AenigmaScrawl')
 	#fontpath = fonts.fontpath('DejaVuSans-BoldOblique')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/VanDijAntD.ttf'
+	fontpath = fonts.return_fontpath('DejaVuSans-Oblique.ttf')
+	print "fontpath:", fontpath
 	if clutils.needs_update('.', file='Title.png'):
 		imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=8, fill=fill, maxsize=(640,90) )
+		print "Updating Title.png"
 	else:
 		print "Not updating Title.png"
+
+	fontpath = fonts.return_fontpath('DejaVuSans-ExtraLight.ttf')
 	if clutils.needs_update('.', file='Header.png'):
 		imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill)#, maxsize=(400,90) )
+		print "Updated Header.png"
 	else:
 		print "Not updating Header.png"
 
@@ -363,8 +368,8 @@ def songgen(group, song=None):
 		index='index.shtml'
 	
 		# make the title graphics...
-		fonts = clutils.fontlib()	# maybe put this in the group?
-		fontpath = fonts.fontpath('FoxboroScriptBold')
+		fonts = clutils.FontLib()	# maybe put this in the group?
+		fontpath = fonts.return_fontpath('SF Foxboro Script Bold.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/PaletD.ttf'
 		if clutils.needs_update('.', file='Title.png'):
 			imagemaker.make_text_graphic(song.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
@@ -411,7 +416,7 @@ def songgen(group, song=None):
 				content += '<li><a href="#' + part + '">' + name + '</a>\n'
 			content += '</ul><br><hr>\n'
 
-		fontpath = fonts.fontpath('FoxboroScriptBold')
+		fontpath = fonts.return_fontpath('SF Foxboro Script Bold.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 		for part in song.partlist:
 			# make the title graphics...
@@ -492,8 +497,8 @@ def homegen(group):
 	page.name = group.name
 
 	# make the title graphics...
-	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('FoxboroScriptBold')
+	fonts = clutils.FontLib()	# maybe put this in the group?
+	fontpath = fonts.return_fontpath('SF Foxboro Script.ttf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 	imagemaker.make_text_graphic(page.fun_title, 'Title_dk.png', fontpath, fontsize=45, border=10, fill=clColors.COLAB_BLUE )
@@ -567,8 +572,8 @@ def newgen(group):
 		exit(1)
 
 	# make the title graphics...
-	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('FoxboroScriptBold')
+	fonts = clutils.FontLib()	# maybe put this in the group?
+	fontpath = fonts.return_fontpath('SF Foxboro Script.ttf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
@@ -634,8 +639,8 @@ def navgen(group):
 		exit(1)
 
 	# make the title graphics...
-	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('FoxboroScriptBold')
+	fonts = clutils.FontLib()	# maybe put this in the group?
+	fontpath = fonts.return_fontpath('SF Foxboro Script.ttf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
@@ -727,8 +732,8 @@ def archivegen(group):
 	# The part specific to this page...
 	
 	# make the title graphics...
-	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('FoxboroScriptBold')
+	fonts = clutils.FontLib()	# maybe put this in the group?
+	fontpath = fonts.return_fontpath('SF Foxboro Script.ttf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
@@ -798,8 +803,8 @@ def helpgen(group):
 		exit(1)
 
 	# make the title graphics...
-	fonts = clutils.fontlib()	# maybe put this in the group?
-	fontpath = fonts.fontpath('FoxboroScriptBold')
+	fonts = clutils.FontLib()	# maybe put this in the group?
+	fontpath = fonts.return_fontpath('SF Foxboro Script.ttf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )

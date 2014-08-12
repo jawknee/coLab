@@ -3,7 +3,10 @@
 
     Some scripting to create a series of 
 	images that will be the movie of the 
-	scrolling line...
+	scrolling line.
+	
+	Can crate an overview image from a sound file, 
+	or use a screen capture.
 """
 
 import os

@@ -421,8 +421,8 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 			clAudio.make_movie(page, vid_gen_progbar)
 			print "Returned from clAudio.make_move"
 			#vid_gen_progbar.stop()
-	except:
-		print "no page editor object - likely running free..."
+	except Exception, info:
+		logging.warning("TypeError: %s", info)
 		
 	#ftp_progbar.progBar.start()
 	"""

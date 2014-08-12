@@ -50,6 +50,8 @@ class Html:
 		# replace the strings...
 		body = self.body.replace('!groupURL!', group.root)
 		body = body.replace('!coLabRoot!', group.coLab_root)
+		if page.obj_type == 'Page':
+			body = body.replace('!soundinfo!', page.soundinfo)
 
 		if media:
 			body += '\t<img src="Title.png" class="fundesc" alt="' + page.fun_title + '">'
@@ -236,6 +238,9 @@ class Html:
 			<!--#include virtual="!groupURL!/Shared/News.html" -->
 			<!--#include virtual="!groupURL!/Shared/rightbar.html" -->
 			<p id="locators"></p>
+			<p>
+			<button type="button" id="sound-info-btn" title="Sound Info">Sound Info</button>
+			<input type="hidden" id="sound-info" value="!soundinfo!">
 			<hr><br>
 			<p id="info"></p>	<! A paragraph for displaying...  info from javascript.>
 			</div> <! End right sidebar>
@@ -269,7 +274,7 @@ class Html:
 		<!-- Video Controls -->
 		  <div id="video-controls">
 		    <span title="Play/Pause">
-				<button type="button" id="play-pause">P</button>
+				<button type="button" style="vidbarbutton" id="play-pause">P</button>
 			</span>
 			""" + self.emit_loc_buttons() + """
 			<input type="range" id="volume-bar" min="0" max="1" step="0.1" value="1">

@@ -365,6 +365,7 @@ class Page:
 		('part', "All"),
 		('prevlink', "<unset>"),
 		('nextlink', "<unset>"),
+		('soundinfo', "<unset>"),
 		# initial value - as a datetime object 
 		('createtime', timenow),
 		('updatetime', timenow),
@@ -424,6 +425,8 @@ class Page:
 			'xEnd=' + str(self.xEnd) + '\n' +
 			'screenshot_width=' + str(self.screenshot_width) + '\n' +
 			'fps=' + str(self.fps) + '\n' +
+			'\n' +
+			'soundinfo="""' + self.soundinfo + '\n"""'
 			'\n' +
 			'prevlink="' + self.prevlink + EOL +
 			'nextlink="' + self.nextlink + EOL +
@@ -657,9 +660,10 @@ class Song:
 			raise(ValueError)
 			self.group_obj = cltkutils.getGroup()
 			self.group = self.group_obj.name
+			self.group="Test"
 			#self.group = "SBP"
 			#self.group= "Catharsis"
-			self.group= "Johnny"
+			#self.group= "Johnny"
 			logging.info("Note: override: group = %s - %s", self.group_obj, self.group)
 
 		song_dir = os.path.join('Group', self.group, 'Song', self.name)

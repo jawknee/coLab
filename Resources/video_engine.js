@@ -195,7 +195,7 @@ window.onload = function() {
 	function setPlayButton() {
 		if ( video.paused == true ) {
 			//playButton.innerHTML = '<img src="/coLab/Resources/Icons/Play_24x24xp_02.png" alt="Play">';
-			playButton.innerHTML = '<img src="/coLab/Resources/Icons/Play_24x24btn_04.png" alt="Play">';
+			playButton.innerHTML = '<img src="/coLab/Resources/Icons/Play_24x24btn_03.png" alt="Play">';
 			//  also handle full screen where we don't have control...
 			if ( playStatus == 'Paused' && video.paused == true ) {
 				//video.style.cursor = 'wait';
@@ -302,6 +302,17 @@ window.onload = function() {
 		}
 
 	}
+	function toTimeString(time) {
+		// convert the number, in seconds, 
+		// into minutes and seconds
+		mins = parseInt(time/60);
+		secs = time - mins * 60;
+		isecs = parseInt(secs);
+		frac = secs - isecs;
+		secstr = secs.toFixed(0);
+		return mins.toFixed(0) + ":" + ('0' + secstr).substr(-2) + '.' + frac.toFixed(3).substr(2);
+	}
+
 	//
 	// Set up each button - putting a number (or "-" if not
 	// set) into each button, and build the locations 
@@ -317,7 +328,7 @@ window.onload = function() {
 		//console.log ("loc val " + locVal.toString());
 		locVar += "_desc"
 		var locDesc = document.getElementById(locVar).value;
-		var buttonTextString = locDesc + " (" + locVal.toFixed(3) +  ")";
+		var buttonTextString = locDesc + " (" + toTimeString(locVal)+  ")";
 
 		if ( locDesc == 'Unset' ) {
 			btnType="dash";	//  use use a "-" if no value...

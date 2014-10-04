@@ -64,7 +64,7 @@ class Sizes:
 		self.size_d = dict()
 		self.next_d = dict()
 		self.names = []
-		for (name, size, next)  in SIZE_LIST:
+		for (name, size, next) in SIZE_LIST:
 			self.size_d[name] = size
 			self.next_d[name] = next
 			self.names.append(name)

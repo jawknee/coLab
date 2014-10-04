@@ -45,13 +45,19 @@ def main():
 	for fontfile in sorted(fonts.fontdict.keys(), key=lambda s: s.lower()):
 		print fontfile
 		path = fonts.fontdict[fontfile]
-		pngname = fontfile.replace('ttf', 'png')
-		pngfile = font_index_dir  + pngname
+		for ftype in 'ttf', 'TTF', 'otf', 'notafont':
+			if fontfile.endswith(ftype):
+				pngname = fontfile.replace(ftype, 'png')
+				break
+		if type == 'notafont':
+			continue	# not a font....
+			
+		pngfile = font_index_dir + pngname
 		# Get the family and style....
 		try:
 			f = ImageFont.truetype(path, 1)
 		except:
-			print "Error: not a Truetype font:", path
+			logging.warning("Error: not a TrueType/OpenType font: %s", path, exc_info=True)
 			continue
 		
 		family = f.font.family
@@ -68,7 +74,7 @@ def main():
 		content += '<hr>\n'
 		file.write(content)
 	
-	
+	file.write("Whatcha thinkin'?")	
 	file.write("</body></html>\n")
 	file.close()
 

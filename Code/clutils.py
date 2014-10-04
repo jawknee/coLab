@@ -230,7 +230,7 @@ class FontLib:
 		for (here, dirlist, filelist) in os.walk(self.fontpath):
 			for file in filelist:
 				logging.info("Checking file: %s", file)
-				if not file.endswith('.ttf') and not file.endswith('.TTF'):
+				if not file.endswith('.ttf') and not file.endswith('.otf'):
 					continue
 				logging.info("Found one - dir is: %s", here)
 				try:

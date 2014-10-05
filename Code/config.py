@@ -17,6 +17,9 @@ NUM_BUTS = 10	# number of locator buttons
 # base size of the time boxes
 T_BOX_WIDE = 55
 T_BOX_HIGH = 23
+# box size of the marker boxes
+M_BOX_WIDE = 18
+M_BOX_HIGH = 18
 # Sound graphic borders:
 SG_LEFT_BORDER = 30
 SG_RIGHT_BORDER = 10

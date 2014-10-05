@@ -129,6 +129,21 @@ def calculate_fps(page):
 	print "Derived fps is:", fps
 	return( (frames, seconds) )	# should account for max fps being enough...
 
+def quantize_increment(time_val):
+	""" quantize the passed time to a "nice" value
+	
+	take the passed value, in seconds (int or float) and
+	return a close (<=) value that is in a good number for
+	displaying - could be float (<1 second) or int
+	"""
+	values = [ 0.1, 0.2, 0.25, 0.5,
+			1, 2, 5, 10, 15, 20, 30, 
+			60, 120, 300, 600, 900, 1200, 1800 ]
+	for i in values:
+		if i > time_val:
+			break
+	return i 
+
 def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixel=0):
 	print "Creating image...", image
 	"""
@@ -146,7 +161,7 @@ def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixe
 	# skip most samples....
 	if not page.strict_graphic and max_samp_per_pixel == 0:
 		max_samp_per_pixel = 250	# 
-	snd_image = Sound_image(sound, image, size, prog_bar, page.graphic_theme, max_samp_per_pixel)
+	snd_image = Sound_image(sound, image, size, page, prog_bar, page.graphic_theme, max_samp_per_pixel)
 	snd_image.build()	# separate - we may want to change a few things before the build...
 	page.soundthumbnail = "SoundGraphic_tn.png"
 	
@@ -201,7 +216,7 @@ def make_sub_images(page, size=None):
 				print "Cannot open poser image", overlaypath, info
 			else:
 				# could resize here - but I'd rather see it something changes...
-				#
+			#
 				# Now we gotta git a bit tricky since PIL doesn't support alpha compositing...
 				r, g, b, a = over_image.split()
 				overlay_rgb = Image.merge('RGB', (r,g,b))
@@ -308,8 +323,8 @@ def make_images(page, prog_bar=None, media_size=None):
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
 	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/QuartBolD.ttf')
-	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
-	fontpath = fontclass.return_fontpath('DigitaldreamFatSkew.ttf')
+	fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
+	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkew.ttf')
 	fontsize = int(12 * adjust_factor)
 	font = ImageFont.truetype(fontpath, fontsize)
 
@@ -528,7 +543,7 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitalDream.ttf'
 	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
 	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkew.ttf')
-	fontpath = fontclass.return_fontpath('Berrington.otf')
+	fontpath = fontclass.return_fontpath('CarvalCondIt.otf')
 	font_size = int(10 * adjust_factor)
 	font = ImageFont.truetype(fontpath, font_size)
 	res_string = str(width) + " x " + str(height)
@@ -596,7 +611,7 @@ class Sound_image():
 
 	Generates a standard (or other) sized png file.
 	"""
-	def __init__(self, sound_file, image_file, media_size, prog_bar=None, theme='Default', max_samp_per_pixel=0):
+	def __init__(self, sound_file, image_file, media_size, page, prog_bar=None, theme='Default', max_samp_per_pixel=0):
 		""" open the sound file and set the various internal vars. """
 		print "Beginning Sound file open..."
 		
@@ -606,10 +621,11 @@ class Sound_image():
 			logging.warning("Sound file problems: %s", sound_file, exc_info=True)
 			raise Exception
 		
-		self.sound_file = sound_file
-		self.image_file = image_file
-		self.media_size = media_size
-		self.prog_bar = prog_bar
+		self.sound_file = sound_file	# audio the image (or at least annotations) is based on
+		self.image_file = image_file	# where it's headed
+		self.media_size = media_size	# how big...
+		self.page = page				# parent page for markers, etc...
+		self.prog_bar = prog_bar		# is one's set up - we drive it...
 		"""
 		max samp/pixel let's us process hour long audio quickly for preview. 
 		Setting to some value (e.g., 100) approximates that many sample per
@@ -631,18 +647,18 @@ class Sound_image():
 				
 	# Adjust the amount of content in the top and bottom strings, based
 	# on the size..	
-	def upTickText(self, text, xcenter, y, font, fill=clColors.GREEN):
-		""" create an string with an "up tick"
+	def upTickText(self, text, xcenter, y, font, textcolor=clColors.GREEN, tickcolor=clColors.GREEN, txtyoffset=-2):
+		""" create a string with an "up tick"
 		
 		centers the text and puts a corresponding height
-		tick up from the current line.
+		tick up from the top line
 		"""
 		
 		tick_height = 5 * self.adjust_factor
 		
 		(twidth, theight) = self.graphic_draw.textsize(text, font=font)
-		self.graphic_draw.text((xcenter-(twidth/2), self.top), text, font=font, fill=clColors.GREEN)
-		self.graphic_draw.line([(xcenter,y), (xcenter,y-tick_height)], fill=clColors.GREEN)
+		self.graphic_draw.text((xcenter-(twidth/2), y-theight+txtyoffset), text, font=font, fill=textcolor)
+		self.graphic_draw.line([(xcenter,y), (xcenter,y-tick_height)], fill=tickcolor)
 
 
 	def build(self):
@@ -950,7 +966,7 @@ class Sound_image():
 		# RBF: Convert this to not have a full path
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
 		#fontpath = fontclass.return_fontpath('DomCasDReg.ttf')
-		fontpath = fontclass.return_fontpath('ComicSenseCond.otf')
+		fontpath = fontclass.return_fontpath('CarvalCondIt.otf')
 		font_size = int( 18 * adjust_factor)
 		font = ImageFont.truetype(fontpath, font_size)	
 	
@@ -987,7 +1003,9 @@ class Sound_image():
 	
 		self.adjust_factor = size_class.calc_adjust(height)
 
-		self.graphic_draw = graphic_draw		# UGLY!!!! Fix this    RBF
+		self.graphic = graphic			# UGLY!!!! Fix this    RBF
+		self.graphic_draw = graphic_draw		
+
 		self.xPos = int(config.SG_LEFT_BORDER * adjust_factor)
 		self.xEnd = int(width - config.SG_RIGHT_BORDER * adjust_factor)
 		self.upTickText('Start', self.xPos, ymin, font=font)
@@ -1003,15 +1021,22 @@ class Sound_image():
 		# Base the number of markers on the scale, and then find 
 		# the closest time increment to use.
 		adjust_scale = size_class.calc_scale(height)
-		num_time_incs = int(5 * adjust_scale)
+		num_time_incs = int(7 * adjust_scale)
 		
 		seconds = float(self.nframes) / self.framerate
 		time_incr =  seconds / (num_time_incs + 1)
+		time_incr = quantize_increment(time_incr)
+
 		logging.info("upTickTime incr...")
 		time = time_incr
-		while  time < seconds:
+		while  time < (seconds - float(time_incr) / 3):
 			#string = '%05.3f' % time
-			string = str(time)
+			if seconds > 90:
+				minutes = int(time / 60)
+				secs = time - minutes * 60
+				string = '%d:%02.0f' % (minutes, secs)
+			else:
+				string = str(time)	# stock str should give a good format for this...
 			time_factor = time / seconds
 
 			x = (self.xEnd - self.xPos) * time_factor + self.xPos
@@ -1019,6 +1044,32 @@ class Sound_image():
 			self.upTickText(string, x, ymin, font=font)
 			time += time_incr
 
+		# Marker boxes - if any....
+		mbox_width = int(config.M_BOX_WIDE * adjust_factor) 
+		mbox_height = int(config.M_BOX_HIGH * adjust_factor)
+	
+		mbox_size = (mbox_width, mbox_height)
+		mbox_rect = [ (0,0), (mbox_width-1, mbox_height-1) ]
+
+		# create basic box...
+		mbox = Image.new('RGBA', mbox_size, color=clColors.COLAB_BLUE)
+		mboxdraw = ImageDraw.Draw(mbox)
+		mboxdraw.rectangle(mbox_rect, outline=clColors.DESERT_GOLD)
+
+		for i in range(1,self.page.numbuts+1):	# step through the buttons..
+			evalstring = "self.page.Loc_%d_desc" % i
+			if eval(evalstring) != "Unset":
+				evalstring = "self.page.Loc_%d" % i
+				try:
+					time = float(eval(evalstring))
+				except:
+					logging.warning("Problem converting: %s", evalstring, exc_info=True)
+					continue	# skip this one...
+			
+				time_factor = time / seconds
+				x = int((self.xEnd - self.xPos) * time_factor + self.xPos)
+				self.graphic.paste(mbox, (x - mbox_width/2, 2))
+				self.upTickText(str(i), x,  ymin, font=font, textcolor=clColors.BLACK, tickcolor=clColors.DESERT_GOLD, txtyoffset=-4*self.adjust_factor)
 
 		#------------------------
 		# Bottom Text Line
@@ -1039,13 +1090,10 @@ class Sound_image():
 			if self.size_class.is_larger_than(self.media_size, 'Medium'):
 				bot_string += ' / %0.1fkHz' % (self.framerate / 1000.)
 				bot_string += ' /  %dbits' % (self.sampwidth * 8)
-			if self.size_class.is_larger_than(self.media_size, 'Large'):
-				bot_string += ' Clipping: ' + str(clip_count)
 		
 		graphic_draw.text((left, ymax+3), bot_string, font=font, fill=clColors.GREEN)
 
-		#if clip_count > 0 and self.size_class.is_larger_than(self.media_size, 'Large'):
-		if clip_count:
+		if clip_count > 0 and self.size_class.is_larger_than(self.media_size, 'Large'):
 			# add in a string about clipping
 			# --- let's try to make this smarter about clips vs. likely normalization
 			string = 'Clipping: ' + str(clip_count)
@@ -1123,7 +1171,7 @@ def main():
 		prog_bar.width = 500
 		prog_bar.max = s.sizeof(media_size)[0]
 		prog_bar.post()		# initial layout...
-		Sound_image(snd, pic, media_size, prog_bar, max_samp_per_pixel=0).build()
+		Sound_image(snd, pic, media_size, page, prog_bar, max_samp_per_pixel=0).build()
 	#"""
 	# now create and load a page so we can have some images....
 
@@ -1144,7 +1192,7 @@ def main():
 	
 	page.media_size = media_size
 	pic = img_base + "SoundGraphic.png"
-	Sound_image(snd, pic, media_size, prog_bar, page.graphic_theme).build()
+	Sound_image(snd, pic, media_size, page, prog_bar, page.graphic_theme).build()
 
 	page.use_soundgraphic = True
 	

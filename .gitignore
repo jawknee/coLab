@@ -24,10 +24,14 @@ logs/*
 bin/Older_stuff
 Old
 Old/*
+Resources/Fonts
+Resources/Fonts/*
 Resources/Fonts.tar
 Resources/Fonts.prev
 Resources/Fonts.prev/*
 Resources/Fonts.old
 Resources/Fonts.old/*
+Resources/BadFonts
+Resources/BadFonts/*
 *.swp
 Imaging-1.1.7/

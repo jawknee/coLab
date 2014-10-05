@@ -129,7 +129,6 @@ def calculate_fps(page):
 	print "Derived fps is:", fps
 	return( (frames, seconds) )	# should account for max fps being enough...
 
-
 def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixel=0):
 	print "Creating image...", image
 	"""
@@ -309,7 +308,8 @@ def make_images(page, prog_bar=None, media_size=None):
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
 	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/QuartBolD.ttf')
-	fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
+	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
+	fontpath = fontclass.return_fontpath('DigitaldreamFatSkew.ttf')
 	fontsize = int(12 * adjust_factor)
 	font = ImageFont.truetype(fontpath, fontsize)
 
@@ -526,7 +526,9 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/ArabBruD.ttf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitalDream.ttf'
-	fontpath = fontclass.return_fontpath('Digitaldream.ttf')
+	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
+	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkew.ttf')
+	fontpath = fontclass.return_fontpath('Berrington.otf')
 	font_size = int(10 * adjust_factor)
 	font = ImageFont.truetype(fontpath, font_size)
 	res_string = str(width) + " x " + str(height)
@@ -601,7 +603,7 @@ class Sound_image():
 		try:
 			self.aud = aifc.open(sound_file)
 		except:
-			print "Sound file problems:", sound_file
+			logging.warning("Sound file problems: %s", sound_file, exc_info=True)
 			raise Exception
 		
 		self.sound_file = sound_file
@@ -626,7 +628,23 @@ class Sound_image():
 		self.samp_max = 1 << (self.sampwidth * 8 - 1)	# -1 because we're signed.  range is -samp_max(-1?) - +samp_max; 3 => -8388607 - 8388608
 		
 		self.theme_colors = clColors.Themes(theme)
+				
+	# Adjust the amount of content in the top and bottom strings, based
+	# on the size..	
+	def upTickText(self, text, xcenter, y, font, fill=clColors.GREEN):
+		""" create an string with an "up tick"
 		
+		centers the text and puts a corresponding height
+		tick up from the current line.
+		"""
+		
+		tick_height = 5 * self.adjust_factor
+		
+		(twidth, theight) = self.graphic_draw.textsize(text, font=font)
+		self.graphic_draw.text((xcenter-(twidth/2), self.top), text, font=font, fill=clColors.GREEN)
+		self.graphic_draw.line([(xcenter,y), (xcenter,y-tick_height)], fill=clColors.GREEN)
+
+
 	def build(self):
 		""" Build the image based on what we know...
 		
@@ -926,18 +944,20 @@ class Sound_image():
 			
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamFatSkewNarrow.ttf'
-		fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
+		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DomCasDReg.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DomCasDReg.ttf'
 		# RBF: Convert this to not have a full path
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
-		fontpath = fontclass.return_fontpath('DomCasDReg.ttf')
+		#fontpath = fontclass.return_fontpath('DomCasDReg.ttf')
+		fontpath = fontclass.return_fontpath('ComicSenseCond.otf')
 		font_size = int( 18 * adjust_factor)
 		font = ImageFont.truetype(fontpath, font_size)	
 	
 		# Build the text strings for the graphic
 		#
 		clist = self.chan_list()	# what do we call these things called channels?
+		#------- Pretty much aren't doing this now --- rip out eventually.
 		# First - the bits that are channel based
 		comma = ''
 		rms = 'rms(dB): '
@@ -956,44 +976,83 @@ class Sound_image():
 			# Channel name:
 			graphic_draw.text((xmin/2, centers[c]-10), clist[c], font=font, fill=clColors.GREEN)
 		
-		# Adjust the amount of content in the top and bottom strings, based
-		# on the size..	
-		left = box_width + 5
-		
-		top = 5		# yeah, I know - but it basically works everything else falls out of the equation
-		top_string = 'Headroom: %0.1fdB' % -headroom
-		if aud_frame_skip != 1:
-			top_string += ' (approx)'
+		#------------------------
+		# Top Text Line
+		#------------------------
+		self.top = 5		# yeah, I know - but it basically works everything else falls out of the equation
 
-
-		
-		if self.size_class.is_larger_than(self.media_size, 'Small'):
-			top_string += '  /  ' + rms 
-			if self.size_class.is_larger_than(self.media_size,'Medium'):
-				top_string += '  -  ' + offset
-		graphic_draw.text((left, top), top_string, font=font, fill=clColors.GREEN)
-		
+		size_class = config.Sizes()
+		size = size_class.sizeof(self.media_size)
+		(width, height) = size
 	
-		if clip_count > 0:
-			# add in a string about clipping
-			string = 'Clipping: ' + str(clip_count)
-			(twidth, theight) = graphic_draw.textsize(top_string, font=font)
-			right = left + twidth + 15
-			print "Right text fun:", right, width, twidth, 15
-			graphic_draw.text((right, top), string, font=font, fill=clColors.BRIGHT_RED)
-							
+		self.adjust_factor = size_class.calc_adjust(height)
+
+		self.graphic_draw = graphic_draw		# UGLY!!!! Fix this    RBF
+		self.xPos = int(config.SG_LEFT_BORDER * adjust_factor)
+		self.xEnd = int(width - config.SG_RIGHT_BORDER * adjust_factor)
+		self.upTickText('Start', self.xPos, ymin, font=font)
+		#start_string = 'Start'
+		#(twidth, theight) = graphic_draw.textsize(start_string, font=font)
+		#graphic_draw.text((xPos-(twidth/2), top), start_string, font=font, fill=clColors.GREEN)
+		#graphic_draw.line([(xPos,ymin), (xPos,ymin-tick_height)], fill=clColors.GREEN)
+		
+		self.upTickText('End', self.xEnd, ymin, font=font)
+		
+		# So now....
+		# we need to figure out where to put the time markers
+		# Base the number of markers on the scale, and then find 
+		# the closest time increment to use.
+		adjust_scale = size_class.calc_scale(height)
+		num_time_incs = int(5 * adjust_scale)
+		
+		seconds = float(self.nframes) / self.framerate
+		time_incr =  seconds / (num_time_incs + 1)
+		logging.info("upTickTime incr...")
+		time = time_incr
+		while  time < seconds:
+			#string = '%05.3f' % time
+			string = str(time)
+			time_factor = time / seconds
+
+			x = (self.xEnd - self.xPos) * time_factor + self.xPos
+			logging.info("time intr: %3f time factor time / seconds: %3f / %3f ", time_incr, time , seconds)
+			self.upTickText(string, x, ymin, font=font)
+			time += time_incr
+
+
+		#------------------------
+		# Bottom Text Line
+		#------------------------
+		left = box_width + 5
 		(dir, filename) = os.path.split(self.sound_file)
-		bot_string = 'File: ' + filename 
+		bot_string = '   File: '
+		bot_string += filename 
 		if self.size_class.is_larger_than(self.media_size, 'Tiny'):
 			seconds = float(self.nframes) / self.framerate
 			minutes = int(seconds / 60)
 			secs = seconds - minutes * 60
-			bot_string += '  /  Length(m:s): ' + '%d:%06.3f' % (minutes, secs)
-			bot_string += ' /  %d bits' % (self.sampwidth * 8)
+			bot_string += ' / Length: %d:%06.3f' % (minutes, secs)
+			bot_string += ' / Headroom: '
+			if aud_frame_skip != 1 and headroom != 0:
+				bot_string += '~'
+			bot_string += ' %0.1fdB' % -headroom
 			if self.size_class.is_larger_than(self.media_size, 'Medium'):
-				bot_string += ' / %0.3f kHz' % (self.framerate / 1000.)
+				bot_string += ' / %0.1fkHz' % (self.framerate / 1000.)
+				bot_string += ' /  %dbits' % (self.sampwidth * 8)
+			if self.size_class.is_larger_than(self.media_size, 'Large'):
+				bot_string += ' Clipping: ' + str(clip_count)
 		
 		graphic_draw.text((left, ymax+3), bot_string, font=font, fill=clColors.GREEN)
+
+		#if clip_count > 0 and self.size_class.is_larger_than(self.media_size, 'Large'):
+		if clip_count:
+			# add in a string about clipping
+			# --- let's try to make this smarter about clips vs. likely normalization
+			string = 'Clipping: ' + str(clip_count)
+			(bwidth, bheight) = graphic_draw.textsize(bot_string, font=font)
+			right = left + bwidth + 15
+			print "Right text fun:", right, width, bwidth, 15
+			graphic_draw.text((right, ymax+3), string, font=font, fill=clColors.BRIGHT_RED)
 		
 		#add_res_text(graphic_draw, size, adjust_factor)
 
@@ -1005,8 +1064,6 @@ class Sound_image():
 		print "Computed headroom of:", hr_ratio, '/', headroom, 'dBFS'
 		print "Expected vs. processed audioframes:", self.nframes, aud_frame_count
 		print "Clip count:", clip_count
-		print "Top String:", top_string
-		print "Bot String:", bot_string
 	
 
 	def chan_list(self):

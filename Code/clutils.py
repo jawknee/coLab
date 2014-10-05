@@ -248,7 +248,7 @@ class FontLib:
 		NOTE: need to do something about the default - but if nothing passed, or 
 		found, return the default.
 		"""
-		DEF_FONT = "aescrawl.ttf"	# we can do better - and define some where else?  RBF
+		DEF_FONT = "Brentford.otf"	# we can do better - and define some where else?  RBF
 		if font is None:
 			font = DEF_FONT
 			logging.info("No font passed - using default: %s", font)

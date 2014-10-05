@@ -38,7 +38,7 @@ def main():
 	#fontlist=f.fontdict.items()	# convert to a list of tuples for sorting...
 	#fontlist.sort()
 	
-	teststring = ": The Quick Brown Fox jumped over the Lazy Dog. AaBbCc 1lI O0"
+	teststring = "The Quick Brown Fox jumped over the Lazy Dog. AaBbCc 1234567890 1lI O0"
 	
 	fonts = clutils.FontLib()
 	
@@ -63,7 +63,8 @@ def main():
 		family = f.font.family
 		style = f.font.style
 	
-		fontstring = family + '-' + style + teststring
+		#fontstring = family + '-' + style + ': ' + teststring
+		fontstring = teststring
 		imagemaker.make_text_graphic(fontstring, pngfile, path, fontsize=60, fill=fill, maxsize=(1000,100))
 		content = '<b>'
 		content += family + ' ' + style
@@ -74,7 +75,6 @@ def main():
 		content += '<hr>\n'
 		file.write(content)
 	
-	file.write("Whatcha thinkin'?")	
 	file.write("</body></html>\n")
 	file.close()
 

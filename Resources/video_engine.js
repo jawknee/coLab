@@ -477,11 +477,13 @@ window.onload = function() {
         }, false);
 
 	// handle clicks on the sound info button...
-	soundInfoButton.addEventListener("click", function() {
-		// just pop up an alert with the content of the sound-info var...
-		alert(soundInfo);
-		}
-	);
+	if ( soundInfoEl ) {
+		soundInfoButton.addEventListener("click", function() {
+			// just pop up an alert with the content of the sound-info var...
+			alert(soundInfo);
+			}
+		);
+	}
 
 	/*
 	// Entering fullscreen mode

@@ -1075,7 +1075,12 @@ class Sound_image():
 		# create basic box...
 		mbox = Image.new('RGBA', mbox_size, color=clColors.COLAB_BLUE)
 		mboxdraw = ImageDraw.Draw(mbox)
+		# Get a little tricky (why not?!) and draw two boxes, one pixel
+		# smaller than the box, offset - to simulate 3-D highlight...
+		mbox_rect = [ (0,0), (mbox_width-2, mbox_height-2) ]
 		mboxdraw.rectangle(mbox_rect, outline=clColors.DESERT_GOLD)
+		mbox_rect = [ (1,1), (mbox_width-1, mbox_height-1) ]
+		mboxdraw.rectangle(mbox_rect, outline=clColors.DESERT_BROWN)
 
 		for i in range(1,self.page.numbuts+1):	# step through the buttons..
 			evalstring = "self.page.Loc_%d_desc" % i

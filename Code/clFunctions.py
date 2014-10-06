@@ -916,7 +916,8 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		page.needs_rebuild = True
 		page.changed = True
 		
-		if page.use_soundgraphic:		# note -this is probably duplicated -check that out    RBF
+		#if page.use_soundgraphic:		# note -this is probably duplicated -check that out    RBF
+		if True:
 			self.editor.set_member('screenshot', page.soundgraphic)
 			imagemaker.make_sub_images(page)
 			self.graphic_path =  os.path.join(page.home, page.soundthumbnail)
@@ -1082,7 +1083,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.graphic_path = os.path.join(self.editor.obj.home, self.editor.obj.thumbnail)
 		#
 		# Let's create the poster size and thumbnails
-		imagemaker.make_sub_images(self.obj)
+		imagemaker.make_sub_images(page)
 
 		self.post()
 		page.graphic_row.post()

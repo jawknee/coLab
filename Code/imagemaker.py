@@ -723,7 +723,10 @@ class Sound_image():
 		self.graphic_draw = graphic_draw		
 
 		# Draw the limit lines...
-		graphic_draw.line([(xmin,ymin), (xmax,ymin)], fill=clColors.GREEN)
+		if self.page.use_soundgraphic:
+			graphic_draw.line([(xmin,ymin), (xmax,ymin)], fill=clColors.GREEN)
+		else:
+			graphic_draw.line([(0,ymin), (width-1,ymin)], fill=clColors.GREEN)
 		# A little tricky here - account for the time boxes:
 		box_width = int(config.T_BOX_WIDE * adjust_factor)
 		graphic_draw.line([(2+box_width,ymax), (width-box_width-2, ymax)], fill=clColors.GREEN )
@@ -889,10 +892,10 @@ class Sound_image():
 			# drop the current graphic into space available...
 			image = self.page.screenshot
 			orig_image = Image.open(image)
-			newsize = (width, height-tborder-bborder)
+			newsize = (width, height-tborder-bborder-1)
 			print "resizing graphic to: ", newsize
 			base_image = orig_image.resize(newsize, Image.ANTIALIAS ).convert('RGBA')
-			self.graphic.paste(base_image,(0, tborder))
+			self.graphic.paste(base_image,(0, tborder+1))
 		else:	
 			chan_ht = ( ymax - ymin ) / nchan
 			centers = []
@@ -1050,13 +1053,13 @@ class Sound_image():
 
 		logging.info("upTickTime incr...")
 		time = time_incr
-		while  time < (seconds - float(time_incr) / 3):
-			#string = '%05.3f' % time
-			if seconds > 90:
+		# start emitting time ticks until we're within a 1/2 of one interval from the end..
+		while  time < (seconds - time_incr / 2.):
+			if seconds > 90:	 # > 90 seconds, represent as m:ss.
 				minutes = int(time / 60)
 				secs = time - minutes * 60
 				string = '%d:%02.0f' % (minutes, secs)
-			else:
+			else:		# otherwise - just a number of seconds, with fraction, if any
 				string = str(time)	# stock str should give a good format for this...
 			time_factor = time / seconds
 

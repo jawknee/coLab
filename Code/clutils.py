@@ -27,20 +27,17 @@ def get_config(debug=False):
 	# locations in the order we want to search...
 	dnf="DidNoTfIndaFile"
 	locations=('.', os.path.expanduser("~/coLab"), "../coLab", "../../coLab", "~/coLab", dnf)
-	debug = True
 	for loc in locations:
 		file = loc + "/.coLab.conf"
-		if debug:
-			print "Searching", file
+		logging.info("Searching %s", file)
 		if os.path.isfile(file):
-			if debug:
-				print "Found it..."
+			logging.info("Found a config") 
 			break
 		else:
-			#print "nope..."
 			continue
 
 	if file.startswith(dnf):
+		logging.warning("No config file found.")
 		raise(ImportError)
 
 	try:
@@ -48,7 +45,7 @@ def get_config(debug=False):
 		conf.file = file
 		return(conf)
 	except ImportError, info:
-		print "get_config: ImportError", info
+		logging.warning ("get_config: ImportError", exc_info=True)
 		sys.exit(1)	
 	
 
@@ -65,8 +62,8 @@ def needs_update(path, file="index.shtml", opt='nope'):
 	try:
 		os.chdir(path)
 	except:
-		print "problem changing to", path
-		return False
+		logging.warning("problem changing to: %s", path)
+		return True
 
 	try:
 		htime = os.path.getmtime(file)
@@ -79,7 +76,7 @@ def needs_update(path, file="index.shtml", opt='nope'):
 		#
 		# Depending on 
 		print ("Trouble getting mtime on data time...skipping")
-		return False
+		return True
 
 	if htime < dtime or opt == 'All':
 		if opt == 'All':
@@ -195,6 +192,86 @@ def has_filetype(path, typelist=[], min=1):
 	print "has_filetype Found:", count
 	return count >= min
 
+
+class FontLib:
+	""" A repository for fonts
+	
+	Keeps track of them, can return the full path, and
+	can generate an overview doc/web page.
+	"""
+	
+	def __init__(self, conf=None):
+		""" Read the font info and organize
+		
+		Builds a library of fonts that can be referenced 
+		by name - flags any fonts that are not unique by base 
+		name.
+		"""
+		
+		if conf is None:
+			logging.warning("FontLib called with no conf - check this.")
+			conf = get_config()
+			
+		fontpath = os.path.join(conf.coLab_home, "Resources", "Fonts")
+		if not os.path.exists(fontpath):
+			logging.error("No such path: %s - cannot continue.", fontpath)	
+			sys.exit(1)
+			
+		try:
+			os.chdir(fontpath)
+		except:
+			logging.warning("Cannot find fontpath, %s", fontpath, exc_info=True)
+			return
+		
+		self.fontpath = fontpath
+		logging.info("Greetings from: %s", fontpath)
+		self.fontdict = {}
+		
+		for (here, dirlist, filelist) in os.walk(self.fontpath):
+			for file in filelist:
+				logging.info("Checking file: %s", file)
+				if not file.endswith('.ttf') and not file.endswith('.otf'):
+					continue
+				logging.info("Found one - dir is: %s", here)
+				try:
+					self.fontdict[file]
+				except:
+					# don't have one - add it...
+					self.fontdict[file] = os.path.join(here, file)
+				else:
+					logging.warning("Duplicate fonts: %s - %s and %s", file, self.fontdict[file], here)
+				logging.info("Current entry: %s, %s", file, self.fontdict[file])
+
+	def return_fontpath(self,font=None):
+		""" return the full path to the specified font
+		
+		NOTE: need to do something about the default - but if nothing passed, or 
+		found, return the default.
+		"""
+		DEF_FONT = "Brentford.otf"	# we can do better - and define some where else?  RBF
+		if font is None:
+			font = DEF_FONT
+			logging.info("No font passed - using default: %s", font)
+			
+		try:
+			fontdir = self.fontdict[font]
+		except:
+			logging.warning("Did not find font: %s - using default %s", font, DEF_FONT)
+			try:
+				fontdir = self.fontdict[DEF_FONT]
+			except:
+				logging.error("Fatal: Fontlib - no default font: %s", DEF_FONT)
+				sys.exit(1)
+		return os.path.join(self.fontpath, fontdir)
+
+	def list_fonts(self):
+		""" list them out...   
+		
+		mostly for debugging
+		"""
+		for font in sorted(self.fontdict.keys(), key=lambda s: s.lower()):
+			print "Font:", font, os.path.join(self.fontpath,self.fontdict[font])
+
 class fontlib:
 	""" A class to let us manage our fonts
 
@@ -256,9 +333,17 @@ class fontlib:
 			print name, self.fontdict[name]
 
 if __name__ == "__main__":
+	logging.basicConfig(level=logging.INFO)
 	for name in ['This', 'is a space', '?,()#&*?what??']:
 		print "string_to_filename:", string_to_filename(name)
 	print "testing get_config"
 	conf=get_config()
-	print "result:",  conf.coLab_url_head, conf.coLab_rel_head
-	print "result:", conf.file, conf.coLab_url_head, conf.coLab_rel_head
+	print "result:",  conf.coLab_url_head
+	print "result:", conf.file, conf.coLab_root, conf.coLab_home
+	
+	#fontclass = FontLib()
+	fontclass = FontLib(conf)
+	fontclass.list_fonts()
+	print "Font pass", fontclass.return_fontpath('DigitalDream.ttf')
+	print "Font none", fontclass.return_fontpath()
+	print "Font bogo", fontclass.return_fontpath('bogofont')

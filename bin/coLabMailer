@@ -31,7 +31,7 @@ then
 	cLmail_return="colab_mail@jawknee.com"
 fi
 
-cLmail_addresses="$cLmail_addresses $cLmail_return"
+cLmail_addresses="$cLmail_addresses, $cLmail_return"
 MailBoundary="coLabMailBoundary"
 
 cat <<-EOF |

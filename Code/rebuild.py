@@ -349,7 +349,8 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	fps = imagemaker.calc_fps_val(page)
 	frames = int(float(page.duration) * fps) 
 	print "render_page fps, frames, page.duration", fps, frames,  page.duration
-	if page.use_soundgraphic:
+	#if page.use_soundgraphic:
+	if True:
 		f0 = tk.Frame(render_frame)
 		f0.grid(row=0, column=0, sticky=tk.W)
 	
@@ -407,8 +408,8 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	info = tk.Label(render_frame, text=infotext, justify=tk.LEFT)
 	info.grid(row=4, column=0)
 
-	if page.use_soundgraphic:
-		imagemaker.make_sound_image(page, sound_dest, img_dest, media_size, snd_img_progbar, max_samples_per_pixel)
+	#if page.use_soundgraphic:
+	imagemaker.make_sound_image(page, sound_dest, img_dest, media_size, snd_img_progbar, max_samples_per_pixel)
 
 	try:
 
@@ -421,8 +422,8 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 			clAudio.make_movie(page, vid_gen_progbar)
 			print "Returned from clAudio.make_move"
 			#vid_gen_progbar.stop()
-	except:
-		print "no page editor object - likely running free..."
+	except Exception, info:
+		logging.warning("TypeError: %s", info)
 		
 	#ftp_progbar.progBar.start()
 	"""

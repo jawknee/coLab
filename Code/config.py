@@ -5,6 +5,10 @@ import logging
 import math
 
 #--------------------------------------
+# Interface descriptions
+#--------------------------------------
+NUM_BUTS = 10	# number of locator buttons
+#--------------------------------------
 # Resolution 
 #--------------------------------------
 # sizes and classes to define the various resolutions
@@ -13,6 +17,9 @@ import math
 # base size of the time boxes
 T_BOX_WIDE = 55
 T_BOX_HIGH = 23
+# box size of the marker boxes
+M_BOX_WIDE = 18
+M_BOX_HIGH = 18
 # Sound graphic borders:
 SG_LEFT_BORDER = 30
 SG_RIGHT_BORDER = 10
@@ -60,7 +67,7 @@ class Sizes:
 		self.size_d = dict()
 		self.next_d = dict()
 		self.names = []
-		for (name, size, next)  in SIZE_LIST:
+		for (name, size, next) in SIZE_LIST:
 			self.size_d[name] = size
 			self.next_d[name] = next
 			self.names.append(name)

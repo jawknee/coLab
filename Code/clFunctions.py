@@ -916,7 +916,8 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		page.needs_rebuild = True
 		page.changed = True
 		
-		if page.use_soundgraphic:		# note -this is probably duplicated -check that out    RBF
+		#if page.use_soundgraphic:		# note -this is probably duplicated -check that out    RBF
+		if True:
 			self.editor.set_member('screenshot', page.soundgraphic)
 			imagemaker.make_sub_images(page)
 			self.graphic_path =  os.path.join(page.home, page.soundthumbnail)
@@ -1049,13 +1050,14 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		prev_popup.destroy()
 
 		image = Image.open(graphic_dest)		# mostly we need the size....
-		width = image.size[0]	# save the width...
+		width = image.size[0]			# save the width...
+		page.screenshot_width = width
 		w_05 = int(width * 0.05)		# 5% of width - possible starting point
 		w_95 = int(width - w_05)		# 95 % if width - possible ending poin
 
 		# is this the same file?  (i.e., we just reselected it?)
 		if filename == orig_filename and not self.copy_graphicfile:	
-			print "Grhpic seems to be the same:  not changing...------------------", filename, orig_filename, self.copy_graphicfile
+			print "Graphic seems to be the same:  not changing...------------------", filename, orig_filename, self.copy_graphicfile
 			xStart = page.xStart
 			xEnd = page.xEnd
 		else:		# set the start/end to a reasonable guess
@@ -1082,7 +1084,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.graphic_path = os.path.join(self.editor.obj.home, self.editor.obj.thumbnail)
 		#
 		# Let's create the poster size and thumbnails
-		imagemaker.make_sub_images(self.obj)
+		imagemaker.make_sub_images(page)
 
 		self.post()
 		page.graphic_row.post()

@@ -8,6 +8,7 @@ import logging
 import imp
 import copy
 
+import config
 import cldate
 import clutils
 import cltkutils
@@ -364,6 +365,7 @@ class Page:
 		('part', "All"),
 		('prevlink', "<unset>"),
 		('nextlink', "<unset>"),
+		('soundinfo', "<unset>"),
 		# initial value - as a datetime object 
 		('createtime', timenow),
 		('updatetime', timenow),
@@ -372,6 +374,16 @@ class Page:
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = [ 'duration' ]
 		self.intvars = [ 'xStart', 'xEnd', 'screenshot_width' ]
+		
+		# set up a number of buttons
+		# add to the init data, and the floatvars
+		numbut = config.NUM_BUTS
+		initdata.append( ("numbuts", numbut) )
+		for i in range(1, numbut+1):
+			locvar = "Loc_%d" % i
+			initdata.append( (locvar, 0.0) )	# var, val tuple
+			self.floatvars.append(locvar)
+			initdata.append( (locvar+'_desc', 'Unset'))
 
 		set_init_vars(self, initdata)
 		# Create a "previous" version (possibly overwritten in "load") for comparisons
@@ -414,13 +426,26 @@ class Page:
 			'screenshot_width=' + str(self.screenshot_width) + '\n' +
 			'fps=' + str(self.fps) + '\n' +
 			'\n' +
+			'soundinfo="""' + self.soundinfo + '\n"""'
+			'\n' +
 			'prevlink="' + self.prevlink + EOL +
 			'nextlink="' + self.nextlink + EOL +
 			'\n' +
 			'createtime="' + cldate.utc2string(self.createtime) + EOL +
 			'updatetime="' + cldate.utc2string(self.updatetime) + EOL +
-			'\n'
+			'\n' + self.dump_locs()
 			)
+	def dump_locs(self):
+		""" Output the button info...
+		"""
+		but_str = "numbuts=%d\n" % self.numbuts
+		for i in range(1, self.numbuts+1):
+			locvar = "Loc_%d" % i
+			locval = eval("self." + locvar)
+			but_str += locvar + "=" + str(locval) + '\n'
+			but_str += locvar + '_desc="' + eval("self." + locvar + "_desc") + '"\n'
+		
+		return but_str
 
 	def load(self, path=None):
 		"""
@@ -635,9 +660,10 @@ class Song:
 			raise(ValueError)
 			self.group_obj = cltkutils.getGroup()
 			self.group = self.group_obj.name
+			self.group="Test"
 			#self.group = "SBP"
 			#self.group= "Catharsis"
-			self.group= "Johnny"
+			#self.group= "Johnny"
 			logging.info("Note: override: group = %s - %s", self.group_obj, self.group)
 
 		song_dir = os.path.join('Group', self.group, 'Song', self.name)

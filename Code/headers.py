@@ -50,6 +50,8 @@ class Html:
 		# replace the strings...
 		body = self.body.replace('!groupURL!', group.root)
 		body = body.replace('!coLabRoot!', group.coLab_root)
+		if page.obj_type == 'Page':
+			body = body.replace('!soundinfo!', page.soundinfo)
 
 		if media:
 			body += '\t<img src="Title.png" class="fundesc" alt="' + page.fun_title + '">'
@@ -63,6 +65,7 @@ class Html:
 			# do we include the video controls?
 			body += self.video_controls
 			body += self.media_tail
+			body += self.gen_locbutton_tags(page)
 			body += self.gen_geometry_tags(page)
 		return(body)
 
@@ -117,6 +120,30 @@ class Html:
 				break
 			print "Next size:", size
 		return(sources)
+
+	def gen_locbutton_tags(self, page):
+		""" Generate "hidden" tags to pass button info to javascript
+		
+		Location (float seconds) and description (string) 
+		to describe the locator buttons.
+		"""
+		loc_html = """
+			<!-- Locator button info -->
+				<input type="hidden" id="numbut" value="%d">\n""" % config.NUM_BUTS
+		for i in range(1, config.NUM_BUTS+1):
+			varname = "Loc_%d" % i
+			value = eval('page.' + varname)
+			loc_html += """
+				<input type="hidden" id="%s" value="%f">""" % (varname, value)
+			value = eval('page.' + varname + '_desc')
+			loc_html += """
+				<input type="hidden" id="%s_desc" value="%s">""" % (varname, value)
+
+
+		loc_html += """
+			<!-- End loccator button info -->
+			"""
+		return loc_html
 
 	def gen_geometry_tags(self, page):
 		""" Generate "hidden" tags to pass info to javascript
@@ -210,6 +237,11 @@ class Html:
 			<!--#include virtual="/coLab/Resources/News.html" -->
 			<!--#include virtual="!groupURL!/Shared/News.html" -->
 			<!--#include virtual="!groupURL!/Shared/rightbar.html" -->
+			<p id="locators"></p>
+			<p>
+			<button type="button" id="sound-info-btn" title="Sound Info">Sound Info</button>
+			<input type="hidden" id="sound-info" value="!soundinfo!">
+			<hr><br>
 			<p id="info"></p>	<! A paragraph for displaying...  info from javascript.>
 			</div> <! End right sidebar>
 			<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
@@ -242,21 +274,16 @@ class Html:
 		<!-- Video Controls -->
 		  <div id="video-controls">
 		    <span title="Play/Pause">
-				<button type="button" id="play-pause">P</button>
+				<button type="button" style="vidbarbutton" id="play-pause">P</button>
 			</span>
-			<input type="range" id="seek-bar" value="0">
-		    <span title="Mute/Unmute">
-				<button type="button" id="mute">M</button>
-			</span>
+			""" + self.emit_loc_buttons() + """
 			<input type="range" id="volume-bar" min="0" max="1" step="0.1" value="1">
 		    <span title="FullScreen">
 				<button type="button" id="full-screen">FS</button>
 			</span>
 		 </div> <! video-controls>
 		 """
-
-	
-	
+		 
 		self.tail = """
 		<hr>
 		Enter your comments here:<br>
@@ -290,6 +317,22 @@ class Html:
 		</body>
 		</html>
 		"""
+	def emit_loc_buttons(self,numbuttons=config.NUM_BUTS):
+		""" Generate some buttons
+
+		Simple for now - these will likely be modified by the javascript
+		"""
+		loc_string="""
+			<span>"""
+		for button in range(1, numbuttons+1):
+			loc_string += """
+				<button type="button" id="LocBtn%d">%d</button>""" % ( button, button)
+		loc_string += """
+			</span>"""
+		return loc_string	
+			
+		
+
 
 def main():
 	""" test gen_html5_sources"""

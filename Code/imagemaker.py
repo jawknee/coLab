@@ -198,7 +198,7 @@ def make_sub_images(page, size=None):
 	# of poster images for the video tag
 	try:
 		orig_image = Image.open(baseimage)
-		screenshot_width = orig_image.size[0]	# save the width...
+		#page.screenshot_width = orig_image.size[0]	# save the width...
 	except:
 		print "Error opening:", baseimage
 	else:

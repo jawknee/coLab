@@ -1050,13 +1050,14 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		prev_popup.destroy()
 
 		image = Image.open(graphic_dest)		# mostly we need the size....
-		width = image.size[0]	# save the width...
+		width = image.size[0]			# save the width...
+		page.screenshot_width = width
 		w_05 = int(width * 0.05)		# 5% of width - possible starting point
 		w_95 = int(width - w_05)		# 95 % if width - possible ending poin
 
 		# is this the same file?  (i.e., we just reselected it?)
 		if filename == orig_filename and not self.copy_graphicfile:	
-			print "Grhpic seems to be the same:  not changing...------------------", filename, orig_filename, self.copy_graphicfile
+			print "Graphic seems to be the same:  not changing...------------------", filename, orig_filename, self.copy_graphicfile
 			xStart = page.xStart
 			xEnd = page.xEnd
 		else:		# set the start/end to a reasonable guess

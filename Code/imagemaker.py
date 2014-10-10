@@ -3,7 +3,10 @@
 
     Some scripting to create a series of 
 	images that will be the movie of the 
-	scrolling line...
+	scrolling line.
+	
+	Can crate an overview image from a sound file, 
+	or use a screen capture.
 """
 
 import os
@@ -34,7 +37,7 @@ import cltkutils
 import clSchedule
 import clAudio
 import clColors
-
+import clutils	# for fonts - pull if fonts move to their own module
 
 #size = (width, height)
 poster_width = 640
@@ -126,6 +129,20 @@ def calculate_fps(page):
 	print "Derived fps is:", fps
 	return( (frames, seconds) )	# should account for max fps being enough...
 
+def quantize_increment(time_val):
+	""" quantize the passed time to a "nice" value
+	
+	take the passed value, in seconds (int or float) and
+	return a close (<=) value that is in a good number for
+	displaying - could be float (<1 second) or int
+	"""
+	values = [ 0.1, 0.2, 0.25, 0.5,
+			1, 2, 5, 10, 15, 20, 30, 
+			60, 120, 300, 600, 900, 1200, 1800 ]
+	for i in values:
+		if i > time_val:
+			break
+	return i 
 
 def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixel=0):
 	print "Creating image...", image
@@ -144,7 +161,7 @@ def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixe
 	# skip most samples....
 	if not page.strict_graphic and max_samp_per_pixel == 0:
 		max_samp_per_pixel = 250	# 
-	snd_image = Sound_image(sound, image, size, prog_bar, page.graphic_theme, max_samp_per_pixel)
+	snd_image = Sound_image(sound, image, size, page, prog_bar, page.graphic_theme, max_samp_per_pixel)
 	snd_image.build()	# separate - we may want to change a few things before the build...
 	page.soundthumbnail = "SoundGraphic_tn.png"
 	
@@ -167,6 +184,9 @@ def make_sub_images(page, size=None):
 		baseimage = os.path.join(page.home, page.soundgraphic)
 	else:
 		baseimage = page.localize_screenshot()
+	# for now....  RBF  !!
+	baseimage = os.path.join(page.home, page.soundgraphic)
+
 	graphic = os.path.join(page.home, page.graphic)
 	thumbnail = os.path.join(page.home, page.thumbnail)
 	if size is None:
@@ -178,7 +198,7 @@ def make_sub_images(page, size=None):
 	# of poster images for the video tag
 	try:
 		orig_image = Image.open(baseimage)
-		page.screenshot_width = orig_image.size[0]	# save the width...
+		#page.screenshot_width = orig_image.size[0]	# save the width...
 	except:
 		print "Error opening:", baseimage
 	else:
@@ -199,7 +219,7 @@ def make_sub_images(page, size=None):
 				print "Cannot open poser image", overlaypath, info
 			else:
 				# could resize here - but I'd rather see it something changes...
-				#
+			#
 				# Now we gotta git a bit tricky since PIL doesn't support alpha compositing...
 				r, g, b, a = over_image.split()
 				overlay_rgb = Image.merge('RGB', (r,g,b))
@@ -236,6 +256,8 @@ def make_images(page, prog_bar=None, media_size=None):
 	to the factor - based on the "BASE_SIZE":
 	square root of the ratio.
 	"""
+	
+	fontclass = clutils.FontLib()	# this needs to be done at initialization   RBF
 
 	print "make_images: page.home:", page.home
 
@@ -290,6 +312,7 @@ def make_images(page, prog_bar=None, media_size=None):
 	else:
 		image = page.screenshot
 
+	image = page.soundgraphic
 	orig_image = Image.open(image)
 	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 
@@ -301,8 +324,11 @@ def make_images(page, prog_bar=None, media_size=None):
 	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
 
 	#font = ImageFont.truetype('../Resources/Fonts/data-latin.ttf', 18)
-	fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
+	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
+	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/QuartBolD.ttf')
+	fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
+	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkew.ttf')
 	fontsize = int(12 * adjust_factor)
 	font = ImageFont.truetype(fontpath, fontsize)
 
@@ -357,7 +383,8 @@ def make_images(page, prog_bar=None, media_size=None):
 	
 	frameIncr = float(xLen) / frames
 	# for generated graphics, don't let the cursor go over the text
-	if page.use_soundgraphic:
+	#if page.use_soundgraphic:
+	if True:
 		cursor_top = int(config.SG_TOP_BORDER * adjust_factor)
 		cursor_bot = height - int(config.SG_BOTTOM_BORDER * adjust_factor)
 	else:	#cursor is top to bottom
@@ -514,10 +541,14 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	
 	(width, height) = size
 	
-	fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
+	fontclass = clutils.FontLib()	# this needs to be done at initialization   RBF
+	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
 	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/ArabBruD.ttf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitalDream.ttf'
+	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
+	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkew.ttf')
+	fontpath = fontclass.return_fontpath('CarvalCondIt.otf')
 	font_size = int(10 * adjust_factor)
 	font = ImageFont.truetype(fontpath, font_size)
 	res_string = str(width) + " x " + str(height)
@@ -585,20 +616,21 @@ class Sound_image():
 
 	Generates a standard (or other) sized png file.
 	"""
-	def __init__(self, sound_file, image_file, media_size, prog_bar=None, theme='Default', max_samp_per_pixel=0):
+	def __init__(self, sound_file, image_file, media_size, page, prog_bar=None, theme='Default', max_samp_per_pixel=0):
 		""" open the sound file and set the various internal vars. """
 		print "Beginning Sound file open..."
 		
 		try:
 			self.aud = aifc.open(sound_file)
 		except:
-			print "Sound file problems:", sound_file
+			logging.warning("Sound file problems: %s", sound_file, exc_info=True)
 			raise Exception
 		
-		self.sound_file = sound_file
-		self.image_file = image_file
-		self.media_size = media_size
-		self.prog_bar = prog_bar
+		self.sound_file = sound_file	# audio the image (or at least annotations) is based on
+		self.image_file = image_file	# where it's headed
+		self.media_size = media_size	# how big...
+		self.page = page				# parent page for markers, etc...
+		self.prog_bar = prog_bar		# is one's set up - we drive it...
 		"""
 		max samp/pixel let's us process hour long audio quickly for preview. 
 		Setting to some value (e.g., 100) approximates that many sample per
@@ -617,7 +649,23 @@ class Sound_image():
 		self.samp_max = 1 << (self.sampwidth * 8 - 1)	# -1 because we're signed.  range is -samp_max(-1?) - +samp_max; 3 => -8388607 - 8388608
 		
 		self.theme_colors = clColors.Themes(theme)
+				
+	# Adjust the amount of content in the top and bottom strings, based
+	# on the size..	
+	def upTickText(self, text, xcenter, y, font, textcolor=clColors.GREEN, tickcolor=clColors.GREEN, txtyoffset=-2):
+		""" create a string with an "up tick"
 		
+		centers the text and puts a corresponding height
+		tick up from the top line
+		"""
+		
+		tick_height = 5 * self.adjust_factor
+		
+		(twidth, theight) = self.graphic_draw.textsize(text, font=font)
+		self.graphic_draw.text((xcenter-(twidth/2), y-theight+txtyoffset), text, font=font, fill=textcolor)
+		self.graphic_draw.line([(xcenter,y), (xcenter,y-tick_height)], fill=tickcolor)
+
+
 	def build(self):
 		""" Build the image based on what we know...
 		
@@ -642,6 +690,8 @@ class Sound_image():
 		"""
 		# Set up min and max based on border size,
 		# and various factors and values
+
+		fontclass = clutils.FontLib()	# this needs to be done at initialization   RBF
 
 		self.size_class = config.Sizes()	# new size class for size fun...
 		size = self.size_class.sizeof(self.media_size)
@@ -669,8 +719,14 @@ class Sound_image():
 		graphic = Image.new('RGBA', (width, height), color=colors.background)
 		graphic_draw = ImageDraw.Draw(graphic)
 		
+		self.graphic = graphic			# UGLY!!!! Fix this    RBF
+		self.graphic_draw = graphic_draw		
+
 		# Draw the limit lines...
-		graphic_draw.line([(xmin,ymin), (xmax,ymin)], fill=clColors.GREEN)
+		if self.page.use_soundgraphic:
+			graphic_draw.line([(xmin,ymin), (xmax,ymin)], fill=clColors.GREEN)
+		else:
+			graphic_draw.line([(0,ymin), (width-1,ymin)], fill=clColors.GREEN)
 		# A little tricky here - account for the time boxes:
 		box_width = int(config.T_BOX_WIDE * adjust_factor)
 		graphic_draw.line([(2+box_width,ymax), (width-box_width-2, ymax)], fill=clColors.GREEN )
@@ -816,11 +872,11 @@ class Sound_image():
 		Might want this to be per channel - for now it's global
 		We want the furthest excursion, min or max
 		"""
-	
+
 		max_xcrsn = max		# maximum excursion
 		if -min > max+1:	# '+1' prevents -0.0
 			max_xcrsn = -min
-			
+				
 		# Calculate what we now know...
 		# headroom ratio and headroom in dBFS
 		hr_ratio = float(max_xcrsn) / self.samp_max	# ratio of highest peak to max value - headroom as a ratio
@@ -829,159 +885,251 @@ class Sound_image():
 			eff_ratio = hr_ratio * 1.1	# make the end points just short of the limits
 		else:
 			eff_ratio = 1	# close enough - show the wave form as is
-			
+				
 		headroom = 20 * math.log10(hr_ratio)
-		
-		
-		chan_ht = ( ymax - ymin ) / nchan
-		centers = []
-		separators = []	# note  there n-1 - we skip 0 later
-		for c in range(nchan):		# Build the center lines,  bottom up..
-			# This is where we do the next bit of reversal - so that left or 1 is 
-			# at the top, we build the list bottom up
-			centers.append(ymin + c * chan_ht + chan_ht / 2)
-			separators.append(ymin + c * chan_ht )
-			# and add separaters
-			if c != 0:	# we do n-1 separators
-				y = separators[c]
-				graphic_draw.line([(xmin,y), (xmax, y)], fill=clColors.HILITE)
-		
-		x = xmin
-		for s in range(num_xpix):	
-			# step through, scaling the samples as we go
-			# and emitting the graphics 
-			# the minus is to flip the value of the sample - the second bit of the
-			# reversal
-			for c in range(nchan):
-				top = int(centers[c] - ( float(max_tab[c][s]) / levels_per_pixel ) / eff_ratio ) + 1
-				bot = int(centers[c] - ( float(min_tab[c][s]) / levels_per_pixel ) / eff_ratio ) + 1
-				rms = math.sqrt(rms_tab[c][s])	
-				rms_offset = (rms / levels_per_pixel) / eff_ratio
-				rms_center = (top + bot) / 2
-				# or...
-				rms_center = centers[c]
-				
-				t_rms = int(rms_center - rms_offset)
-				b_rms = int(rms_center + rms_offset)
-				# or...
-				
-				# temp - may make this an option at some point...
-				rms_display = True
-				
-				if rms_display:
-					# as three - rms "middle" is darker
-					graphic_draw.line([(x,t_rms), (x,b_rms)], fill =  colors.rms)
-					graphic_draw.line([(x,top), (x,t_rms)], fill = colors.wave)
-					graphic_draw.line([(x,b_rms), (x,bot)], fill = colors.wave)
-				else:
-					# as one line...
-					graphic_draw.line([(x,top), (x,bot)], fill = colors.wave)
-					
-				"""
-				Draw the end points - mark any likely clip points
-				(Note - we can only detect max values - they may or may
-				not be a clip.   
-				
-				Future:  if there is only one "clip" per channel, we
-				may want to assume it's a normalized clip and not get
-				quite so excited.
-				"""
-				
-				clip_stretch = 1 + int(adjust_factor*adjust_factor)
-				#if eff_ratio == 1 and top == centers[c] - chan_ht / 2:
-				if max_tab[c][s] == self.samp_max-1:
-					fill = clColors.BRIGHT_RED
-					tip_stretch = clip_stretch
-					#print "=====Clip!", s, c, max_tab[c][s], min_tab[c][s], max, min
-				else:
-					fill = colors.peak
-					tip_stretch	= 0
-				#graphic_draw.point([(x,top)], fill = fill)
-				graphic_draw.line([(x-tip_stretch,top), (x+tip_stretch,top)], fill = fill)
-				
-				tip_stretch	= 0
-				#if eff_ratio == 1 and bot == centers[c] + chan_ht / 2 + 1:
-				if min_tab[c][s] == -self.samp_max:
-					fill = clColors.BRIGHT_RED
-					tip_stretch = clip_stretch	# allows us to highliging...
-					#print "-----Clip!", s, c, max_tab[c][s], min_tab[c][s], max, min
-				else:
-					fill = colors.peak
-				
-				#graphic_draw.point([(x,bot)], fill = fill)
-				graphic_draw.line([(x-tip_stretch,bot), (x+tip_stretch,bot)], fill = fill)
-			x += 1 		# Next vertical line
+	
+		if not self.page.use_soundgraphic:
+			# drop the current graphic into space available...
+			image = self.page.screenshot
+			orig_image = Image.open(image)
+			newsize = (width, height-tborder-bborder-1)
+			print "resizing graphic to: ", newsize
+			base_image = orig_image.resize(newsize, Image.ANTIALIAS ).convert('RGBA')
+			self.graphic.paste(base_image,(0, tborder+1))
+		else:	
+			chan_ht = ( ymax - ymin ) / nchan
+			centers = []
+			separators = []	# note  there n-1 - we skip 0 later
+			for c in range(nchan):		# Build the center lines,  bottom up..
+				# This is where we do the next bit of reversal - so that left or 1 is 
+				# at the top, we build the list bottom up
+				centers.append(ymin + c * chan_ht + chan_ht / 2)
+				separators.append(ymin + c * chan_ht )
+				# and add separaters
+				if c != 0:	# we do n-1 separators
+					y = separators[c]
+					graphic_draw.line([(xmin,y), (xmax, y)], fill=clColors.HILITE)
 			
+			x = xmin
+			for s in range(num_xpix):	
+				# step through, scaling the samples as we go
+				# and emitting the graphics 
+				# the minus is to flip the value of the sample - the second bit of the
+				# reversal
+				for c in range(nchan):
+					top = int(centers[c] - ( float(max_tab[c][s]) / levels_per_pixel ) / eff_ratio ) + 1
+					bot = int(centers[c] - ( float(min_tab[c][s]) / levels_per_pixel ) / eff_ratio ) + 1
+					rms = math.sqrt(rms_tab[c][s])	
+					rms_offset = (rms / levels_per_pixel) / eff_ratio
+					rms_center = (top + bot) / 2
+					# or...
+					rms_center = centers[c]
+					
+					t_rms = int(rms_center - rms_offset)
+					b_rms = int(rms_center + rms_offset)
+					# or...
+					
+					# temp - may make this an option at some point...
+					rms_display = True
+					
+					if rms_display:
+						# as three - rms "middle" is darker
+						graphic_draw.line([(x,t_rms), (x,b_rms)], fill =  colors.rms)
+						graphic_draw.line([(x,top), (x,t_rms)], fill = colors.wave)
+						graphic_draw.line([(x,b_rms), (x,bot)], fill = colors.wave)
+					else:
+						# as one line...
+						graphic_draw.line([(x,top), (x,bot)], fill = colors.wave)
+						
+					"""
+					Draw the end points - mark any likely clip points
+					(Note - we can only detect max values - they may or may
+					not be a clip.   
+					
+					Future:  if there is only one "clip" per channel, we
+					may want to assume it's a normalized clip and not get
+					quite so excited.
+					"""
+					
+					clip_stretch = 1 + int(adjust_factor*adjust_factor)
+					#if eff_ratio == 1 and top == centers[c] - chan_ht / 2:
+					if max_tab[c][s] == self.samp_max-1:
+						fill = clColors.BRIGHT_RED
+						tip_stretch = clip_stretch
+						#print "=====Clip!", s, c, max_tab[c][s], min_tab[c][s], max, min
+					else:
+						fill = colors.peak
+						tip_stretch	= 0
+					#graphic_draw.point([(x,top)], fill = fill)
+					graphic_draw.line([(x-tip_stretch,top), (x+tip_stretch,top)], fill = fill)
+					
+					tip_stretch	= 0
+					#if eff_ratio == 1 and bot == centers[c] + chan_ht / 2 + 1:
+					if min_tab[c][s] == -self.samp_max:
+						fill = clColors.BRIGHT_RED
+						tip_stretch = clip_stretch	# allows us to highliging...
+						#print "-----Clip!", s, c, max_tab[c][s], min_tab[c][s], max, min
+					else:
+						fill = colors.peak
+					
+					#graphic_draw.point([(x,bot)], fill = fill)
+					graphic_draw.line([(x-tip_stretch,bot), (x+tip_stretch,bot)], fill = fill)
+				x += 1 		# Next vertical line
+				
 			
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamFatSkewNarrow.ttf'
-		fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
+		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/Dom Casual/DomCasDReg.ttf'
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DomCasDReg.ttf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DomCasDReg.ttf'
 		# RBF: Convert this to not have a full path
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
+		#fontpath = fontclass.return_fontpath('DomCasDReg.ttf')
+		fontpath = fontclass.return_fontpath('CarvalCondIt.otf')
 		font_size = int( 18 * adjust_factor)
 		font = ImageFont.truetype(fontpath, font_size)	
-	
+# 	
 		# Build the text strings for the graphic
 		#
 		clist = self.chan_list()	# what do we call these things called channels?
-		# First - the bits that are channel based
-		comma = ''
-		rms = 'rms(dB): '
-		offset = 'Bias(%): '
-		for c in range(nchan):
-			rms_avg = math.sqrt( sum_sqrs[c] / (self.nframes / aud_frame_skip ) )
-			rms_val = 20. * math.log10( rms_avg / self.samp_max  )
-			
-			rms += comma + clist[c] +': %0.1f' % rms_val
-			#offset_val = 20 * math.log10( float(run_count[c]) / self.samp_max )
-			offset_val = (( float(run_count[c]) / self.samp_max ) / self.nframes ) * 100.
-			offset += comma + clist[c] +': %.2f' %  offset_val 
-			comma = ', '
-			# while we're at it, let's label the channels
 
-			# Channel name:
-			graphic_draw.text((xmin/2, centers[c]-10), clist[c], font=font, fill=clColors.GREEN)
-		
-		# Adjust the amount of content in the top and bottom strings, based
-		# on the size..	
-		left = box_width + 5
-		
-		top = 5		# yeah, I know - but it basically works everything else falls out of the equation
-		top_string = 'Headroom: %0.1fdB' % -headroom
-		if aud_frame_skip != 1:
-			top_string += ' (approx)'
-
-
-		
-		if self.size_class.is_larger_than(self.media_size, 'Small'):
-			top_string += '  /  ' + rms 
-			if self.size_class.is_larger_than(self.media_size,'Medium'):
-				top_string += '  -  ' + offset
-		graphic_draw.text((left, top), top_string, font=font, fill=clColors.GREEN)
-		
+		if self.page.use_soundgraphic:
+			# First - the bits that are channel based
+			comma = ''
+			rms = 'rms(dB): '
+			offset = 'Bias(%): '
+			for c in range(nchan):
+				rms_avg = math.sqrt( sum_sqrs[c] / (self.nframes / aud_frame_skip ) )
+				rms_val = 20. * math.log10( rms_avg / self.samp_max  )
+				
+				rms += comma + clist[c] +': %0.1f' % rms_val
+				#offset_val = 20 * math.log10( float(run_count[c]) / self.samp_max )
+				offset_val = (( float(run_count[c]) / self.samp_max ) / self.nframes ) * 100.
+				offset += comma + clist[c] +': %.2f' %  offset_val 
+				comma = ', '
+				# while we're at it, let's label the channels
 	
-		if clip_count > 0:
-			# add in a string about clipping
-			string = 'Clipping: ' + str(clip_count)
-			(twidth, theight) = graphic_draw.textsize(top_string, font=font)
-			right = left + twidth + 15
-			print "Right text fun:", right, width, twidth, 15
-			graphic_draw.text((right, top), string, font=font, fill=clColors.BRIGHT_RED)
-							
+				# Channel name:
+				graphic_draw.text((xmin/2, centers[c]-10), clist[c], font=font, fill=clColors.GREEN)
+		
+		#------------------------
+		# Top Text Line
+		#------------------------
+		self.top = 5		# yeah, I know - but it basically works everything else falls out of the equation
+
+		size_class = config.Sizes()
+		size = size_class.sizeof(self.media_size)
+		(width, height) = size
+	
+		self.adjust_factor = size_class.calc_adjust(height)
+
+
+		if self.page.use_soundgraphic:
+			scale_factor = size_class.calc_scale(height)
+			xPos = int(config.SG_LEFT_BORDER * adjust_factor)
+			xEnd = int(width - config.SG_RIGHT_BORDER * adjust_factor)
+		else:	# compensate for the actual size of the screenshot image...
+			scale_factor = float(width) / self.page.screenshot_width		
+			xPos = int(self.page.xStart * scale_factor)
+			xEnd = int(self.page.xEnd * scale_factor)
+
+		self.upTickText('Start', xPos, ymin, font=font)
+		#start_string = 'Start'
+		#(twidth, theight) = graphic_draw.textsize(start_string, font=font)
+		#graphic_draw.text((xPos-(twidth/2), top), start_string, font=font, fill=clColors.GREEN)
+		#graphic_draw.line([(xPos,ymin), (xPos,ymin-tick_height)], fill=clColors.GREEN)
+		
+		self.upTickText('End', xEnd, ymin, font=font)
+		
+		# So now....
+		# we need to figure out where to put the time markers
+		# Base the number of markers on the scale, and then find 
+		# the closest time increment to use.
+		num_time_incs = int(12 * adjust_factor)
+		
+		seconds = float(self.nframes) / self.framerate
+		time_incr =  seconds / (num_time_incs + 1)
+		time_incr = quantize_increment(time_incr)
+
+		logging.info("upTickTime incr...")
+		time = time_incr
+		# start emitting time ticks until we're within a 1/2 of one interval from the end..
+		while  time < (seconds - time_incr / 2.):
+			if seconds > 90:	 # > 90 seconds, represent as m:ss.
+				minutes = int(time / 60)
+				secs = time - minutes * 60
+				string = '%d:%02.0f' % (minutes, secs)
+			else:		# otherwise - just a number of seconds, with fraction, if any
+				string = str(time)	# stock str should give a good format for this...
+			time_factor = time / seconds
+
+			x = (xEnd - xPos) * time_factor + xPos
+			logging.info("time intr: %3f time factor time / seconds: %3f / %3f ", time_incr, time , seconds)
+			self.upTickText(string, x, ymin, font=font)
+			time += time_incr
+
+		# Marker boxes - if any....
+		mbox_width = int(config.M_BOX_WIDE * adjust_factor) 
+		mbox_height = int(config.M_BOX_HIGH * adjust_factor)
+	
+		mbox_size = (mbox_width, mbox_height)
+		mbox_rect = [ (0,0), (mbox_width-1, mbox_height-1) ]
+
+		# create basic box...
+		mbox = Image.new('RGBA', mbox_size, color=clColors.COLAB_BLUE)
+		mboxdraw = ImageDraw.Draw(mbox)
+		# Get a little tricky (why not?!) and draw two boxes, one pixel
+		# smaller than the box, offset - to simulate 3-D highlight...
+		mbox_rect = [ (0,0), (mbox_width-2, mbox_height-2) ]
+		mboxdraw.rectangle(mbox_rect, outline=clColors.DESERT_GOLD)
+		mbox_rect = [ (1,1), (mbox_width-1, mbox_height-1) ]
+		mboxdraw.rectangle(mbox_rect, outline=clColors.DESERT_BROWN)
+
+		for i in range(1,self.page.numbuts+1):	# step through the buttons..
+			evalstring = "self.page.Loc_%d_desc" % i
+			if eval(evalstring) != "Unset":
+				evalstring = "self.page.Loc_%d" % i
+				try:
+					time = float(eval(evalstring))
+				except:
+					logging.warning("Problem converting: %s", evalstring, exc_info=True)
+					continue	# skip this one...
+			
+				time_factor = time / seconds
+				x = int((xEnd - xPos) * time_factor + xPos)
+				self.graphic.paste(mbox, (x - mbox_width/2, 2))
+				self.upTickText(str(i), x,  ymin, font=font, textcolor=clColors.BLACK, tickcolor=clColors.DESERT_GOLD, txtyoffset=-4*self.adjust_factor)
+
+		#------------------------
+		# Bottom Text Line
+		#------------------------
+		left = box_width + 5
 		(dir, filename) = os.path.split(self.sound_file)
-		bot_string = 'File: ' + filename 
+		bot_string = '   File: '
+		bot_string += filename 
 		if self.size_class.is_larger_than(self.media_size, 'Tiny'):
 			seconds = float(self.nframes) / self.framerate
 			minutes = int(seconds / 60)
 			secs = seconds - minutes * 60
-			bot_string += '  /  Length(m:s): ' + '%d:%06.3f' % (minutes, secs)
-			bot_string += ' /  %d bits' % (self.sampwidth * 8)
+			bot_string += ' / Length: %d:%06.3f' % (minutes, secs)
+			bot_string += ' / Headroom: '
+			if aud_frame_skip != 1 and headroom != 0:
+				bot_string += '~'
+			bot_string += ' %0.1fdB' % -headroom
 			if self.size_class.is_larger_than(self.media_size, 'Medium'):
-				bot_string += ' / %0.3f kHz' % (self.framerate / 1000.)
+				bot_string += ' / %0.1fkHz' % (self.framerate / 1000.)
+				bot_string += ' /  %dbits' % (self.sampwidth * 8)
 		
 		graphic_draw.text((left, ymax+3), bot_string, font=font, fill=clColors.GREEN)
+
+		if clip_count > 0 and self.size_class.is_larger_than(self.media_size, 'Large'):
+			# add in a string about clipping
+			# --- let's try to make this smarter about clips vs. likely normalization
+			string = 'Clipping: ' + str(clip_count)
+			(bwidth, bheight) = graphic_draw.textsize(bot_string, font=font)
+			right = left + bwidth + 15
+			print "Right text fun:", right, width, bwidth, 15
+			graphic_draw.text((right, ymax+3), string, font=font, fill=clColors.BRIGHT_RED)
 		
 		#add_res_text(graphic_draw, size, adjust_factor)
 
@@ -993,8 +1141,6 @@ class Sound_image():
 		print "Computed headroom of:", hr_ratio, '/', headroom, 'dBFS'
 		print "Expected vs. processed audioframes:", self.nframes, aud_frame_count
 		print "Clip count:", clip_count
-		print "Top String:", top_string
-		print "Bot String:", bot_string
 	
 
 	def chan_list(self):
@@ -1054,7 +1200,7 @@ def main():
 		prog_bar.width = 500
 		prog_bar.max = s.sizeof(media_size)[0]
 		prog_bar.post()		# initial layout...
-		Sound_image(snd, pic, media_size, prog_bar, max_samp_per_pixel=0).build()
+		Sound_image(snd, pic, media_size, page, prog_bar, max_samp_per_pixel=0).build()
 	#"""
 	# now create and load a page so we can have some images....
 
@@ -1075,7 +1221,7 @@ def main():
 	
 	page.media_size = media_size
 	pic = img_base + "SoundGraphic.png"
-	Sound_image(snd, pic, media_size, prog_bar, page.graphic_theme).build()
+	Sound_image(snd, pic, media_size, page, prog_bar, page.graphic_theme).build()
 
 	page.use_soundgraphic = True
 	

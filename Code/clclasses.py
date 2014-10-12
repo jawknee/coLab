@@ -34,7 +34,7 @@ def set_init_vars(obj, initdata):
 	for var in obj.varlist:
 		string = 'obj.' + var
 		value = eval(string)
-		#print "init: var:", var, " is: ", value
+		logging.info("init: var:", var, " is: %s", value)
 
 def set_paths(obj,sub_dir):
 	""" set path variables for locations
@@ -108,7 +108,7 @@ def import_data(obj, path=None):
 		# value changed, deal with it...
 		string = 'obj.' + var + ' = val'
 		exec(string)	# this assigns the file var
-		#print "updating value", var, val
+		logging.info("updating var: %s, value:%s", var, val)
 	convert_vars(obj)		# convert any floats, ints, etc...
 	
 def convert_vars(obj):
@@ -122,11 +122,10 @@ def convert_vars(obj):
 		# let's leave this out for now.   We'll just save
 		# floats w/o quotes
 		if var in obj.floatvars:
-			#print 'Floating', var
+			logging.info('Floating: %s', var)
 			conversion = "float"
 		if var in obj.timevars:
-			#logging.info("Converting %s", var)
-			logging.info("Converting %s", var)		# RBF---------
+			logging.info("Converting %s", var)		
 			conversion = "cldate.string2utc"
 		if var in obj.intvars:
 			conversion = "int"

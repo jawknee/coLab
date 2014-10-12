@@ -92,7 +92,7 @@ class Data_row:
 		the status column, should work for most/all row classes...
 		If nothing / None is passed in, use the row's current status.
 		"""
-		print "Post_status: (name, self.ok, passed ok, editable):", self.member, self.ok, ok, self.editable
+		logging.info("Post_status: name: %s, self.ok: %s, passed ok: %s, editable:%s", self.member, self.ok, ok, self.editable)
 		if not self.editable:	# not editable, no status - takes prio
 			ok = None
 		elif ok is None:
@@ -119,7 +119,7 @@ class Data_row:
 		implemented specifically to all sub classes...
 		For now: return None and not ok...
 		'''
-		print ">>>>>>   Generic read: method needs to be replaced...", self.member
+		logging.warning(">>>>>>   Generic read: method needs to be replaced... %s", self.member)
 		return(None, False)	
 
 	def return_value(self):
@@ -173,11 +173,11 @@ class Entry_row(Data_row):
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 			# Now we build a string that is the name of the associated variable.   Then we use eval and exec to
 			# deal with it.
-			print "self.member", self.member
+			logging.info("self.member %s", self.member)
 			self.value = eval("self.editor.obj." + self.member)	# convert the variable name to its value
-			print "value", self.value
-			#print "ept: new?:", self.new
-			print "post:  my new is:", self.member, self.new
+			logging.info("value: %s", self.value)
+			#logging.info("ept: new?: %s", self.new)
+			logging.info("post: %s,  my new is: %s", self.member, self.new)
 			
 			# set up a small label between the title and the value to 
 			# display the status of the value...
@@ -192,17 +192,17 @@ class Entry_row(Data_row):
 			self.widget.destroy()
 		
 		# if not editable - just display as a label...
-		print "vobj - editable:", self.editable
+		logging.info("vobj - editable: %s", self.editable)
 		if not self.editable:
 			self.widget = ttk.Label(self.editor.edit_frame, textvariable=self.value_strVar, justify=tk.LEFT)
 			self.widget.grid(row=self.row,column=self.column + 2, columnspan=3, sticky=tk.W)
 			self.value_strVar.set(self.value)
 			#self.ok = True		# since we can't change it - it's good
 			self.post_status()
-			print "non-edit _obj:", self.widget
+			logging.info("non-edit _obj: %s", self.widget)
 		else:
 			
-			print "Ev_init: callback is:", self.callback
+			logging.info("Ev_init: callback is: %s", self.callback)
 			# Build a list: the call back registery and the subcodes, 
 			# then turn the list into a tuple to pass in...
 			l = [ self.editor.edit_frame.register(self.callback) ]		# first part is the registration of the call back.
@@ -210,14 +210,14 @@ class Entry_row(Data_row):
 			for sc in self.subcodes:
 				l.append(sc)
 			self.validatecommand = tuple(l)	# make into a tuple
-			print "vcmd ", self.validatecommand, "validate:", self.validate
+			logging.info("vcmd %s, validate: %s", self.validatecommand, self.validate)
 			# set colors for edit (Black) and new (lt. gray) objects
 			fg = '#000'		# black
 			if self.new:
 				fg = '#AAA'	# light gray
 			
 			self.widget = ttk.Entry(self.editor.edit_frame, textvariable=self.value_strVar, width=self.width, foreground=fg,background='#e9e9e9', validate=self.validate, validatecommand=self.validatecommand )
-			print "v-obj widget created:", self.widget
+			logging.info("v-obj widget created: %s", self.widget)
 			self.widget.grid(row=self.row, column=self.column + 2, sticky=tk.W)
 			self.value_strVar.set(self.value)
 						
@@ -236,47 +236,47 @@ class Entry_row(Data_row):
 		
 		Updates the status column based on what's 
 		"""
-		print "vld8_entry_base:", why, what, how
+		logging.info("vld8_entry_base: why: %s, what: %s, how %s", why, what, how)
 		
 		if why == '-1':
 			if how == 'forced':
-				print "Focus: we don't need no stinkin' forced focus"
+				logging.info("Focus: we don't need no stinkin' forced focus")
 			elif how == 'focusin':
-				print "Focus In: restore Match", self.match_text
+				logging.info("Focus In: restore Match: %s", self.match_text)
 				if self.match_text:
 					self.post_match()
 					
 			elif how == 'focusout':
-				print "Focus Out: get rid of Match"
-				print "Would be:", would
+				logging.info("Focus Out: get rid of Match")
+				logging.info("Would be: %s", would)
 				if self.ok:
-					print "Setting ourselves to would."
+					logging.info("Setting ourselves to would.")
 					self.set(would)
 				self.matchVar.set('')
 			return True
 		try:
 			val = self.widget.get()
 		except:
-			print "For some reason we're here without a widget:", self
+			logging.info("For some reason we're here without a widget: %s", self)
 			return True
 			
 		#-- bad character?
 		for c in self.exclude_chars:
 			if what.find(c) + 1:		# 0 and above: found
-				print "Bad: found ", c
+				logging.info("Bad: found: %s ", c)
 				self.widget.bell()
 				return False
 			
 		self.editor.changed = True	
 		#--are we new?   If so, blank what's there, update the color, and replace with any addition
-		print "self.new:", self.new
+		logging.info("self.new: %s", self.new)
 		self.match_text = ''
 		r_code = True	# from here on out, keep track of conditions that require an ultimate failure..
 		if self.new:
-			print "why:", why
+			logging.info("why: %s", why)
 			if why == '1':
 				would = what
-				print "would is what", what
+				logging.info("would is what: %s", what)
 			else:
 				would = ''
 			#would = ''
@@ -289,12 +289,12 @@ class Entry_row(Data_row):
 			self.new = False
 			r_code = False		# Reject the character - we've already set it in, above
 			
-		print "Would is:", would
+		logging.info("Would is: %s", would)
 		#-- zero length?  
 		if  len(would) == 0:
 			self.ok = False
 			self.post_status()
-			print "Bad-==========-Zero length"
+			logging.info("Bad-==========-Zero length")
 			self.match_text = ''
 			self.post_match()
 			return r_code
@@ -312,13 +312,13 @@ class Entry_row(Data_row):
 		for item in self.exclude_list:
 			if f(item).find(f(would)) == 0:		# matches at the start
 				if f(item) == f(would):
-					print "BAD:  matches", item
+					logging.info("BAD:  matches: %s", item)
 					self.match_text += item + '\n'
 					self.match_color = '#f11'
 					good = False
 					#break
 				else:
-					print "partial match:", item,  '/', would
+					logging.info("partial match:%s / %s", item, would)
 					self.match_color = '#666'
 					self.match_text += item + '\n'
 		#
@@ -342,7 +342,7 @@ class Entry_row(Data_row):
 		Pull the value out of the widget...
 		"""
 		self.value = self.value_strVar.get()
-		print "Entry read:", self.text, self.value, self.ok
+		logging.info("Entry read: text: %s, value: %s, ok: %s", self.text, self.value, self.ok)
 		return 
 	
 class Text_row(Data_row):
@@ -396,7 +396,7 @@ class Menu_row(Data_row):
 		self.handler = self.handle_menu
 		
 	def post(self):
-		print "Welcome menu-post"
+		logging.info("Welcome menu-post")
 		
 		# write the base label...
 		if self.label is None:
@@ -426,7 +426,7 @@ class Menu_row(Data_row):
 			else:
 				value = self.titles[0]	# use the first as a default...
 		
-		print "Setting gOpt to: ", value
+		logging.info("Setting gOpt to: %s", value)
 		self.gOpt.set(value)
 
 		self.widget = tk.OptionMenu(self.editor.edit_frame, self.gOpt, *self.titles, command=self.handler)
@@ -471,7 +471,7 @@ class Menu_row(Data_row):
 		value = self.lookup(value)	# convert from displayed to "actual"
 
 		if value != self.value:
-			print "Menu read - mismatch in values:", value, self.value
+			logging.info("Menu read - mismatch in values: %s / %s", value, self.value)
 		self.value = value
 		
 	def return_value(self):
@@ -500,7 +500,7 @@ class Theme_menu_row(Menu_row):
 		"""
 		Menu_row.handle_menu(self, value)
 		
-		print "Rebuild the thumbnail(s) as appropriate..."
+		logging.info("Rebuild the thumbnail(s) as appropriate...")
 		page = self.editor.obj
 		page.graphic_theme = self.value		# 
 		popup = cltkutils.Popup('Rebuilding thumbnail...', 'Rebuilding to theme:\n'+self.value, geometry="+500+500")
@@ -544,7 +544,7 @@ class Resolution_menu_row(Menu_row):
 		prev_size = page.media_size 
 		page.media_size = self.value
 		if prev_size != page.media_size:
-			print "Size has changed..."
+			logging.info("Size has changed...")
 			page.needs_rebuild = True
 			page.changed = True
 		
@@ -586,7 +586,7 @@ class Song_menu_row(Menu_row):
 			pass
 		
 		self.dict = d
-		print "About to call Menu_row post with l / d:", l, d
+		logging.info("About to call Menu_row post with l: %s / d: %s", l, d)
 		Menu_row.post(self)
 		
 	def handle_menu(self, value):
@@ -598,7 +598,7 @@ class Song_menu_row(Menu_row):
 		songname = self.dict[value]
 		page = self.editor.obj
 		if page.song == songname:
-			print "Didn't really change..."
+			logging.info("Didn't really change...")
 			# Didn't really change - all good...
 			return
 		# 
@@ -607,8 +607,8 @@ class Song_menu_row(Menu_row):
 		try:
 			group = page.group_obj
 		except Exception as e:
-			print "------- No such group found as part of", self.editor.obj.value
-			print "---- fix  - for now, returning"
+			logging.warning("------- No such group found as part of: %s", self.editor.obj.value)
+			logging.warning("---- fix  - for now, returning",exc_info=True)
 			return
 	
 		song_obj = group.find_song_by_title(value)
@@ -619,18 +619,18 @@ class Song_menu_row(Menu_row):
 		self.new = not self.ok
 		self.editor.changed = True			# we may not need this....
 		
-		print "Song menu - handle_menu - songname, value", songname, value
+		logging.info("Song menu - handle_menu - songname: %s, value: %s", songname, value)
 		
 		#page = self.editor.obj
 		self.editor.set_member('song', songname)
 		page.song = songname
 		self.default = value
-		print "self.default:", self.default
+		logging.info("self.default: %s", self.default)
 		self.post()
 		
 		song_obj = group.find_song_by_title(value)
 		if song_obj == None:
-			print "No such song object found for:", value
+			logging.info("No such song object found for: %s", value)
 		song_obj.needs_rebuild = True		# mark the new song as needing rebuild too..
 		# build a part list...
 		self.editor.song_obj = song_obj
@@ -640,14 +640,14 @@ class Song_menu_row(Menu_row):
 		part_obj.titles = self.editor.build_part_list()
 		
 		# Special case a song with only the default part as "OK"
-		print "testing the partlist..."
+		logging.info("testing the partlist...")
 		if song_obj.partlist == [ 'All'	]:
-			print "Partlist is just 'all'"
+			logging.info("Partlist is just 'all'")
 			part_obj.post_status(ok=True)
 			self.editor.set_member('part', 'All')
 		else:
 			part_obj.post_status(ok=False)
-			print "Song object part list is vague:", song_obj.name, part_obj.ok
+			logging.info("Song object part list is vague - name: %s, ok %s", song_obj.name, part_obj.ok)
 			#time.sleep(2)
 		# set the new dictionary in place...
 		self.editor.part_obj.dict = self.editor.part_lookup
@@ -682,7 +682,7 @@ class Graphic_row(Data_row):
 		put the text and graphic on the screen...
 		"""
 	       
-		print "Graphic post"
+		logging.info("Graphic post")
 		if self.label is None:
 			# write the base label...
 			self.frame = self.editor.edit_frame
@@ -700,7 +700,7 @@ class Graphic_row(Data_row):
 			try:
 				self.graph_el.graphic.destroy()
 			except:
-				print "Graphic_el.graphic.destroy failed."
+				logging.warning("Graphic_el.graphic.destroy failed.", exc_info=True)
 				pass
 
 		self.graph_el = cltkutils.graphic_element(self.frame)
@@ -764,7 +764,7 @@ class Graphic_menu_row(Menu_row):
 
 		self.post_menu()	# short cut to just the menu...
 		self.statusVar.set('!!')
-		print "Graphic post"
+		logging.info("Graphic post")
 		self.graphic_row.graphic_path = self.graphic_path
 		self.graphic_row.post()
 		
@@ -785,13 +785,13 @@ class Graphic_menu_row(Menu_row):
 	
 
 	def load(self):
-		print "Graphic Menu Placeholder: load"
+		logging.info("Graphic Menu Placeholder: load")
 	def adjust(self):
-		print "Graphic Menu Placeholder: adjust"
+		logging.info("Graphic Menu Placeholder: adjust")
 	def reuse(self):
-		print "Graphic Menu Placeholder: reuse"
+		logging.info("Graphic Menu Placeholder: reuse")
 	def usesound(self):
-		print "Graphic Menu Placeholder: usesound"
+		logging.info("Graphic Menu Placeholder: usesound")
 		
 class Graphic_menu_row_soundfile(Graphic_menu_row):
 	def post(self):
@@ -810,27 +810,27 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		if clutils.has_filetype(colab_local, ['.aif', '.aiff']):
 			self.menulist.append('Reuse')	
 
-		print "Graphic menu list:", self.menulist
+		logging.info("Graphic menu list: %s", self.menulist)
 		self.default = "Change Sound File"
 		Graphic_menu_row.post(self)
 
 	def handle_menu(self, menustring):
 
 		action = self.dict[menustring]
-		print "Soundfile menu handler", action
+		logging.info("Soundfile menu handler: %s", action)
 		if action is 'Load':
 			self.load()
 		elif action is 'Reuse':
 			self.reuse()
 		else:
 			self.post()
-			print "Time to relax - or panic s", action
+			logging.info("Time to relax - or panic %s", action)
 
 	def load(self):
 		"""
 		Mostly just set up the initial path to the file...
 		"""
-		print "this is the sound file loader"
+		logging.info("this is the sound file loader")
 		page = self.editor.obj
 		page.changed = True
 		page.needs_rebuild = True	
@@ -849,14 +849,14 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		"""
 		Similar to load - but point to where we keep the local files
 		"""
-		print "this is the sound file reloader"
+		logging.info("this is the sound file reloader")
 		page = self.editor.obj
 		page.changed = True
 		page.needs_rebuild = True	
 		self.initialPath = os.path.join(page.home, "coLab_local")
 		self.filetypes = [ ('AIFF', '*.aif'), ('AIFF', '*.aiff') ]
 		self.initialfile = os.path.split(page.soundfile)[1]	# just the file name
-		print"reuse: initial file:", self.initialfile
+		logging.info("reuse: initial file: %s", self.initialfile)
 		self.copy_soundfile = False	# we already have it - just change the name...
 		self.file_load()
 
@@ -865,7 +865,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		Bring in the file we are pointing to in initialPath and initialfile...
 		"""
 		page = self.editor.obj
-		print "----File load - initial file:", self.initialfile
+		logging.info("----File load - initial file: %s", self.initialfile)
 		file_path = tkFileDialog.askopenfilename(initialdir=self.initialPath, defaultextension='.aif', title="Open AIFF sound file...", filetypes=self.filetypes, initialfile=self.initialfile)
 		if not file_path:
 			return
@@ -884,7 +884,7 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 			try:
 				shutil.copy(file_path, sound_dest)
 			except Exception as e:
-				print "Failure copying", file_path, "to", sound_dest
+				logging.warning("Failure copying: %s to %s", file_path, sound_dest, exc_info=True)
 				raise Exception
 			finally:
 				popup.destroy()
@@ -956,14 +956,14 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		if page.screenshot != '' and not page.use_soundgraphic:
 			self.menulist.append('Adjust')
 			
-		print "Graphic menu list:", self.menulist
+		logging.info("Graphic menu list: %s", self.menulist)
 		self.default = "Change Graphic"
 		
 		Graphic_menu_row.post(self)
 		
 	def handle_menu(self, menustring):
 		action = self.dict[menustring]
-		print "Graphic file menu handler", action
+		logging.info("Graphic file menu handler %s", action)
 		if action is 'Load':
 			self.load()
 		elif action is 'Reuse':
@@ -974,13 +974,13 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			self.usesound()
 		else:
 			self.post()
-			print "Time to relax - or panic g", action
+			logging.info("Time to relax - or panic %s", action)
 	def load(self):
 		"""
 		Load in a graphic - presumably a screen shot
 		"""
 
-		print "this is the screen shot loader..."
+		logging.info("this is the screen shot loader...")
 		page = self.editor.obj
 		page.use_soundgraphic = False
 		page.changed = True
@@ -995,7 +995,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.file_load()
 
 	def reuse(self):
-		print "this is the screen shot reloader..."
+		logging.info("this is the screen shot reloader...")
 		page = self.editor.obj
 		page.use_soundgraphic = False
 		page.changed = True
@@ -1006,19 +1006,19 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 
 		#self.file_path = tkFileDialog.askopenfilename(initialdir=initialPath, defaultextension='.png', title="Open screen shot...", filetypes=filetypes, initialfile=initialfile)
 
-		print"reuse: initial file:", self.initialfile
+		logging.info("reuse: initial file: %s", self.initialfile)
 		self.copy_graphicfile = False	# we already have it - just change the name...
 		self.file_load()
 
 	def file_load(self):
 		page = self.editor.obj
-		print "----File load - initial file:", self.initialfile
+		logging.info("----File load - initial file: %s", self.initialfile)
 		file_path = tkFileDialog.askopenfilename(initialdir=self.initialPath, defaultextension='.png', title="Select screen shot...", filetypes=self.filetypes, initialfile=self.initialfile)
 		if not file_path:
 			return
 		
 		orig_filename = os.path.split(self.initialfile)[1]	# used to determine if we have the same file...
-		print "Graphic_menu_row_screenshot File path is:", file_path
+		logging.info("Graphic_menu_row_screenshot File path is: %s", file_path)
 		filename = os.path.split(file_path)[1]
 		self.editor.set_member('screenshot', file_path)
 		
@@ -1033,7 +1033,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			try:
 				shutil.copy(file_path, graphic_dest)
 			except Exception as e:
-				print "Failure copying", file_path, "to", graphic_dest
+				logging.warning("Failure copying %s to %s", file_path, graphic_dest, exc_info=True)
 				raise Exception
 			finally:
 				popup.destroy()
@@ -1045,7 +1045,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 				open = '/usr/bin/open'
 				subprocess.call([open, '-W', '-a', 'Preview.app',  graphic_dest])
 		except Exception as e:
-				print "Ooops - Exception", e, sys.exc_info()[0]
+				logging.warning("Problem executing open of Preview.app", exc_info=True)
 				sys.exit(1)
 		prev_popup.destroy()
 
@@ -1057,11 +1057,11 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 
 		# is this the same file?  (i.e., we just reselected it?)
 		if filename == orig_filename and not self.copy_graphicfile:	
-			print "Graphic seems to be the same:  not changing...------------------", filename, orig_filename, self.copy_graphicfile
+			logging.info("Graphic seems to be the same:  not changing... File: %s, orig file: %s,graphics file: %s------------------", filename, orig_filename, self.copy_graphicfile)
 			xStart = page.xStart
 			xEnd = page.xEnd
 		else:		# set the start/end to a reasonable guess
-			print "New graphic ------------------------", graphic_dest, w_05, w_95
+			logging.info("New graphic: %s, w05, %d, w95, %d ------------------------", graphic_dest, w_05, w_95)
 			xStart = w_05	
 			xEnd = w_95
 			
@@ -1109,7 +1109,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		self.editor.set_member('xStart', graph_edit.start_x)
 		self.editor.set_member('xEnd', graph_edit.end_x)
 				
-		print "xStart, xEnd", self.editor.get_member('xStart'), self.editor.get_member('xEnd')
+		logging.info("xStart, xEnd: %d, %d", self.editor.get_member('xStart'), self.editor.get_member('xEnd'))
 
 		self.post()
 		page.needs_rebuild = True
@@ -1124,7 +1124,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		"""
 		Use the graphic built from the sound...
 		"""
-		print "Using the sound graphic..."
+		logging.info("Using the sound graphic...")
 		page = self.editor.obj
 		page.use_soundgraphic = True
 		#self.editor.set_member('graphic', page.soundgraphic)
@@ -1176,16 +1176,16 @@ class Select_edit():
 		"""
 		Called when the "Edit" button is pushed
 		"""
-		print "edit_select called."
+		logging.info("edit_select called.")
 		selected_str = self.my_option_menu.var.get()
 		if selected_str is None:
-			print "Got a Null selection."
-		print self.my_option_menu.var.get()
+			logging.info("Got a Null selection.")
+		logging.info(self.my_option_menu.var.get())
 		self.selected = self.my_option_menu.dictionary[selected_str]
 		self.tmpBox.destroy()
 		
 	def menu_callback(self, value):
-		print "called back we were", value
+		logging.info("called back we were: %s", value)
 
 					
 class Check_button():
@@ -1258,13 +1258,13 @@ class Edit_screen:
 		not to be called directly - set up for the derivative
 		class
 		"""
-		print "hello"
+		logging.info("hello")
 		if parent.edit_lock:
-			print "locked"  # (obviously more, later)
+			logging.info("locked")  # (obviously more, later)
 			return
 		#parent.edit_lock = True
 		#new = False
-		print "Edit Screen: new:",new
+		logging.info("Edit Screen: new: %s",new)
 		self.parent = parent		# at this point, coLab_top
 		self.object_type = 'Unset'
 		self.new = new
@@ -1323,7 +1323,7 @@ class Edit_screen:
 	    row = Entry_row(self, "Name", "name", width=20)
 	    self.name_row = row
 	    # build the list of excluded names: the existing page list of the parent group...
-	    print "PES: obj, group", self.obj.name, self.obj.group_obj.name
+	    logging.info("PES: obj: %s, group %s", self.obj.name, self.obj.group_obj.name)
 	
 	    row.exclude_list = self.exclude_list
 	    row.exclude_chars=' "/:'        # characters we don't want in file names...
@@ -1357,27 +1357,26 @@ class Edit_screen:
 			
 		self.ok = ok
 		self.obj.name = value
-		print
-		print "------------------"
-		print "Creation of song/page", self.obj.name, self.ok
+		logging.info("------------------")
+		logging.info("Creation of song/page: %s, ok: %s", self.obj.name, self.ok)
 	
-		print "Dump----------------"	
-		#print self.obj.dump()
-		print'---first home'
+		logging.info("Dump----------------")
+		#logging.info("%s", self.obj.dump())
+		logging.info('---first home')
 		# Add the new name to the so far partial paths...
 		try:
 			sub_dir = os.path.join(self.obj.sub_dir,  self.obj.name)
 			home_dir = os.path.join(self.obj.coLab_home, sub_dir)
 		except Exception as e:
-			print "Cannot build new page sub_dir", e, sys.exc_info()[0]
+			logging.warning("Cannot build new page sub_dir: %s", home_dir, exc_info=True)
 			sys.exit(1)
 	
 		clclasses.set_paths(self.obj, sub_dir)		# Paths are now correct...
-		print "Pagehome:", self.obj.home
-		print "Pageroot:", self.obj.root
+		logging.info("Pagehome: %s", self.obj.home)
+		logging.info("Pageroot: %s", self.obj.root)
 
 		self.object_type = self.obj.object_type
-		print "Save new - object type:", self.object_type
+		logging.info("Save new - object type: %s", self.object_type)
 		
 		# 
 		# A bit klunky for now but....
@@ -1408,9 +1407,9 @@ class Edit_screen:
 		arguably could be part of __init__
 		'''
 		
-		print "-----------Setup called!"
+		logging.info("-----------Setup called!")
 		if self.edit_frame is not None:
-			print "---------------Destroy All Page Frames...---------"
+			logging.info("---------------Destroy All Page Frames...---------")
 			self.edit_frame.destroy()
 
 		# Set up a dictionary listing the row objects, etc. that have the 
@@ -1438,13 +1437,13 @@ class Edit_screen:
 		Read the current state of the edit list into the 
 		object.
 		"""
-		print "Reading into obj.."
+		logging.info("Reading into obj..")
 		self.ok = True		# until we hear otherwise...
 		self.bad_list = []	# Keep track of the names that are not set well..
 		for item in self.editlist:		# editlist is a dictionary of member names -> edit row objects
 			row_obj = self.editlist[item]	# convert to a row object
 			(value, ok) = row_obj.return_value()
-			print "item.member:", row_obj.member, value, ok
+			logging.info("item.member: %s, OK: %s", row_obj.member, value, ok)
 			#  prev  value - have we changed...?
 			try:	# this is not working yet....
 				prev_value = eval ("self.obj.prev." + row_obj.member)
@@ -1460,7 +1459,7 @@ class Edit_screen:
 			# may not want to do this - but it likely doesn't matter as we 
 			# will either correct it, or toss it.
 			string = "self.obj." + item + ' = """' + str(value) + '"""'
-			print "exec string:", string
+			logging.info("exec string: %s", string)
 			exec(string)
 				
 		
@@ -1473,8 +1472,8 @@ class Edit_screen:
 		try:
 			return(self.editlist[member])
 		except Exception as e:
-			print "Initialization Failed", sys.exc_info()[0], e
-			print "member is:", member
+			logging.warning("Initialization Failed!!!!")
+			logging.warning("member is: %s", member, exc_info=True)
 			raise SystemError
 				
 	def set_member(self, member, value):
@@ -1657,7 +1656,7 @@ class Page_edit_screen(Edit_screen):
 		menu.post()
 			
 		#  Part - depends on the song selected.
-		print "part time..."
+		logging.info("part time...")
 		menu = Menu_row(self, "Part", "part")
 		self.part_obj = menu		# save this for song changes (implying a new part list)
 		menu.titles = self.build_part_list()
@@ -1674,28 +1673,27 @@ class Page_edit_screen(Edit_screen):
 			
 
 	def save(self):
-		print
-		print "------------------"
-		print "Dump of page", self.obj.name
+		logging.info("------------------")
+		logging.info("Dump of page: %s", self.obj.name)
 		
-		#print "Dump----------------"	
-		#print self.obj.dump()
-		print'---first home'
+		logging.info("Dump----------------")
+		logging.info("%s", self.obj.dump())
+		logging.info('---first home')
 		try:
 			sub_dir = os.path.join('Group', self.obj.group, 'Page',  self.obj.name)
 			home_dir = os.path.join(self.obj.coLab_home, sub_dir)
 		except Exception as e:
-			print "Cannot build new page sub_dir", e, sys.exc_info()[0]
+			logging.warning("Cannot build new page sub_dir: %s ", home_dir, exc_info=True)
 			sys.exit(1)
 	
 		clclasses.set_paths(self.obj, sub_dir)		# Paths are now correct...
-		print "Pagehome:", self.obj.home
-		print "Pageroot:", self.obj.root
+		logging.info("Pagehome: %s", self.obj.home)
+		logging.info("Pageroot: %s", self.obj.root)
 		
 		self.read()
 		
 		if not self.ok:
-			print "Still something wrong - see above"
+			logging.info("Still something wrong - see above")
 			message = "There were problems with the following fields:\n\n"
 			spacer=' '
 			for i in self.bad_list:
@@ -1708,7 +1706,7 @@ class Page_edit_screen(Edit_screen):
 		message = "This will " + self.action + " the page: " + self.obj.name
 		message += "\n\nOK?"
 		if u'no' == tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
-			print "return"
+			logging.info("return")
 			return
 
 		if self.action == 'create':
@@ -1751,13 +1749,13 @@ def create_new_page(coLab_top):
 	The rest is done there.
 	"""
 	
-	print "New page"
+	logging.info("New page")
 	group_name = coLab_top.current_grouptitle		# currently selected group
 	this_group = coLab_top.current_group
 	
-	print "My group is:", group_name, this_group.title
+	logging.info("My group is: %s, title: %s", group_name, this_group.title)
 	
-	print "Group info:", this_group.subtitle
+	logging.info("Group info: %s, subtitle: %s", this_group.subtitle)
 	
 	new_page = clclasses.Page(None)
 	new_page.group_obj = this_group
@@ -1769,19 +1767,19 @@ def create_new_page(coLab_top):
 	
 	
 def edit_page(coLab_top):
-	print "edit Page"
+	logging.info("edit Page")
 	
 	selector = Select_edit(coLab_top, "pagelist", "desc_title", "Page")	# pick a page...
-	print "ep hello"
+	logging.info("ep hello")
 	selector.post()
-	print "ep post post"
+	logging.info("ep post post")
 	try:
 		page = selector.selected
 	except:
 		page = None
 	if page is None:
 		return
-	print "Selected:", page.name, page.locked
+	logging.info("Selected: %s, locked: %s", page.name, page.locked)
 	#if page.locked:
 	#	coLab_top.master.beep()
 	#	return
@@ -1790,19 +1788,18 @@ def edit_page(coLab_top):
 
 
 def create_new_song(coLab_top):
-	print "new song"
-	"""
-	Does the initial setup to call the edit screen and leaves.
+	""" Does the initial setup to call the edit screen and leaves.
+
 	The rest is done there.
 	"""
 	
-	print "New song"
+	logging.info("New song")
 	group_name = coLab_top.current_grouptitle		# currently selected group
 	this_group = coLab_top.current_group
 	
-	print "My group is:", group_name, this_group.title
+	logging.info("My group is: %s, title: %s", group_name, this_group.title)
 	
-	print "Group info:", this_group.subtitle
+	logging.info("Group info: subtitle: %s", this_group.subtitle)
 	
 	new_song = clclasses.Song(None)
 	new_song.group_obj = this_group
@@ -1814,19 +1811,19 @@ def create_new_song(coLab_top):
 	
 def edit_song(coLab_top):
 
-	print "edit Song"
+	logging.info("edit Song")
 	
 	selector = Select_edit(coLab_top, "songlist", "desc_title", "Song")	# pick a song...
-	print "ep hello"
+	logging.info("es hello")
 	selector.post()
-	print "ep post post"
+	logging.info("es post post")
 	try:
 		song = selector.selected
 	except:
 		song = None
 	if song is None:
 		return
-	print "Selected:", song.name
+	logging.info("Selected:%s", song.name)
 	
 	coLab_top.editor = Song_edit_screen(coLab_top, song, new=False)	
 
@@ -1845,13 +1842,13 @@ class Song_edit_screen(Edit_screen):
 	def __init__(self, parent, song, new=False):
 		Edit_screen.__init__(self, parent, song, new)
 
-		print "hello"
+		logging.info("hello")
 		if parent.edit_lock:
-			print "locked"  # (obviously more, later)
+			logging.info("locked")   # (obviously more, later)
 			return
 		#parent.edit_lock = True
 		#new = False
-		print "SES: new:",new
+		logging.info("SES: new: %s",new)
 		
 		song.object_type = 'Song'
 		
@@ -1894,26 +1891,25 @@ class Song_edit_screen(Edit_screen):
 		
 		
 	def save(self):
-		print
-		print "------------------"
-		print "Dump of page", self.obj.name
+		logging.info("------------------")
+		logging.info("Dump of page %s", self.obj.name)
 		self.read()
-		print "Dump----------------"	
-		#print self.obj.dump()
-		print'---first home'
+		logging.info("Dump----------------"	)
+		logging.info("%s", self.obj.dump())
+		logging.info('---first home')
 		try:
 			sub_dir = os.path.join('Group', self.obj.group, 'Song',  self.obj.name)
 			home_dir = os.path.join(self.obj.coLab_home, sub_dir)
 		except Exception as e:
-			print "Cannot build new page sub_dir", e, sys.exc_info()[0]
+			logging.warning("Cannot build new page sub_dir %s", home_dir, exc_info=True)
 			sys.exit(1)
 	
 		clclasses.set_paths(self.obj, sub_dir)		# Paths are now correct...
-		print "Pagehome:", self.obj.home
-		print "Pageroot:", self.obj.root
+		logging.info("Pagehome: %s", self.obj.home)
+		logging.info("Pageroot: %s", self.obj.root)
 		
 		if not self.ok:
-			print "Still something wrong - see above"
+			logging.info("Still something wrong - see above")
 			message = "There were problems with the following fields:\n\n"
 			spacer=' '
 			for i in self.bad_list:
@@ -1927,7 +1923,7 @@ class Song_edit_screen(Edit_screen):
 			message = "This will " + self.action + " the song: " + self.obj.name
 			message += "\n\nOK?"
 			if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
-				print "return"
+				logging.info("return")
 				return
 	
 	
@@ -1962,7 +1958,7 @@ class Song_edit_screen(Edit_screen):
 #------ interface to main routine...
 import coLab
 def main():
-	print "Colab Main"
+	logging.info("Colab Main")
 	coLab.main()
 	
 if __name__ == '__main__':

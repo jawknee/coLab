@@ -107,7 +107,7 @@ class Sizes:
 		try:
 			return self.names.index(s1) > self.names.index(s2)
 		except ValueError:
-			print "Sizes class invalid sizes:", s1, s2
+			logging.warning("Sizes class invalid sizes: %s, %s", s1, s2, exc_info=True)
 			raise ValueError('Invalid Size')
 	def is_larger_than(self,s1,s2):
 		""" Convenient notation for the reverse... """

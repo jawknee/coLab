@@ -110,9 +110,9 @@ def calculate_fps(page):
 	pixels = end - start + 1 
 	# 
 	pps =  pixels / secs_long	# pixels per second required
-	print "Size:", width, height
-	print "start, end:",  start, end, factor
-	print "calculate_fps, pixels/sec:", pps
+	logging.info("Size: w: %f, h: %f", width, height)
+	logging.info("start: %f, end: %f, factor: %f",  start, end, factor)
+	logging.info("calculate_fps, pixels/sec: %f", pps)
 
 	"""   At this time - there are no fractional fps,
 	      ffmpeg does not support it - so let's eliminate
@@ -126,7 +126,7 @@ def calculate_fps(page):
 			break	# this is the one.
 	
 	#page.post()	# seems like I think you'd want to remember..
-	print "Derived fps is:", fps
+	logging.info("Derived fps is: %f", fps)
 	return( (frames, seconds) )	# should account for max fps being enough...
 
 def quantize_increment(time_val):
@@ -145,7 +145,7 @@ def quantize_increment(time_val):
 	return i 
 
 def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixel=0):
-	print "Creating image...", image
+	logging.info("Creating image... %s", image)
 	"""
 	soundimageTop = tk.Toplevel()
 	
@@ -169,7 +169,7 @@ def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixe
 	try:
 		page.editor.get_member('soundfile').post()
 	except:
-		print "Free running..."
+		logging.info("Free running...")
 		pass
 	
 	#soundimageTop.destroy()
@@ -200,13 +200,13 @@ def make_sub_images(page, size=None):
 		orig_image = Image.open(baseimage)
 		#page.screenshot_width = orig_image.size[0]	# save the width...
 	except:
-		print "Error opening:", baseimage
+		logging.warning("Error opening: %s", baseimage, exc_info=True)
 	else:
 		base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 		tn_image = orig_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
 		base_image.save(graphic, 'PNG')
 		tn_image.save(thumbnail, 'PNG')
-		print "make_sub_images:", graphic, thumbnail
+		logging.info("make_sub_images: %s, tn: %s", graphic, thumbnail)
 		
 		resourcedir = os.path.join(page.coLab_home, 'Resources')
 		for postertype in [ 'Start', 'Pressed', 'Waiting']:
@@ -216,7 +216,7 @@ def make_sub_images(page, size=None):
 			try:
 				over_image = Image.open(overlaypath).convert('RGBA')
 			except IOError, info:
-				print "Cannot open poser image", overlaypath, info
+				logging.warning("Cannot open poser image %s", overlaypath, exc_info=True)
 			else:
 				# could resize here - but I'd rather see it something changes...
 			#
@@ -237,11 +237,11 @@ def make_sub_images(page, size=None):
 	try:
 		snd_image = Image.open(soundgraph)
 	except:
-		print "Error opening:", soundgraph
+		logging.warning("Error opening: %s", soundgraph, exc_info=True)
 	else:
 		tn_image = snd_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
 		tn_image.save(soundthumb, 'PNG')
-		print "make_sub_images:", soundgraph, soundthumb
+		logging.info("make_sub_images: %s, tn: %s", soundgraph, soundthumb)
 		del snd_image
 
 def make_images(page, prog_bar=None, media_size=None):
@@ -259,7 +259,7 @@ def make_images(page, prog_bar=None, media_size=None):
 	
 	fontclass = clutils.FontLib()	# this needs to be done at initialization   RBF
 
-	print "make_images: page.home:", page.home
+	logging.info("make_images: page.home: %s", page.home)
 
 	directory = os.path.join(page.home, 'coLab_local', 'Overlays' )
 	os.system('rm -rfv ' + directory + '/')
@@ -268,8 +268,9 @@ def make_images(page, prog_bar=None, media_size=None):
 	try:
 		os.chdir(page.home)
 	except OSError, info:
-		print "Problem changing to :", page.home
-		print info
+		logging.warning("Problem changing to: %s", page.home)
+		logging.warning("%s: ", info, exc_info=True)
+    
 		sys.exit(1)
 	if media_size is None:
 		media_size = page.media_size
@@ -286,7 +287,7 @@ def make_images(page, prog_bar=None, media_size=None):
 	(width, height) = size
 	
 	adjust_factor = size_class.calc_adjust(height)
-	print "adjust_factor:", adjust_factor
+	logging.info("adjust_factor: %s", adjust_factor)
 
 	box_width = int(config.T_BOX_WIDE * adjust_factor) 
 	box_height = int(config.T_BOX_HIGH * adjust_factor)
@@ -356,9 +357,10 @@ def make_images(page, prog_bar=None, media_size=None):
 	#
 	frames = int(float(page.duration) * page.fps) 
 
-	print "duration, fps, frames:", page.duration, page.fps, frames
+	logging.info("duration: %f, fps: %f, frames: %d", page.duration, page.fps, frames)
 	if frames != prog_bar.max:
-		print "------FRAME MISMATCH---------", frames, prog_bar.max
+		logging.warning("------FRAME MISMATCH---------")
+		logging.warning("Frames: %s, prog_bar.max: %s", frames, prog_bar.max)
 		prog_bar.max = frames
 		#prog_bar.post()
 		#sys.exit(0)
@@ -375,7 +377,7 @@ def make_images(page, prog_bar=None, media_size=None):
 		offsetcolor=clColors.HILITE
 	# set the width of the offset based on the scale adjustment
 	offsetwidth = 1 + int(adjust_factor) 
-	print "color, offset, width", linecolor, offsetcolor, offsetwidth
+	logging.info("color: %s, offset: %s, width: %s", linecolor, offsetcolor, offsetwidth)
 	
 	overlay_master = Image.new( 'RGBA', size, color=clColors.XPARENT)
 	master_draw = ImageDraw.Draw(overlay_master)
@@ -457,9 +459,9 @@ def make_images(page, prog_bar=None, media_size=None):
 		frame_image = base_image.copy()		# new copy of the base...
 		frame_image.paste(overlay_rgb, (0,0), mask)
 
-		print "Frame", fr_num, "of", last_fr_num
+		logging.info("Frame num: %s, to %s", fr_num, last_fr_num)
 		frame_image.save( directory + '/' + 'Frame-%05d.png' % fr_num, 'PNG')
-		#print "Saved:", directory + '/' + 'Frame-%05d.png' % fr_num
+		#logging.info("Saved: %s, / %s", directory 'Frame-%05d.png' % fr_num)
 
 		xPos += frameIncr
 		try:
@@ -467,11 +469,11 @@ def make_images(page, prog_bar=None, media_size=None):
 		except:
 			pass
 		
-	print "Done: ",
+	logging.info("Done: ")
 	if page.fps < 1:
-		print "Seconds per frame:", 1/page.fps
+		logging.info("Seconds per frame: %s", 1/page.fps)
 	else:
-		print "Frames per second:", page.fps
+		logging.info("Frames per second: %s", page.fps)
 
 def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill=(196, 176, 160, 55), maxsize=(670,100) ):
 	"""
@@ -484,8 +486,9 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	We convert the string from what could be utf-8 (check this - other formats are possible)
 	to the ascii equivalent since most TrueType fonts don't support them.
 	"""
-	print "Font file is:", fontfile
+	logging.info("Font file is: %s", fontfile)
 	font = ImageFont.truetype(fontfile, fontsize, encoding='unic')	# utf-8 is not working yet...
+	#font = ImageFont.truetype(fontfile, fontsize, encoding='utf-8')	# utf-8 is not working yet...
 	string = string.encode('ascii', 'ignore')	# decode any utf-8 chars - not handled well in mo
 	# create a temp image - just long enough to get the size of the text
 	size = (10,10)
@@ -493,7 +496,7 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	box_draw = ImageDraw.Draw(box)
 
 	(w,h) = box_draw.textsize(string, font=font)
-	print "Size is:", w, h
+	logging.info("Size is: w: %d, h: %d", w, h)
 	# Let's see if we overflowed the size...
 	# (There may be a more python way of doing this, 
 	# but let's just return the largest of the returned
@@ -505,19 +508,19 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	maxw, maxh = maxsize
 	maxw = float(maxw - pad)	# account for the border (included in max)
 	maxh = float(maxh - pad)	# and make a float for the division...
-	print "maxsize, maxw, maxh", maxsize, maxw, maxh
+	logging.info("maxsize: %f, maxw: %f, maxh: %f", maxsize, maxw, maxh)
 	factor = max ( w / maxw, h / maxh )
 	if factor > 1.0:
 		factor = factor * 1.1	# kludge - but accounts for variability in actual font sizes...
 		newfontsize=int(fontsize/factor)
 		font = ImageFont.truetype(fontfile, newfontsize)
-		#print "Scale font by 1 /", factor, " from/to:", fontsize, newfontsize
-		#print "Factor = min( w/maxw, h/maxh):", factor, w, maxw, h, maxh
+		logging.info("Scale font by 1 /%f  from/to: %f, %f", factor, fontsize, newfontsize)
+		logging.info("Factor:  %f, min( w: %f /maxw: %f , h: %f /maxh: %f ):", factor, w, maxw, h, maxh)
 		w = int(w/factor)
 		h = int(h/factor)
-		print "New w,h:", w,h, "font/new:", fontsize, newfontsize, " factor:", factor
+		logging.info("New w,h: %d, %d font/new: %d, %d,  factor %f", w,h, fontsize, newfontsize, factor)
 		(w,h) = box_draw.textsize(string, font=font)
-		print "New width/height:", w, h
+		logging.info("New width/height: %d, %d", w, h)
 
 	size = (w+pad, h+pad)
 	offset = (border, border)
@@ -553,15 +556,15 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	font = ImageFont.truetype(fontpath, font_size)
 	res_string = str(width) + " x " + str(height)
 	(t_width, t_height) = draw.textsize(res_string, font=font)
-	print "Text size is :", t_width, t_height
+	logging.info("Text size is w: %d, h: %d", t_width, t_height)
 	
 	
-	print "build sound file"
+	logging.info("build sound file")
 	lborder = config.SG_LEFT_BORDER
 	rborder = config.SG_RIGHT_BORDER 
 	tborder = int(config.SG_TOP_BORDER * adjust_factor)
 	bborder = int(config.SG_BOTTOM_BORDER * adjust_factor)
-	print "Border constants set."
+	logging.info("Border constants set.")
 	xmin = lborder
 	xmax = width - rborder 
 	ymin = bborder
@@ -571,7 +574,7 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	r_text_x = xmax - box_width - int(10 * adjust_factor) - t_width
 	r_text_y = ymax + int(10 * adjust_factor)
 	
-	print "rx,ry, ", r_text_x, r_text_y
+	logging.info("rx,ry, %f, %f", r_text_x, r_text_y)
 	
 	# Draw with hi/lo lights so it should show up on many any background
 	# (and look cool!)
@@ -600,7 +603,7 @@ def signed2int(s):
                 value = value - max
 
         #if value >= 65536:
-        #        print "OOops - toobig:", value
+        #        logging.info("OOops - toobig: %s", value)
         #        raise ValueError
         return(value)
 
@@ -618,7 +621,7 @@ class Sound_image():
 	"""
 	def __init__(self, sound_file, image_file, media_size, page, prog_bar=None, theme='Default', max_samp_per_pixel=0):
 		""" open the sound file and set the various internal vars. """
-		print "Beginning Sound file open..."
+		logging.info("Beginning Sound file open...")
 		
 		try:
 			self.aud = aifc.open(sound_file)
@@ -698,14 +701,14 @@ class Sound_image():
 		(width, height) = size
 		
 		adjust_factor = self.size_class.calc_adjust(height)
-		print "adjust_factor:", adjust_factor
+		logging.info("adjust_factor: %f", adjust_factor)
 		
-		print "build sound file"
+		logging.info("build sound file")
 		lborder = int(config.SG_LEFT_BORDER * adjust_factor)
 		rborder = int(config.SG_RIGHT_BORDER * adjust_factor)
 		tborder = int(config.SG_TOP_BORDER * adjust_factor)
 		bborder = int(config.SG_BOTTOM_BORDER * adjust_factor)	
-		print "Border constants set."
+		logging.info("Border constants set.")
 		xmin = lborder
 		xmax = width - rborder 
 		ymin = bborder
@@ -744,7 +747,7 @@ class Sound_image():
 	
 		aud_frames_per_pixel = float(self.nframes) / num_xpix
 		
-		print "Frames_per_pixel", aud_frames_per_pixel
+		logging.info("Frames_per_pixel: %f", aud_frames_per_pixel)
 		# variables for keeping track of the range..
 		max = -self.samp_max
 		min = self.samp_max
@@ -784,11 +787,11 @@ class Sound_image():
 		
 		
 		# v is vertical line
- 		print "reading frames...", self.nframes
+ 		logging.info("reading frames... %s", self.nframes)
 
 		aud_frame_data = self.aud.readframes(self.nframes)
 	
-		print "Done reading.", len(aud_frame_data)
+		logging.info("Done reading. %d", len(aud_frame_data))
 		p = 0	# pointer into the frame data
 		# for previews, we can seet sample_skip to some value 
 		# (e.g. 100) to 
@@ -831,7 +834,7 @@ class Sound_image():
 					value = signed2int( aud_frame_data[p:ep] )
 					if value == self.samp_max -1 or value == -self.samp_max:
 						clip_count += 1
-						print "-------Found Clip:", value, aud_frame_count, c, v
+						logging.info("-------Found Clip: val: %s, frame: %s, c: %s, v: %s", value, aud_frame_count, c, v)
 					#p = ep
 					#aud_frame_data = aud_frame_data[w:]		# strip what we just read off the front
 					run_count[c] += value
@@ -856,8 +859,8 @@ class Sound_image():
 								max = value
 								
 			last_samp = next_samp_num 	# and so it goes, round and round...
-		print "----Max, min:", max, min
-		print " ----------Samp Max:", self.samp_max
+		logging.info("----Max, min: %s,%s", max, min)
+		logging.info(" ----------Samp Max: %s", self.samp_max)
 		try:
 			self.prog_bar.update(num_xpix)
 		except:
@@ -893,7 +896,7 @@ class Sound_image():
 			image = self.page.screenshot
 			orig_image = Image.open(image)
 			newsize = (width, height-tborder-bborder-1)
-			print "resizing graphic to: ", newsize
+			logging.info("resizing graphic to: %s", newsize)
 			base_image = orig_image.resize(newsize, Image.ANTIALIAS ).convert('RGBA')
 			self.graphic.paste(base_image,(0, tborder+1))
 		else:	
@@ -956,7 +959,7 @@ class Sound_image():
 					if max_tab[c][s] == self.samp_max-1:
 						fill = clColors.BRIGHT_RED
 						tip_stretch = clip_stretch
-						#print "=====Clip!", s, c, max_tab[c][s], min_tab[c][s], max, min
+						logging.info("=====Clip! %s %s %s %s %s %s", s, c, max_tab[c][s], min_tab[c][s], max, min)
 					else:
 						fill = colors.peak
 						tip_stretch	= 0
@@ -968,7 +971,7 @@ class Sound_image():
 					if min_tab[c][s] == -self.samp_max:
 						fill = clColors.BRIGHT_RED
 						tip_stretch = clip_stretch	# allows us to highliging...
-						#print "-----Clip!", s, c, max_tab[c][s], min_tab[c][s], max, min
+						logging.info("-----Clip! %s %s %s %s %s %s", s, c, max_tab[c][s], min_tab[c][s], max, min)
 					else:
 						fill = colors.peak
 					
@@ -1128,7 +1131,7 @@ class Sound_image():
 			string = 'Clipping: ' + str(clip_count)
 			(bwidth, bheight) = graphic_draw.textsize(bot_string, font=font)
 			right = left + bwidth + 15
-			print "Right text fun:", right, width, bwidth, 15
+			logging.info("Right text fun: %s, %s, %s, %s ", right, width, bwidth, 15)
 			graphic_draw.text((right, ymax+3), string, font=font, fill=clColors.BRIGHT_RED)
 		
 		#add_res_text(graphic_draw, size, adjust_factor)
@@ -1137,10 +1140,10 @@ class Sound_image():
 		
 		graphic.save(self.image_file, 'PNG')
 		
-		print "Got min/max and actual max of:", min, max, max_xcrsn
-		print "Computed headroom of:", hr_ratio, '/', headroom, 'dBFS'
-		print "Expected vs. processed audioframes:", self.nframes, aud_frame_count
-		print "Clip count:", clip_count
+		logging.info("Got min/max and actual max of: %s %s %s", min, max, max_xcrsn)
+		logging.info("Computed headroom of: %s / %s dBFS", hr_ratio, headroom)
+		logging.info("Expected vs. processed audioframes: %s, %s", self.nframes, aud_frame_count)
+		logging.info("Clip count: %s", clip_count)
 	
 
 	def chan_list(self):

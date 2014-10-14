@@ -53,16 +53,16 @@ class Render_engine():
 		
 		try:
 			self.conf=clutils.get_config()
-			print "conf shows:", self.conf.coLab_home
+			logging.info("conf shows: %s", self.conf.coLab_home)
 		except ImportError:
-			print "Cannot find config."
+			logging.error("Cannot find config.", exc_info=True)
 			sys.exit(1)		# fatal...
 			
 		self.home = self.conf.coLab_home   # can be overridden - not currently anticipated
 		if render_list_file is None:	
 			render_list_file = os.path.join(self.home, "PendingRenders")	
 		
-		print "Render list:", render_list_file
+		logging.info("Render list: %s", render_list_file)
 			
 		self.render_list_file = render_list_file
 		self.top = None		# force the first frame to open...
@@ -110,7 +110,7 @@ class Render_engine():
 			self.pending_renders = []
 		
 		
-		print "Render file list:", self.pending_renders
+		logging.info("Render file list: %s", self.pending_renders)
 		if len(self.pending_renders) != 0:
 			self.pending_renders.pop()	# the new line at the end of the last line creates a null entry - loose it.
 		self.refresh()
@@ -121,13 +121,13 @@ class Render_engine():
 	def check(self):	
 		""" Called every now and then to see what we're up to... """
 
-		#print "Entered check."
+		logging.info("Entered check.")
 		if self.busy:
-			#print "still busy..."
+			logging.info("still busy...")
 			self.master.after(1000,self.check)	# every second should be sufficient...
 			return
 		
-		print "Length of pending_renders is:", len(self.pending_renders)
+		logging.info("Length of pending_renders is: %d", len(self.pending_renders))
 		if len(self.pending_renders) == 0:
 			next_render = None
 			self.active_name.set("(None)")
@@ -139,7 +139,7 @@ class Render_engine():
 			#for mirroring in [ False, True, True ]:
 			for mirroring in [ True ]:	# for now...
 				for group in self.group_rebuild_list:
-					print "rebuilding and uploading for group:", group, mirroring
+					logging.info("rebuilding and uploading for group: %s, mirroring: %s", group, mirroring)
 					rebuild_and_upload(group, mirror=mirroring )
 			return
 		else:
@@ -167,7 +167,7 @@ class Render_engine():
 		try:
 			page.load(next_render)
 		except:
-			print "Something went wrong with the loading of 'next_render'"
+			logging.warning("Something went wrong with the loading of 'next_render'", exc_info=True)
 			return
 		
 		
@@ -187,17 +187,17 @@ class Render_engine():
 	def refresh(self):
 		""" Update the strings based on the current state of things.... """
 
-		print "Greetings from refresh"
+		logging.info("Greetings from refresh")
 		# create a Page class - load it up to the title, 
 		# build the titles from that...
 		p = clclasses.Page('temp')
 		renderlist = []		# titles of the pending renders...
 		for path in self.pending_renders:
-			#print "Path:", path
+			logging.info("Path: %s", path)
 			#fullpath = os.path.join(self.home, path)
 			p.load(path)
 			renderlist.append(p.desc_title)
-		#print "Renderlist is:", renderlist
+		logging.info("Renderlist is: %s", renderlist)
 		renderstring = '\n'.join(renderlist)
 		self.pending_list.set('\n'.join(renderlist))
 		
@@ -205,7 +205,7 @@ class Render_engine():
 	def add_render(self, path):
 		""" Add the passed path to the render list """
 
-		print "Add_render: just called with:", path
+		logging.info("Add_render: just called with: %s", path)
 		self.init()
 		self.pending_renders.append(path)
 		self.refresh()
@@ -219,12 +219,12 @@ class Render_engine():
 	def set_list(self, list):
 		self.init()	# check?
 		# tmp - just to see if I can set the list on the fly...
-		print "Just received list:", list
+		logging.info("Just received list: %s", list)
 		self.pending_list.set(list)
 		
 	def hello(self):
-		print "Greetings from Page_builder"
-		print "My render_list is:", self.render_list_file
+		logging.info("Greetings from Page_builder")
+		logging.info("My render_list is: %s", self.render_list_file)
 	
 	def render_all(self, page):
 		""" Calls render_page for each of the media sizes 
@@ -240,12 +240,11 @@ class Render_engine():
 		try:
 			os.chdir(page.home)
 		except OSError, info:
-			print "Problem changing to :", page.home
-			print info
+			logging.warning("Problem changing to: %s", page.home, exc_info=True)
 			sys.exit(1)
 
 		# remove all media of the form <name>-media - plus the old stuff...
-		print "Removing existing media files..."
+		logging.info("Removing existing media files...")
 		media_list = [ "-media-", "-desktop.m4v", "-iPhone-cell.3gp", "-iPhone.m4v", ".mov"  ]
 		# create a new list with the name prefix..
 		remove_list = []
@@ -256,7 +255,7 @@ class Render_engine():
 		for file in file_list:
 			for prefix in remove_list:
 				if file.startswith(prefix):
-					print "Removing media,", file, ", matching:", prefix
+					logging.info("Removing media file: %s, matching: %s", file, prefix)
 					os.system('rm -fv ' + file)
 
 		#
@@ -279,34 +278,34 @@ class Render_engine():
 			self.active_name.set(active_text)	# post the name....
 
 			# re-render this resolution...
-			print "Render-all, rendering:", page.media_size
+			logging.info("Render-all, rendering: %s", page.media_size)
 			top_bar = render_page(page)
-			print "Back from the render_page"
+			logging.info("Back from the render_page")
 			top_bar.destroy()		# seems to work better if we destroy the top bar here...
 
 			page.media_size = size_c.next_size(page.media_size)		# next?
 			if page.media_size == config.SMALLEST:
 				break
 		
-		print "Done - scheduling check in 100 ms"
+		logging.info("Done - scheduling check in 100 ms")
 		page.media_size = page.base_size
 		#self.master.after(100, self.check)
 		# Need something here to keep things going...   
 		#self.top.configure(takefocus=True)
 		
-		print "Scheduling browser..."
+		logging.info("Scheduling browser...")
 		local_url = "http://localhost/" + page.root
 		clSchedule.browse_url(local_url)
 		
 		self.group_rebuild_list.append(page.group)
-		print "Group rebuild list is:", self.group_rebuild_list
+		logging.info("Group rebuild list is: %s", self.group_rebuild_list)
 		self.busy = False
 		#browse_thread = threading.Thread(clSchedule.browse_url, args=(local_url))
 		#browse_thread.start()
-		print "Scheduling browser..."			#  RBF!!   hardcoded URL
+		logging.info("Scheduling browser...")			#  RBF!!   hardcoded URL
 		remote_url = "http://jawknee.com/" + page.root
 		clSchedule.browse_url(remote_url)
-		print "Done."
+		logging.info("Done.")
 		
 def render_page(page, media_size=None, max_samples_per_pixel=0):
 	""" Interface to the routines to render a page.  
@@ -324,7 +323,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	else:
 		page.media_size = media_size
 		
-	print "render_page - size is:", media_size
+	logging.info("render_page - size is: %s", media_size)
 	sound_dest = page.localize_soundfile()
 	img_dest = os.path.join(page.home, page.soundgraphic)
 	#make_sound_image(page, sound_dest, img_dest, size, max_samples_per_pixel)
@@ -348,7 +347,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	#
 	fps = imagemaker.calc_fps_val(page)
 	frames = int(float(page.duration) * fps) 
-	print "render_page fps, frames, page.duration", fps, frames,  page.duration
+	logging.info("render_page fps: %f, frames: %d, page.duration: %f", fps, frames,  page.duration)
 	#if page.use_soundgraphic:
 	if True:
 		f0 = tk.Frame(render_frame)
@@ -420,10 +419,10 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 			imagemaker.make_images(page, img_gen_progbar)
 			#img_gen_progbar.progBar.stop()
 			clAudio.make_movie(page, vid_gen_progbar)
-			print "Returned from clAudio.make_move"
+			logging.info("Returned from clAudio.make_move")
 			#vid_gen_progbar.stop()
 	except Exception, info:
-		logging.warning("TypeError: %s", info)
+		logging.warning("TypeError: %s", exc_info=True)
 		
 	#ftp_progbar.progBar.start()
 	"""
@@ -433,7 +432,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 		print"Need to find a solution to the group render problem!"
 	#"""
 	#ftp_progbar.progBar.stop()
-	print "returning the progTop var", progressTop
+	logging.info("returning the progTop var: %s", progressTop)
 	#page.top.update_idletasks()
 	#progressTop.destroy()
 	progressTop.update_idletasks()
@@ -448,7 +447,7 @@ def rebuild_and_upload(group, mirror=True, opt="nope"):
 	"""
 	#
 	# Just do it twice...
-	print "Full rebuild and upload...   ", time, "time."
+	logging.info("Full rebuild and upload...  time: %s", time)
 	# For now...
 	# Used to pass a group name - still do from the "Refresh" button.
 	# A bit kludgy, but if the passed item does not have a coLab_home, 
@@ -457,7 +456,7 @@ def rebuild_and_upload(group, mirror=True, opt="nope"):
 		group.coLab_home
 	except:
 		gname=group
-		print "WARNING: obsolescent call: group passed as a name:", gname
+		logging.warning("WARNING: obsolescent call: group passed as a name: %s", gname)
 		group = clclasses.Group(gname)
 		group.load()
 		
@@ -480,12 +479,12 @@ def do_mirror(coLab_home=None):
 
 	scriptpath = os.path.join(coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
 	osascript = "/usr/bin/osascript"
-	print "Mirror:", osascript, scriptpath
+	logging.info("Mirror: %s", osascript, scriptpath)
 	try:
 		pid = subprocess.Popen([osascript, scriptpath]).pid
-		print "do_mirror - mirror pid is:", pid
+		logging.info("do_mirror - mirror pid is: %d", pid)
 	except:
-		print "Mirror error: cannot continue."
+		logging.warning("Mirror error: cannot continue.", exc_info=True)
 		sys.exit(1)
 
 def rebuild(g, mirror=False, opt="nope"):
@@ -504,11 +503,11 @@ def rebuild(g, mirror=False, opt="nope"):
 		g.coLab_home
 	except:
 		gname=g 
-		print "WARNING: obsolecent call: group passed as a name:", gname
+		logging.info("WARNING: obsolecent call: group passed as a name: %s", gname)
 		g = clclasses.Group(gname)
 		g.load()
 		
-	print "Rebuilding group object:", g.title
+	logging.info("Rebuilding group object: %s", g.title)
 	
 	"""
 	At this point, we should have a populated group object, which includes
@@ -517,9 +516,9 @@ def rebuild(g, mirror=False, opt="nope"):
 	"""
 	# debug - print them out...	
 	for s in g.pagelist:
-		print "group->page", s.name
+		logging.info("group->page: %s", s.name)
 
-	print "----------"
+	logging.info("----------")
 	#  sort pages by creation date - old to new...
 	g.pagelist.sort(key=clclasses.createkey)
 
@@ -532,7 +531,7 @@ def rebuild(g, mirror=False, opt="nope"):
 	as needed, index.shtml (data file change)
 	"""
 	for pg in g.pagelist:
-		print "Next page - name, song is:", pg.name, pg.song
+		logging.info("Next page - name: %s, song is: %s", pg.name, pg.song)
 		thissong = g.songdict[pg.song]	# Song obj. for this page
 		# 
 		# and rebuild the html in that case...
@@ -553,28 +552,12 @@ def rebuild(g, mirror=False, opt="nope"):
 		try:
 			thispart = thissong.part_dict[pg.part]
 		except KeyError:
-			print "new part:", pg.part
+			logging.info("new part: %s", pg.part)
 			thissong.part_dict[pg.part] = []
 
 		thissong.part_dict[pg.part].append(pg)
 		
 		#RBF:   This whole section above needs a good look pretty soon.
-
-	"""  old debug code...
-	print "Songs found:"
-	for songname in song_dict:
-		print "Song:", songname
-		song = song_dict[songname]
-		song.list.sort(key=clclasses.updatekey)
-		for page in song.list:
-			print "  Page:", page.name
-
-		print "In part order"
-		for part in song.part_dict:
-			print "Part:", part
-			for page in song.part_dict[part]:
-				print "Page:", page.name
-	#"""
 
 	# sort pages by update time... oldest to newest
 	
@@ -602,12 +585,12 @@ def rebuild(g, mirror=False, opt="nope"):
 
 	pageURLbase = os.path.join(g.root, 'Page')
 	for pg in g.pagelist[index:]:
-		print "times:", pg.createtime, pg.updatetime
+		logging.info("times: create: %s, update: %s", pg.createtime, pg.updatetime)
 
 		# If the page is new or has been updated recently,
 		# then make a "mark"
 		age = cldate.epochtime(cldate.utcnow()) - cldate.epochtime(pg.updatetime)
-		print "Age is:", age
+		logging.info("Age is: %f", age)
 
 		flag = ''		# any tag on the end of name...
 		if age < NOT_NEW:
@@ -627,7 +610,7 @@ def rebuild(g, mirror=False, opt="nope"):
 			'<br><i>' + cldate.utc2short(pg.updatetime) + 
 			'</i></li>\n')
 
-		print pg.name, '-', cldate.utc2short(pg.updatetime), flag
+		logging.info("page: %s - update: $s - flag: $s", pg.name, cldate.utc2short(pg.updatetime), flag)
 
 	f_recent.write('</ul>\n')
 	f_recent.close()
@@ -639,7 +622,7 @@ def rebuild(g, mirror=False, opt="nope"):
 	try:
 		f_project = open(project, 'w+')
 	except IOError, info:
-		print "Error opening file:", project, info
+		logging.warning("Error opening file:", project, exc_info=True)
 
 	# a quick header...
 	f_project.write("""<!-- Shared "project" list generated by """ + sys.argv[0] + \
@@ -654,9 +637,9 @@ def rebuild(g, mirror=False, opt="nope"):
 
 	songURLbase = os.path.join(g.root, 'Song')
 	g.songlist.sort(key=clclasses.createkey)
-	print "index is", index, "song list is", g.songlist
+	logging.info("index is: %d, song list is", index, g.songlist)
 	for sg in g.songlist[index:]:
-		#print "times:", sg.createtime, sg.updatetime
+		logging.info("times: create %s, update, %s", sg.createtime, sg.updatetime)
 
 		localURL = os.path.join(songURLbase, sg.name)
 		f_project.write('<li><a href="' + localURL + '/" title="' + sg.fun_title +
@@ -682,7 +665,7 @@ def rebuild(g, mirror=False, opt="nope"):
 	g.pagelist.sort(key=clclasses.createkey)
 	htmlgen.linkgen(g)	# build the included links for the each page
 	for song in g.songlist:
-		print "precheck:", g.name, song.name
+		logging.info("precheck: song: %s, name: %s", g.name, song.name)
 
 	htmlgen.songgen(g)	# build the song pages
 
@@ -691,7 +674,7 @@ def rebuild(g, mirror=False, opt="nope"):
 	htmlgen.navgen(g)
 	htmlgen.archivegen(g)
 	htmlgen.helpgen(g)
-	print "Rebuild done."
+	logging.info("Rebuild done.")
 
 
 def main():
@@ -701,7 +684,7 @@ def main():
 	try:
 		group = sys.argv[1]
 	except IndexError, info:
-		print "usage: use correctly:", info
+		logging.info("usage: use correctly: %s", info)
 		sys.exit(1)
 
 	# optional option parm
@@ -712,7 +695,7 @@ def main():
 
 	rebuild(group, opt)
 	"""
-	print "In main of rebuild..."
+	logging.info("In main of rebuild...")
 	master = tk.Tk()
 	pb = Render_engine(master)
 	

@@ -1717,7 +1717,7 @@ class Page_edit_screen(Edit_screen):
 			self.editTop.destroy()
 					
 		# We're good - let's post this...
-		clclasses.convert_vars(self.obj)
+		#clclasses.convert_vars(self.obj)
 		self.obj.post()
 		# Now build the frames and video in the background...
 		#page_thread=threading.Thread(target=rebuild_page_edit, args=(self,))

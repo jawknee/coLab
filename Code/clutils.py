@@ -75,14 +75,14 @@ def needs_update(path, file="index.shtml", opt='nope'):
 	except:
 		#
 		# Depending on 
-		print ("Trouble getting mtime on data time...skipping")
+		logging.info("Trouble getting mtime on data time...skipping", exc_info=True)
 		return True
 
 	if htime < dtime or opt == 'All':
 		if opt == 'All':
-			print "Option All - regenerating all"
+			logging.info("Option All - regenerating all")
 		else:
-			print "File data is newer, need to regenerate the", file, "file"
+			logging.info("File data is newer, need to regenerate the file: %s", file)
 
 		return True
 	else:
@@ -112,7 +112,7 @@ def string_to_filename(title):
 	filename = ''	# start here - add chars as we go...
 	
 	if not isinstance(title, six.string_types):
-		print "ERROR:  string_to_filename - not a string", title
+		logging.error("ERROR:  string_to_filename - not a string %s", title)
 		sys.exit(1)
 		
 	alnum_chars = "%s%s" % (string.ascii_letters, string.digits)
@@ -153,7 +153,7 @@ def string_to_unique(title, dir=None):
 	numbers to the end until it is unique.
 	"""
 	if not os.path.isdir(dir):
-		print "Fatal error - string to unique, not a dir:", dir
+		logging.error("Fatal error - string to unique, not a dir: %s", dir)
 		sys.exit(1)
 		
 	basename = string_to_filename(title)
@@ -163,7 +163,7 @@ def string_to_unique(title, dir=None):
 	count = 1
 	while os.path.isfile(basepath + extra):
 		extra = "_%d" % count
-		print "extra:", extra
+		logging.info("extra: %s", extra)
 		count += 1
 		
 	return basename + extra
@@ -180,7 +180,7 @@ def has_filetype(path, typelist=[], min=1):
 	try:
 		os.chdir(path)
 	except:
-		print "problem changing to", path
+		logging.info("problem changing to: %s", path)
 		return False
 
 	count = 0
@@ -189,7 +189,7 @@ def has_filetype(path, typelist=[], min=1):
 		for type in typelist:
 			if file.endswith(type):
 				count += 1
-	print "has_filetype Found:", count
+	logging.info("has_filetype Found: %d", count)
 	return count >= min
 
 
@@ -270,7 +270,7 @@ class FontLib:
 		mostly for debugging
 		"""
 		for font in sorted(self.fontdict.keys(), key=lambda s: s.lower()):
-			print "Font:", font, os.path.join(self.fontpath,self.fontdict[font])
+			logging.info("Font: %s, path: %s", font, os.path.join(self.fontpath,self.fontdict[font]))
 
 class fontlib:
 	""" A class to let us manage our fonts
@@ -322,7 +322,7 @@ class fontlib:
 		try:
 			path= os.path.join(self.conf.coLab_home, self.fontdict[font])
 		except KeyError:
-			print "No such font: '" + font + "' Using default: '" + self.default + "'"
+			logging.warning("No such font: '%s' Using default: '%s'", font,   self.default, exc_info=True)
 			path=self.fontdict[self.default]
 		return path
 

@@ -132,7 +132,7 @@ class graphic_element:
 		"""
 		build a tk image and post it - the values should have been filled in above.
 		"""
-		print "ge-post:", self.filepath
+		logging.info("ge-post: %s", self.filepath)
 			
 		try:	 # same thing, for the title
 			img = Image.open(self.filepath)
@@ -140,16 +140,15 @@ class graphic_element:
 			self.graphic = tk.Label(self.parent, image=labelimage)
 			self.graphic.image = labelimage
 			self.graphic.grid(column=self.column, row=self.row, rowspan=self.rowspan, columnspan=self.columnspan, sticky=self.sticky)
-		except Exception as e:
-			print "Title creation exception", sys.exc_info()[0], e
-			print "Filepath:", self.filepath
+		except:
+			logging.warning( "Title creation exception - file: ", self.filepath, exc_info=True)
 			#raise SystemError
 	def destroy(self):		
 		try:
 			self.graphic.grid_forget()
 			self.graphic.destroy()
-		except Exception as e:
-			print "self.graphic.grid_forget / destroy excepted...", e, sys.exc_info()[0]
+		except:
+			logging.warning("self.graphic.grid_forget / destroy excepted...", exc_info=True)
 		   
 class clOption_menu:
 	"""
@@ -178,7 +177,7 @@ class clOption_menu:
 	
 		for member in self.list:
 			string = self.opt_string(member, eval_string)
-			print "New member", string
+			logging.info("New member: %s", string)
 			self.namelist.append(string)
 			self.dictionary[string] = member
 			 
@@ -186,14 +185,14 @@ class clOption_menu:
 		self.var.set(self.default)
 		self.om = tk.OptionMenu(self.parent, self.var, *self.namelist, command=command)
 		if arg is None:
-			print self.var.get()
+			logging.info("OptionMenu: %s", self.var.get())
 		else:
-			print self.var.get(), arg
+			logging.info("OptionMenu: %s, arg: %s", self.var.get(), arg)
 		
 	def return_value(self):
 		""" which one is currently selected """
 		string = self.var.get()
-		print "clOptionMenu return_value .", string
+		logging.info("clOptionMenu return_value %s", string)
 		if string == self.default:
 			return None
 		return self.dictionary[string]	# could "try" this... but a failure is pretty serious in any case
@@ -212,7 +211,7 @@ class Popup:
 		that out outside the loop and won't get cycles (like using 
 		Preview to crop the graphics.
 		"""
-		print "Popup: creating popup, label:", label, "text:", text
+		logging.info("Popup: creating popup, label: %s, text: %s", label, text)
 		self.t = tk.Toplevel()
 		self.t.transient()
 		self.t.title("File copy")

@@ -32,7 +32,7 @@ do
 		if [ "$page_type" = html5 ] 
 		then
 			echo $i $page_type
-			rm -rfv $i/coLab_local/Overlays
+			rm -rf $i/coLab_local/Overlays
 		else
 			echo "-------->" $i $page_type
 		fi

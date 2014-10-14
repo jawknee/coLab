@@ -50,16 +50,16 @@ def check_comments(obj):
 				' created on ' + cldate.now() + '-->\n' )
 			f.close()
 		except:
-			print "Error creating", file
+			logging.warning("Error creating", file, exc_info=True)
 	else:
-		print "Comments exist"
+		logging.info("Comments exist")
 	file = 'links.html'
 	if not os.path.isfile(file):
 		try:
 			f = open(file, 'w+')	# just create a blank file for now
 			f.close()
 		except:
-			print "Error creating", file
+			logging.info("Error creating: %s", file)
 
 def tagstrip(string,subs='\n',tag=''):
 	""" Remove html tags 
@@ -110,15 +110,17 @@ def smartsub(string,length):
 
 def mk_dur_string(dur):
 	"""  convert duration into a time string """
-	if dur != "":
-		mins = int(dur / 60)
-		seconds = dur - (mins * 60)
-		secs = int(seconds)
-		frac = int((seconds % 1) * 100)
+	try:
+		dur = float(dur)
+	except:
+		logging.warning("Unexpected dur string: %s", exc_info=True)
+		dur = 0.
+	mins = int(dur / 60)
+	seconds = dur - (mins * 60)
+	secs = int(seconds)
+	frac = int((seconds % 1) * 100)
 
-		timestr = "%d:%02d.%02d" % (mins, secs, frac)
-	else:
-		timestr = "(?)"
+	timestr = "%d:%02d.%02d" % (mins, secs, frac)
 
 	return(timestr)
 
@@ -129,8 +131,7 @@ def pagegen(group, page):
 	try:
 		os.chdir(page.home)
 	except OSError,info:
-		print "Cannot cd to ", page.home
-		print "fatal."
+		logging.error("Fatal Error: Cannot cd to ", page.home, exc_info=True)
 		sys.exit(1)
 
 	# make the title graphic...
@@ -138,19 +139,19 @@ def pagegen(group, page):
 	#fontpath = fonts.fontpath('DejaVuSans-BoldOblique')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/VanDijAntD.ttf'
 	fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
-	print "fontpath:", fontpath
+	logging.info("fontpath: %s", fontpath)
 	if clutils.needs_update('.', file='Title.png'):
 		imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=8, fill=fill, maxsize=(640,90) )
-		print "Updating Title.png"
+		logging.info("Updating Title.png")
 	else:
-		print "Not updating Title.png"
+		logging.info("Not updating Title.png")
 
 	fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
 	if clutils.needs_update('.', file='Header.png'):
 		imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill)#, maxsize=(400,90) )
-		print "Updated Header.png"
+		logging.info("Updated Header.png")
 	else:
-		print "Not updating Header.png"
+		logging.info("Not updating Header.png")
 
 	now = cldate.now()
 
@@ -160,7 +161,7 @@ def pagegen(group, page):
 		try:
 			os.remove(index)
 		except OSError, info:
-			print "Error removing", index, info
+			logging.error("Fatal Error removing", index, exc_info=True)
 			sys.exit(1)
 
 
@@ -168,7 +169,7 @@ def pagegen(group, page):
 	try:
 		outfile = open(index, 'w+')
 	except IOError, info:
-		print "Failure opening ", index, info
+		logging.error("Fatal Error: Failure opening ", index, exc_info=True)
 		exit(1)
 
 	html = Html()	# create an html object that contains the html strings...
@@ -240,19 +241,19 @@ def linkgen(group):
 		if currName != 'Home':  # for "Home" the key is to execute the code at the bottom to load the pipeline
 			#
 			# Are these the links we saw last time?
-			print "Links for", q.name, "correct", prevName, p.name, "stored:", q.prevlink, q.nextlink
+			logging.info("Links for: %s, correct: prev: %s, name: %s, stored: prv%s, nxt%s ", q.name, prevName, p.name, q.prevlink, q.nextlink)
 			#"""
 			if prevName == q.prevlink and p.name == q.nextlink:
-				print "No link change for",  q.name
+				logging.info("No link change for: %s",  q.name)
 			else:
 			#"""
 			#if True:
 				linkfile = os.path.join(currPath, 'links.html')
-				print "Creating linkfile", linkfile
+				logging.info("Creating linkfile: %s", linkfile)
 				try:
 					l = open(linkfile, 'w+')
 				except IOError, info:
-					print "problem opening", linkfile, info
+					logging.warning("problem opening", linkfile, exc_info=True)
 					raise IOError
 
 				# a little kludgy - should consider full path URLs from
@@ -269,7 +270,7 @@ def linkgen(group):
 				# 
 				# Update the pointers
 				if q.name != 'Archive':
-					print "Updating links in", p.name
+					logging.info("Updating links in: %s", p.name)
 					q.prevlink = prevName
 					q.nextlink = p.name
 					q.post()
@@ -299,7 +300,7 @@ def mk_page_synopsis(page, type='Default'):
 		shot=page.thumbnail
 	else:
 		shot=page.screenshot
-		print "no thumbnail"
+		logging.info("no thumbnail")
 
 	screenshot = os.path.join(page.root, shot)
 	header = os.path.join(page.root, 'Header.png')
@@ -354,14 +355,14 @@ def songgen(group, song=None):
 	hr_full = '<p><hr><p>'
 	
 	for song in songlist:
-		print "Writing song page:", song.name, group.name
+		logging.info("Writing song page: song: %s, group: %s", song.name, group.name)
 		
 		song_dir = os.path.join(group.home, 'Song', song.name)	
 
 		try:
 			os.chdir(song_dir)
 		except OSError,info:
-			print "Cannot cd to ", song_dir
+			logging.warning("Cannot cd to: %s ", song_dir, exc_info=True)
 			continue
 	
 	
@@ -377,19 +378,19 @@ def songgen(group, song=None):
 			imagemaker.make_text_graphic(song.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
 	
 		if not clutils.needs_update('.', file='index.shtml'):
-			print "Song", song.name, "does not need update."
+			logging.info("Song %s oes not need update.", song.name)
 			continue
 
-		print "------Updating:", song_dir + '/' + index
+		logging.info("------Updating: %s/%s", song_dir, index)
 
 		# open the index file, dump the header, body, etc. into it...
 		try:
 			outfile = open(index, 'w+')
-		except IOError, info:
-			print "Failure opening ", index, info
+		except:
+			logging.error("Failure opening ", index, exc_info=True)
 			exit(1)
 
-		print "Updating", song.name, "index.shtml"
+		logging.info("Updating: %s index.html", song.name)
 		html = Html()	# create an html object that contains the html strings...
 		# 
 		# output the pieces of the page...
@@ -436,7 +437,7 @@ def songgen(group, song=None):
 			except KeyError:
 				num_pages = 0
 
-			print "for part", part, "num is", num_pages
+			logging.info("for part %s, num is: %d", part, num_pages)
 
 			if num_pages == 0:
 				content += "(none)<p>"
@@ -484,8 +485,8 @@ def homegen(group):
 	""" Generates the top group level home page... """
 	try:
 		os.chdir(group.home)
-	except OSError,info:
-		print "Cannot cd to ", group.home
+	except:
+		logging.warning( "Cannot cd to: %s", group.home, exc_info=True)
 		return()
 
 
@@ -508,8 +509,8 @@ def homegen(group):
 	# open the index file, dump the header, body, etc. into it...
 	try:
 		outfile = open(index, 'w+')
-	except IOError, info:
-		print "Failure opening ", index, info
+	except:
+		logging.error("Fatal Error: Failure opening ", index, exc_info=True)
 		exit(1)
 
 	html = Html()	# create an html object that contains the html strings...
@@ -548,14 +549,14 @@ def newgen(group):
 
 	try:
 		os.chdir(shared)
-	except OSError,info:
-		print "Cannot cd to ", shared
+	except:
+		logging.warning("Cannot cd to: %s ", shared, exc_info=True)
 		return()
 
 
 	index='index.shtml'
 	if not clutils.needs_update('.', file=index):
-		print "Skipping newgen..."
+		logging.info("Skipping newgen...")
 		return
 
 	page = clclasses.Page('null')	# create a page structure - to pass in a title
@@ -567,8 +568,8 @@ def newgen(group):
 	# open the index file, dump the header, body, etc. into it...
 	try:
 		outfile = open(index, 'w+')
-	except IOError, info:
-		print "Failure opening ", index, info
+	except:
+		logging.error("Fatal Error: Failure opening ", index, exc_info=True)
 		exit(1)
 
 	# make the title graphics...
@@ -615,14 +616,14 @@ def navgen(group):
 
 	try:
 		os.chdir(nav)
-	except OSError,info:
-		print "Cannot cd to ", nav
+	except:
+		logging.warning("Cannot cd to: %s", nav, exc_info=True)
 		return()
 
 
 	index='index.shtml'
 	if not clutils.needs_update('.', file=index):
-		print "Skipping nevgen..."
+		logging.info("Skipping nevgen...")
 		return
 
 	page = clclasses.Page('null')	# create a page structure - to pass in a title
@@ -634,8 +635,8 @@ def navgen(group):
 	# open the index file, dump the header, body, etc. into it...
 	try:
 		outfile = open(index, 'w+')
-	except IOError, info:
-		print "Failure opening ", index, info
+	except:
+		logging.error("Fatal Error: Failure opening ", index, exc_info=True)
 		exit(1)
 
 	# make the title graphics...
@@ -699,8 +700,8 @@ def archivegen(group):
 
 	try:
 		os.chdir(archive)
-	except OSError,info:
-		print "Cannot cd to ", archive
+	except:
+		logging.warning("Cannot cd to: %s", archive, exc_info=True)
 		return()
 
 
@@ -715,8 +716,8 @@ def archivegen(group):
 	# open the index file, dump the header, body, etc. into it...
 	try:
 		outfile = open(index, 'w+')
-	except IOError, info:
-		print "Failure opening ", index, info
+	except:
+		logging.error("Fatal Error: Failure opening ", index, exc_info=True)
 		exit(1)
 
 
@@ -756,7 +757,7 @@ def archivegen(group):
 	group.pagelist.reverse()
 	hr = ''		# no horizontal rule on the first pass...
 	for pg in group.pagelist:
-		print "archive:", pg.name
+		logging.info("archive: %s", pg.name)
 
 		outfile.write(hr + mk_page_synopsis(pg, type='Archive'))
 		hr = '<hr>'
@@ -780,13 +781,13 @@ def helpgen(group):
 
 	try:
 		os.chdir(help)
-	except OSError,info:
-		print "Cannot cd to ", help
+	except:
+		logging.warning("Cannot cd to: %s ", help, exc_info=True)
 		return()
 
 	index='index.shtml'
 	if not clutils.needs_update('.', file=index):
-		print "Skipping helpgen..."
+		logging.info("Skipping helpgen...")
 		return
 
 	page = clclasses.Page('null')	# create a page structure - to pass in a title
@@ -798,8 +799,8 @@ def helpgen(group):
 	# open the index file, dump the header, body, etc. into it...
 	try:
 		outfile = open(index, 'w+')
-	except IOError, info:
-		print "Failure opening ", index, info
+	except:
+		logging.error("Fatal Error: Failure opening ", index, exc_info=True)
 		exit(1)
 
 	# make the title graphics...
@@ -883,7 +884,7 @@ def helpgen(group):
 if __name__ == "__main__":
 
 	if len(sys.argv) < 2:
-		print "Usage:", sys.argv[0], "page name"
+		logging.error("Fatal Error: Usage: %s page name", sys.argv[0])
 		exit(1)
 
 	name=sys.argv[1]

@@ -90,7 +90,7 @@ class Html:
 		<source src="!name!-media-!media_size!.webm" type='video/webm; codecs="vp8.0, vorbis"'>
 		<source src="!name!-media-!media_size!.mp4" type='video/mp4'>
 		"""
-		print "gen_html5_source:", name, size
+		logging.info("gen_html5_source: %s size %s", name, size)
 		
 		# a list of source type / info pairs...
 		# order matters: if specified: mp4, ogg, webm   then:
@@ -118,7 +118,7 @@ class Html:
 			size = size_c.next_size(size)
 			if size is None:
 				break
-			print "Next size:", size
+			logging.info( "Next size: %s", size)
 		return(sources)
 
 	def gen_locbutton_tags(self, page):

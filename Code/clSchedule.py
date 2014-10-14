@@ -14,12 +14,12 @@ def start_mamp(path="/Applications/MAMP PRO/MAMP PRO.app"):
     subprocess.call([open_app, path])
     
 def browse_url(url="http://jawknee.com/coLab"):
-    print "Browsing:", url
+    logging.info("Browsing: %s", url)
     subprocess.call([open_app, url])
 
 def main():
     start_mamp()
-    print "clSchedule main: returned"
+    logging.info("clSchedule main: returned")
     
     
 if __name__ == "__main__":

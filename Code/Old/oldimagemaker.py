@@ -19,7 +19,7 @@ def make_image():
 	"""
 
 	dir="/Users/Johnny/dev/ScrollLine/Overlays"
-	os.system('rm -rfv ' + dir + '/')
+	os.system('rm -rf ' + dir + '/')
 	os.system('mkdir -pv ' + dir )
 
 	fps = 6

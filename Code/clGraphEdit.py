@@ -32,7 +32,7 @@ class Button:
 			text = u"\u25B6"	# right triangle
 			self.amt = +1
 		else:
-			print "Warning - bad button"
+			logging.warning("Warning - bad button")
 			
 		self.obj = ttk.Button(g_edit.c_frame, text=text, command=self.handler)
 		self.obj.grid(column=column, row=row)
@@ -61,14 +61,14 @@ class Button:
 		if not handled:
 			# set a flag here if we intend to rebuild both...
 			if pressed:
-				print "In college they told us this was bullshit....."
+				logging.info("In college they told us this was bullshit.....")
 			if self.held:
-				print "Rejected call."
+				logging.info("Rejected call.")
 				self.held = False
 				
 			else:
 				doit = True
-				print "Uncaught press"
+				logging.info("Uncaught press")
 		if pressed:
 			# if this is the first time this has been pressed,
 			# set up for the delay before repeat...
@@ -76,14 +76,14 @@ class Button:
 				self.held = True
 				self.count = 5
 				doit = True
-				print "First press"
+				logging.info("First press")
 			else:
 				if self.count > 0:
 					self.count -= 1
-					print "Pre-delay"
+					logging.info("Pre-delay")
 				else:
 					doit = True
-					print "Repeated press"
+					logging.info("Repeated press")
 				
 		if doit:
 			# set some limits...
@@ -95,12 +95,12 @@ class Button:
 				hi_limit = self.g_edit.width + 1
 			# Stored value is one less than displayed value
 			new_value = eval('self.g_edit.' + self.which + '_x') + self.amt + 1
-			print "New value:", new_value, " - lo, hi", lo_limit, hi_limit
+			logging.info("New value: %s - lo: %s, hi: %s", new_value, lo_limit, hi_limit)
 			if new_value == lo_limit or new_value == hi_limit:
-				print "Out of range..."
+				logging.info("Out of range...")
 				self.obj.bell()
 				return
-			print "Press:", self.which, self.type, self.amt
+			logging.info("Press: %s, %s, %s", self.which, self.type, self.amt)
 			# Slightly tricky - we move the line in question,
 			# we change the value +/- 1, and we update the text.
 			# we do a fair bit of eval to make this happen
@@ -109,11 +109,11 @@ class Button:
 			self.g_edit.cnvs.move(line_id, self.amt, 0)
 			
 			s = 'self.g_edit.' + self.which + '_x = ' + str(new_value - 1)
-			print s
+			logging.info("Exec string: %s",s)
 			
 			exec(s)
 			s = 'self.g_edit.' + self.which + 'Text.set(str(new_value))' 
-			print s
+			logging.info("Exec string: %s", s)
 			exec(s)
 class GraphEdit:
 	"""
@@ -245,33 +245,33 @@ class GraphEdit:
 		if self.running:
 			self.root.after(delay, self.animate_lines)
 		else:
-			print "Line animate terminating."
+			logging.info("Line animate terminating.")
 	
 	def lineSelect(self, event):
-		print "Entered 'select'", event.type, event.x, event.y
+		logging.info("Entered 'select', %s, %s, %s", event.type, event.x, event.y)
 		# only the two lines are set up - let's do the on our own,
 		# find the closest - and set up the max and min
 	
-		print "X, canvas.x:", event.x, self.cnvs.canvasx(event.x)
+		logging.info("X, canvas.x: %s, %s", event.x, self.cnvs.canvasx(event.x))
 		# record the item and its location
 		if abs( self.start_x - event.x) < abs(self.end_x - event.x):
 			item = self.start_line
 			loc = self.start_x
 			self.line_min = self.offset	
 			self.line_max = self.end_x + self.offset - 1 
-			print "Selected START line, min, max:", self.line_min, self.line_max
+			logging.info("Selected START line, min: %s, max: %s", self.line_min, self.line_max)
 		else:
 			item = self.end_line
 			loc = self.end_x
 			self.line_min = self.start_x + self.offset + 1
 			self.line_max = self.width + self.offset - 1
-			print "Selected END line, min, max:", self.line_min, self.line_max
+			logging.info("Selected END line, min: %s, max: %s", self.line_min, self.line_max)
 			
 		# there are only three selectable items on the canvas, the graphic
 		# (which we don't want) and the two lines, only one of which we're
 		# likely to select (but....)
 		self.selected_item = item
-		print "selected_item is:", self.selected_item, event.x
+		logging.info("selected_item is: %s, %s", self.selected_item, event.x)
 		self._drag_data["item"] = self.selected_item
 		self._drag_data["x"] = loc + self.offset
 		x = event.x
@@ -281,10 +281,10 @@ class GraphEdit:
 		try:
 			self.selected_item
 		except:
-			print "no item selected"
+			logging.info("no item selected")
 			return
 		
-		print "Entered 'move'", event.type, event.x, event.y
+		logging.info("Entered 'move' type, %s, x: %s, y: %s", event.type, event.x, event.y)
 		#
 		# Would this exceed the limits?
 		x = event.x
@@ -292,7 +292,7 @@ class GraphEdit:
 		self.update_line_nums(x)	
 		 	
 	def lineRelease(self, event):
-		print "Entered 'release'", event.type, event.x, event.y
+		logging.info("Entered 'release', type, %s, x: %s, y: %s", event.type, event.x, event.y)
 		
 		try:
 			self.selected_item
@@ -314,10 +314,10 @@ class GraphEdit:
 			x = self.line_min
 		
 		if self.selected_item == self.start_line:
-			print "Start line"
+			logging.info("Start line")
 			self.start_x = x - self.offset
 		if self.selected_item == self.end_line:
-			print "End Line"	
+			logging.info("End Line"	)
 			self.end_x = x - self.offset
 			
 		self.startText.set(str(self.start_x+1))
@@ -336,43 +336,43 @@ class GraphEdit:
 		allowed - we do need to check to see if the value is out 
 		of range (could be tricky)
 		"""
-		print "vld8_numbers:", why, what, how
+		logging.info("vld8_numbers: %s, %s, %s", why, what, how)
 		
 		if why == '-1':
 			if how == 'forced':
-				print "Focus: we don't need no stinkin' forced focus"
+				logging.info("Focus: we don't need no stinkin' forced focus")
 			elif how == 'focusin':
-				print "Focus In: restore Match", self.match_text
+				logging.info("Focus In: restore Match: %s", self.match_text)
 				if self.match_text:
 					self.post_match()
 					
 			elif how == 'focusout':
-				print "Focus Out: get rid of Match"
+				logging.info("Focus Out: get rid of Match")
 				self.matchVar.set('')
 			return True
 		try:
 			val = self.widget.get()
 		except:
-			print "For some reason we're here without a widget:", self
+			logging.warning("For some reason we're here without a widget: %s", self, exc_info=True)
 			return True
 			
 		#-- bad character?
 		for c in self.exclude_chars:
 			if what.find(c) + 1:		# 0 and above: found
-				print "Bad: found ", c
+				logging.info("Bad: found: %s", c)
 				self.widget.bell()
 				return False
 			
 		self.parent.changed = True	
 		#--are we new?   If so, blank what's there, update the color, and replace with any addition
-		print "self.new:", self.new
+		logging.info("self.new: %s", self.new)
 		self.match_text = ''
 		r_code = True	# from here on out, keep track of conditions that require an ultimate failure..
 		if self.new:
-			print "why:", why
+			logging.info("why: %s", why)
 			if why == '1':
 				would = what
-				print "would is what", what
+				logging.info("would is what: %s", what)
 			else:
 				would = ''
 			#self.widget.configure(fg='#000')
@@ -383,11 +383,11 @@ class GraphEdit:
 			self.new = False
 			r_code = False		# Reject the character - we've already set it in, above
 			
-		print "Would is:", would
+		logging.info("Would is: %s", would)
 		#-- zero length?  
 		if  len(would) == 0:
 			self.set_status(ok = False)
-			print "Bad-==========-Zero length"
+			logging.info("Bad-==========-Zero length")
 			self.match_text = ''
 			self.post_match()
 			return r_code
@@ -405,13 +405,13 @@ class GraphEdit:
 		for item in self.exclude_list:
 			if f(item).find(f(would)) == 0:		# matches at the start
 				if f(item) == f(would):
-					print "BAD:  matches", item
+					logging.info("BAD:  matches: %s", item)
 					self.match_text += item + '\n'
 					self.match_color = '#f11'
 					good = False
 					#break
 				else:
-					print "partial match:", item,  '/', would
+					logging.info("partial match: %s / %s", item, would)
 					self.match_color = '#666'
 					self.match_text += item + '\n'
 		#
@@ -483,7 +483,7 @@ class GraphEdit:
 		if self.running:
 			self.root.after(100, self.button_handler)
 		else:
-			print "Button handler termminating."
+			logging.info("Button handler termminating.")
 		
 	def quit_handler(self):
 		"""
@@ -500,7 +500,7 @@ class GraphEdit:
 			page.editor.set_member('xStart', self.start_x)
 			page.editor.set_member('xEnd', self.end_x)
 				
-			print "xStart, xEnd", page.editor.get_member('xStart'), page.editor.get_member('xEnd')
+			logging.info("xStart, xEnd: %si, %s", page.editor.get_member('xStart'), page.editor.get_member('xEnd'))
 			#self.parent.post_member('xStart')
 			#self.parent.post_member('xEnd')
 			page.editor.refresh()
@@ -524,7 +524,7 @@ def main():
 	g = GraphEdit(root, file)
 	root.after(200, g.post)
 	root.mainloop()
-	print "Got:", g.start_x, g.end_x
+	logging.info("Got: startx: %s, endx: %s", g.start_x, g.end_x)
 	
 	
 if __name__ == '__main__':

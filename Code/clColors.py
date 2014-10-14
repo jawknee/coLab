@@ -46,9 +46,9 @@ DESERT_GOLD = (228, 176, 74, 255)
 DESERT_BROWN = (100, 59, 15, 255)
 DESERT_ORANGE = (183, 82, 30, 255)
 # Nola
-EGGPLANT = (97, 64, 81, 255)
+EGGPLANT = (35, 5, 30, 255)
 #CLAY = (126, 60, 45, 255)
-CLAY = (96, 40, 30, 255)
+CLAY = (100, 10, 0, 255)
 #CLAY = (166, 142, 115, 255)
 OCHRE = (204, 119, 34, 255)
 LIME = (191, 255, 0, 255)
@@ -99,7 +99,7 @@ class Themes:
 					[ 'Iced', DK_BLUE,  ICE_BLUE1, ICE_BLUE2, WHITE, BRIGHT_RED, XPARENT],
 					[ 'Beam', DARK_X_GRAY, DEEP_BLUE, GREEN, WHITE, YELLOW, XPARENT], 
 					[ 'Sand', DESERT_GOLD, DESERT_BROWN, DESERT_ORANGE, DESERT_TAN, DESERT_DARK, LOLITE],
-					[ 'Nola', CLAY, EGGPLANT, AQUA, LIME, BLACK, XPARENT],
+					[ 'Nola', EGGPLANT, CLAY, LIME, AQUA, BLACK, XPARENT],
 					[ 'Tree', DK_BROWN, DK_GREEN, MED_GREEN, GREEN_WHITE, EL_BLUE, XPARENT],
 					[ 'Leaf', DK_GREEN, LT_GREEN, MED_GREEN, GREEN_WHITE, EL_BLUE, XPARENT]
 					]
@@ -117,7 +117,7 @@ class Themes:
 				
 		if not valid:
 			values = default_vals	# just in case we get passed a bogus theme .. don't blow up
-			print "ERROR:  invalid theme:", theme, " - using default:", DEFAULT_THEME
+			logging.warning("ERROR:  invalid theme: %s,- using default: %s", theme, DEFAULT_THEME)
 		
 		self.theme = theme
 		(self.background, self.rms, self.wave, self.peak, self.cursor, self.cursor_offset) = tuple(values)

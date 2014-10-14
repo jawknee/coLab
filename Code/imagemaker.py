@@ -262,7 +262,7 @@ def make_images(page, prog_bar=None, media_size=None):
 	logging.info("make_images: page.home: %s", page.home)
 
 	directory = os.path.join(page.home, 'coLab_local', 'Overlays' )
-	os.system('rm -rfv ' + directory + '/')
+	os.system('rm -rf ' + directory + '/')
 	os.system('mkdir -pv ' + directory )
 
 	try:
@@ -460,8 +460,9 @@ def make_images(page, prog_bar=None, media_size=None):
 		frame_image.paste(overlay_rgb, (0,0), mask)
 
 		logging.info("Frame num: %s, to %s", fr_num, last_fr_num)
-		frame_image.save( directory + '/' + 'Frame-%05d.png' % fr_num, 'PNG')
-		#logging.info("Saved: %s, / %s", directory 'Frame-%05d.png' % fr_num)
+		filename = directory + '/' + 'Frame-%05d.png' % fr_num
+		frame_image.save(filename, 'PNG')
+		logging.info("Saved: %s", filename)
 
 		xPos += frameIncr
 		try:
@@ -532,7 +533,7 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	(fw,fh) = box_draw.textsize(string, font=font)	# how big is it really?
 	offset = ( (size[0] - fw) / 2, ( size[1] - fh) / 2 )
 	box_draw.text(offset, string, font=font, fill=fill)
-
+	logging.warning("Output file: %s", output_file)
 	box.save(output_file, 'PNG')
 	return (font.font.family, font.font.style)
 

@@ -47,12 +47,12 @@ def make_movie(page, prog_bar=None):
     
     media_script = os.path.join(page.coLab_home, 'Code', 'ffmpeg.sh')
     
-    print "running:", media_script, "with:", infofile
+    logging.info("running: %s with: %s", media_script, infofile)
     try:
         bufsize = 1     # line buffered
         ffmpeg = subprocess.Popen([media_script, infofile], bufsize, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
     except:
-        print "Video generation failed."
+        logging.warning("Video generation failed.", exc_info=True)
         sys.exit(1)
     """
     # buffering info from Derrick Petzold: https://derrickpetzold.com/p/capturing-output-from-ffmpeg-python/
@@ -71,7 +71,7 @@ def make_movie(page, prog_bar=None):
         
         ffmpeg.poll()   # check the status....
         if ffmpeg.returncode is not None:
-            print "ffmpeg is done:", ffmpeg.returncode
+            logging.info("ffmpeg is done: %s", ffmpeg.returncode)
             break
 
         parms = line.split()
@@ -79,36 +79,10 @@ def make_movie(page, prog_bar=None):
             if parms[0] == 'frame=':
                 frame_num = parms[1]
                 prog_bar.update(int(frame_num))
-                print" Frame", frame_num
+                info (" Frame: %s", frame_num)
                   #read_delay=0.1      # a bit slower so we don't slow down the encoding...
         except:
-            print "Something went wrong on the update...", frame_num
+            logging.warning("Something went wrong on the update... %s", frame_num, exc_info=True)
             pass
             #break
-        """
-        if readx:
-            try:
-                nextline = ffmpeg.stdout.readline()
-            except IOError:
-                nextline = '?'
-                pass
-            
-            print "nextline:", nextline
-            if nextline == '':
-                print "Nothing - we think we're done with ffmpeg"
-                break       # all done - head back
-            
-            parms = nextline.split()
-            try:
-                if parms[0] == 'frame=':
-                      prog_bar.update(int(parms[1]))
-                      print" Frame", parms[1]
-                      read_delay=0.1      # a bit slower so we don't slow down the encoding...
-            except:
-                break
-        else:
-            print "Got nothing back from select"
-        """
-        #time.sleep(read_delay)   
-    print "ffmpeg has completed."     
-        
+    logging.info("ffmpeg has completed.")

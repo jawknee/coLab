@@ -533,7 +533,6 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	(fw,fh) = box_draw.textsize(string, font=font)	# how big is it really?
 	offset = ( (size[0] - fw) / 2, ( size[1] - fh) / 2 )
 	box_draw.text(offset, string, font=font, fill=fill)
-	logging.warning("Output file: %s", output_file)
 	box.save(output_file, 'PNG')
 	return (font.font.family, font.font.style)
 
@@ -998,19 +997,7 @@ class Sound_image():
 		clist = self.chan_list()	# what do we call these things called channels?
 
 		if self.page.use_soundgraphic:
-			# First - the bits that are channel based
-			comma = ''
-			rms = 'rms(dB): '
-			offset = 'Bias(%): '
-			for c in range(nchan):
-				rms_avg = math.sqrt( sum_sqrs[c] / (self.nframes / aud_frame_skip ) )
-				rms_val = 20. * math.log10( rms_avg / self.samp_max  )
-				
-				rms += comma + clist[c] +': %0.1f' % rms_val
-				#offset_val = 20 * math.log10( float(run_count[c]) / self.samp_max )
-				offset_val = (( float(run_count[c]) / self.samp_max ) / self.nframes ) * 100.
-				offset += comma + clist[c] +': %.2f' %  offset_val 
-				comma = ', '
+
 				# while we're at it, let's label the channels
 	
 				# Channel name:
@@ -1107,22 +1094,34 @@ class Sound_image():
 		#------------------------
 		# Bottom Text Line
 		#------------------------
+		# Build the text for the line below the graphic - 
+		# while we're at it, also build the sound info line - a super set...
 		left = box_width + 5
 		(dir, filename) = os.path.split(self.sound_file)
 		bot_string = '   File: '
 		bot_string += filename 
+		sound_string = 'File: ' + filename + '\n'
 		if self.size_class.is_larger_than(self.media_size, 'Tiny'):
 			seconds = float(self.nframes) / self.framerate
 			minutes = int(seconds / 60)
 			secs = seconds - minutes * 60
-			bot_string += ' / Length: %d:%06.3f' % (minutes, secs)
-			bot_string += ' / Headroom: '
+			l = 'Length: %d:%06.3f' % (minutes, secs)
+			bot_string += ' / ' + l
+			sound_string += l + '\n'
+			head = 'Headroom: '
 			if aud_frame_skip != 1 and headroom != 0:
-				bot_string += '~'
-			bot_string += ' %0.1fdB' % -headroom
+				head += '~'
+			head += ' %0.1fdB' % -headroom
+			bot_string += ' / ' + head
+			sound_string += head + '\n'
+
+			sr = '%0.1fkHz' % (self.framerate / 1000.)
+			bits = '%dbits' % (self.sampwidth * 8)
 			if self.size_class.is_larger_than(self.media_size, 'Medium'):
-				bot_string += ' / %0.1fkHz' % (self.framerate / 1000.)
-				bot_string += ' /  %dbits' % (self.sampwidth * 8)
+				bot_string += " / " + sr + ' / ' + bits
+			sound_string += "Sample rate: " + sr + '\n'  
+			sound_string += "Sample width: " + bits + '\n'
+			
 		
 		graphic_draw.text((left, ymax+3), bot_string, font=font, fill=clColors.GREEN)
 
@@ -1134,12 +1133,28 @@ class Sound_image():
 			right = left + bwidth + 15
 			logging.info("Right text fun: %s, %s, %s, %s ", right, width, bwidth, 15)
 			graphic_draw.text((right, ymax+3), string, font=font, fill=clColors.BRIGHT_RED)
+			sound_string += string + '\n'
 		
-		#add_res_text(graphic_draw, size, adjust_factor)
+		# Calculate some sound details...
+		comma = ''
+		rms = 'rms(dB): '
+		offset = 'Bias(%): '
+		for c in range(nchan):
+			rms_avg = math.sqrt( sum_sqrs[c] / (self.nframes / aud_frame_skip ) )
+			rms_val = 20. * math.log10( rms_avg / self.samp_max  )
+			
+			rms += comma + clist[c] +': %0.1f' % rms_val
+			#offset_val = 20 * math.log10( float(run_count[c]) / self.samp_max )
+			offset_val = (( float(run_count[c]) / self.samp_max ) / self.nframes ) * 100.
+			offset += comma + clist[c] +': %.2f' %  offset_val 
+			comma = ', '
 
-	#"""
+		sound_string += rms + '\n'
+		sound_string += offset + '\n'
+
 		
 		graphic.save(self.image_file, 'PNG')
+		self.page.soundinfo = sound_string
 		
 		logging.info("Got min/max and actual max of: %s %s %s", min, max, max_xcrsn)
 		logging.info("Computed headroom of: %s / %s dBFS", hr_ratio, headroom)

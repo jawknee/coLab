@@ -79,10 +79,10 @@ def make_movie(page, prog_bar=None):
             if parms[0] == 'frame=':
                 frame_num = parms[1]
                 prog_bar.update(int(frame_num))
-                info (" Frame: %s", frame_num)
-                  #read_delay=0.1      # a bit slower so we don't slow down the encoding...
+                logging.info (" Frame: %s", frame_num)
+                #read_delay=0.1      # a bit slower so we don't slow down the encoding...
         except:
-            logging.warning("Something went wrong on the update... %s", frame_num, exc_info=True)
+            logging.info("Something went wrong on the update... %s - possible last frame.", frame_num)
             pass
             #break
     logging.info("ffmpeg has completed.")

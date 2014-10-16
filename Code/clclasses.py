@@ -65,9 +65,10 @@ def set_paths(obj,sub_dir):
 def import_data(obj, path=None):
 	"""
 	used by the various load routines to import the data file
-	in the "path" dir.  Import the values found in the data file,
-	then, using the objects varlist, import them as found into the
-	object (group, song, page, etc.)
+	in the "path" dir.  Import the values from the data file by
+	simply reading the file into a var and executing that.  Sets
+	the vars into the local context and we copy them over into
+	the obj based on it's varlist.
 	
 	By default, we load from the file 'data' in the current 
 	object's home var.  If path is set, we use that instead.
@@ -78,20 +79,14 @@ def import_data(obj, path=None):
 	else:
 		datafile = os.path.join(obj.home, 'data')
 
-	p = ''
-	logging.info("Enter import_data for: %s, path: %s", obj.name,  datafile)
 	try:
-		p = imp.load_source('',datafile)
-		os.remove(datafile + 'c')
-	except IOError, info:
-		logging.warning("Import problem with %s", datafile, exc_info=True)
-		#raise IOError
-
-	try:
-		logging.info("name from import: %s", p.name)
+		f = open(datafile)
+		content = f.read()
+		exec(content)
 	except:
-		pass
-	
+		logging.warning("Error importing: %s", datafile, exc_info=True)
+		return
+
 	#self.set_paths(conf)
 	# A few state vars...  are we "clean"?
 	# RBF - maybe someday
@@ -99,13 +94,12 @@ def import_data(obj, path=None):
 	#obj.needs_rebuild = False
 	# Convert the import data into actual vars in the object...
 	for var in obj.varlist:
-		string = 'p.' + var	# var name from the file...
 		try:
-			val = eval(string)
-		except AttributeError, info:
-			logging.info("No file value for: %s, %s, ", string, info, exc_info=True)
-			continue
-		# value changed, deal with it...
+			val = eval(var)
+		except:
+			logging.info("No file value for: %s", var, exc_info=True)
+			continue	# we got nothing...   skip to the next var
+		# we had a matching value in the data file... use it...
 		string = 'obj.' + var + ' = val'
 		exec(string)	# this assigns the file var
 		logging.info("updating var: %s, value:%s", var, val)
@@ -425,7 +419,7 @@ class Page:
 			'screenshot_width=' + str(self.screenshot_width) + '\n' +
 			'fps=' + str(self.fps) + '\n' +
 			'\n' +
-			'soundinfo="""' + self.soundinfo + '\n"""'
+			'soundinfo="""' + self.soundinfo.strip() + '\n"""'
 			'\n' +
 			'prevlink="' + self.prevlink + EOL +
 			'nextlink="' + self.nextlink + EOL +

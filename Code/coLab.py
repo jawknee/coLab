@@ -193,9 +193,9 @@ class Colab():
 			self.display_group_list()
 			self.place_logo()
 		except TypeError, info:
-			logging.warning("TypeError: %s", info)
+			logging.warning("TypeError", exc_info=True)
 		except Exception as e:
-			logging.warning( "Initialization Failed" + info,exc_info=True)
+			logging.warning( "Initialization Failed", exc_info=True)
 			raise SystemError
 
 		# do a few of the simpler ones here...

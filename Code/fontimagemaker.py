@@ -33,11 +33,6 @@ def main():
 	content += "<blockquote> End characters are: one-el-eye oh-zero (1lI O0)</blockquote><p><hr><p>"
 	file.write(content)
 	
-	# No need to do this anymore - we now step through them....
-	#f = clutils.fontlib()	# create a font object
-	#fontlist=f.fontdict.items()	# convert to a list of tuples for sorting...
-	#fontlist.sort()
-	
 	teststring = "The Quick Brown Fox jumped over the Lazy Dog. AaBbCc 1234567890 1lI O0"
 	
 	fonts = clutils.FontLib()

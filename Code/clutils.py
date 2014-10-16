@@ -217,6 +217,7 @@ class FontLib:
 			logging.error("No such path: %s - cannot continue.", fontpath)	
 			sys.exit(1)
 			
+		current_dir = os.path.abspath('.')
 		try:
 			os.chdir(fontpath)
 		except:
@@ -241,6 +242,8 @@ class FontLib:
 				else:
 					logging.warning("Duplicate fonts: %s - %s and %s", file, self.fontdict[file], here)
 				logging.info("Current entry: %s, %s", file, self.fontdict[file])
+
+		os.chdir(current_dir)
 
 	def return_fontpath(self,font=None):
 		""" return the full path to the specified font
@@ -271,66 +274,6 @@ class FontLib:
 		"""
 		for font in sorted(self.fontdict.keys(), key=lambda s: s.lower()):
 			logging.info("Font: %s, path: %s", font, os.path.join(self.fontpath,self.fontdict[font]))
-
-class fontlib:
-	""" A class to let us manage our fonts
-
-	A collection of paths.   Mostly to return the path to a named font,
-	but also can return the list of fonts / paths.
-	Needs a rewrite to actually scan the library and build the list.
-	"""
-	def __init__(self, conf=None):
-		self.conf = conf
-		if self.conf is None:
-			self.conf = get_config()
-		
-		self.default = 'FoxboroScriptEBold'	# default font...
-		self.fontdict = {
-		'BaroqueScript': 'Resources/Fonts/BaroqueScript.ttf',
-		'TantrumTongue': 'Resources/Fonts/TantrumTongue.ttf',
-		'Neurochrome': 'Resources/Fonts/Neurochrome/neurochr.ttf',
-		'Daemones': 'Resources/Fonts/DAEMONES.ttf',
-		'TarantellaMF': 'Resources/Fonts/TarantellaMF/Tarantella MF.ttf',
-		'Minus': 'Resources/Fonts/Minus.ttf',
-		'Scretch': 'Resources/Fonts/Scretch.ttf',
-		'Radaern': 'Resources/Fonts/RADAERN.ttf',
-		'FoxboroScriptBold': 'Resources/Fonts/SF Foxboro Script v1.0/SF Foxboro Script Bold.ttf',
-		'FoxboroScriptEBold': 'Resources/Fonts/SF Foxboro Script v1.0/SF Foxboro Script Extended Bold.ttf',
-		'WorstveldSling': 'Resources/Fonts/WorstveldSling/WorstveldSling.ttf',
-		'Maxine': 'Resources/Fonts/maxine.ttf',
-		'JohnnyMacScrawl': 'Resources/Fonts/JohnnyMacScrawl/jmacscrl.ttf',
-		'Blippo': 'Resources/Fonts/Blippo/BlippBlaD.ttf',
-		'Metropolataines': 'Resources/Fonts/Metropolitaines/MetroD.ttf',
-		'Diskus': 'Resources/Fonts/Diskus/DiskuDMed.ttf',
-		'Coronet': 'Resources/Fonts/Coronet/CoronI.ttf',
-		'Blacklight': 'Resources/Fonts/Blacklight/BlackD.ttf',
-		'Freebooter': 'Resources/Fonts/Freebooter/FreebooterUpdated.ttf',
-		'Gillies': 'Resources/Fonts/Gillies/GilliGotDLig.ttf',
-		'Palette': 'Resources/Fonts/Palette/PaletD.ttf',
-		'DomCasual': 'Resources/Fonts/Dom Casual/DomCasDReg.ttf',
-		'RageJoi': 'Resources/Fonts/Rage/RageJoiD.ttf',
-		'Rage': 'Resources/Fonts/Rage/RageD.ttf',
-		'AenigmaScrawl': 'Resources/Fonts/AenigmaScrawl/aescrawl.ttf',
-		'DejaVuSans-BoldOblique': 'Resources/Fonts/dejavu-fonts-ttf-2.34/ttf/DejaVuSans-BoldOblique.ttf'
-		}
-
-	def fontpath(self,font):
-		""" Return the path to the passed font,
-
-		return the default if no match.
-		"""
-		try:
-			path= os.path.join(self.conf.coLab_home, self.fontdict[font])
-		except KeyError:
-			logging.warning("No such font: '%s' Using default: '%s'", font,   self.default, exc_info=True)
-			path=self.fontdict[self.default]
-		return path
-
-	def list(self):
-		""" prints the list of fonts """
-		# is this used??? - doesn't look like it...
-		for name in self.fontdict:
-			print name, self.fontdict[name]
 
 if __name__ == "__main__":
 	logging.basicConfig(level=logging.INFO)

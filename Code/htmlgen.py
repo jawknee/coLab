@@ -138,7 +138,7 @@ def pagegen(group, page):
 	#  RBF   This needs a rewrite....      
 	#fontpath = fonts.fontpath('DejaVuSans-BoldOblique')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/VanDijAntD.ttf'
-	fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
+	fontpath = fonts.return_fontpath('ProximaFontauriItalic.otf')
 	logging.info("fontpath: %s", fontpath)
 	if clutils.needs_update('.', file='Title.png'):
 		imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=8, fill=fill, maxsize=(640,90) )
@@ -146,7 +146,7 @@ def pagegen(group, page):
 	else:
 		logging.info("Not updating Title.png")
 
-	fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
+	fontpath = fonts.return_fontpath('ProximaFontauriItalic.otf')
 	if clutils.needs_update('.', file='Header.png'):
 		imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill)#, maxsize=(400,90) )
 		logging.info("Updated Header.png")
@@ -370,7 +370,7 @@ def songgen(group, song=None):
 	
 		# make the title graphics...
 		fonts = clutils.FontLib()	# maybe put this in the group?
-		fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
+		fontpath = fonts.return_fontpath('ProximaFontauriItalic.otf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/PaletD.ttf'
 		if clutils.needs_update('.', file='Title.png'):
 			imagemaker.make_text_graphic(song.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
@@ -417,7 +417,7 @@ def songgen(group, song=None):
 				content += '<li><a href="#' + part + '">' + name + '</a>\n'
 			content += '</ul><br><hr>\n'
 
-		fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
+		fontpath = fonts.return_fontpath('ProximaFontauriItalic.otf')
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 		for part in song.partlist:
 			# make the title graphics...
@@ -499,7 +499,7 @@ def homegen(group):
 
 	# make the title graphics...
 	fonts = clutils.FontLib()	# maybe put this in the group?
-	fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
+	fontpath = fonts.return_fontpath('ProximaFontauriItalic.otf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 	imagemaker.make_text_graphic(page.fun_title, 'Title_dk.png', fontpath, fontsize=45, border=10, fill=clColors.COLAB_BLUE )
@@ -574,7 +574,7 @@ def newgen(group):
 
 	# make the title graphics...
 	fonts = clutils.FontLib()	# maybe put this in the group?
-	fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
+	fontpath = fonts.return_fontpath('ProximaFontauriItalic.otf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
@@ -641,7 +641,7 @@ def navgen(group):
 
 	# make the title graphics...
 	fonts = clutils.FontLib()	# maybe put this in the group?
-	fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
+	fontpath = fonts.return_fontpath('ProximaFontauriItalic.otf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
@@ -734,7 +734,7 @@ def archivegen(group):
 	
 	# make the title graphics...
 	fonts = clutils.FontLib()	# maybe put this in the group?
-	fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
+	fontpath = fonts.return_fontpath('ProximaFontauriItalic.otf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )
@@ -805,7 +805,7 @@ def helpgen(group):
 
 	# make the title graphics...
 	fonts = clutils.FontLib()	# maybe put this in the group?
-	fontpath = fonts.return_fontpath('BrentfordBoldItalic.otf')
+	fontpath = fonts.return_fontpath('ProximaFontauriItalic.otf')
 	#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/ArabBruD.ttf'
 	imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=10, fill=fill )
 	imagemaker.make_text_graphic(page.desc_title, 'Header.png', fontpath, fontsize=30, border=2, fill=fill )

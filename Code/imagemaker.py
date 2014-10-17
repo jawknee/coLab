@@ -1111,29 +1111,31 @@ class Sound_image():
 			head = 'Headroom: '
 			if aud_frame_skip != 1 and headroom != 0:
 				head += '~'
-			head += ' %0.1fdB' % -headroom
+			head += ' %0.1fdB' % ( math.fabs(headroom) + 0.05 )
 			bot_string += ' / ' + head
 			sound_string += head + '\n'
 
-			sr = '%0.1fkHz' % (self.framerate / 1000.)
-			bits = '%dbits' % (self.sampwidth * 8)
+			sr = '%0.1f' % (self.framerate / 1000.)
+			bits = '%d' % (self.sampwidth * 8)
 			if self.size_class.is_larger_than(self.media_size, 'Medium'):
-				bot_string += " / " + sr + ' / ' + bits
-			sound_string += "Sample rate: " + sr + '\n'  
-			sound_string += "Sample width: " + bits + '\n'
+				bot_string += " / " + sr + 'kHz / ' + bits + 'bits'
+			sound_string += "Sample rate: " + sr + ' kHz\n'  
+			sound_string += "Sample width: " + bits + ' bits\n'
 			
 		
 		graphic_draw.text((left, ymax+3), bot_string, font=font, fill=clColors.GREEN)
 
-		if clip_count > 0 and self.size_class.is_larger_than(self.media_size, 'Large'):
+		if clip_count > 0:
 			# add in a string about clipping
 			# --- let's try to make this smarter about clips vs. likely normalization
-			string = 'Clipping: ' + str(clip_count)
-			(bwidth, bheight) = graphic_draw.textsize(bot_string, font=font)
-			right = left + bwidth + 15
-			logging.info("Right text fun: %s, %s, %s, %s ", right, width, bwidth, 15)
-			graphic_draw.text((right, ymax+3), string, font=font, fill=clColors.BRIGHT_RED)
-			sound_string += string + '\n'
+			clipstring = 'Clipping: ' + str(clip_count)
+			sound_string += clipstring + '\n'
+
+			if self.size_class.is_larger_than(self.media_size, 'Large'):
+				# different color - so offset from the width of the current string
+				(bwidth, bheight) = graphic_draw.textsize(bot_string, font=font)
+				right = left + bwidth + 15
+				graphic_draw.text((right, ymax+3), clipstring, font=font, fill=clColors.BRIGHT_RED)
 		
 		# Calculate some sound details...
 		comma = ''

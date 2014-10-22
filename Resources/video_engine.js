@@ -309,7 +309,7 @@ window.onload = function() {
 		secs = time - mins * 60;
 		isecs = parseInt(secs);
 		frac = secs - isecs;
-		secstr = secs.toFixed(0);
+		secstr = isecs.toFixed(0);
 		return mins.toFixed(0) + ":" + ('0' + secstr).substr(-2) + '.' + frac.toFixed(3).substr(2);
 	}
 

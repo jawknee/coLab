@@ -22,6 +22,7 @@ window.onload = function() {
 	var currentLocation = 0.;
 	var baseURL = document.URL
 	var parse = parseUri(baseURL);
+	var videoOver = false;
 
 	// Video
 	var video = document.getElementById("video");
@@ -91,7 +92,7 @@ window.onload = function() {
 		var fullscreenEnabled = document.fullscreenEnabled;
 	} else if (video.mozRequestFullScreen) {
 		fullscreenMode = "Mozilla";
-		var fullscreenRequester = function () { video.mozRequestFullScreen(); } // Firefox
+		var FullscreenRequester = function () { video.mozRequestFullScreen(); } // Firefox
 		var fullscreenElement = document.mozFullScreenElement;
 		var fullscreenEnabled = document.mozFullScreenEnabled;
 	} else if (video.webkitRequestFullscreen) {
@@ -118,25 +119,80 @@ window.onload = function() {
 	// ----------------------------------------
 	// URL "query" values 
 	if ( parse.queryKey.time ) {
-		timeArray = parse.queryKey.time.split(':');
-		console.log("Time array: " + timeArray[0]);
-		if ( timeArray[1] ) {	// minutes were specified...
-			startTime = parseFloat(timeArray[0]) * 60. + parseFloat(timeArray[1]);
-		} else {
-			startTime = parseFloat(timeArray[0]); 	// seconds only...
-		}
+		timeString = pause.queryKey.time;
+		var startTime = timeToVal(timeString);
+		goTimePause(timeString);
 	} else {
-		startTime = 0.0;
+		var startTime = 0.0;
 	}
-	console.log("Start time: " + startTime.toFixed(3));
-	if ( startTime != 0.0 ) {
-		//
-		playIt();	// if nothing else, get off that initial screen...
-		pauseIt();
-		video.currentTime = startTime;
-		pauseIt();
-	
+
+
+	function goTimePlay(time) {
+		goTimePause(time);
+		playIt();
 	}
+
+	function goTimePause(time) {
+		if ( time != 0.0 ) {
+			playIt();	// if nothing else, get off that initial screen...
+			pauseIt();
+			video.currentTime = time;
+			pauseIt();
+		}
+	}
+
+
+	function timeToVal(timeString) {
+		// convert a traditional time string to a floating point number.
+		timeArray = timeString.split(':');
+		timeval = 0.;
+		for (i=0; i<2; i++) {
+			console.log("time array of " + i.toString() );
+			if ( timeArray[i] ) {
+				timeval = timeval * 60 + parseFloat(timeArray[i]);
+				console.log("Time value: " + timeval.toString());
+			}
+		}
+		return timeval
+	}
+
+	// handle any element corrections
+	function elementFix(element) {
+		/// find event - probably overkill, from: 
+		// http://www.quirksmode.org/js/events_properties.html
+		var targ;
+		if (!e) var e = window.event;
+		if (e.target) targ = e.target;
+		else if (e.srcElement) targ = e.srcElement;
+		if (targ.nodeType == 3) // defeat Safari bug
+			targ = targ.parentNode;
+		return targ
+	}
+
+	// location strings...
+	function timeLocate(e) {
+		// passed an element - pull it's time string and go there...
+		targ = elementFix(e);
+		time = targ.getAttribute("value");
+		console.log("timeLocate entered " + time);
+		timeval = timeToVal(time);
+		//goTimePause(timeval);
+		goTimePlay(timeval);
+	}
+	function locLocate(e) {
+		// passed an element that references a locator...
+		targ = elementFix(e);
+		locator = targ.getAttribute("value");
+		btnnum = locator.replace("#", "");	// build locID value...
+		console.log("locLocate Button: " + btnnum)
+		time = buttonToLocation(btnnum);
+		if ( time != 0. ) {
+			goTimePlay(time);
+		}
+
+	}
+
+
 	//
 	//
 	// ----------------------------------------
@@ -278,30 +334,36 @@ window.onload = function() {
 		return
 	}
 
+	function buttonToLocation(button) {
+		// passed a button number (string),  
+		// return the time in seconds...
+		locID = "Loc_" + button
+		var locDesc = document.getElementById(locID + "_desc").value;
+		timeVal = 0.0
+		if ( locDesc ) {
+			if ( locDesc !== 'Unset' ) {
+				locValstring = document.getElementById(locID).value;
+				timeVal = parseFloat(locValstring);
+			}
+		}
+		return timeVal
+	}
+
 	// ----------------------------------------
 	//      Location Buttons - set them up
 	// ----------------------------------------
 	function handleLocButton(e) {
-		// find event - probably overkill, from: 
-		// http://www.quirksmode.org/js/events_properties.html
-		var targ;
-		if (!e) var e = window.event;
-		if (e.target) targ = e.target;
-		else if (e.srcElement) targ = e.srcElement;
-		if (targ.nodeType == 3) // defeat Safari bug
-			targ = targ.parentNode;
-		
+		// A button was pressed 
+		// where does it point to - go there and start playing
+		targ = elementFix(e);
 		var btnID = targ.getAttribute("id");
-		locID = btnID.replace("LocBtn", "Loc_");	// change name to loc ID
-		var locDesc = document.getElementById(locID + "_desc").value;
-		if ( locDesc !== 'Unset' ) {
-			var locValstring = document.getElementById(locID).value;
-			var timeOffset = parseFloat(locValstring);
-			video.currentTime = timeOffset;
-			playIt();
+		var btnnum = btnID.replace("LocBtn", "");	// build locID value...
+		time = buttonToLocation(btnnum);
+		if ( time != 0. ) {
+			goTimePlay(time);
 		}
-
 	}
+	
 	function toTimeString(time) {
 		// convert the number, in seconds, 
 		// into minutes and seconds
@@ -355,8 +417,33 @@ window.onload = function() {
 		//  while we're at it - let's set up the even handler for each button...
 		locButton.addEventListener("click", function(e) {
 			handleLocButton(e);
-			});
+		});
+	}
 
+	// ----------------------------------------
+	// 	Locator tags - class TimeMarker
+	// ----------------------------------------
+	var timeMarkerElements = document.getElementsByClassName("TimeMarker");
+	for (i = 0; i < timeMarkerElements.length; i++) {
+		el = timeMarkerElements[i]
+		val = el.getAttribute("value");
+		console.log("Found TimeMarker: " + val)
+		el.addEventListener("click", function(e) {
+			timeLocate(e);
+		});
+	}
+
+	// ----------------------------------------
+	// 	marker tags - class LocMarker
+	// ----------------------------------------
+	var locMarkerElements = document.getElementsByClassName("LocMarker");
+	for (i = 0; i < locMarkerElements.length; i++) {
+		el = locMarkerElements[i]
+		val = el.getAttribute("value");
+		console.log("Found LocMarker: " + val)
+		el.addEventListener("click", function(e) {
+			locLocate(e);
+		});
 	}
 
 	// ----------------------------------------
@@ -908,4 +995,3 @@ parseUri.options = {
 		loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
 	}
 };
-

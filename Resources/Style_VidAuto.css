@@ -159,6 +159,9 @@ button:hover {
 	cursor: pointer;
 }
 
+# markers - class used when javascript has processed them...
+span.TimeMarker { color: #d8c8b8; text-decoration: none;}
+span.LocMarker { color: #d8c8b8; text-decoration: none;}
 
 #seek-bar {
 	width: 360px;

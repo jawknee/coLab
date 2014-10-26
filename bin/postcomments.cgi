@@ -3,13 +3,13 @@
 #	Copyright Johnny Klonaris 2012
 #	
 source ../.coLab.conf
-#eval "$(./cgi-parse.py | tee -a ../logs/var.log | ./evalfix)"
+#eval "$(../Code/html_encode.py | tee -a ../logs/var.log | ./evalfix)"
 
 ulog="$coLab_home/logs/uri.log"		# what is passed in...
 vlog="$coLab_home/logs/var.log"		# what is processed...
 elog="$coLab_home/logs/eval.log"		# what is processed...
 
-eval "$(tee $ulog | $coLab_home/bin/cgi-parse.py |  tee -a $vlog | $coLab_home/bin/evalfix.py | tee $elog )"
+eval "$(tee $ulog | ../Code/html_encode.py |  tee -a $vlog | $coLab_home/bin/evalfix.py | tee $elog )"
 
 
 source ../.coLab.conf	# don't like this...
@@ -29,7 +29,7 @@ then
 	(Variable: "Text")
 	<p>
 	This is an uncharacterized bug at this point and intermittent.
-	If you think of anything unusual about you entered the comments,
+	If you think of anything unusual about how you entered the comments,
 	please let me know.
 	<p>
 	Thanks.
@@ -43,8 +43,11 @@ then
 	EOF
 	exit
 fi
+dest=${HTTP_REFERER%\?*}	# remove any parameters
+#echo HTTP_REFERER $HTTP_REFERER $dest
 shopt -s extglob		# our old friend, extglob (pattern matching extension, next line)
-dest=${HTTP_REFERER%index.?(s)html}	# removes index.html or index.shtml
+dest=${dest%index.?(s)html}	# removes index.html or index.shtml
+REF_URL="${dest}index.shtml"
 shopt -u extglob
 
 dirname=$coLab_home/${dest#$coLab_url_head}
@@ -58,13 +61,13 @@ fi
 cat <<-EOF >>$logfile
 <hr width=25% align=left>
 <i>$(date) - $Commenter</i><br>
-$Text
+$(echo $Text | ../Code/locTagger.py)
 EOF
 
 cat <<EOF
 <html>
 <head><title>coLab Comments: $desc_title</title>
-<!meta HTTP-EQUIV="REFRESH" content="5;URL="$HTTP_REFERER/index.shtml">
+<!meta HTTP-EQUIV="REFRESH" content="5;URL="$REF_URL">
 <link rel="stylesheet" type="text/css" href="../Resources/Style_Default.css">
 </head>
 <body>
@@ -86,14 +89,14 @@ export cLmail_bodytext=$(cat <<-EOF
 	<h2>New Comment on $desc_title</h2>
 	At $(date),<br>
 	$Commenter commented on 
-	<a href="$HTTP_REFERER">$desc_title</a>:<P>
+	<a href="$REF_URL">$desc_title</a>:<P>
 
-	$Text
+	$(echo $Text | ../Code/locTagger.py -a "$REF_URL")
 	<p><hr><p>
 	<h3>The full set of comments:</h3>
 	$(cat $logfile)
 	<p><hr><p>
-	<a href="$HTTP_REFERER">&larr; Back to the $desc_title page.</a>
+	<a href="$REF_URL">&larr; Back to the $desc_title page.</a>
 	<p>
 	EOF
 	)

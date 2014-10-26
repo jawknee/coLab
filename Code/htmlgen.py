@@ -21,6 +21,7 @@ import clutils
 import cldate
 import clclasses
 import clColors
+import locTagger
 
 from headers import *
 import imagemaker
@@ -195,7 +196,7 @@ def pagegen(group, page):
 	<td valign=top><img src="Header.png" align=left alt="page.desc_title"><br clear=all>
 	<i>Created: """ + cldate.utc2long(page.createtime) + """</i></td>
 	<td valign=center align=right><b>Duration: """ + mk_dur_string(page.duration) + """</b></td></tr></table>
-	<p><font color=a0b0c0>"""  + page.description + '<p>'
+	<p><font color=a0b0c0>"""  + locTagger.loctagger(page.description) + '<p>'
 
 	outfile.write(content)
 

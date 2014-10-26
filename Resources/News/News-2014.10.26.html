@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+		    <html>
+			<head><title>Click! coLab News: May 26, 2014</title>
+			<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
+			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
+			
+			</head>
+			<body>
+			
+			<div id="Content" class="main" style="height: 97%; overflow: auto "> <! middle content >
+			<p>
+		
+		</center>
+
+	<div class="maintext">
+	<font color=a0b0c0>
+	<img src="/coLab/Resources/Icons/News.png" alt="New!" align=left valign=top>
+	<h1>Time/Locator Tagging</h1>
+	<font size=-1><i>October 26, 2014</i></font><br>
+	The new coLab Time/Location Tagging feature is now working.
+	<p>
+	Simply enter a time value (must contain at least one ':', e.g, :23) or
+	preceed a locator number with a pound-sign (e.g., #1) and the text on the
+	web page will be highlighted and will take you directly to that location 
+	and start playing,
+	<p>
+	If you enter a time that is beyond the end of the song, or a locactor button
+	that is now set yet, the tags will not be active on the page.
+	<p>
+	In addition, links appear on the page after submitting the comment as well
+	as in the email. 
+	<p>
+
+	<h2>Details</h2>
+	There's not a lot of detail here, other than what constitues a time
+	string.  To match and show up as a tag, a time string must have:
+	<p>
+	<ul>
+		At a minimum:
+		<li>A colon and two digits (seconds):  :21
+		Optionally:
+		<li>a fractional part:  :21.3  (as many digits as you care to type)
+		<li>one two digits and colon (minutes):  1:23  23:06
+		<li>An hour - in this case, only one digit, a colon and 
+		minutes and seconds must both be two digits:   1:05:33.8
+	</ul>
+	This should tag things that look like time, but not tag things like
+	"2:1" which would likely be a ratio.
+	<p>
+	The locator tags are just a # and one or two digits.
+
+	<h2>Implementation</h2>
+	There's not a lot here, but under the hood there are some differences
+	between what appears on the page and what shows up on the Comment 
+	confirmation page or email.
+	<p>
+	The values on the page are not really links, but are &gt;span&lt; tags
+	that invoke the javascript directly.   They are made active as the
+	page loads and are validated at that time.
+	<p>
+	For the comments page and email, the matching strings are tagged 
+	with a URL, which passes a time= or locator= parameter on the end
+	of the URL.
+
+
+	</font>
+	</div>
+
+	</body>
+	</html>
+		

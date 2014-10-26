@@ -119,9 +119,23 @@ window.onload = function() {
 	// ----------------------------------------
 	// URL "query" values 
 	if ( parse.queryKey.time ) {
-		timeString = pause.queryKey.time;
+		timeString = parse.queryKey.time;
+		console.log("TimeString: " + timeString);
 		var startTime = timeToVal(timeString);
-		goTimePause(timeString);
+		console.log("Time val passed: " + timeString + ' - ' +  startTime.toString());
+		goTimePause(startTime);
+	} else {
+		var startTime = 0.0;
+	}
+
+	if ( parse.queryKey.locator ) {
+		locator = parse.queryKey.locator;
+		console.log("Button: " + locator);
+		var startTime = buttonToLocation(locator);
+		console.log("Button number passed: " + locator + ' - ' +  startTime.toString());
+		if ( startTime != 0.0 ) {
+			goTimePause(startTime);
+		}
 	} else {
 		var startTime = 0.0;
 	}
@@ -151,7 +165,7 @@ window.onload = function() {
 			console.log("time array of " + i.toString() );
 			if ( timeArray[i] ) {
 				timeval = timeval * 60 + parseFloat(timeArray[i]);
-				console.log("Time value: " + timeval.toString());
+				console.log("Time value: " + timeArray[i] + ' - ' + timeval.toString());
 			}
 		}
 		return timeval
@@ -339,14 +353,23 @@ window.onload = function() {
 	function buttonToLocation(button) {
 		// passed a button number (string),  
 		// return the time in seconds...
-		locID = "Loc_" + button
-		var locDesc = document.getElementById(locID + "_desc").value;
-		timeVal = 0.0
+		console.log("buttonToLoc: " + button);
+		var locID = "Loc_" + button
+		var locElem = document.getElementById(locID + "_desc");
+		if (locElem) {
+			var locDesc = locElem.value;
+			console.log("LocDesc: " + locDesc)
+		}
+		var timeVal = 0.0
 		if ( locDesc ) {
 			if ( locDesc !== 'Unset' ) {
-				locValstring = document.getElementById(locID).value;
+				var locValstring = document.getElementById(locID).value;
 				timeVal = parseFloat(locValstring);
+			} else {
+				console.log("button unset");
 			}
+		} else {
+			console.log("button doesn't exist");
 		}
 		return timeVal
 	}
@@ -405,7 +428,8 @@ window.onload = function() {
 		var locButton = document.getElementById(btnID);
 
 		if ( locDesc !== 'Unset' ) {
-			spantag = '<span class="LocMarkerActive" value="#' + i.toString() + '">'
+			// Add a descriptive line - LocMarker will be come LocMarkerAtive later
+			spantag = '<span class="LocMarker" value="#' + i.toString() + '">'
 			locatorTextString += spantag
 			locatorTextString += btnType + ". "
 			locatorTextString += buttonTextString + "</span><br>"
@@ -438,9 +462,8 @@ window.onload = function() {
 				timeLocate(e);
 			});
 			// build a new element...
-			var newEl = '<span class="TimeMarkerActive" value="' + val + '">' + val + '</span>';
-			el.innerHTML = newEl;
-			console.log("New tag:" + newEl);
+			el.className = "TimeMarker TimeMarkerActive";
+			console.log("New tag class: " + el.className );
 		} else {
 			console.log("Time string beyond duration: " + val);
 		}
@@ -452,23 +475,24 @@ window.onload = function() {
 	// Check each elemnt of class "LocMarker" 
 	// If there is a matching locator, set up an 
 	// event listener and change the class to "LocMarkerActive"
+	console.log("Check LocMarkers");
 	var locMarkerElements = document.getElementsByClassName("LocMarker");
+	console.log("Found: " + locMarkerElements.length.toString() + " elements.");
+	var i = 0;
 	for (i = 0; i < locMarkerElements.length; i++) {
-		el = locMarkerElements[i]
-		val = el.getAttribute("value");
+		var el = locMarkerElements[i]
+		var val = el.getAttribute("value");
 		console.log("Found LocMarker: " + val)
-		btnnum = val.replace("#", "");	// build locID value...
-		console.log("locLocate Button: " + btnnum)
+		var btnnum = val.replace("#", "");	// build locID value...
 		// Calculate the time, if not zero, it's valid
-		time = buttonToLocation(btnnum);
+		var time = buttonToLocation(btnnum);
 		if ( time != 0. ) {
 			el.addEventListener("click", function(e) {
 				locLocate(e);
 			});
 			// build a replacement element...
-			newEl = '<span class="LocMarkerActive" value="' + val + '">' + val + '</span>';
-			el.innerHTML = newEl;
-			console.log("New tag:" + newEl);
+			el.className = "LocMarker LocMarkerActive";
+			console.log("New tag class: " + el.className );
 		}
 	}
 

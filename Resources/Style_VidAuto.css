@@ -44,6 +44,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .sidebar_r a:visited { color: #0000c0; text-decoration: none; }
 .sidebar_r a:hover { color: #f0e0d0; text-decoration: underline;}
 .sidebar_r a:active { color: #ffffff; text-decoration: underline;}
+.sidebar_r span.LocMarkerActive { color: #2030AA; text-decoration: none;}
 
 /* 
  * Open Loop Alert: the numbers here are repeated in the config.py file - need to come from
@@ -159,9 +160,9 @@ button:hover {
 	cursor: pointer;
 }
 
-# markers - class used when javascript has processed them...
-span.TimeMarker { color: #d8c8b8; text-decoration: none;}
-span.LocMarker { color: #d8c8b8; text-decoration: none;}
+/* markers - class used when javascript has processed them...  */
+span.TimeMarkerActive { color: #d8c8b8; text-decoration: none;}
+span.LocMarkerActive { color: #d8c8b8; text-decoration: none;}
 
 #seek-bar {
 	width: 360px;

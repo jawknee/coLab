@@ -81,3 +81,6 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 
 .logo { position: absolute; top: 40px; right: 20px; }
 
+# markers - class used when javascript has processed them...
+span.TimeMarkerActive { color: #d8c8b8; text-decoration: none;}
+span.LocMarkerActive { color: #d8c8b8; text-decoration: none;}

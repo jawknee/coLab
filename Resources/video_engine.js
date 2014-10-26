@@ -144,8 +144,9 @@ window.onload = function() {
 
 	function timeToVal(timeString) {
 		// convert a traditional time string to a floating point number.
-		timeArray = timeString.split(':');
-		timeval = 0.;
+		var timeArray = timeString.split(':');
+		var timeval = 0.;
+		var i=0;
 		for (i=0; i<2; i++) {
 			console.log("time array of " + i.toString() );
 			if ( timeArray[i] ) {
@@ -157,7 +158,7 @@ window.onload = function() {
 	}
 
 	// handle any element corrections
-	function elementFix(element) {
+	function elementFix(e) {
 		/// find event - probably overkill, from: 
 		// http://www.quirksmode.org/js/events_properties.html
 		var targ;
@@ -183,6 +184,7 @@ window.onload = function() {
 		// passed an element that references a locator...
 		targ = elementFix(e);
 		locator = targ.getAttribute("value");
+		console.log("Locator: " + locator);
 		btnnum = locator.replace("#", "");	// build locID value...
 		console.log("locLocate Button: " + btnnum)
 		time = buttonToLocation(btnnum);
@@ -403,8 +405,10 @@ window.onload = function() {
 		var locButton = document.getElementById(btnID);
 
 		if ( locDesc !== 'Unset' ) {
+			spantag = '<span class="LocMarkerActive" value="#' + i.toString() + '">'
+			locatorTextString += spantag
 			locatorTextString += btnType + ". "
-			locatorTextString += buttonTextString + "<br>"
+			locatorTextString += buttonTextString + "</span><br>"
 			locatorText.innerHTML = locatorTextString;
 			locButton.title = buttonTextString;
 		}
@@ -427,23 +431,45 @@ window.onload = function() {
 	for (i = 0; i < timeMarkerElements.length; i++) {
 		el = timeMarkerElements[i]
 		val = el.getAttribute("value");
-		console.log("Found TimeMarker: " + val)
-		el.addEventListener("click", function(e) {
-			timeLocate(e);
-		});
+		console.log("Found TimeMarker: " + val);
+		// Check to make sure the number is within the duration...
+		if ( timeToVal(val) <= duration ) {
+			el.addEventListener("click", function(e) {
+				timeLocate(e);
+			});
+			// build a new element...
+			var newEl = '<span class="TimeMarkerActive" value="' + val + '">' + val + '</span>';
+			el.innerHTML = newEl;
+			console.log("New tag:" + newEl);
+		} else {
+			console.log("Time string beyond duration: " + val);
+		}
 	}
 
 	// ----------------------------------------
 	// 	marker tags - class LocMarker
 	// ----------------------------------------
+	// Check each elemnt of class "LocMarker" 
+	// If there is a matching locator, set up an 
+	// event listener and change the class to "LocMarkerActive"
 	var locMarkerElements = document.getElementsByClassName("LocMarker");
 	for (i = 0; i < locMarkerElements.length; i++) {
 		el = locMarkerElements[i]
 		val = el.getAttribute("value");
 		console.log("Found LocMarker: " + val)
-		el.addEventListener("click", function(e) {
-			locLocate(e);
-		});
+		btnnum = val.replace("#", "");	// build locID value...
+		console.log("locLocate Button: " + btnnum)
+		// Calculate the time, if not zero, it's valid
+		time = buttonToLocation(btnnum);
+		if ( time != 0. ) {
+			el.addEventListener("click", function(e) {
+				locLocate(e);
+			});
+			// build a replacement element...
+			newEl = '<span class="LocMarkerActive" value="' + val + '">' + val + '</span>';
+			el.innerHTML = newEl;
+			console.log("New tag:" + newEl);
+		}
 	}
 
 	// ----------------------------------------

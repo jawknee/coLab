@@ -92,7 +92,7 @@ window.onload = function() {
 		var fullscreenEnabled = document.fullscreenEnabled;
 	} else if (video.mozRequestFullScreen) {
 		fullscreenMode = "Mozilla";
-		var FullscreenRequester = function () { video.mozRequestFullScreen(); } // Firefox
+		var fullscreenRequester = function () { video.mozRequestFullScreen(); } // Firefox
 		var fullscreenElement = document.mozFullScreenElement;
 		var fullscreenEnabled = document.mozFullScreenEnabled;
 	} else if (video.webkitRequestFullscreen) {
@@ -113,6 +113,7 @@ window.onload = function() {
 	} else {
 		fullscreenMode = "None";
 	}
+	console.log("Fullscreen Mode: " + fullscreenMode);
 
 	// ----------------------------------------
 	//      URL parsing...
@@ -248,8 +249,10 @@ window.onload = function() {
 		infoString += "Screenshot: " + screenshotWidth + '<br>';
 		infoString += "Screen width: " + screen.width.toString() + '<br>';
 		infoString += "Screen height: " + screen.height.toString() + '<br>';
+		*/
 		infoString += "Fullscreen: " + fullscreenStatus + '<br>';
 		infoString += "Fullscreen Mode: " + fullscreenMode + '<br>';
+		/*
 		infoString += "<b>Click Type:</b> " + clickType + '<br>';
 		//infoString += "<b>Event Name:</b> " + eventlist + '<br>'; 
 		*/
@@ -453,7 +456,7 @@ window.onload = function() {
 	// ----------------------------------------
 	var timeMarkerElements = document.getElementsByClassName("TimeMarker");
 	for (i = 0; i < timeMarkerElements.length; i++) {
-		el = timeMarkerElements[i]
+		el = timeMarkerElements[i];
 		val = el.getAttribute("value");
 		console.log("Found TimeMarker: " + val);
 		// Check to make sure the number is within the duration...
@@ -480,9 +483,9 @@ window.onload = function() {
 	console.log("Found: " + locMarkerElements.length.toString() + " elements.");
 	var i = 0;
 	for (i = 0; i < locMarkerElements.length; i++) {
-		var el = locMarkerElements[i]
+		var el = locMarkerElements[i];
 		var val = el.getAttribute("value");
-		console.log("Found LocMarker: " + val)
+		console.log("Found LocMarker: " + val + " " + i.toString() + " of " + locMarkerElements.length);
 		var btnnum = val.replace("#", "");	// build locID value...
 		// Calculate the time, if not zero, it's valid
 		var time = buttonToLocation(btnnum);
@@ -495,6 +498,7 @@ window.onload = function() {
 			console.log("New tag class: " + el.className );
 		}
 	}
+	console.log("Done with marker tags...");
 
 	// ----------------------------------------
 	// 	Event Listeners
@@ -530,22 +534,25 @@ window.onload = function() {
 		setMuteButton();
 		postInfo("Mute pressed.");
 	});
-	}
+	};
 
 	// Event listener for the full-screen button
 	fullScreenButton.addEventListener("click", function() {
 		//  Call the requester we found at load time...
 		//  unless there isn't one....
 		postInfo("FullScreen Button");
+		console.log("FullScreen - mode: " + fullscreenMode);
 		if ( fullscreenMode != "None" ) {
-			fullscreenRequester();
 			console.log("Requesting full screen for " + fullscreenMode );
+			fullscreenRequester();
 		} else {
 			alert("Your browser does not support the Full Screen Mode API.");
 		}
 		//video.removeAttribute("controls");	// no help...
 		clickType = 'reset';		// renable document clicks...
 	});
+
+	console.log("Added fullScreenButton event listener for " + fullscreenMode);
 
 
 	// Event listener for the seek bar

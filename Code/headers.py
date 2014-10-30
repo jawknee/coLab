@@ -200,6 +200,9 @@ class Html:
 			<head><title>!fun_title!</title>
 			<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 			<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_VidAuto.css">
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/bootstrap/css/bootstrap.css">
+			<link rel="stylesheet" type="text/css" href="/coLab/Resources/context.bootstrap.css">
+			<!link rel="stylesheet" type="text/css" href="/coLab/Resources/context.standalone.css">
 			<link rel="shortcut icon" href="/coLab/Resources/CoLab_Logo2D.png">
 			""" 
 
@@ -224,7 +227,13 @@ class Html:
 		self.body = """
 			</head>
 			<body>
-			<script src="/coLab/Resources/video_engine.js"></script>
+
+			<! Good old jQuery >
+			<script type="text/javascript" src="/coLab/Resources/jquery-1.11.1.min.js"></script>
+			<! Our main javascript to drive the video - and most everything else >
+			<script type= "text/javascript" src="/coLab/Resources/video_engine.js"></script>
+			<! the ContextJS package for working context menus >
+			<script type="text/javascript" src="/coLab/Resources/context.js"></script>
 
 			<!--   Menu Header -->
 			<div id="container" style="height: 100%; width: 100%; overflow: hidden;">
@@ -254,7 +263,7 @@ class Html:
 		
 		self.media_insert_html5="""
 			<div id="video-container">		
-			<div id="clickdiv">
+			<!div id="clickdiv">
 			<video  id="video" poster="Poster_Start.png" width="640" height="530">
 			<!-- The following line is replaced with the full complement of html5 video codecs for this page... -->
 			 !html5-source-lines!
@@ -265,7 +274,7 @@ class Html:
 			  <i>Your browser does not support html5 - using mp4 plug-in</i>
 			  </font>
 			</video>
-		</div><! end click div>
+		<!/div><! end clickdiv>
 		"""
 		self.media_tail="""</div> <! video-container>\n"""
 		

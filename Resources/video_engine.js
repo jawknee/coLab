@@ -26,9 +26,9 @@ window.onload = function() {
 
 	// Video
 	var video = document.getElementById("video");
-	var vcontainer = document.getElementById("video-container");
-	var clickbar = document.getElementById("clickbar");
-	var clickdiv = document.getElementById("clickdiv");
+	//var vcontainer = document.getElementById("video-container");
+	//var clickbar = document.getElementById("clickbar");
+	//var clickdiv = document.getElementById("clickdiv");
 
 	// Buttons
 	var playButton = document.getElementById("play-pause");
@@ -762,31 +762,6 @@ window.onload = function() {
 		postInfo("Video MouseUp");
 		}, false);
 
-	//  div - possibly redundant   secondary to video
-	// mouse down
-	clickdiv.addEventListener('mousedown', function(e) {
-		console.log("div mousedown" + clickType);
-		eventlist += 'd';
-		if ( clickType != 'video' ) {
-			if ( clickType != 'Doc' ) {
-				handleMouseDown(e);
-				eventlist += '+';
-			}
-			clickType = 'div';
-		}
-		postInfo("Div MouseDown");
-		}, false);
-	// mouse up
-	clickdiv.addEventListener('mouseup', function(e) {
-		console.log("div mouseup" + clickType);
-		eventlist += 'cu';
-		if ( clickType == 'div' ) {
-			handleMouseUp(e);
-			eventlist += '+';
-		}
-		postInfo("Click MouseUp");
-		}, false);
-
 	
 	// click in the whole document - ignore other than in
 	// full screen - needed as some video elements do 
@@ -830,6 +805,11 @@ window.onload = function() {
 		//
 		// Called when we get a click in the video - or possibly the surrounding <div> 
 		// calculate where to position the video (audio).
+		console.log("handleMouseDown");
+		if ( event.which != 1 ) {
+			console.log("Not left mouse button.");
+			return;
+		}
 		//
 		// get where that click was... 
 		lastxclick = event.clientX;
@@ -889,6 +869,10 @@ window.onload = function() {
 	// Mouse up...
 	function handleMouseUp (event) {
 		console.log("MouseUp In - click status: " + clickStatus);
+		if ( event.which != 1 ) {
+			console.log("Not left mouse button.");
+			return;
+		}
 		// if we've just started, the first click starts us off...
 		if ( playStatus == "Initial") {
 			playIt();
@@ -1008,8 +992,62 @@ window.onload = function() {
 		postInfo("time:" + time.toFixed(3) + ' / ' + xvalue );
 		return time;
 	}
+
+	function SetLocation(e) {
+	
+		var posx = e.clientX  + 'px'; //Left Position of Mouse Pointer
+		var posy = e.clientY + 'px'; //Top Position of Mouse Pointer
+		//console.log("SetLocation: posx: " +  posx + " posy: " + posy);
+		alert("SetLocation: x:" + posx + ' y:' + posy );
+	}
+	
+	/*
+ 	* ------ Context.js------
+ 	* hopefully a way to do context menues
+ 	*/
+	
+	context.init({
+    		fadeSpeed: 100,
+    		filter: null,
+    		above: 'auto',
+    		preventDoubleContext: false,
+    		compress: false
+	});
+	
+	
+	context.attach('#video', 
+		[{ header: 'coLab Options:' }, 
+		{ text: 'Show My Location', action: function(e) { 
+			SetLocation(e); 
+		} },
+		{ text: 'Pause', action: function() {
+			pauseIt();
+		} },
+		{ text: 'Play', action: function() {
+			playIt();
+		} },
+		{ text: 'Go Fullscreen', action: function() {
+			fullscreenRequester();
+		} },
+		{ header: 'Not working yet:' },
+		{ text: 'Set a Locator...',
+		  subMenu: [ { text: 'Loc 1 - the beginning?' },
+		  		{text: 'Loc 2 - next?' },
+		  		{text: 'Loc 3 - next?' },
+		  		{text: 'Loc 4 - next?' },
+		  		{text: 'Loc 5 - next?' },
+		  		{text: 'Loc 6 - next?' },
+		  		{text: 'Loc 7 - next?' },
+		  		{text: 'Loc 8 - next?' },
+		  		{text: 'Loc 9 - next?' },
+		  		{text: 'Loc 10 - next?' } ] },
+		{ text: 'Mark as "home"' },
+		{ text: 'Some other thing.' }
+	]);
+       	
 }
 
+// parseURI - handy way to find out what's been passed via the URL
 function displayAttrById (id) {
 	//   let's see what attributes this element has...
 	var element = document.getElementById(id);

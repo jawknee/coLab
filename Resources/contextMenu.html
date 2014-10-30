@@ -1,0 +1,83 @@
+<!--  contextMenu.html
+
+      html to set up the context menu - intended to be included in 
+      at the Page style web pages.
+
+      Based originally on the work by: Bikash Prakash Dash
+      at: http://www.codeproject.com/Tips/630793/Context-Menu-on-Right-Click-in-Webpage
+      -->
+
+<!  A basic context menu>
+<div style="display:none; "   id="contextMenu">
+        <table  border="0" cellpadding="0" cellspacing="0" 
+            style="border: thin solid #808080; cursor: default;" width="100px" 
+            bgcolor="White">
+            <tr>
+                <td >
+                    <div  class="ContextItem">View</div>
+                </td>
+            </tr>
+            <tr>
+                <td >
+                <div  class="ContextItem">Edit</div>
+                </td>
+            </tr>
+            <tr>
+                <td >
+                    <div  class="ContextItem">Delete</div>
+                </td>
+            </tr>
+        </table>
+</div>
+
+<! Create the elements to use the menu >
+<!--
+<div  onmousedown="HideMenu('contextMenu');"
+          onmouseup="HideMenu('contextMenu');"
+          oncontextmenu="ShowMenu('contextMenu',event);"
+         class="detailItem">
+    Right Click Here Item: 1
+        </div>
+         <div  onmousedown="HideMenu('contextMenu');"
+          onmouseup="HideMenu('contextMenu');"
+          oncontextmenu="ShowMenu('contextMenu',event);"
+         class="detailItem">
+    Right Click Here Item: 2
+        </div>
+       <div  onmousedown="HideMenu('contextMenu');"
+          onmouseup="HideMenu('contextMenu');"
+        oncontextmenu="ShowMenu('contextMenu',event);"
+         class="detailItem">
+    Right Click Here Item: 3
+</div>   
+-->
+	
+<! a bit of style - needs to move the css file >
+
+<style type="text/css">
+      .ContextItem    <!-Context Menu Item Style-->
+        {
+            background-color:White;
+            color:Black;
+            font-weight:normal;
+            
+            }
+     .ContextItem:hover   <!-Context Menu Item Style On Mouse Over-->
+       {
+            background-color:#0066FF;
+            color:White;
+            font-weight:bold;            
+        }
+       .detailItem
+       {
+           background:transparant;
+           
+       }
+       .detailItem:hover
+       {
+           background-color:#FEE378;
+           border: 1px outset #222222;
+           font-weight:bold;
+           cursor:default;
+       }
+</style>

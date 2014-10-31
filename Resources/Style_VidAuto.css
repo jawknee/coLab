@@ -94,6 +94,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 #video {
 	position: relative;
 	top: 0px;
+	z-index: 0;
 }
 
 #video-container {

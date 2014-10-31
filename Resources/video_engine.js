@@ -52,6 +52,9 @@ window.onload = function() {
 	}
 	var locatorTextString = "";
 
+	// Intial statue of menu...
+	var contextMenuArray = buildContextMenuArray();
+
 	// Sliders
 	var seekBar = document.getElementById("seek-bar");
 	var volumeBar = document.getElementById("volume-bar");
@@ -195,6 +198,7 @@ window.onload = function() {
 		//goTimePause(timeval);
 		goTimePlay(timeval);
 	}
+	
 	function locLocate(e) {
 		// passed an element that references a locator...
 		targ = elementFix(e);
@@ -206,7 +210,6 @@ window.onload = function() {
 		if ( time != 0. ) {
 			goTimePlay(time);
 		}
-
 	}
 
 
@@ -268,6 +271,7 @@ window.onload = function() {
 	//
 	//  functions to set the icons into the buttons...
 	function setPlayButton() {
+		contextMenuArray = buildContextMenuArray();	
 		if ( video.paused == true ) {
 			//playButton.innerHTML = '<img src="/coLab/Resources/Icons/Play_24x24xp_02.png" alt="Play">';
 			playButton.innerHTML = '<img src="/coLab/Resources/Icons/Play_24x24btn_03.png" alt="Play">';
@@ -993,12 +997,87 @@ window.onload = function() {
 		return time;
 	}
 
-	function SetLocation(e) {
+	// ----------------------------------------
+	//   Menu Functions
+	// ----------------------------------------
 	
+
+	function buildContextMenuArray() {
+		// Build the context menu, piece at a time...
+		var cm = [ { header: 'coLab Options:' } ];	// context menu entries...
+		
+		// show screen coordinates (debug)
+		cm[cm.length] = { text: 'Screen Coordinates', 
+			action: function(e) { 
+			showLocation(e); 
+			} 
+		};
+
+		// Post to comments...
+		cm[cm.length] = 
+		{ text: 'Post Location to Comments', action: function() { postLocation();
+		} };
+
+		// Play or Pause, based on state...
+		//if ( video.paused == false ) {
+			console.log("Menu: Pause");
+			cm[cm.length] = 
+			{ text: 'Pause', action: function() {
+				pauseIt();
+			} };
+		//} else {
+			console.log("Menu: Play");
+			cm[cm.length] = 
+			{ text: 'Play', action: function() {
+				playIt();
+			} };
+		//}
+		cm[cm.length] = 
+		{ text: 'Go Fullscreen', action: function() {
+			fullscreenRequester();
+		} };
+
+		//
+		// Build a locator menu - submenu to the next entry...
+		var lm = [ { header: 'Select Location' } ];
+		$(".locId").each(function( index ) {
+			console.log("next jQ button: " + index.toFixed() );
+			desc_var = this.id + "_desc";
+			desc = document.getElementById(desc_var).value;
+			console.log("next jQ button: " + index.toFixed() + " desc:" + desc);
+			s = this.id + ": " + desc ;
+			if ( desc == "Unset" ) {
+				lm[lm.length] = { text: s };
+			} else {
+				s += " (" + toTimeString(this.value) + ")" ;
+				lm[lm.length] =  { header: s };
+			}
+		});
+		// Set a locator...
+		cm[cm.length] = { text: "Set a locator",
+				  subMenu: lm };
+
+		/*
+		cm[cm.length] = 
+		*/
+
+		return cm
+		
+	}
+
+
+	function showLocation(e) {
+		// set (or for now, display) a location	
 		var posx = e.clientX  + 'px'; //Left Position of Mouse Pointer
 		var posy = e.clientY + 'px'; //Top Position of Mouse Pointer
-		//console.log("SetLocation: posx: " +  posx + " posy: " + posy);
-		alert("SetLocation: x:" + posx + ' y:' + posy );
+		//console.log("showLocation: posx: " +  posx + " posy: " + posy);
+		alert("showLocation: x:" + posx + ' y:' + posy );
+	}
+
+	function postLocation() {
+		// Post the current location to the comment box
+		// as text
+		document.getElementById("CommentBox").value += ' ' + toTimeString(video.currentTime) + ' ';
 	}
 	
 	/*
@@ -1010,15 +1089,21 @@ window.onload = function() {
     		fadeSpeed: 100,
     		filter: null,
     		above: 'auto',
-    		preventDoubleContext: false,
+    		preventDoubleContext: true,
     		compress: false
 	});
 	
 	
+	context.attach('#video', contextMenuArray);
+	/*
 	context.attach('#video', 
+		// 
 		[{ header: 'coLab Options:' }, 
-		{ text: 'Show My Location', action: function(e) { 
-			SetLocation(e); 
+		{ text: 'Screen Coordinates', action: function(e) { 
+			showLocation(e); 
+		} },
+		{ text: 'Location to Comments', action: function() {
+			postLocation();
 		} },
 		{ text: 'Pause', action: function() {
 			pauseIt();
@@ -1044,8 +1129,9 @@ window.onload = function() {
 		{ text: 'Mark as "home"' },
 		{ text: 'Some other thing.' }
 	]);
+	*/
        	
-}
+}	// end of window.onload
 
 // parseURI - handy way to find out what's been passed via the URL
 function displayAttrById (id) {

@@ -998,8 +998,8 @@ class Sound_image():
 
 		if self.page.use_soundgraphic:
 
-				# while we're at it, let's label the channels
-	
+			# while we're at it, let's label the channels
+			for c in range(nchan):
 				# Channel name:
 				graphic_draw.text((xmin/2, centers[c]-10), clist[c], font=font, fill=clColors.GREEN)
 		

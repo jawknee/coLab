@@ -134,7 +134,7 @@ class Html:
 			varname = "Loc_%d" % i
 			value = eval('page.' + varname)
 			loc_html += """
-				<input type="hidden" id="%s" value="%f">""" % (varname, value)
+				<input type="hidden" id="%s" class="locID" value="%f">""" % (varname, value)
 			value = eval('page.' + varname + '_desc')
 			loc_html += """
 				<input type="hidden" id="%s_desc" value="%s">""" % (varname, value)
@@ -301,7 +301,7 @@ class Html:
 		Your name: <input type="text" name="Commenter" ><br>
 		<input type="hidden" name="page" value="!name!">
 		<input type="hidden" name="desc_title" value="!desc_title!">
-		<textarea name="Text" rows=7 cols=80></textarea>
+		<textarea name="Text" rows=7 cols=80 id-"CommentBox"></textarea>
 		<br>
 
 		<input type="submit" value="Add your comment">

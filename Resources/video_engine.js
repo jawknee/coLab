@@ -1040,6 +1040,7 @@ window.onload = function() {
 		//
 		// Build a locator menu - submenu to the next entry...
 		var lm = [ { header: 'Select Location' } ];
+		if ( window.jQuery ) {
 		$(".locId").each(function( index ) {
 			console.log("next jQ button: " + index.toFixed() );
 			desc_var = this.id + "_desc";
@@ -1053,6 +1054,9 @@ window.onload = function() {
 				lm[lm.length] =  { header: s };
 			}
 		});
+		} else {
+			lm = [ { header: "no jQuery - no submenu" } ]
+		}
 		// Set a locator...
 		cm[cm.length] = { text: "Set a locator",
 				  subMenu: lm };

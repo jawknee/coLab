@@ -8,36 +8,44 @@
 
 import sys
 
-def py2php(filename="data"):
+import logging
+
+def py2php(filename="data", phpversion='5.3'):
 	""" read the file as a series of python style
 		assignment statements, and output a php 
 		compatible eval string.
+		
+		if php version is passed in and 
+	
 	"""
+	logging.info("Reading from: %s", filename)
 	if filename != '':
 		try: 
-			print "# Reading from:", filename
 			string = file(filename).read()
 		except:
-			pass
+			string = ''
 	else:
-		print "# reading from stdin:"
+		logging.info("Reading from stdin:")
 		string = sys.stdin.read()
 		
-	#print " Parsing:", string
-	#print "# =================================="
+	EOF_tag = "EOF"	# 
+	END_tag = EOF_tag + ';\n'
 
+	if phpversion == '5.3':		# RBF: Do more with this...
+		EOF_tag = "'" + EOF_tag + "'"	# convert from a HereDoc to NowDoc
 	# Now, take that string, as a series of lines, 
 	# and step through it, converting to php-style assignments
 	# as we go...
 	out = ''
 	lines = string.split('\n')
 	max = len(lines)
-	print "# Number of Lines:", max
+	logging.info("Number of Lines: %s", max)
 	i = 0
 	while i < max:
 		l = lines[i]
 		if len(l) == 0:
-			print"// blank...", i
+			logging.info("blank, line # %s", i)
+			out += '// --- \n'
 			i += 1
 			continue
 		if l[0] == '#':
@@ -46,7 +54,7 @@ def py2php(filename="data"):
 			continue
 		eq_pos = l.find('=')
 		if eq_pos == -1:
-			out += "# <blankline> \n"	# RBF!
+			out += "// -?- " + l + " -?- \n"	
 			i += 1
 			continue
 		# if we get here, we've got an assignment statement...
@@ -56,7 +64,7 @@ def py2php(filename="data"):
 			val = val[1:]	# remove the uni-code prefix...
 		# convert triple quoted to nowdocs.. 
 		if val[0:3] == '"""' or val[0:3] == "'''":	# is this a triple quote?
-			out += '$' + var + " = <<<'EOF'\n"
+			out += '$' + var + " = <<<" + EOF_tag + '\n'
 			endquote = val[0:3]
 			val = val[3:]
 			while val.find(endquote) == -1:
@@ -66,7 +74,7 @@ def py2php(filename="data"):
 			laststring = val[:val.find(endquote)] 
 			if len(laststring) != 0:	# if the line line is blank - don't do it.
 				out += val[:val.find(endquote)] + '\n'
-			out += 'EOF;\n'
+			out += END_tag
 			i += 1
 		else:
 			out += '$' + var + ' = ' + val + ';\n'
@@ -80,5 +88,7 @@ if  __name__ == '__main__':
 	argc = len(sys.argv)
 	if argc > 1:
 			filename=sys.argv[1]
-
-	print py2php(filename)
+	logging.basicConfig(level=logging.INFO)
+	#logging.basicConfig(level=logging.WARNING)
+	logging.info('Filename: %s', filename)
+	print py2php(filename),

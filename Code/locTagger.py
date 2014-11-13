@@ -130,11 +130,10 @@ if  __name__ == '__main__':
 
 	if filename != '':
 		try: 
-			string = file(sys.argv[1]).read()
+			string = file(filename).read()
 		except:
 			pass
-
-	if string == '':
+	else:
 		string = sys.stdin.read()
 
 	if url != '':

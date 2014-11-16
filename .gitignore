@@ -34,5 +34,7 @@ Resources/Fonts.old
 Resources/Fonts.old/*
 Resources/BadFonts
 Resources/BadFonts/*
+Resources/php/.*
 *.swp
 Imaging-1.1.7/
+

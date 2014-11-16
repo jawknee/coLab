@@ -11,12 +11,13 @@ coLab_local
 coLab_local/*
 /Shared/mostrecent.html
 /.InterarchyMirrorCacheData/*
-Page
-Page/*
-Song
-Song/*
 Group
 Group/*
+# In case we allow any Group content in the future:
+Group/**/Page
+Group/**/Page/*
+Group/**/Song
+Group/**/Song/*
 Resources/FontIndex
 Resources/*.png
 logs

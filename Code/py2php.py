@@ -10,12 +10,19 @@ import sys
 
 import logging
 
-def py2php(filename="data", phpversion='5.3'):
+import locTagger
+
+def py2php(filename="data", tagit = False, phpversion='5.3'):
 	""" read the file as a series of python style
 		assignment statements, and output a php 
 		compatible eval string.
 		
-		if php version is passed in and 
+		If tagit is True - we first run the file through
+		the locTagger...
+		
+		if php version is a placeholder - if older
+		versions of php are extant - we need to NOT use
+		a "NowDoc".
 	
 	"""
 	logging.info("Reading from: %s", filename)
@@ -30,7 +37,7 @@ def py2php(filename="data", phpversion='5.3'):
 		
 	EOF_tag = "EOF"	# 
 	END_tag = EOF_tag + ';\n'
-
+	
 	if phpversion == '5.3':		# RBF: Do more with this...
 		EOF_tag = "'" + EOF_tag + "'"	# convert from a HereDoc to NowDoc
 	# Now, take that string, as a series of lines, 
@@ -67,7 +74,12 @@ def py2php(filename="data", phpversion='5.3'):
 			out += '$' + var + " = <<<" + EOF_tag + '\n'
 			endquote = val[0:3]
 			val = val[3:]
+
 			while val.find(endquote) == -1:
+				# special case for the description var and  tagging...
+				if var == "description" and tagit:
+					logging.info("Running string through loctagger")
+					val = locTagger.loctagger(val)
 				out += val + '\n'
 				i += 1
 				val = lines[i]
@@ -91,4 +103,4 @@ if  __name__ == '__main__':
 	logging.basicConfig(level=logging.INFO)
 	#logging.basicConfig(level=logging.WARNING)
 	logging.info('Filename: %s', filename)
-	print py2php(filename),
+	print py2php(filename, tagit=True),

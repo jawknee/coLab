@@ -1,0 +1,12 @@
+<!-- /Volumes/iMac 2TB/Software/coLab/Resources/Include/Page/geometry.inc -->
+   <input type="hidden" id="xOffset" value="<?php echo $xOffset; ?>">\n'
+   <input type="hidden" id="xStart" value="<?php echo $xStart; ?>">\n'
+   <input type="hidden" id="xEnd" value="<?php echo $xEnd; ?>">\n'
+   <input type="hidden" id="pageScale" value="<?php echo $pgview_scale; ?>">\n'
+   <input type="hidden" id="screenshotWidth" value="<?php echo $screenshot_width; ?>">\n'
+ <!-- media info (fullscreen) -->\n'
+   <input type="hidden" id="duration" value="<?php echo $page.duration; ?>">\n'
+   <input type="hidden" id="media_width" value="<?php echo $media_width; ?>">\n'
+   <input type="hidden" id="media_height" value="<?php echo $media_height; ?>">\n'
+   <input type="hidden" id="media_start" value="<?php echo $page.xStart; ?>">\n'
+   <input type="hidden" id="media_end" value="<?php echo $page.xEnd; ?>">\n'

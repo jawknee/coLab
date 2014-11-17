@@ -100,7 +100,7 @@ if  __name__ == '__main__':
 	argc = len(sys.argv)
 	if argc > 1:
 			filename=sys.argv[1]
-	logging.basicConfig(level=logging.INFO)
+	#logging.basicConfig(level=logging.INFO)
 	#logging.basicConfig(level=logging.WARNING)
 	logging.info('Filename: %s', filename)
-	print py2php(filename, tagit=True),
+	print py2php(filename, tagit=True, phpversion=4.4),

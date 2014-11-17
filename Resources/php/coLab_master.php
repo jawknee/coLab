@@ -1,10 +1,40 @@
-<?php 
+<?php
 	/*
 	 * coLab_master.php
 	 * This is the main php script - all pages point here,
 	 * then the script builds the web page based on the 
 	 * data local the file original path.
 	 */
+	function inc_name($name) {
+		//
+		// just simplify building the include file name
+		global $page_include_dir, $dlim;
+		return $page_include_dir . $dlim . $name;
+	}
+
+	// an array that takes a size, and returns the "next" size down...
+	// Used by function next_size
+	$size_map = array(
+	 '4k-Ultra-HD' => "HiDef",
+	 'Super-HD' => "HiDef",
+	 'Super-HD-Letterbox' => "Large",
+	 'HiDef' => "Medium",
+	 'HD-Letterbox' => "Small",
+	 'Large' => "Small",
+	 'Medium' => "Small",
+	 'Small' => "Tiny",
+	 'Tiny' => "Micro",
+	 'Micro' => '',
+	);
+
+	function next_size($size) {
+		 // return the next size...
+		global $size_map;
+		return $size_map[$size];
+	}
+	
+
+	//  Where are we?   Build some paths...
 	$phpself = $_SERVER['PHP_SELF'];  // e.g., /coLab/Group/Test/Page/HelloNola/index.php  (symlink to:)
 	$fullpath = __FILE__;			  // e.g., /Volumes/iMac 2TB/Software/coLab/Resources/php/coLab_master.php 
 	// build paths to places we need
@@ -14,50 +44,110 @@
 	$dlim = '/';		# path separator
 	$coLab_root = '';
 	foreach (range(1, $root_parts) as $i) {
-		$coLab_root = $coLab_root . $dlim . $path_parts[$i];
+		$coLab_root .= $dlim . $path_parts[$i];
 	}
 	$code_path = $coLab_root . $dlim . 'coLab' .  $dlim . 'Code';
 	$py2php_path = $code_path . $dlim . 'py2php.py';
 	
+	// Build the path to the Page include dir
 	$page_include_dir = $coLab_root;
 	foreach (array('coLab', 'Resources', 'Include', 'Page') as $part) {
-		$page_include_dir = $page_include_dir . $dlim . $part;
+		$page_include_dir .= $dlim . $part;
 	}
 	
-
 	$page_home = $coLab_root . dirname($phpself);	// includes the leading '/coLab' from phpself
 	$data_path = $page_home . $dlim . 'data';	
 	
+	// Read the page's data file, converted to php assignments - then evaluate
 	// escape these as the paths may have spaces...
 	$page_data_cmd = escapeshellarg($py2php_path) . ' ' . escapeshellarg($data_path);
-	#$result = exec($page_data_cmd, &$data_results);
-	$data_results = `$page_data_cmd`;
+	$data_results = `$page_data_cmd`;	# re
 	eval($data_results);
+	// At this point the page data vars are all in the env.
 	
 	// Build meta-data - locator button tags:
 	$locator_buttons = '<span>';
-	foreach (range(1, $numbuts+1) as $button) {
+	foreach (range(1, $numbuts) as $button) {
 		$btn = (string)$button;
-		$locator_buttons = $locator_buttons . '<button type="button" id="LocBtn' . $btn . '">' . $btn . '</button>';
+		$locator_buttons .= '<button type="button" id="LocBtn' . $btn . '">' . $btn . '</button>';
 	}
-	$locator_buttons = $locator_buttons . '</span>';
+	$locator_buttons .= '</span>';
 	
-	$headinclude = $page_include_dir . $dlim . 'head.inc';
-	include($headinclude);
 	$groupURL = '/coLab/Group/' . $group;
-	$bodyinclude = $page_include_dir . $dlim . 'body.inc';
-	include($bodyinclude);
-	$bannerinclude = $page_include_dir . $dlim . 'banner.inc';
-	include($bannerinclude);
+	
+	// The all important, html5-source tags...
+	// Kind of the heart of the whole thing...
+	$media_codecs = array(
+		'ogg' => 'theora, vorbis',
+		'mp4' => 'avc1.42E01E, mp4a.40.2',
+		'webm' => 'vp8.0, vorbis');
+	// list of type we're using...
+	$media_list = array( 'mp4', 'webm' );
+
+	$html5_source = '\n';
+
+	$size = $media_size;	# start with the size of this video...
+	while ( $size != '' ) {
+		foreach ($media_list as $type) {
+			echo "Size " . $size . "type:" . $type;
+			$codecs = $media_codecs[$type];
+			$html5_source .= <<<EOF
+				<source src="$name-media-$size.$type" type='video/$type'; codecs="$codecs">
+			
+EOF;
+			# Now - move down to the next size...
+			$size = next_size($size);
+		}
+	}	
+
+	
+	include(inc_name('head.inc'));
+	include(inc_name('body.inc'));
+	include(inc_name('banner.inc'));
+
 	echo <<<EOF
 	<div id="Content" class="main" style="height: 97%; overflow: auto ">
 EOF;
-	$videoinclude = $page_include_dir . $dlim . 'video.inc';
-	include($videoinclude);
-	$contentinclude = $page_include_dir . $dlim . 'content.inc';
-	include($contentinclude);
+
+	include(inc_name('video.inc'));
+	include(inc_name('content.inc'));
+	/*
+	 * Generate the locator button info...
+	 */
+	echo <<<EOF
+	 <!-- Locator button info -->
+			<input type="hidden" id="numbut" value="$numbuts">
+
+EOF;
+
+	foreach (range(1, $numbuts) as $i) {
+		$varname = "Loc_" . (string)$i;
+		$pvar = "\$" . $varname;
+		eval("\$value = \"$pvar\";");
+		
+		echo <<<EOF
+	    <input type="hidden" id="$varname" class="locId" value="$value">
+
+EOF;
+		$varname .= '_desc';	# get the description...
+		$pvar = "\$" . $varname;
+		eval("\$value = \"$pvar\";");
+
+		echo <<<EOF
+		<input type="hidden" id="$varname" value="$value">
+
+EOF;
+	}
 
 	echo <<<EOF
+	<!-- End locator button info -->
+
+EOF;
+
+	include(inc_name('geometry.inc'));
+
+	echo <<<EOF
+	<p><hr>Debug<hr><p>
 	<h2>coLab Master</h2>
 	Our path is: $local_path
 	<p>
@@ -82,7 +172,6 @@ EOF;
 	Onward...
 EOF;
 
-	$tailinclude = $page_include_dir . $dlim . 'tail.inc';
-	include($tailinclude);
+	include(inc_name('tail.inc'));
 	
 ?>

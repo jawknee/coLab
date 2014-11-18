@@ -82,7 +82,7 @@
 		'mp4' => 'avc1.42E01E, mp4a.40.2',
 		'webm' => 'vp8.0, vorbis');
 	// list of type we're using...
-	$media_list = array( 'mp4', 'webm' );
+	$media_list = array( 'mp4', 'webm', 'ogg' );
 
 	$html5_source = '\n';
 

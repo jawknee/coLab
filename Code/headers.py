@@ -100,10 +100,10 @@ class Html:
 		# Safari and IE will pick up mp4 an in any case - oddly, firefox on windows seems
 		# to also pickup mp4 - who knew?
 		# media type, codec info
-		""" ( 'ogg', 'theora, vorbis'), """
 		sourceinfo = [ 
 			( 'mp4', 'avc1.42E01E, mp4a.40.2'), 
-			( 'webm', 'vp8.0, vorbis')
+			( 'webm', 'vp8.0, vorbis'),
+			( 'ogg', 'theora, vorbis') 
 			]
 		sources = '\n'
 		t3 = '\t' * 3	# 3 tabs - makes the html easier to read....

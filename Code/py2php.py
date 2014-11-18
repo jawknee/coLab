@@ -7,12 +7,16 @@
 """
 
 import sys
+""" can't use this until I can get a reasonable version of python working at Sonic.net
+import subprocess
+#"""
+from distutils.version import StrictVersion
 
 import logging
 
 import locTagger
 
-def py2php(filename="data", tagit = False, phpversion='5.3'):
+def py2php(filename="data", tagit=False, phpversion='4.0'):
 	""" read the file as a series of python style
 		assignment statements, and output a php 
 		compatible eval string.
@@ -38,8 +42,10 @@ def py2php(filename="data", tagit = False, phpversion='5.3'):
 	EOF_tag = "EOF"	# 
 	END_tag = EOF_tag + ';\n'
 	
-	if phpversion == '5.3':		# RBF: Do more with this...
-		EOF_tag = "'" + EOF_tag + "'"	# convert from a HereDoc to NowDoc
+	# If our php version is new enough, use a "NowDoc" 
+	# rather than a "HereDoc"  - somewhat more secure...
+	if StrictVersion(phpversion) >= StrictVersion('5.3.0'):		
+		EOF_tag = "'" + EOF_tag + "'"	
 	# Now, take that string, as a series of lines, 
 	# and step through it, converting to php-style assignments
 	# as we go...
@@ -69,7 +75,7 @@ def py2php(filename="data", tagit = False, phpversion='5.3'):
 		val = l[eq_pos+1:]
 		if val[0] == 'u':
 			val = val[1:]	# remove the uni-code prefix...
-		# convert triple quoted to nowdocs.. 
+		# convert triple quoted to here/nowdocs.. 
 		if val[0:3] == '"""' or val[0:3] == "'''":	# is this a triple quote?
 			out += '$' + var + " = <<<" + EOF_tag + '\n'
 			endquote = val[0:3]
@@ -100,7 +106,16 @@ if  __name__ == '__main__':
 	argc = len(sys.argv)
 	if argc > 1:
 			filename=sys.argv[1]
-	#logging.basicConfig(level=logging.INFO)
+
+	""" sigh - no good until we get a newer version of python on Sonic.net.
+	logging.basicConfig(level=logging.INFO)
 	#logging.basicConfig(level=logging.WARNING)
 	logging.info('Filename: %s', filename)
-	print py2php(filename, tagit=True, phpversion=4.4),
+	try:
+		version = subprocess.check_output(["php", "-v"]).split(' ')[1]
+	except:
+		version = "4.0.0"	# worst case?
+	#"""
+	version = '4.4.0'
+	
+	print py2php(filename, tagit=True, phpversion=version),

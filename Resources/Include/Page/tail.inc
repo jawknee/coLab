@@ -14,6 +14,7 @@
 	<p><hr><p>
 	<h3>Comments:</h3>
 	<!--#include virtual="Comments.log" -->
+	<?php virtual ("Comments.log"); ?>
 	<p>
 	<br>
 	<div class=copyright>

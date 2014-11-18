@@ -89,15 +89,14 @@
 	$size = $media_size;	# start with the size of this video...
 	while ( $size != '' ) {
 		foreach ($media_list as $type) {
-			echo "Size " . $size . "type:" . $type;
 			$codecs = $media_codecs[$type];
 			$html5_source .= <<<EOF
 				<source src="$name-media-$size.$type" type='video/$type'; codecs="$codecs">
 			
 EOF;
 			# Now - move down to the next size...
-			$size = next_size($size);
 		}
+		$size = next_size($size);
 	}	
 
 	
@@ -107,6 +106,7 @@ EOF;
 
 	echo <<<EOF
 	<div id="Content" class="main" style="height: 97%; overflow: auto ">
+	<img src="Title.png" class="fundesc" alt="$fun_title">
 EOF;
 
 	include(inc_name('video.inc'));
@@ -143,10 +143,50 @@ EOF;
 	<!-- End locator button info -->
 
 EOF;
+	// Geometry - hidden tags that tell the javascript how
+	// to manuever for media clicks...
+	//
+	// We need a couple of (4) bits - these calls to 
+	// colab_geo will return them.
+	$clGeo_path = $code_path . $dlim . 'clGeo.py';
+	$clGeo_cmd = escapeshellarg($clGeo_path) . ' ' . $media_size;
+	$offset_cmd = $clGeo_cmd . ' -o';
+	$xOffset = `$offset_cmd` + 0;	# add zero to get rid of the newline...
+	
+	$pgview_cmd = $clGeo_cmd . ' -p';
+	$pgview_width = `$pgview_cmd` + 0;
+	
+	$mwidth_cmd = $clGeo_cmd . ' -w';
+	$media_width = `$mwidth_cmd` + 0;
 
+	$mheight_cmd = $clGeo_cmd . ' -h';
+	$media_height = `$mheight_cmd` + 0;
+
+	if ($use_soundgraphic) {
+		# there is no screen shot - use the media size...
+		$pgview_scale = (float)$media_width / $pgview_width;
+		$screenshot_width = "None";
+		# open loop alert: calculating the image borders as per imagemaker...
+		# triple open loop alert: see above
+
+		$factor_cmd = $clGeo_cmd . ' -f';
+		$adjust_factor = `$factor_cmd` + 0;
+
+		$left_cmd = $clGeo_cmd . ' -l';
+		$xStart = (int)(`$left_cmd` + 0) * $adjust_factor;
+		$right_cmd = $clGeo_cmd . ' -r';
+		$xEnd = (int)( $media_width - ( (`$right_cmd` + 0 ) * $adjust_factor) );
+		/*
+		*/
+	}
+	else {
+		$pgview_scale = (float)$screenshot_width / $pgview_width;
+	}
+	
 	include(inc_name('geometry.inc'));
 
 	echo <<<EOF
+	<!--  Internal Debug fun...  specific to the php rendering...
 	<p><hr>Debug<hr><p>
 	<h2>coLab Master</h2>
 	Our path is: $local_path
@@ -170,6 +210,8 @@ EOF;
 	<p> <hr> <p>
 	
 	Onward...
+	end php debug -->
+	<a href="index.shtml">index.shtml</a>
 EOF;
 
 	include(inc_name('tail.inc'));

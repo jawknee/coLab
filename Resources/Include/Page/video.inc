@@ -1,13 +1,13 @@
 <!-- /Volumes/iMac 2TB/Software/coLab/Resources/include/page/video.inc -->
 
-	<div id="video-container">		
+	<div id="video-container">
 	<!div id="clickdiv">
 	<video  id="video" poster="Poster_Start.png" width="640" height="480">
 	<!-- The following line is replaced with the full complement of html5 video codecs for this page... -->
 	 <?php echo $html5_source; ?>
 	  <!-- Fall back for non-html5 browsers, (WinXP/IE8, e.g.) simple mp4 embed tag -->
 	  <br>
-	  <embed src="<?php echo $name; ?>-media-Small.mp4" autostart="false" height="500" width="640" /><br>
+	  <embed src="<?php echo $name; ?>-media-Small.mp4" autostart="false" height="480" width="640" /><br>
 	  <font size=-2>
 	  <i>Your browser does not support html5 - using mp4 plug-in</i>
 	  </font>

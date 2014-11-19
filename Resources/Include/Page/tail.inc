@@ -24,7 +24,7 @@
 	<p>&nbsp;<p>
 	</td></tr></table>
 	<font size=1>
-	Page type: $page_type
+	Page type: <?php echo $page_type; ?> - php
 	</font>
 	</div>	<! middle content>
 	</div>	<! container >

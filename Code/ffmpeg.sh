@@ -56,7 +56,7 @@ ogg_opts="-r $fps -flags:v qscale -qscale:v 1 -codec:v libtheora -codec:a libvor
 
 # use these to turn off one or more gnerators
 #unset ogg_opts webm_opts
-unset ogg_opts 
+#unset ogg_opts 
 #unset webm_opts
 #unset mp4_opts
 # redirect the stderr to stdout - changing carriage returns to new lines so we can read it...

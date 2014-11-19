@@ -35,7 +35,9 @@
 	
 
 	//  Where are we?   Build some paths...
-	$phpself = $_SERVER['PHP_SELF'];  // e.g., /coLab/Group/Test/Page/HelloNola/index.php  (symlink to:)
+	if ( $phpself == "" ) {
+		$phpself = $_SERVER['PHP_SELF'];  // e.g., /coLab/Group/Test/Page/HelloNola/index.php  (symlink to:)
+	}
 	$fullpath = __FILE__;			  // e.g., /Volumes/iMac 2TB/Software/coLab/Resources/php/coLab_master.php 
 	// build paths to places we need
 	$path_parts = explode('/', $fullpath);
@@ -64,6 +66,16 @@
 	$data_results = `$page_data_cmd`;	# re
 	eval($data_results);
 	// At this point the page data vars are all in the env.
+	//
+	// do some format manipulation
+	$duration = number_format($duration,3);
+	
+	if (version_compare(phpversion(), '5.2.0', '>')) {
+		$format = "Y-m-d h:i:s A T";
+		// date.timezone = "America/Los_Angeles";		# not sure why this is needed on some implementations (newer?)
+		$createtime = date_format(date_create($createtime), $format);
+		$updatetime = date_format(date_create($updatetime), $format);
+	}
 	
 	// Build meta-data - locator button tags:
 	$locator_buttons = '<span>';

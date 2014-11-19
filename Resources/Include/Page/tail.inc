@@ -21,6 +21,7 @@
 	&copy; Catharsis Studios West 2014
 	</div><! end of copyright>
 	<!--#include virtual="links.html" -->
+	<?php virtual ("links.html"); ?>
 	<p>&nbsp;<p>
 	</td></tr></table>
 	<font size=1>

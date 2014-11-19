@@ -2,6 +2,7 @@
 <p>
 	<! Start links...>
 	<!--#include virtual="links.html" -->
+	<?php virtual ("links.html"); ?>
 	<! ...end links.>
 	<div class="maintext">
 	<br>

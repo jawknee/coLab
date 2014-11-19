@@ -72,7 +72,7 @@
 	
 	if (version_compare(phpversion(), '5.2.0', '>')) {
 		$format = "Y-m-d h:i:s A T";
-		// date.timezone = "America/Los_Angeles";		# not sure why this is needed on some implementations (newer?)
+		date_default_timezone_set("America/Los_Angeles");		
 		$createtime = date_format(date_create($createtime), $format);
 		$updatetime = date_format(date_create($updatetime), $format);
 	}

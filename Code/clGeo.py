@@ -15,8 +15,12 @@ import config
 def main():
 	""" Return specific values based on the requested info.
 	
-		runstring is rather restricted:
-		clGeo size -o | -p | -w | -h
+		Runstring only - basically an interface to allow the php
+		code to calculate sizes using the same code/values as 
+		the older html generation.
+	
+		runstring is restricted - must include size and one option:
+		clGeo.py size -o | -p | -f | -l | -r | -w | -h
 		   where:
 		   	-o	xOffset 
 		   	-p  pageview width
@@ -26,7 +30,7 @@ def main():
 		   	-w	media width
 		   	-h  media height
 		
-		when in doubt, returns...   42  (why not)
+		when in doubt, returns...   42  (why not?)
 	"""
 	argc = len(sys.argv)
 	if argc > 2:

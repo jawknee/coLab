@@ -99,7 +99,7 @@ class Colab():
 			   
 	   
 		# let's make sure mamp is running...
-		clSchedule.start_mamp()
+		#clSchedule.start_mamp()	 # (let's not)
 
 		self.get_last_group()	# set the initial group, and load it...
 		#self.set_group()		# update the internal group structure

@@ -72,13 +72,19 @@
 	
 	if (version_compare(phpversion(), '5.2.0', '>')) {
 		$format = "Y-m-d h:i:s A T";
-		date_default_timezone_set("America/Los_Angeles");		
+		date_default_timezone_set("America/Los_Angeles");
 		$createtime = date_format(date_create($createtime), $format);
 		$updatetime = date_format(date_create($updatetime), $format);
 	}
 	
 	// Build meta-data - locator button tags:
 	$locator_buttons = '<span>';
+	if ( !isset($numbuts)) {
+		$numbuts = 5;
+		$nobutdef = True;
+	} else {
+		$nobutdef = False;
+	}
 	foreach (range(1, $numbuts) as $button) {
 		$btn = (string)$button;
 		$locator_buttons .= '<button type="button" id="LocBtn' . $btn . '">' . $btn . '</button>';
@@ -104,7 +110,6 @@
 			$codecs = $media_codecs[$type];
 			$html5_source .= <<<EOF
 				<source src="$name-media-$size.$type" type='video/$type'; codecs="$codecs">
-			
 EOF;
 			# Now - move down to the next size...
 		}
@@ -114,12 +119,7 @@ EOF;
 	
 	include(inc_name('head.inc'));
 	include(inc_name('body.inc'));
-	include(inc_name('banner.inc'));
-
-	echo <<<EOF
-	<div id="Content" class="main" style="height: 97%; overflow: auto ">
-	<img src="Title.png" class="fundesc" alt="$fun_title">
-EOF;
+	//include(inc_name('banner.inc'));
 
 	include(inc_name('video.inc'));
 	include(inc_name('content.inc'));
@@ -134,16 +134,25 @@ EOF;
 
 	foreach (range(1, $numbuts) as $i) {
 		$varname = "Loc_" . (string)$i;
-		$pvar = "\$" . $varname;
-		eval("\$value = \"$pvar\";");
+
+		if ( $nobutdef ) {	// no button defined - old page...
+			$value = 0.0;
+		} else {
+			$pvar = "\$" . $varname;
+			eval("\$value = \"$pvar\";");
+		}
 		
 		echo <<<EOF
 	    <input type="hidden" id="$varname" class="locId" value="$value">
 
 EOF;
 		$varname .= '_desc';	# get the description...
-		$pvar = "\$" . $varname;
-		eval("\$value = \"$pvar\";");
+		if ( $nobutdef ) {	// no button defined - old page...
+			$value = "Unset";
+		} else {
+			$pvar = "\$" . $varname;
+			eval("\$value = \"$pvar\";");
+		}
 
 		echo <<<EOF
 		<input type="hidden" id="$varname" value="$value">

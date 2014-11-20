@@ -1,25 +1,35 @@
-<!-- /Volumes/iMac 2TB/Software/coLab/Resources/include/page/body.inc -->
-</head>
+<!-- Start: /coLab/Resources/include/page/body.inc -->
 <body>
+    <div id="Master">
 
-	<! Good old jQuery >
-	<script type="text/javascript" src="/coLab/Resources/jquery-1.11.1.min.js"></script>
-	<! Our main javascript to drive the video - and most everything else >
-	<script type= "text/javascript" src="/coLab/Resources/video_engine.js"></script>
-	<! the ContextJS package for working context menus >
-	<script type="text/javascript" src="/coLab/Resources/context.js"></script>
+<!  ----    Banner ---->
+<div id="banner" > <! start of banner>
+	<table width=80% border=0 cellpadding=0 class="banner_txt">
+	  <td align="center" ><a href="<?php echo $groupURL?>/index.shtml" title="Always a nice place to go...">Home</a></td>
 
-	<!--   Menu Header -->
-	<div id="container" style="height: 100%; width: 100%; overflow: hidden;">
-	<div class="sidebar_l">
+	  <td align="center" ><a href="<?php echo $groupURL?>/Shared/WhatsNew/index.shtml" title="The place to be, if you want to be somewhere else.">What's&nbsp;New</a></td>
+	  <td align="center" ><a href="<?php echo $groupURL?>/Shared/Nav/index.shtml" title="How to get to where you need go.">Nav</a></td>
+	  <td align="center" ><a href="<?php echo $groupURL?>/Shared/Archive/index.shtml" title="What have we been up to...">Archive</a></td>
+	  <td align="center" ><a href="<?php echo $groupURL?>/Shared/Help/index.shtml" title="Hopefully, the help you need.">Help</a></td>
+	</tr></table>
+<br>
+</div>	<! end of banner>
+
+	<div id="container" >
+
+	<div id="sidebar_l" class="sidebar_l">
 	<?php virtual ($groupURL . "/Shared/mostrecent.html"); ?>
 	<p><hr><P>
 	<!--#include virtual="<?php echo $groupURL; ?>/Shared/projectlist.html" -->
 	<?php virtual ($groupURL . "/Shared/projectlist.html"); ?>
-	</div> <! End sidebar>
-	<div class="sidebar_r">
+	<p><hr><P>
 	<!--#include virtual="/coLab/Resources/News.html" -->
 	<?php virtual ("/coLab/Resources/News.html"); ?>
+	</div> <! End sidebar>
+
+	<div id="sidebar_r" class="sidebar_r">
+	<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
+	<! end logo>
 	<!--#include virtual="<?php echo $groupURL; ?>/Shared/News.html" -->
 	<?php virtual ($groupURL . "/Shared/News.html"); ?>
 	<!--#include virtual="<?php echo $groupURL; ?>/Shared/rightbar.html" -->
@@ -31,7 +41,8 @@
 	<hr><br>
 	<p id="info"></p>	<! A paragraph for displaying...  info from javascript.>
 	</div> <! End right sidebar>
-	<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
-	<! end logo>
-	<!div id="Content" class="main" style="height: 97%; overflow: auto ">
 
+	<div id="Content" >
+	<img src="Title.png" class="fundesc" alt="$fun_title">
+
+<!-- End: /coLab/Resources/include/page/body.inc -->

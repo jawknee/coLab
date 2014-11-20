@@ -1,6 +1,5 @@
-<!-- /Volumes/iMac 2TB/Software/coLab/Resources/include/page/banner.inc -->
-<img src="Title.png" class="fundesc" alt="<?php echo $fun_title; ?>">
-<div class="banner" > <! start of banner>
+<!-- Start: .../coLab/Resources/include/page/banner.inc -->
+<div id="banner" > <! start of banner>
 	<table width=80% border=0 cellpadding=0 class="banner_txt">
 	  <td align="center" ><a href="<?php echo $groupURL?>/index.shtml" title="Always a nice place to go...">Home</a></td>
 
@@ -11,3 +10,4 @@
 	</tr></table>
 <br>
 </div>	<! end of banner>
+<!-- End: .../coLab/Resources/include/page/banner.inc -->

@@ -1,4 +1,4 @@
-<!-- /Volumes/iMac 2TB/Software/coLab/Resources/include/page/head.inc -->
+<!-- Start: .../coLab/Resources/include/page/tail.inc -->
 	<hr>
 	Enter your comments here:<br>
 		
@@ -20,15 +20,16 @@
 	<div class=copyright>
 	&copy; Catharsis Studios West 2014
 	</div><! end of copyright>
-	<!--#include virtual="links.html" -->
+
 	<?php virtual ("links.html"); ?>
 	<p>&nbsp;<p>
-	</td></tr></table>
 	<font size=1>
 	Page type: <?php echo $page_type; ?> - php
 	</font>
-	</div>	<! middle content>
-	</div>	<! container >
-
+	</div>	<! end maintext >
+	</div>	<! end Content >
+    </div>  <! end container>
+    </div>  <!-- end of Master -->
 </body>
 </html>
+<!-- End: .../coLab/Resources/include/page/tail.inc -->

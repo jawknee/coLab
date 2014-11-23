@@ -51,11 +51,11 @@ SIZE_LIST = [
 			( 'Super-HD-Letterbox', (1920, 1440), "Large"),
 			( 'HiDef', (1920, 1080), "Medium"),
 			( 'HD-Letterbox', (1440, 1080), "Small"),
-			( 'Large', (1280, 960), "Small"),
-			( 'Medium', (960, 720), "Small"),
-			( 'Small', (640, 480), "Tiny"),
-			( 'Tiny', (320, 240), "Micro"),
-			( 'Micro', (160, 120), None)
+			( 'Large', (1280, 720), "Small"),
+			( 'Medium', (960, 540), "Small"),
+			( 'Small', (640, 360), "Tiny"),
+			( 'Tiny', (320, 180), "Micro"),
+			( 'Micro', (160, 90), None)
 			]
 
 BASE_SIZE = 'Small'		# what the main "page" is generated with...

@@ -1599,11 +1599,21 @@ class Page_edit_screen(Edit_screen):
 		self.editlist[row.member] =  row
 		row.post()
 		
-		#---- Strict Mode
+		#---- "bonus frame: a little space next to the sound graphic..
 		bonus_frame = ttk.Frame(self.edit_frame)
 		bonus_frame.grid(row=self.row-2, column=3, sticky=tk.NW)
+		#---- Strict Mode
 
-		button = Check_button(bonus_frame, text='Strict Graphics (slower)', member='strict_graphic', value=self.obj.strict_graphic)
+		bonus1 = ttk.Frame(bonus_frame)
+		bonus1.grid(row=0, column=0, sticky=tk.NW)
+		button = Check_button(bonus1, text='Strict Graphics (slower)', member='strict_graphic', value=self.obj.strict_graphic)
+		button.post()
+		self.editlist[button.member] = button
+
+		#---- Combined Mode
+		bonus2 = ttk.Frame(bonus_frame)
+		bonus2.grid(row=1, column=0, sticky=tk.NW)
+		button = Check_button(bonus2, text='Combined Graphics (one waveform)', member='combined_graphic', value=self.obj.combined_graphic)
 		button.post()
 		self.editlist[button.member] = button
 		

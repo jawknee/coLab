@@ -480,12 +480,14 @@ def do_mirror(coLab_home=None):
 	scriptpath = os.path.join(coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
 	osascript = "/usr/bin/osascript"
 	logging.info("Mirror: %s", osascript, scriptpath)
+	"""
 	try:
 		pid = subprocess.Popen([osascript, scriptpath]).pid
 		logging.info("do_mirror - mirror pid is: %d", pid)
 	except:
 		logging.warning("Mirror error: cannot continue.", exc_info=True)
 		sys.exit(1)
+	#"""
 
 def rebuild(g, mirror=False, opt="nope"):
 	""" rebuilt a group page

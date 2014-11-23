@@ -2,7 +2,7 @@
 <!-- Start: /coLab/Resources/include/page/head.inc -->
 <html>
     <head><title><?php echo $fun_title ?></title>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<!-- css -->
 	<link rel="stylesheet" type="text/css" href="/coLab/Resources/Style_Default.css">
 	<!link rel="stylesheet" type="text/css" href="/coLab/Resources/bootstrap/css/bootstrap.css">

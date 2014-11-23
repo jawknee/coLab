@@ -340,6 +340,7 @@ class Page:
 		('thumbnail', "ScreenShot_tn.png"),
 		('use_soundgraphic', False),
 		('strict_graphic', False),
+		('combined_graphic', False),
 		('graphic_theme', 'Default'),
 		('soundfile', ""),
 		('soundgraphic', os.path.join("coLab_local", "SoundGraphic.png")),
@@ -404,6 +405,7 @@ class Page:
 			'\n' +
 			'soundfile="' + self.soundfile + EOL +
 			'strict_graphic=' + str(self.strict_graphic) + '\n' +
+			'combined_graphic=' + str(self.combined_graphic) + '\n' +
 			'graphic_theme="' + self.graphic_theme + EOL +
 			'soundgraphic="' + self.soundgraphic + EOL +
 			'soundthumbnail="' + self.soundthumbnail + EOL +

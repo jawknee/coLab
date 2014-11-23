@@ -32,6 +32,7 @@ import clclasses
 import cltkutils
 import clSchedule
 import rebuild
+import imagemaker
 
 class Colab():
 	""" Basic class for the colab front end - holder of the main window and basic methods. 
@@ -428,6 +429,10 @@ class Colab():
 		logging.info("Refresh: %s", self.current_grouptitle)
 		rebuild.rebuild(self.current_group.name, mirror=True)
 		clSchedule.browse_url(self.current_group.url_head)
+		"""	Code to regenerate posters, thumbnails
+		for page in self.current_group.pagelist:
+			imagemaker.make_sub_images(page)
+		#"""
 		logging.info("Refresh complete.")
 		
 	def my_quit(self):

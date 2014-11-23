@@ -990,8 +990,10 @@ window.onload = function() {
 			"\nxval: " + xval.toString() +
 			"\nxlen: " + xlen.toString() +
 			"\noffset: " + offset.toFixed(3) + 
+			"\nmaxtime: " + maxtime.toString() +
 			"\nVideo Width: " + video.videoWidth.toFixed() +
 			"\nx-click: " + lastxclick.toString() +
+			"\nduration: " + dur.toString() +
 			"\ntime: " + time.toFixed(3) );
 		postInfo("time:" + time.toFixed(3) + ' / ' + xvalue );
 		return time;

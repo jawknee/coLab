@@ -20,14 +20,15 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	overflow: hidden;
 	}
 
-#banner { position: relative; top: 4px; left: 4px;  height: 20px;  right: 4px;
+#banner { position: fixed; top: 4px; left: 4px;  height: 20px;  right: 4px;
 	z-index: 3;
 	font-family:Georgia; color: #c0b0a0; 
 	background-color: #000040; 
 	background-image: url('/coLab/Resources/BlueBlackBanner.png'); 
 	overflow: hidden;
 	}
-#banner table td { width: 2% }
+/*#banner table td { width: 2% } 
+ */
 
 .banner_txt { color: #c0b0a0 }
 .banner_txt a:link { color: #d8c8b8; text-decoration: none;}
@@ -44,6 +45,11 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	overflow: hidden;
 	}
 
+#toptitle { 
+	height: 50; 
+	width: 100%;
+	}
+
 #sidebar_l { position: absolute; top: 24px; left: 4px; width: 200px; 
 	font-family: Helvetica; font-size: smaller;
 	color: black; 
@@ -58,7 +64,10 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .sidebar_l a:hover { color: #f0e0d0; text-decoration: underline;}
 .sidebar_l a:active { color: #ffffff; text-decoration: underline;}
 
-.sidebar_r { position: absolute; top: 75px; left: 915px; 
+#sidebar_r { 
+	position: absolute;
+	top: 20px; 
+	left: 915px; 
 	font-family: Helvetica; font-size: smaller;
 	color: black; 
 	bottom: 0px;
@@ -72,6 +81,11 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .sidebar_r a:active { color: #ffffff; text-decoration: underline;}
 .sidebar_r span.LocMarkerActive { color: #2030AA; text-decoration: none;}
 
+#coLabLogo {
+	position: fixed;
+	top: 30px;
+	right: 2px;
+	}
 
 #Content {
 	position: absolute; top: 0px; bottom: 0px; left: 204px;  width: 700px; 
@@ -81,8 +95,10 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	background-image: url('/coLab/Resources/P1Black2.png');
 	color: #a0b0c0; 
 	overflow: hidden;
+	z-index: 1;
 	}
 
+#
 
 /* 
  * Open Loop Alert: the numbers here are repeated in the config.py file - need to come from
@@ -97,68 +113,36 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	}
 .main table h2 { color: #c0b0a0; }
 
-#toplinkbar {
-	position: relative;;
-	top: 400;
-	width: 600;
-	}
-#maintext { 
-	position: absolute; 
-	top: 600px;
-	bottom: 0px;
-	left: 25px; width: 600;
-	overflow: auto;
-	text-align:left;
-	color: #a0b0c0;
-	}
-
-.fundesc { font-family: cursive, 'Brush Script MT','Lucida Handwriting'; color: #c0b0a0 }
-
-.imglink img { border: solid 2px transparent; }
-.imglink img:hover { border-color: #c0b0a0 ; }
-
-.links a:link { color: #d8c8b8; text-decoration: none;}
-.links a:visited { color: #b8a898; text-decoration: none; }
-.links a:hover { color: #f0e0d0; text-decoration: underline; }
-.links a:active { color: #ffffff; text-decoration: underline; }
-
-.song a:link { color: #a0b0c0; text-decoration: none;}
-.song a:visited { color: #a0b0c0; text-decoration: none; }
-.song a:hover { color: #f0e0d0; text-decoration: underline; }
-.song a:active { color: #ffffff; text-decoration: underline; }
-
-.logo { position: absolute; top: 40px; right: 20px; }
-
-.copyright { text-align:center; font-size:small; }
-
-
-#video {
-	position: relative;
-	top: 0px;
-	z-index: 1;
-}
-
 #video-container {
+	position: absolute;
 	width: 640px;
-	height: 525px;
-	position: relative;
-	top: 0px;
-	text-align: center;
+	height: 400px;
+	top: 50px;
+	text-align-: center;
+	z-index: -1;
 	/* force the left margin rather than center - to account for
 	 * the scroll bar width  ~12 pixels  
 	 */
 	margin-left: 24px;
 	margin-right: auto;
-	z-index: 0;
+	z-index: 2;
 	overflow: hidden;
 }
 
+#video {
+	position: relative;
+	top: 0px;
+	width: 640px;
+	height: 360px;
+	z-index: 1;
+}
+
+
+
 #video-controls {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	padding: 5px;
+	position: relative;;
+	top: 640;
+	z-index: 4;
 	opacity: 0;
 	-webkit-transition: opacity 1.0s;
 	-moz-transition: opacity 1.0s;
@@ -181,9 +165,61 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 }
 
 #video-container:hover #video-controls {
-	opacity: .9;
+	opacity: 1.0;
 }
 
+/* mid title bar - lays under the video-controls 
+ */
+#toplinkbar {
+	position: absolute;
+	top: 450px;
+	width: 100%;
+	}
+
+#mainsection { 
+	position: absolute;
+	top: 480px;
+	bottom: 0px;
+	left: 25px; 
+	right: 0px;
+	overflow: auto;
+	text-align:left;
+	color: #a0b0c0;
+}
+
+#midtitle {
+	position: relative;
+	top: 0px;
+	left: 30px;
+	width: 90%;
+	height: 80px;
+	z-index: 3;
+}
+
+#maintext {
+	postion: relative;
+	top: 30px;
+	bottom: 0px;
+}
+
+#fundesc { font-family: cursive, 'Brush Script MT','Lucida Handwriting'; color: #c0b0a0; vertical-align: bottom; }
+
+.imglink img { border: solid 2px transparent; }
+.imglink img:hover { border-color: #c0b0a0 ; }
+
+.links a:link { color: #d8c8b8; text-decoration: none;}
+.links a:visited { color: #b8a898; text-decoration: none; }
+.links a:hover { color: #f0e0d0; text-decoration: underline; }
+.links a:active { color: #ffffff; text-decoration: underline; }
+
+.song a:link { color: #a0b0c0; text-decoration: none;}
+.song a:visited { color: #a0b0c0; text-decoration: none; }
+.song a:hover { color: #f0e0d0; text-decoration: underline; }
+.song a:active { color: #ffffff; text-decoration: underline; }
+
+.logo { position: absolute; top: 40px; right: 20px; }
+
+.copyright { text-align:center; font-size:small; }
 .vidbarbutton {
 	background: rbg(255, 0, 0);
 }
@@ -209,11 +245,11 @@ span.TimeMarkerActive { color: #d8c8b8; text-decoration: none;}
 span.LocMarkerActive { color: #d8c8b8; text-decoration: none;}
 
 #seek-bar {
-	width: 360px;
+	max-width: 360px;
 }
 
 #volume-bar {
-	width: 50px;
+	max-width: 50px;
 	background: rgba(192, 192, 255, 0.2);
 	color: #870
 	outline: none;

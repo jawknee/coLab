@@ -30,7 +30,28 @@
 	function next_size($size) {
 		 // return the next size...
 		global $size_map;
-		return $size_map[$size];
+		if ( $size == 'Small') {
+			return '';
+		} else {
+			return $size_map[$size];
+		}
+	}
+	
+	function time_format($time) {
+		// format for a scaled time string
+		// Produces a useable sting based on $time in seconds.
+		if ( $time < 60 ) {
+			return sprintf("%2.3f secs", $test);
+		}
+		$minutes = (int) ($time / 60);
+		$seconds = (int) ($time - ($minutes * 60 ));
+		
+		if ( $minutes < 60 ) {
+			return sprintf("%d:%02.0f", $minutes, $seconds);
+		}
+		$hours = (int) ($minutes / 60);
+		$minutes = $minutes - ($hours * 60);
+		return sprintf("%2d:%02d:%02.0f", $hours, $minutes, $seconds);
 	}
 	
 
@@ -68,10 +89,11 @@
 	// At this point the page data vars are all in the env.
 	//
 	// do some format manipulation
-	$duration = number_format($duration,3);
+	$dur_string = time_format($duration);
 	
 	if (version_compare(phpversion(), '5.2.0', '>')) {
-		$format = "Y-m-d h:i:s A T";
+		//$format = "Y-m-d h:i:s A T";
+		$format = "M j, Y";
 		date_default_timezone_set("America/Los_Angeles");
 		$createtime = date_format(date_create($createtime), $format);
 		$updatetime = date_format(date_create($updatetime), $format);
@@ -100,7 +122,7 @@
 		'mp4' => 'avc1.42E01E, mp4a.40.2',
 		'webm' => 'vp8.0, vorbis');
 	// list of type we're using...
-	$media_list = array( 'mp4', 'webm', 'ogg' );
+	$media_list = array( 'mp4', 'ogg', 'webm' );
 
 	$html5_source = '\n';
 
@@ -232,7 +254,6 @@ EOF;
 	
 	Onward...
 	end php debug -->
-	<a href="index.shtml">index.shtml</a>
 EOF;
 
 	include(inc_name('tail.inc'));

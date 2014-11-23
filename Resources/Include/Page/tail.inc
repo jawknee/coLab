@@ -24,9 +24,10 @@
 	<?php virtual ("links.html"); ?>
 	<p>&nbsp;<p>
 	<font size=1>
-	Page type: <?php echo $page_type; ?> - php
+	Page type: <?php echo $page_type; ?> - <a href="./index.shtml">php</a>
 	</font>
-	</div>	<! end maintext >
+	</div>	<! end maintext>
+	</div>  <! end mainsection> 
 	</div>	<! end Content >
     </div>  <! end container>
     </div>  <!-- end of Master -->

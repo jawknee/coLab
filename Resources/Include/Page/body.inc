@@ -23,16 +23,18 @@
 	<!--#include virtual="<?php echo $groupURL; ?>/Shared/projectlist.html" -->
 	<?php virtual ($groupURL . "/Shared/projectlist.html"); ?>
 	<p><hr><P>
-	<!--#include virtual="/coLab/Resources/News.html" -->
+	<!--#include virtual="<?php echo $groupURL; ?>/Shared/News.html" -->
+	<?php virtual ($groupURL . "/Shared/News.html"); ?>
 	<?php virtual ("/coLab/Resources/News.html"); ?>
 	</div> <! End sidebar>
 
 	<div id="sidebar_r" class="sidebar_r">
-	<div id="Logo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
+	<div id="coLabLogo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
 	<! end logo>
-	<!--#include virtual="<?php echo $groupURL; ?>/Shared/News.html" -->
-	<?php virtual ($groupURL . "/Shared/News.html"); ?>
+	<?php virtual ("/coLab/Resources/Alert.html"); ?>
+	<?php virtual ("/coLab/Resources/WelcomeMsg.html"); ?>
 	<!--#include virtual="<?php echo $groupURL; ?>/Shared/rightbar.html" -->
+	<!--#include virtual="/coLab/Resources/News.html" -->
 	<?php virtual ($groupURL . "/Shared/rightbar.html"); ?>
 	<p id="locators"></p>
 	<p>
@@ -40,9 +42,21 @@
 	<input type="hidden" id="sound-info" value="<?php echo $soundinfo; ?>">
 	<hr><br>
 	<p id="info"></p>	<! A paragraph for displaying...  info from javascript.>
+	<table align="right" border=0><tr><td>
+	<a href="http://colorfilter.wickline.org/colorblind/filter/button"
+	target="_blank"><img
+	alt="See your web site through colorblind eyes with the colorblind web
+	page filter."
+	src="http://colorfilter.wickline.org/colorfilter_button.gif" width="88"
+	height="31"></a><br>Colorblind Safe
+	</td></tr></table>
+
 	</div> <! End right sidebar>
 
 	<div id="Content" >
-	<img src="Title.png" class="fundesc" alt="$fun_title">
+	  <div id=toptitle>
+		<img src="Title.png" id="fundesc" alt="$fun_title" >
+	  </div id=toptitle>
+
 
 <!-- End: /coLab/Resources/include/page/body.inc -->

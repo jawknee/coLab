@@ -22,6 +22,7 @@ TRANS_GRAY = (128, 128, 128, 128)   # middle gray, half transparent
 DARK_X_GRAY = (64, 64, 64, 64)		# dark and mostly xprnt
 GRAY_TEXT = (192, 192, 192, 255)
 GREEN = (20, 255, 20, 255)    # a bright, opaque green
+DK_GRAY_BIAS = (32, 32, 32, 0)
 # 
 # Waveform colors...  
 BRIGHT_RED = (255, 48, 16, 255) # bright red - warnings and such
@@ -30,6 +31,7 @@ TAN = (196, 176, 160, 255)
 EL_BLUE = (20, 20, 255, 255)    # electric blue
 DEEP_BLUE = (10, 20, 128, 255)    # dark blue
 DK_BLUE = (5, 10, 64, 255)    # dark blue
+BLUE_BIAS = (10, 20, 0, 0)
 # Hot..
 DK_RED = (90, 0, 0, 255)
 ORANGE = (255, 80, 10, 255)
@@ -94,14 +96,14 @@ class Themes:
 		I don't like the way I'm doing this - needs rework... 
 		"""
 		themelist = [
-					[ 'Blue', PART_BLACK, DEEP_BLUE, EL_BLUE, WHITE, MAIZE, LOLITE],
-					[ 'Fire', PART_BLACK, DK_RED, ORANGE, BRIGHT_YELLOW, EL_BLUE, LOLITE],
-					[ 'Iced', DK_BLUE,  ICE_BLUE1, ICE_BLUE2, WHITE, BRIGHT_RED, XPARENT],
-					[ 'Beam', DARK_X_GRAY, DEEP_BLUE, GREEN, WHITE, YELLOW, XPARENT], 
-					[ 'Sand', DESERT_GOLD, DESERT_BROWN, DESERT_ORANGE, DESERT_TAN, DESERT_DARK, LOLITE],
-					[ 'Nola', EGGPLANT, CLAY, LIME, AQUA, AQUA, XPARENT],
-					[ 'Tree', DK_BROWN, DK_GREEN, MED_GREEN, GREEN_WHITE, EL_BLUE, XPARENT],
-					[ 'Leaf', DK_GREEN, LT_GREEN, MED_GREEN, GREEN_WHITE, EL_BLUE, XPARENT]
+					[ 'Blue', PART_BLACK, DEEP_BLUE, EL_BLUE, WHITE, MAIZE, LOLITE, BLUE_BIAS ],
+					[ 'Fire', PART_BLACK, DK_RED, ORANGE, BRIGHT_YELLOW, EL_BLUE, LOLITE, DK_GRAY_BIAS],
+					[ 'Iced', DK_BLUE,  ICE_BLUE1, ICE_BLUE2, WHITE, BRIGHT_RED, XPARENT, DK_GRAY_BIAS],
+					[ 'Beam', DARK_X_GRAY, DEEP_BLUE, GREEN, WHITE, YELLOW, XPARENT, DK_GRAY_BIAS], 
+					[ 'Sand', DESERT_GOLD, DESERT_BROWN, DESERT_ORANGE, DESERT_TAN, DESERT_DARK, LOLITE, DK_GRAY_BIAS],
+					[ 'Nola', EGGPLANT, CLAY, LIME, AQUA, AQUA, XPARENT, DK_GRAY_BIAS],
+					[ 'Tree', DK_BROWN, DK_GREEN, MED_GREEN, GREEN_WHITE, EL_BLUE, XPARENT, BLUE_BIAS],
+					[ 'Leaf', DK_GREEN, LT_GREEN, MED_GREEN, GREEN_WHITE, EL_BLUE, XPARENT, BLUE_BIAS]
 					]
 		
 		self.theme_names = []
@@ -120,4 +122,4 @@ class Themes:
 			logging.warning("ERROR:  invalid theme: %s,- using default: %s", theme, DEFAULT_THEME)
 		
 		self.theme = theme
-		(self.background, self.rms, self.wave, self.peak, self.cursor, self.cursor_offset) = tuple(values)
+		(self.background, self.rms, self.wave, self.peak, self.cursor, self.cursor_offset, self.bias) = tuple(values)

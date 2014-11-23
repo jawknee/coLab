@@ -142,7 +142,7 @@ def pagegen(group, page):
 	fontpath = fonts.return_fontpath('ProximaFontauriItalic.otf')
 	logging.info("fontpath: %s", fontpath)
 	if clutils.needs_update('.', file='Title.png'):
-		imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=8, fill=fill, maxsize=(640,90) )
+		imagemaker.make_text_graphic(page.fun_title, 'Title.png', fontpath, fontsize=45, border=8, fill=fill, maxsize=(640,70) )
 		logging.info("Updating Title.png")
 	else:
 		logging.info("Not updating Title.png")

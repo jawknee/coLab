@@ -300,11 +300,13 @@ class Render_engine():
 		self.group_rebuild_list.append(page.group)
 		logging.info("Group rebuild list is: %s", self.group_rebuild_list)
 		self.busy = False
+		"""
 		#browse_thread = threading.Thread(clSchedule.browse_url, args=(local_url))
 		#browse_thread.start()
 		logging.info("Scheduling browser...")			#  RBF!!   hardcoded URL
 		remote_url = "http://jawknee.com/" + page.root
 		clSchedule.browse_url(remote_url)
+		#"""
 		logging.info("Done.")
 		
 def render_page(page, media_size=None, max_samples_per_pixel=0):

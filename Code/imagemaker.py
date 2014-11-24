@@ -907,6 +907,7 @@ class Sound_image():
 			logging.info("resizing graphic to: %s", newsize)
 			base_image = orig_image.resize(newsize, Image.ANTIALIAS ).convert('RGBA')
 			self.graphic.paste(base_image,(0, tborder+1))
+			max_clip_per_chan = 0	# RBF: this shouldn't be here - track down why it's needed.
 		else:	
 			chan_ht = ( ymax - ymin ) / n_disp_chan
 			centers = []

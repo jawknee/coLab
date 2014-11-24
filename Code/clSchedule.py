@@ -15,7 +15,7 @@ def start_mamp(path="/Applications/MAMP PRO/MAMP PRO.app"):
     
 def browse_url(url="http://jawknee.com/coLab"):
     logging.info("Browsing: %s", url)
-    subprocess.call([open_app, url])
+    subprocess.call([open_app, '-a', '/Applications/Firefox.app/', url])
 
 def main():
     start_mamp()

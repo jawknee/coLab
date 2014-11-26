@@ -125,7 +125,7 @@
 	#$media_list = array( 'mp4', 'ogg', 'webm' );
 	$media_list = array( 'mp4', 'webm' );
 
-	$html5_source = '\n';
+	$html5_source = '';
 
 	$size = $media_size;	# start with the size of this video...
 	while ( $size != '' ) {
@@ -133,6 +133,7 @@
 			$codecs = $media_codecs[$type];
 			$html5_source .= <<<EOF
 				<source src="$name-media-$size.$type" type='video/$type'; codecs="$codecs">
+
 EOF;
 			# Now - move down to the next size...
 		}

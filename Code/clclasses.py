@@ -520,6 +520,8 @@ class Page:
 				logging.warning("Path: %s", localdir, exc_info=True)
 				logging.warning("Try again.")
 				sys.exit(1)
+		else:
+			logging.warning("page create: page dir already exists: %s", self.home)
 	
 		# create a stub for the data file...
 		datafile = os.path.join(self.home, 'data')

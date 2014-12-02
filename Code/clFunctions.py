@@ -1258,9 +1258,9 @@ class Edit_screen:
 		not to be called directly - set up for the derivative
 		class
 		"""
-		logging.info("hello")
+		logging.info("Edit_screen base class init")
 		if parent.edit_lock:
-			logging.info("locked")  # (obviously more, later)
+			logging.warning("Edit_screen: locked")  # (obviously more, later)
 			return
 		#parent.edit_lock = True
 		#new = False
@@ -1280,7 +1280,7 @@ class Edit_screen:
 		self.obj = object		# the object we're editing
 		self.ok = not new
 		self.edit_frame = None
-		self.song_obj = None
+		self.song_obj = None	#  RBF = Check this
 		self.obj.changed = False
 		self.obj.needs_rebuild = False
 		
@@ -1294,6 +1294,9 @@ class Edit_screen:
 	    Create a new page or song - basically just returns a legal dir name
 	    Needs to not match anything in the exclusion list.   Limits characters
 	    to a small set.  
+	    
+	    Note: this should be going away - we'll be creating songs/pages/etc. based on
+	    the description at save time.
 	    """
 	    """
 	    self.editor = editor
@@ -1464,6 +1467,10 @@ class Edit_screen:
 				
 		
 	def refresh(self):
+		'''     RBF???
+			this looks wrong.... 
+			shouldn't it be:   i.read() / i.post() ??
+		'''
 		for i in self.editlist:
 			self.editlist[i].read()
 			self.editlist[i].post()

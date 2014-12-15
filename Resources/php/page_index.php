@@ -18,6 +18,7 @@ $master_parts[] = "coLab_master.php";
 $dlim = '/';		# path separator
 
 $coLab_master = '';
+# this should probably be an implode
 foreach ($master_parts as $i) {
 	$coLab_master .= $dlim . $i;
 }

@@ -146,7 +146,6 @@ def quantize_increment(time_val):
 	return i 
 
 def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixel=0):
-	logging.info("Creating image... %s", image)
 	"""
 	soundimageTop = tk.Toplevel()
 	
@@ -155,6 +154,7 @@ def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixe
 	soundimage_frame.grid(ipadx=10, ipady=40, padx=25, pady=15)
 	"""
 	
+	logging.info("Creating image... %s", image)
 	#img_gen_progbar.max = 600		# This needs to be calculated 
 	#img_gen_progbar.post()		# initial layout...   called in Sound_image.build()
 	
@@ -164,7 +164,7 @@ def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixe
 		max_samp_per_pixel = 250	# 
 	snd_image = Sound_image(sound, image, size, page, prog_bar, page.graphic_theme, max_samp_per_pixel)
 	snd_image.build()	# separate - we may want to change a few things before the build...
-	page.soundthumbnail = "SoundGraphic_tn.png"
+	#page.soundthumbnail = "SoundGraphic_tn.png"
 	
 	make_sub_images(page)
 	try:
@@ -180,16 +180,19 @@ def make_sub_images(page, size=None):
 	Create the main graphic and thumbnail for a page.
 	Could/should be generalized for other objects.
 	"""
-	#  Screen shot
-	if page.use_soundgraphic:
-		baseimage = os.path.join(page.home, page.soundgraphic)
-	else:
-		baseimage = page.localize_screenshot()
-	# for now....  RBF  !!
-	baseimage = os.path.join(page.home, page.soundgraphic)
-
+	
+	# find the image we're basing the posters on...
 	graphic = os.path.join(page.home, page.graphic)
 	thumbnail = os.path.join(page.home, page.thumbnail)
+	if not os.path.isfile(graphic):
+	#  older page - find the actual base image...
+		if page.use_soundgraphic:
+			srcimage = os.path.join(page.home, page.soundgraphic)
+		else:
+			srcimage = page.localize_screenshot()
+		# and while we're at it...   copy this to the graphic...
+		shutil.copy(srcimage, graphic)
+
 	if size is None:
 		#size = config.Sizes().sizeof(page.media_size)
 		size = poster_size
@@ -198,16 +201,15 @@ def make_sub_images(page, size=None):
 	# Either a screen shot or a generated image, make a pair
 	# of poster images for the video tag
 	try:
-		orig_image = Image.open(baseimage)
+		orig_image = Image.open(graphic)
 		#page.screenshot_width = orig_image.size[0]	# save the width...
 	except:
-		logging.warning("Error opening: %s", baseimage, exc_info=True)
+		logging.warning("Error opening: %s", graphic, exc_info=True)
+		sys.exit(1)
 	else:
 		base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
-		tn_image = orig_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
 		base_image.save(graphic, 'PNG')
-		tn_image.save(thumbnail, 'PNG')
-		logging.info("make_sub_images: %s, tn: %s", graphic, thumbnail)
+		logging.info("make_sub_image: %s", graphic)
 		
 		resourcedir = os.path.join(page.coLab_home, 'Resources')
 		for postertype in [ 'Start', 'Pressed', 'Waiting']:
@@ -233,17 +235,23 @@ def make_sub_images(page, size=None):
 		
 		del orig_image
 		
-	soundgraph = os.path.join(page.home, page.soundgraphic)
-	soundthumb = os.path.join(page.home, page.soundthumbnail)
-	try:
-		snd_image = Image.open(soundgraph)
-	except:
-		logging.warning("Error opening: %s", soundgraph, exc_info=True)
-	else:
-		tn_image = snd_image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
-		tn_image.save(soundthumb, 'PNG')
-		logging.info("make_sub_images: %s, tn: %s", soundgraph, soundthumb)
-		del snd_image
+	#soundgraph = os.path.join(page.home, page.soundgraphic)
+	#soundthumb = os.path.join(page.home, page.soundthumbnail)
+	
+	for (graphic, thumb) in [ (page.soundgraphic, page.soundthumbnail), 
+							(page.screenshot, page.screenshot_tn),
+							(page.graphic, page.thumbnail) ]:
+		try:
+			graphic_path = os.path.join(page.home, graphic)
+			image = Image.open(graphic_path)
+		except:
+			logging.warning("Error opening: %s", graphic_path, exc_info=True)
+		else:
+			thumb_path = os.path.join(page.home, thumb)
+			tn_image = image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
+			tn_image.save(thumb_path, 'PNG')
+			logging.info("make_sub_images: %s, tn: %s", graphic, thumb)
+			del image
 
 def make_images(page, prog_bar=None, media_size=None):
 	"""
@@ -314,7 +322,7 @@ def make_images(page, prog_bar=None, media_size=None):
 	else:
 		image = page.screenshot
 
-	image = page.soundgraphic
+	#image = page.soundgraphic
 	orig_image = Image.open(image)
 	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 
@@ -323,12 +331,6 @@ def make_images(page, prog_bar=None, media_size=None):
 	#page.editor.set_member('fps', page.fps)	#rbf ? for now, update the screen?
 	
 
-	# ********** RBF:   Hardcoded '/' in path... find a way to split and join the bites.
-
-	#font = ImageFont.truetype('../Resources/Fonts/data-latin.ttf', 18)
-	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
-	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
-	#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/QuartBolD.ttf')
 	fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
 	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkew.ttf')
 	fontsize = int(12 * adjust_factor)
@@ -363,9 +365,6 @@ def make_images(page, prog_bar=None, media_size=None):
 		logging.warning("------FRAME MISMATCH---------")
 		logging.warning("Frames: %s, prog_bar.max: %s", frames, prog_bar.max)
 		prog_bar.max = frames
-		#prog_bar.post()
-		#sys.exit(0)
-	
 	
 	# change the colors of the cursor and 
 	# and the contrasting surround (mostly transparent)
@@ -385,14 +384,8 @@ def make_images(page, prog_bar=None, media_size=None):
 	add_res_text(master_draw, size, adjust_factor)
 	
 	frameIncr = float(xLen) / frames
-	# for generated graphics, don't let the cursor go over the text
-	#if page.use_soundgraphic:
-	if True:
-		cursor_top = int(config.SG_TOP_BORDER * adjust_factor)
-		cursor_bot = height - int(config.SG_BOTTOM_BORDER * adjust_factor)
-	else:	#cursor is top to bottom
-		cursor_top = 0
-		cursor_bot = height - (1 / adjust_factor)
+	cursor_top = int(config.SG_TOP_BORDER * adjust_factor)
+	cursor_bot = height - int(config.SG_BOTTOM_BORDER * adjust_factor)
 
 	prog_bar.update(0)		# Reset the time to now...
 	#while fr <= frames:
@@ -694,7 +687,7 @@ class Sound_image():
 		"""
 		# Set up min and max based on border size,
 		# and various factors and values
-
+		logging.basicConfig(level=logging.INFO)
 		fontclass = clutils.FontLib()	# this needs to be done at initialization   RBF
 
 		self.size_class = config.Sizes()	# new size class for size fun...
@@ -890,7 +883,8 @@ class Sound_image():
 				
 		# Calculate what we now know...
 		# headroom ratio and headroom in dBFS
-		hr_ratio = float(max_xcrsn) / self.samp_max	# ratio of highest peak to max value - headroom as a ratio
+		# RBF -  check that this abs is necessary
+		hr_ratio = abs(float(max_xcrsn) / self.samp_max)	# ratio of highest peak to max value - headroom as a ratio
 		# create an "effective headroom" - do we do any correction or not?
 		if hr_ratio < 0.9:
 			eff_ratio = hr_ratio * 1.1	# make the end points just short of the limits
@@ -902,6 +896,9 @@ class Sound_image():
 		if not self.page.use_soundgraphic:
 			# drop the current graphic into space available...
 			image = self.page.screenshot
+			# RBF - temporary kludge...
+			if image[0] != '/':
+				image = os.path.join(self.page.home, image)
 			orig_image = Image.open(image)
 			newsize = (width, height-tborder-bborder-1)
 			logging.info("resizing graphic to: %s", newsize)
@@ -1051,7 +1048,7 @@ class Sound_image():
 					tip_stretch	= 0
 					#if eff_ratio == 1 and bot == centers[c] + chan_ht / 2 + 1:
 					if min_tab[c][s] == -self.samp_max:
-						fill = clip_color
+						fill = clipcolor
 						tip_stretch = clip_stretch	# allows us to highliging...
 						logging.info("-----Clip! %s %s %s %s %s %s", s, c, max_tab[c][s], min_tab[c][s], max, min)
 					else:

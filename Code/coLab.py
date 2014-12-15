@@ -456,6 +456,7 @@ def main():
 	 
 	Create the root and pass it into the Colab class (master)
 	"""
+	#logging.basicConfig(level=logging.INFO)
 	logging.info("Colab Main")
 	root = tk.Tk()
 	

@@ -4,8 +4,8 @@
 		
 	<form method=POST action="/coLab/bin/postcomments.cgi">
 	Your name: <input type="text" name="Commenter" ><br>
-	<input type="hidden" name="page" value="!name!">
-	<input type="hidden" name="desc_title" value="!desc_title!">
+	<input type="hidden" name="page" value="<?php echo $name; ?>">
+	<input type="hidden" name="desc_title" value="<?php echo $desc_title; ?>">
 	<textarea name="Text" rows=7 cols=80 id="CommentBox"></textarea>
 	<br>
 
@@ -24,7 +24,7 @@
 	<?php virtual ("links.html"); ?>
 	<p>&nbsp;<p>
 	<font size=1>
-	Page type: <?php echo $page_type; ?> - <a href="./index.shtml">php</a>
+	Page type: <?php echo $page_type; ?> v<?php echo $page_version; ?> - <a href="./index.shtml">php</a>
 	</font>
 	</div>	<! end maintext>
 	</div>  <! end mainsection> 

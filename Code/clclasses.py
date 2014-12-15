@@ -4,6 +4,7 @@
 
 import os
 import sys
+import shutil
 import logging
 import imp
 import copy
@@ -14,6 +15,8 @@ import clutils
 import cltkutils
 
 import imagemaker	# RBF:  remove once remake kludge is gone
+
+CURRENT_PAGE_VERSION = '0.0'		
 
 def set_init_vars(obj, initdata):
 	""" Process the var/value pairs
@@ -129,6 +132,7 @@ def convert_vars(obj):
 			try:
 				exec(string)
 			except:
+				logging.warning("Error executing: %s", string)
 				logging.warning("import_data, problem with conversion: %s, var: %s", conversion, var, exc_info=True)
 				
 def import_list(parent, type):
@@ -315,7 +319,7 @@ class Page:
 	
 	def __init__(self, name=None):
 		"""
-		We create an initial set of variables from the variable, value pairs.
+		We create an initial set of variables from the (variable, value) pairs.
 		This lets us also create a master variable list which we can use to 
 		merge values from the data files
 		"""
@@ -329,15 +333,17 @@ class Page:
 		initdata = [
 		('obj_type', 'Page'),
 		('page_type', 'orig'),
+		('page_version', '0.0'),
 		('locked', False),
 		('group', "<unset>"),
 		('desc_title', "(Descriptive title - should be unique)"),
 		('fun_title', "(Fun title - whatever feels right)"),
 		('duration',  0.0),
 		('media_size', "Small"),
-		('screenshot', ""),
-		('graphic', "ScreenShot.png"),
-		('thumbnail', "ScreenShot_tn.png"),
+		('screenshot', os.path.join("coLab_local", "ScreenShot.png")),
+		('screenshot_tn', "ScreenShot_tn.png"),
+		('graphic', "PageImage.png"),
+		('thumbnail', "PageImage_tn.png"),
 		('use_soundgraphic', False),
 		('strict_graphic', False),
 		('combined_graphic', False),
@@ -349,7 +355,7 @@ class Page:
 		# start and end of the piece on the original graphic
 		('xStart',  0),
 		('xEnd',  0),
-		('screenshot_width', 0),
+		('screenshot_width', 640),
 		# Frames per second, generally calculated from xEnd-xStart and duration
 		('fps', '6'),
 		
@@ -392,6 +398,7 @@ class Page:
 		return( encoding + '\n' +
 			'name="' + self.name + EOL +
 			'page_type="' + self.page_type + EOL +
+			'page_version="' + self.page_version + EOL +
 			'locked=' + str(self.locked) + '\n' +
 			'group="' + self.group + EOL +
 			'desc_title=u"' + self.desc_title.strip() + EOL +
@@ -399,6 +406,7 @@ class Page:
 			'duration=' + str(self.duration) + '\n' +
 			'media_size="' + str(self.media_size) + EOL +
 			'screenshot="' + self.screenshot + EOL +
+			'screenshot_tn="' + self.screenshot_tn + EOL +
 			'graphic="' + self.graphic + EOL +
 			'thumbnail="' + self.thumbnail + EOL +
 			'use_soundgraphic=' + str(self.use_soundgraphic) + '\n' +
@@ -528,6 +536,28 @@ class Page:
 		f = open(datafile, 'a+')
 		f.write('name="' + self.name + '"\n')
 		f.close()
+		#---- some some initial files...
+		srcdir = os.path.join(self.coLab_home, 'Resources')
+		try:
+			# initial graphics files - and their thumbnails
+			for (image, destination) in [ ('coLab-NoPageImage', 'PageImage'), 
+								('coLab-NoPageSound', os.path.join(local, 'SoundGraphic')), 
+								('coLab-NoScreenshot', os.path.join(local, 'ScreenShot')) ]:
+				for type in ['', '_tn']:
+					src = os.path.join(srcdir, image + type + '.png')
+					dest = os.path.join(self.home, destination + type + '.png')
+					shutil.copy(src, dest)
+					logging.warning("Just copied %s to $s", src, dest)
+
+			# similar for the php file..
+			src = os.path.join(srcdir, 'php', 'page_index.php')
+			dest = os.path.join(self.home, 'index.php')
+			shutil.copy(src, dest)
+			logging.info("Copied index.php")
+		except:
+			logging.error("Page __init__: Cannot copy: cp %s %s", src, dest, exc_info=True)
+			sys.exit(1)
+	
 
 	def localize_soundfile(self):
 		"""

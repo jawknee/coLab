@@ -812,6 +812,24 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 
 		logging.info("Graphic menu list: %s", self.menulist)
 		self.default = "Change Sound File"
+	
+		#---- "bonus frame: a little space next to the sound graphic..
+		bonus_frame = ttk.Frame(self.editor.edit_frame)
+		bonus_frame.grid(row=self.row-1, column=3, sticky=tk.NW)
+		#---- Strict Mode
+		bonus1 = ttk.Frame(bonus_frame)
+		bonus1.grid(row=0, column=0, sticky=tk.NW)
+		button = Check_button(bonus1, text='Strict Graphics (slower)', member='strict_graphic', value=self.editor.obj.strict_graphic)
+		button.post()
+		self.editor.editlist[button.member] = button
+
+		#---- Combined Mode
+		bonus2 = ttk.Frame(bonus_frame)
+		bonus2.grid(row=1, column=0, sticky=tk.NW)
+		button = Check_button(bonus2, text='Combined Graphics (one waveform)', member='combined_graphic', value=self.editor.obj.combined_graphic)
+		button.post()
+		self.editor.editlist[button.member] = button
+	
 		Graphic_menu_row.post(self)
 
 	def handle_menu(self, menustring):
@@ -871,11 +889,11 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 			return
 		
 		self.graphic_row.post_status(True)
-		page.soundfile = file_path
 		self.editor.set_member('soundfile', file_path)
 
 		filename = os.path.split(file_path)[1]
 		destpath = os.path.join('coLab_local', filename)
+		page.soundfile = destpath
 		sound_dest = os.path.join(page.home, destpath)
 		if self.copy_soundfile:
 			popup = cltkutils.Popup("Sound file:" + filename, "Copying...")
@@ -899,34 +917,21 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		page.media_size = 'Tiny'	# for now - probably will define a "Preview" size
 		
 		
-		'''   Let's try a simpler way...
-		# Set up a few vars to only generate the sound graphic..
-		use_save = page.use_soundgraphic
-		page.use_soundgraphic = True
-		page.needs_rebuild = False
-		# 
-		
-		rendertop = rebuild.render_page(page, media_size='Tiny', max_samples_per_pixel=100)   # render as a preview...
-		rendertop.destroy()		# yeah, not too keen on this, but destroying the top window in in the routine causes a hang...
-		
-		page.use_soundgraphic = use_save
-		'''
 		img_dest = os.path.join(page.home, page.soundgraphic)
 		imagemaker.make_sound_image(page, sound_dest, img_dest, size='Tiny', max_samp_per_pixel=100)
+		# Now copy the sound image to the main graphic - if that's what we're up to...
+		if page.use_soundgraphic:
+			shutil.copy(img_dest, os.path.join(page.home, page.graphic))
 		page.needs_rebuild = True
 		page.changed = True
 		
 		#if page.use_soundgraphic:		# note -this is probably duplicated -check that out    RBF
 		if True:
-			self.editor.set_member('screenshot', page.soundgraphic)
 			imagemaker.make_sub_images(page)
 			self.graphic_path =  os.path.join(page.home, page.soundthumbnail)
-			self.editor.post_member('screenshot')
 		
 		self.post()
 		page.graphic_row.post()
-		page.screenshot = page.soundgraphic     # probably not needed.
-		#page.graphic_row.post()
 
 	def return_value(self):
 		return(self.editor.obj.soundfile, self.graphic_row.ok)	# I know, a bit redundant...	
@@ -941,9 +946,10 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		# is there such a file?
 		#self.widget = cltkutils.graphic_element(self.frame)
 		page = self.editor.obj
-		self.graphic_path = os.path.join(page.home, page.thumbnail)
-		if not os.path.isfile(self.graphic_path):		# we need a backup file...
-			self.graphic_path = os.path.join(page.coLab_home, 'Resources', 'coLab-NoPageImage_tn.png')
+		self.screenshot_path = os.path.join(page.home, page.screenshot_tn)
+		# RBF: this should no longer be necessary...
+		#if not os.path.isfile(self.screenshot_path):		# we need a backup file...
+		#	self.screenshot_path = os.path.join(page.coLab_home, 'Resources', 'coLab-NoScreenshot_tn.png')
 		self.menulist = []	# build up the list of menu items based on context...
 		if page.soundfile != '':
 			self.menulist.append('UseSound')	# only offer this if a sound file is defined..
@@ -958,7 +964,23 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			
 		logging.info("Graphic menu list: %s", self.menulist)
 		self.default = "Change Graphic"
-		
+		#---- "bonus frame: a little space next to the screen shot - for the ;actual' graphic"
+
+		self.graphic_path = os.path.join(page.home, page.thumbnail)
+		try:
+			self.main_graph_el.destroy()
+		except:
+			pass
+
+		self.main_graph_el = cltkutils.graphic_element(self.editor.edit_frame)
+		self.main_graph_el.filepath = self.graphic_path
+		self.main_graph_el.row = self.row - 1
+		self.main_graph_el.column = self.column + 3
+		self.main_graph_el.columnspan = 1
+		self.main_graph_el.sticky = tk.W
+		self.main_graph_el.post()    
+	       
+		self.graphic_path = os.path.join(page.home, page.screenshot_tn)
 		Graphic_menu_row.post(self)
 		
 	def handle_menu(self, menustring):
@@ -1020,18 +1042,17 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		orig_filename = os.path.split(self.initialfile)[1]	# used to determine if we have the same file...
 		logging.info("Graphic_menu_row_screenshot File path is: %s", file_path)
 		filename = os.path.split(file_path)[1]
-		self.editor.set_member('screenshot', file_path)
-		
 		destpath = os.path.join('coLab_local', filename)
-		
 		graphic_dest = os.path.join(page.home, destpath)
-		page.screenshot = graphic_dest
+		page.screenshot = destpath
+		self.editor.set_member('screenshot', destpath)
+
 		if self.copy_graphicfile:
-			popup = cltkutils.Popup("Sound file:" + filename, "Copying...") 
-			page = self.editor.obj
-							
+			popup = cltkutils.Popup("Screen shot:" + filename, "Copying...") 
 			try:
 				shutil.copy(file_path, graphic_dest)
+				shutil.copy(file_path, os.path.join(page.home, page.graphic))
+				logging.warning("Copied %s to %s", file_path, graphic_dest)
 			except Exception as e:
 				logging.warning("Failure copying %s to %s", file_path, graphic_dest, exc_info=True)
 				raise Exception
@@ -1064,6 +1085,9 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			logging.info("New graphic: %s, w05, %d, w95, %d ------------------------", graphic_dest, w_05, w_95)
 			xStart = w_05	
 			xEnd = w_95
+
+		shutil.copy(graphic_dest, os.path.join(page.home, page.graphic))
+		logging.warning("Copied %s to %s", graphic_dest, page.graphic)
 			
 	
 		# In any case, the end point should not be more than the width
@@ -1112,6 +1136,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		logging.info("xStart, xEnd: %d, %d", self.editor.get_member('xStart'), self.editor.get_member('xEnd'))
 
 		self.post()
+		# RBF: we may want to do this only if the values have changed...
 		page.needs_rebuild = True
 		page.graphic_row.post()
 		page.needs_rebuild = True
@@ -1127,11 +1152,11 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		logging.info("Using the sound graphic...")
 		page = self.editor.obj
 		page.use_soundgraphic = True
-		#self.editor.set_member('graphic', page.soundgraphic)
+		# Now copy the sound image to the main graphic - if that's what we're up to...
+		shutil.copy(os.path.join(page.home, page.soundgraphic), os.path.join(page.home, page.graphic) )
+
 		imagemaker.make_sub_images(page)
-		#self.graphic_path =  os.path.join(page.home, page.soundthumbnail)
-		#page.graphic = page.soundgraphic		# this *shouldn't be necessary, right?
-		#self.editor.post_member('graphic')
+		
 		self.post()
 		page.graphic_row.post()
 		page.needs_rebuild = True
@@ -1290,14 +1315,14 @@ class Edit_screen:
 	
 	
 	def make_new(self):
-	    """
+	    '''
 	    Create a new page or song - basically just returns a legal dir name
 	    Needs to not match anything in the exclusion list.   Limits characters
 	    to a small set.  
 	    
 	    Note: this should be going away - we'll be creating songs/pages/etc. based on
 	    the description at save time.
-	    """
+	    '''
 	    """
 	    self.editor = editor
 	    self.object = object
@@ -1551,6 +1576,7 @@ class Page_edit_screen(Edit_screen):
 
 		page.object_type = 'Page'
 		page.page_type = 'html5'		# new pages use this..
+		page.page_version = clclasses.CURRENT_PAGE_VERSION
 		
 		# convert the media size (e.g., small, medium, etc) to (width, height)
 		self.size_class = config.Sizes()
@@ -1563,7 +1589,8 @@ class Page_edit_screen(Edit_screen):
 			self.exclude_list = []	# names to not allow for a new page
 			for nextpage in self.obj.group_obj.pagelist:
 				self.exclude_list.append(nextpage.name)
-			self.make_new()	
+			self.make_new()
+			self.obj.create()
 			if not self.ok:
 				return
 		#'''
@@ -1606,24 +1633,6 @@ class Page_edit_screen(Edit_screen):
 		self.editlist[row.member] =  row
 		row.post()
 		
-		#---- "bonus frame: a little space next to the sound graphic..
-		bonus_frame = ttk.Frame(self.edit_frame)
-		bonus_frame.grid(row=self.row-2, column=3, sticky=tk.NW)
-		#---- Strict Mode
-
-		bonus1 = ttk.Frame(bonus_frame)
-		bonus1.grid(row=0, column=0, sticky=tk.NW)
-		button = Check_button(bonus1, text='Strict Graphics (slower)', member='strict_graphic', value=self.obj.strict_graphic)
-		button.post()
-		self.editlist[button.member] = button
-
-		#---- Combined Mode
-		bonus2 = ttk.Frame(bonus_frame)
-		bonus2.grid(row=1, column=0, sticky=tk.NW)
-		button = Check_button(bonus2, text='Combined Graphics (one waveform)', member='combined_graphic', value=self.obj.combined_graphic)
-		button.post()
-		self.editlist[button.member] = button
-		
 		#---- Duration - display only ...
 		row = Entry_row(self, "Duration", "duration", width=8)
 		row.editable = False
@@ -1636,9 +1645,9 @@ class Page_edit_screen(Edit_screen):
 		self.editlist[menu.member] = menu
 		menu.post()
 		
-		#---- graphic file...
+		#---- Screenshot file...
 		# (new version, menu based)
-		row = Graphic_menu_row_screenshot(self, "Graphic", 'screenshot')
+		row = Graphic_menu_row_screenshot(self, "Screenshot", 'screenshot')
 		self.editlist[row.member] =  row
 		row.post()
 		self.obj.graphic_row = row      # we'll want this later....
@@ -1696,8 +1705,10 @@ class Page_edit_screen(Edit_screen):
 		logging.info("Dump----------------")
 		logging.info("%s", self.obj.dump())
 		logging.info('---first home')
+		page_dir = os.path.join('Group', self.obj.group, 'Page')
+		#self.obj.name = clutils.string_to_unique(self.obj.desc_title, page_dir)
 		try:
-			sub_dir = os.path.join('Group', self.obj.group, 'Page',  self.obj.name)
+			sub_dir = os.path.join(page_dir, self.obj.name)
 			home_dir = os.path.join(self.obj.coLab_home, sub_dir)
 		except Exception as e:
 			logging.warning("Cannot build new page sub_dir: %s ", home_dir, exc_info=True)
@@ -1765,7 +1776,7 @@ def create_new_page(coLab_top):
 	Does the initial setup to call the edit screen and leaves.
 	The rest is done there.
 	"""
-	
+	logging.basicConfig(level=logging.INFO)
 	logging.info("New page")
 	group_name = coLab_top.current_grouptitle		# currently selected group
 	this_group = coLab_top.current_group
@@ -1781,6 +1792,7 @@ def create_new_page(coLab_top):
 	
 	new_page.master = coLab_top.master
 	coLab_top.editor = Page_edit_screen(coLab_top, new_page, new=True)
+	logging.basicConfig(level=logging.WARNING)
 	
 	
 def edit_page(coLab_top):

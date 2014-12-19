@@ -11,6 +11,7 @@
 
 import os
 import sys
+import shutil
 import logging
 import operator		# for a bit of tuple addition
 
@@ -208,7 +209,6 @@ def make_sub_images(page, size=None):
 		sys.exit(1)
 	else:
 		base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
-		base_image.save(graphic, 'PNG')
 		logging.info("make_sub_image: %s", graphic)
 		
 		resourcedir = os.path.join(page.coLab_home, 'Resources')
@@ -320,9 +320,8 @@ def make_images(page, prog_bar=None, media_size=None):
 	if page.use_soundgraphic:
 		image = page.soundgraphic
 	else:
-		image = page.screenshot
-
-	#image = page.soundgraphic
+		image = page.graphic
+	
 	orig_image = Image.open(image)
 	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 

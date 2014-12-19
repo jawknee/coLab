@@ -47,7 +47,7 @@ dest=${HTTP_REFERER%\?*}	# remove any parameters
 #echo HTTP_REFERER $HTTP_REFERER $dest
 shopt -s extglob		# our old friend, extglob (pattern matching extension, next line)
 dest=${dest%index.?(s)html}	# removes index.html or index.shtml
-REF_URL="${dest}index.shtml"
+REF_URL="${dest}"		# not used anymore: index.shtml"
 shopt -u extglob
 
 dirname=$coLab_home/${dest#$coLab_url_head}

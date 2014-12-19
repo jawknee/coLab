@@ -11,6 +11,8 @@ import subprocess
 # temp?
 import time
 
+import cProfile, pstats, StringIO
+
 import Tkinter as tk
 import ttk
 import threading
@@ -326,8 +328,11 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 		page.media_size = media_size
 		
 	logging.info("render_page - size is: %s", media_size)
-	sound_dest = page.localize_soundfile()
-	img_dest = os.path.join(page.home, page.soundgraphic)
+	sound_src = page.localize_soundfile()
+	if page.use_soundgraphic:
+		img_dest = os.path.join(page.home, page.soundgraphic)
+	else:
+		img_dest = os.path.join(page.home, page.graphic)
 	#make_sound_image(page, sound_dest, img_dest, size, max_samples_per_pixel)
 	
 	progressTop = tk.Toplevel()
@@ -410,7 +415,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	info.grid(row=4, column=0)
 
 	#if page.use_soundgraphic:
-	imagemaker.make_sound_image(page, sound_dest, img_dest, media_size, snd_img_progbar, max_samples_per_pixel)
+	imagemaker.make_sound_image(page, sound_src, img_dest, media_size, snd_img_progbar, max_samples_per_pixel)
 
 	try:
 
@@ -418,7 +423,20 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 		
 			#snd_img_progbar.stop()
 			#imagemaker.make_images(page, img_gen_progbar, media_size)
+			# 
+			# let us do a bit of profiling of this make_images beast...
+			pr = cProfile.Profile()
+			#pr.enable()
 			imagemaker.make_images(page, img_gen_progbar)
+			'''
+			pr.disable()
+			s = StringIO.StringIO()
+			sortby = 'cumulative'
+			ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+			ps.print_stats()
+			print s.getvalue()
+			#'''
+			
 			#img_gen_progbar.progBar.stop()
 			clAudio.make_movie(page, vid_gen_progbar)
 			logging.info("Returned from clAudio.make_move")

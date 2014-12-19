@@ -657,6 +657,7 @@ class Song_menu_row(Menu_row):
 # a dictionary of menu options, short name mapped to longer name
 # longer name can contain replaceable string, e.g.  !type! 
 OPT_MENU_DICT = { 'Load': 'Load a new !type! file...', 
+ 				  'UseScreenshot': 'Switch back to the screenshot above.',
  				  'Reuse': 'Reuse a previous/existing !type! file...',
 				  'UseSound': 'Use the Sound Graphic (above)',
 				  'Adjust': 'Adjust start and end...'
@@ -805,8 +806,8 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		
 		# set up the menu...   we always include load...
 		self.menulist = [ 'Load' ]
-		# if there are any legit sound files in coLab_local, add "reuse"
 		colab_local = os.path.join(page.home, 'coLab_local')
+		# if there are any legit sound files in coLab_local, add "reuse"
 		if clutils.has_filetype(colab_local, ['.aif', '.aiff']):
 			self.menulist.append('Reuse')	
 
@@ -890,6 +891,9 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		
 		self.graphic_row.post_status(True)
 		self.editor.set_member('soundfile', file_path)
+		# for now, at least, assume that loading a sound changes the graphic to the sound graphic...
+		# this simplifies a number of things...
+		page.use_soundgraphic = True
 
 		filename = os.path.split(file_path)[1]
 		destpath = os.path.join('coLab_local', filename)
@@ -947,16 +951,21 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		#self.widget = cltkutils.graphic_element(self.frame)
 		page = self.editor.obj
 		self.screenshot_path = os.path.join(page.home, page.screenshot_tn)
-		# RBF: this should no longer be necessary...
-		#if not os.path.isfile(self.screenshot_path):		# we need a backup file...
-		#	self.screenshot_path = os.path.join(page.coLab_home, 'Resources', 'coLab-NoScreenshot_tn.png')
+		# 
 		self.menulist = []	# build up the list of menu items based on context...
-		if page.soundfile != '':
+		if not os.path.isfile(self.screenshot_path):		# we need a backup file...
+			self.screenshot_path = os.path.join(page.coLab_home, 'Resources', 'coLab-NoScreenshot_tn.png')
+		else:
+			if os.path.isfile(os.path.join(page.home, page.screenshot)) and page.use_soundgraphic:
+				self.menulist.append('UseScreenshot')
+				
+
+		if page.soundfile != '' and not page.use_soundgraphic:
 			self.menulist.append('UseSound')	# only offer this if a sound file is defined..
 		self.menulist.append('Load')			# we always have this...	
 		
 		colab_local = os.path.join(page.home, 'coLab_local')
-		if  clutils.has_filetype(colab_local, ['.png']):
+		if  clutils.has_filetype(colab_local, ['.png'], min=2): 
 			self.menulist.append('Reuse')
 		
 		if page.screenshot != '' and not page.use_soundgraphic:
@@ -988,6 +997,8 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		logging.info("Graphic file menu handler %s", action)
 		if action is 'Load':
 			self.load()
+		elif action is 'UseScreenshot':
+			self.usescreenshot()
 		elif action is 'Reuse':
 			self.reuse()
 		elif action is 'Adjust':
@@ -1004,9 +1015,6 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 
 		logging.info("this is the screen shot loader...")
 		page = self.editor.obj
-		page.use_soundgraphic = False
-		page.changed = True
-		page.needs_rebuild = True	
 		self.initialPath = "/Users/Johnny/Desktop"
 		self.filetypes = [ ('PNG', '*.png'), ('JPEG', '*.jpg')]
 		self.initialfile = os.path.split(page.screenshot)[1]
@@ -1015,13 +1023,30 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		# We need to keep the latest file path...
 		self.copy_graphicfile = True
 		self.file_load()
+		
+	def usescreenshot(self):
+		"""
+		Switch back to the most recent screenshot...
+		"""
+		page = self.editor.obj
+		page.use_soundgraphic = False
 
+		sound_file = os.path.join(page.home, page.soundfile)
+		image_file = os.path.join(page.home, page.graphic)
+		imagemaker.Sound_image(sound_file, image_file, page.media_size, page, max_samp_per_pixel=250).build()
+		# Let's create the poster size and thumbnails
+		imagemaker.make_sub_images(page)
+
+		self.post()
+		page.graphic_row.post()
+		page.needs_rebuild = True
+		page.changed = True
+		self.graphic_row.post_status(ok=True)
+		self.editor.refresh()
+		
 	def reuse(self):
 		logging.info("this is the screen shot reloader...")
 		page = self.editor.obj
-		page.use_soundgraphic = False
-		page.changed = True
-		page.needs_rebuild = True	
 		self.initialPath = os.path.join(page.home, "coLab_local")
 		self.filetypes = [ ('PNG', '*.png'), ('JPEG', '*.jpg')]
 		self.initialfile = os.path.split(page.screenshot)[1]
@@ -1038,6 +1063,10 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		file_path = tkFileDialog.askopenfilename(initialdir=self.initialPath, defaultextension='.png', title="Select screen shot...", filetypes=self.filetypes, initialfile=self.initialfile)
 		if not file_path:
 			return
+
+		page.use_soundgraphic = False
+		page.changed = True
+		page.needs_rebuild = True	
 		
 		orig_filename = os.path.split(self.initialfile)[1]	# used to determine if we have the same file...
 		logging.info("Graphic_menu_row_screenshot File path is: %s", file_path)
@@ -1051,7 +1080,6 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			popup = cltkutils.Popup("Screen shot:" + filename, "Copying...") 
 			try:
 				shutil.copy(file_path, graphic_dest)
-				shutil.copy(file_path, os.path.join(page.home, page.graphic))
 				logging.warning("Copied %s to %s", file_path, graphic_dest)
 			except Exception as e:
 				logging.warning("Failure copying %s to %s", file_path, graphic_dest, exc_info=True)
@@ -1086,9 +1114,6 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			xStart = w_05	
 			xEnd = w_95
 
-		shutil.copy(graphic_dest, os.path.join(page.home, page.graphic))
-		logging.warning("Copied %s to %s", graphic_dest, page.graphic)
-			
 	
 		# In any case, the end point should not be more than the width
 		if xEnd > width:
@@ -1104,9 +1129,10 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 
 		self.adjust(graphic_dest)	# Adjust the end points...
 
+		sound_file = os.path.join(page.home, page.soundfile)
+		image_file = os.path.join(page.home, page.graphic)
+		imagemaker.Sound_image(sound_file, image_file, page.media_size, page, max_samp_per_pixel=250).build()
 		#self.editor.post_member('screenshot')
-		self.graphic_path = os.path.join(self.editor.obj.home, self.editor.obj.thumbnail)
-		#
 		# Let's create the poster size and thumbnails
 		imagemaker.make_sub_images(page)
 

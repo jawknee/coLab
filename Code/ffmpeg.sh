@@ -73,7 +73,7 @@ mp4:	$mp4_opts
 mp3:	$mp3_opts
 EOF
 #$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts $ogg_opts 2>&1 | tr -u '\r' '\n'
-$ffmpeg $input_opts "$soundfile" -threads $threads $mp4_opts $webm_opts $mp3_opts 2>&1 | tr -u '\r' '\n'
+$ffmpeg $input_opts "$soundfile" -threads $threads $mp4_opts $webm_opts 2>&1 | tr -u '\r' '\n'
 #$ffmpeg -i "$soundfile" $mp3_opts 2>&1 | tr -u '\r' '\n'
 rc=$?
 echo "$ffmpeg has completed with return code: $rc"

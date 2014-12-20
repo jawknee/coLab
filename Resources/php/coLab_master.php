@@ -3,7 +3,7 @@
 	 * coLab_master.php
 	 * This is the main php script - all pages point here,
 	 * then the script builds the web page based on the 
-	 * data local the file original path.
+	 * "data" file local to the original path.
 	 */
 	function inc_name($name) {
 		//

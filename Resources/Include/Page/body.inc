@@ -38,6 +38,10 @@
 	<?php virtual ($groupURL . "/Shared/rightbar.html"); ?>
 	<p id="locators"></p>
 	<p>
+	<!--  RBF THIS IS UGLY - find a better way to get tht path in....  -->
+	<a href="../../../../Resources/php/download.php?dl_dir=<?php echo $page_home; ?>&dl_file=<?php echo $name . '.mp3' ?>"><button
+	type="submit" id="mp3-download-btn" title="Download MP3">Download MP3</button></a>
+	<p>
 	<button type="button" id="sound-info-btn" title="Sound Info">Sound Info</button>
 	<input type="hidden" id="sound-info" value="<?php echo $soundinfo; ?>">
 	<hr><br>

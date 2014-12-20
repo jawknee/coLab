@@ -21,7 +21,10 @@ then
 	echo "$0: pagedir is not a directory: $pagedir"
 	exit 1
 fi
-name=$(basename $pagedir)
+
+#name=$(basename $pagedir)
+cd "$pagedir"
+source data
 
 if [ -z "$soundfile" -o ! -f "$soundfile" ]
 then
@@ -50,13 +53,14 @@ input_opts="-y -r $fps -i $overlay_dir/Frame-%05d.png -i"
 # output streams...
 threads=auto	
 # Webm
-webm_opts="-codec:v libvpx  -crf 20 -b:v 500k  -auto-alt-ref 1 -lag-in-frames 1 -codec:a libvorbis -qscale:a 5 -r $fps $pagedir/$name-media-$media_size.webm"
-mp4_opts="-codec:v libx264 -preset faster -crf 30 -movflags faststart -pix_fmt yuv420p  -codec:a aac -strict -2 -b:a 192k -r $fps $pagedir/$name-media-$media_size.mp4"
+webm_opts="-codec:v libvpx  -crf 20 -b:v 500k  -auto-alt-ref 1 -lag-in-frames 1 -codec:a libvorbis -threads 8 -qscale:a 5 -r $fps $pagedir/$name-media-$media_size.webm"
+mp4_opts="-codec:v libx264 -preset faster -crf 30 -movflags faststart -pix_fmt yuv420p  -threads 8 -codec:a aac -strict -2 -b:a 192k -r $fps  $pagedir/$name-media-$media_size.mp4"
 
 ogg_opts="-r $fps -flags:v qscale -qscale:v 1 -codec:v libtheora -codec:a libvorbis -qscale:a 6 -threads $threads $pagedir/$name-media-$media_size.ogg"
 
 # for audio...
-mp3_opts="-codec:a libmp3lame -qscale:a 1 $name.mp3"
+#mp3_opts="-codec:a libmp3lame -qscale:a 1 -metadata title=\"$desc_title\" -metadata artist=\"$group\" $name.mp3"
+mp3_opts="-codec:a libmp3lame -qscale:a 1"
 
 # use these to turn off one or more gnerators
 #unset ogg_opts webm_opts
@@ -73,7 +77,8 @@ mp4:	$mp4_opts
 mp3:	$mp3_opts
 EOF
 #$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts $ogg_opts 2>&1 | tr -u '\r' '\n'
-$ffmpeg $input_opts "$soundfile" -threads $threads $mp4_opts $webm_opts 2>&1 | tr -u '\r' '\n'
+#$ffmpeg $input_opts "$soundfile"   $mp4_opts $webm_opts  2>&1 | tr -u '\r' '\n'
+$ffmpeg $input_opts "$soundfile"   $mp4_opts $webm_opts $mp3_opts -metadata title="$desc_title" -metadata artist="$group" $name.mp3 2>&1 | tr -u '\r' '\n'
 #$ffmpeg -i "$soundfile" $mp3_opts 2>&1 | tr -u '\r' '\n'
 rc=$?
 echo "$ffmpeg has completed with return code: $rc"

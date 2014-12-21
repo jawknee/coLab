@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """ Audio utilities...
 
-	Simple utitlies:
+	Simple utilities:
 	get_audio_len -- return the length in seconds of an audio file.
 	make_movie -- create the html5 video files for the passed page
 """
@@ -15,6 +15,7 @@ import time
 import aifc
 
 import config
+import clclasses
 import cldate
 
 def get_audio_len(file):
@@ -46,19 +47,29 @@ def make_movie(page, prog_bar=None):
 		content += 'generateMP3="no"\n'
 	else:
 		content += 'generateMP3="yes"\n'
+		# ---  mp3 ID3 tags...
 		# create a series of variables that match to ffpmeg -metadata tags for mp3	
+		# variable names match the ffmpeg metadata tags, e.g., -metadata title="$title"
+		# or the raw tag when not supported directly by ffmpeg, e.g., -metadata TIT3="$TIT3" 
 		content += 'title="' + page.desc_title + '"\n'
-		# would be nice to make this the group title - but the group obj is not 
-		# loaded into the page structure at this time...
-		#grouptitle = page.group_obj.title 
-		grouptitle = page.group
+		#
+		# Get the group "title" ...
+		try:
+			page.group_obj
+		except:
+			page.group_obj = clclasses.Group(page.group)	# load the group whose name we have
+			page.group_obj.load()
+			
+		grouptitle = page.group_obj.title 
 
 		content += 'artist="' + grouptitle + '"\n'
 		content += 'TIT3="' + page.fun_title + '"\n'
-		content += 'date="' + cldate.utc2short(page.createtime) + '"\n'
+
+		year = cldate.format(page.createtime, '%Y')
+		content += 'date="' + year + '"\n'
+		content += 'TDAT="' + cldate.format(page.createtime, '%d%m')
 		content += 'encoded_by="coLab"\n'
-		rec_copyright = u'\u2117'	# recording copyright sign...
-		year = cldate.format(page.createtime, '%Y', cldate.UTC, cldate.HERE)
+		rec_copyright = u"\u2117"	# recording copyright sign...
 		content += 'copyright="' + rec_copyright + ' ' + grouptitle + ' ' + year + '"\n'
 		content += 'encoder="ffmpeg / LAME"\n'
 	

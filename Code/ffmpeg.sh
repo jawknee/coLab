@@ -7,6 +7,7 @@
 # in once step.
 # 
 
+set -x
 infofile="$1"
 
 if [ ! -r "$infofile" ]
@@ -32,6 +33,9 @@ then
 	exit 1
 fi
 
+# and just to be safe...
+# let's source the info file again.. (media_size - at least - conflicts with data)
+source $infofile
 #
 if [ -z "$fps" ]
 then
@@ -50,17 +54,25 @@ ffmpeg=/usr/local/bin/ffmpeg
 # input of image sequence...
 input_opts="-y -r $fps -i $overlay_dir/Frame-%05d.png -i"
 
+# threads - kludge this for now
+if [ $generateMP3 = yes ]
+then
+	threads=3
+else
+	threads=4
+fi
+threads=7
+
 # output streams...
-threads=auto	
 # Webm
-webm_opts="-codec:v libvpx  -crf 20 -b:v 500k  -auto-alt-ref 1 -lag-in-frames 1 -codec:a libvorbis -threads 8 -qscale:a 5 -r $fps $pagedir/$name-media-$media_size.webm"
-mp4_opts="-codec:v libx264 -preset faster -crf 30 -movflags faststart -pix_fmt yuv420p  -threads 8 -codec:a aac -strict -2 -b:a 192k -r $fps  $pagedir/$name-media-$media_size.mp4"
+webm_opts="-codec:v libvpx  -crf 20 -b:v 500k  -auto-alt-ref 1 -lag-in-frames 1 -codec:a libvorbis -threads 8 -qscale:a 5 -r $fps -threads $threads $pagedir/$name-media-$media_size.webm"
+mp4_opts="-codec:v libx264 -preset faster -crf 30 -movflags faststart -pix_fmt yuv420p  -threads 8 -codec:a aac -strict -2 -b:a 192k -r $fps -threads $threads $pagedir/$name-media-$media_size.mp4"
 
 ogg_opts="-r $fps -flags:v qscale -qscale:v 1 -codec:v libtheora -codec:a libvorbis -qscale:a 6 -threads $threads $pagedir/$name-media-$media_size.ogg"
 
 # for audio...
 #mp3_opts="-codec:a libmp3lame -qscale:a 1 -metadata title=\"$desc_title\" -metadata artist=\"$group\" $name.mp3"
-mp3_opts="-codec:a libmp3lame -qscale:a 1"
+mp3_opts="-codec:a libmp3lame -qscale:a 1 -threads 1"
 
 # use these to turn off one or more gnerators
 #unset ogg_opts webm_opts
@@ -83,8 +95,9 @@ then
 else
 	rm -f $name.mp3 >/dev/null 2>&1
 	$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts $mp3_opts \
+		-id3v2_version 3 -metadata  \
 		-metadata title="$title" -metadata artist="$artist" \
-		-metadata TIT3="$TIT3" -metadata date="$date" \
+		-metadata TIT3="$TIT3" -metadata date="$date" -metadata TDAT="$TDAT" \
 		-metadata encoded_by="$encoded_by" -metadata copyright="$copyright" \
 		"$name.mp3" 2>&1 | tr -u '\r' '\n'
 fi
@@ -92,37 +105,3 @@ fi
 rc=$?
 echo "$ffmpeg has completed with return code: $rc"
 exit $rc
-
-
-
-# earlier attempts
-#ogg_opts="-r $fps -flags:v qscale -global_quality:v "10*QP2LAMBDA" -codec:v libtheora -s 640x480 -acodec libvorbis -b:a 320k -threads 2 $pagedir/$name-media-$media_size.ogg"
-#mp4_opts="-codec:v libx264 -preset faster -tune stillimage -crf 30 -movflags faststart -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 -b:a 192k -r $fps $pagedir/$name-media-$media_size.mp4"
-#mp4_opts="-codec:v libx264 -profile:v baseline -movflags faststart -pix_fmt yuv420p -threads 3 -codec:a aac -strict -2 -r $fps $pagedir/$name-media-$media_size.mp4"
-#webm_opts="-codec:v libvpx  -crf 30 -b:v 500k -codec:a libvorbis -qscale:a 5 -threads 3 -r $fps $pagedir/$name-media-$media_size.webm"
-#webm_opts="-codec:v libvpx  -crf 30 -b:v 900k -auto-alt-ref 1 -lag-in-frames 4 -codec:a libvorbis -qscale:a 5 -threads 3 -r $fps $pagedir/$name-media-$media_size.webm"
-#webm_opts="-codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5 -threads 3 -r $fps $pagedir/$name-media-$media_size.webm"
-#mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -preset slow -movflags faststart -pix_fmt yuv420p -threads 3 -codec:a aac -strict -2 $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -level 3 $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -s 640x480 -codec:v libx264 -profile:v baseline -level 3 $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -codec:v h264 -codec:a aac -strict -2 -pix_fmt yuv420p $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -preset slow -crf 22 -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -vcodec h264 -acodec aac -strict -2 $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -b:v 1500k -preset slow -profile:v baseline -vcodec libx264 -g 30 $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -b 1500k -vcodec libx264 -vpre slow -vpre baseline -g 30 $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -i %1 -b 1500k -vcodec libx264 -vpre slow -vpre baseline g 30 -s 640x480 $pagedir/$name-media.mp4"	
-#mp4_opts="-r $fps -codec:v libx264 -b:v 1500k -vpre slow -vpre baseline -g 30 $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -codec:v libx264 -profile:v baseline  -movflags faststart -pix_fmt yuv420p -threads 2 -codec:a aac -strict -2 $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -codec:v mpeg4  -strict -2  -b:a 320k $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -codec:v mpeg4 -preset slow -crf 22 -strict -2  -b:a 320k $pagedir/$name-media.mp4"
-#mp4_opts="-r $fps -codec:v libx264 -profile:v baseline -preset slow -crf 22 -codec:a aac -strict -2 $pagedir/$name-media.mp4"
-#ogg_opts="-r $fps -flags:v qscale -global_quality:v "10*QP2LAMBDA" -codec:v libtheora -s 640x480 -acodec libvorbis -b:a 320k $pagedir/$name-media.ogg"
-#webm_opts="-codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5 -threads 3 $pagedir/$name-media.webm"
-#webm_opts="-strict -2 $pagedir/$name-media.webm"
-#webm_opts="-r 1 -codec:v libvpx  -b:v 500k -codec:a libvorbis -qscale:a 5  $pagedir/$name-media.webm"
-# mp4
-#webm_opts="-r $fps -acodec libvorbis -b:a 320k $pagedir/$name-media.webm"
-#
-# Ogg / theora
-#ogg_opts="-codec:v libtheora -qscale:v 3 -codec:a libvorbis -qscale:a 5 $pagedir/$name-media.ogg"
-#ogg_opts="-r 1  -codec:v libtheora -s 640x480 -qscale:v 5 -codec:a libvorbis -qscale:a 5 $pagedir/$name-media.ogg"

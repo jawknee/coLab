@@ -13,7 +13,7 @@ SHORT_FMT="%a, %b %d, %I:%M %p"
 LONG_FMT="%Y-%m-%d %I:%M:%S %p %Z"
 
 
-def format(time, format, frzone, tozone):
+def format(time, format, frzone=UTC, tozone=HERE):
 	""" called by next routines, returns a data string """
 	orig_time=time.replace(tzinfo=frzone)
 	new_time=orig_time.astimezone(tozone)

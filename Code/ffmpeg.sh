@@ -76,10 +76,19 @@ webm:	$webm_opts
 mp4:	$mp4_opts
 mp3:	$mp3_opts
 EOF
-#$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts $ogg_opts 2>&1 | tr -u '\r' '\n'
-#$ffmpeg $input_opts "$soundfile"   $mp4_opts $webm_opts  2>&1 | tr -u '\r' '\n'
-$ffmpeg $input_opts "$soundfile"   $mp4_opts $webm_opts $mp3_opts -metadata title="$desc_title" -metadata artist="$group" $name.mp3 2>&1 | tr -u '\r' '\n'
-#$ffmpeg -i "$soundfile" $mp3_opts 2>&1 | tr -u '\r' '\n'
+
+if [ $generateMP3 = no ]
+then
+	$ffmpeg $input_opts "$soundfile"   $mp4_opts $webm_opts $mp3_opts 2>&1 | tr -u '\r' '\n'
+else
+	rm -f $name.mp3 >/dev/null 2>&1
+	$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts $mp3_opts \
+		-metadata title="$title" -metadata artist="$artist" \
+		-metadata TIT3="$TIT3" -metadata date="$date" \
+		-metadata encoded_by="$encoded_by" -metadata copyright="$copyright" \
+		"$name.mp3" 2>&1 | tr -u '\r' '\n'
+fi
+
 rc=$?
 echo "$ffmpeg has completed with return code: $rc"
 exit $rc

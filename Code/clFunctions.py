@@ -1603,6 +1603,13 @@ class Page_edit_screen(Edit_screen):
 		page.object_type = 'Page'
 		page.page_type = 'html5'		# new pages use this..
 		page.page_version = clclasses.CURRENT_PAGE_VERSION
+		group = parent.current_group
+		if page.group != group.name:
+			logging.warning("Page group / name do not agree: %s, %s", page.group, group.name)
+			sys.exit(1)
+
+		page.group_obj = group
+		logging.info("Page group title: %s", page.group_obj.title)
 		
 		# convert the media size (e.g., small, medium, etc) to (width, height)
 		self.size_class = config.Sizes()
@@ -1621,6 +1628,7 @@ class Page_edit_screen(Edit_screen):
 				return
 		#'''
 		self.setup()
+		
 		
 		#---- Descriptive title, "unique", but flexible with case, spaces, etc...
 		row = Entry_row(self, "Descriptive title", "desc_title", width=30)

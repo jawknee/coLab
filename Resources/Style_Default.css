@@ -225,9 +225,11 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 }
 
 button {
-	background: rgba(192, 192, 255, 0.2);
+	background: #15A;
+	color: #024;
+	font-size: 18px;
+	padding: 10px, 10px, 10px, 10px;
 	border: 0;
-	color: #EEE;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	-o-border-radius: 3px;

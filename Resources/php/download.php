@@ -6,15 +6,8 @@
 
 global $fun_title;
 
-$dfile = 'HelloNola.mp3';
-
 $file = $_GET["dl_file"];
 $dir = $_GET["dl_dir"];
-
-
-if ( $file != $dfile ) {
-	$msg = 'They differ?? ' .  $file . ' - ' .  $dfile;	
-}
 
 if (! chdir ($dir) ) {
 	echo <<<EOF

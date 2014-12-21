@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+#
+# I'm just looking for some (data)  touch...
+#
+cd ~/coLab/Group/
+glist="*"
+glist="Johnny"
+#glist="Test"
+#glist="SBP"
+glist="Catharsis"
+#glist="Johnny SBP Catharsis Test"
+for group in $glist
+do
+	(
+	cd $group
+	source data
+	grouptitle=$title
+	echo Group: $group / $grouptitle
+	cd Page
+	for i in $(find . -name data)
+	do 
+		echo $i
+		source $i
+		dir=$(dirname $i)
+		name=$(basename $dir)
+		desc_title=${desc_title#u}
+		#echo $dir $desc_title $soundfile
+		if [ "${soundfile#/}" = "$soundfile" ]	# full path...
+		then
+			soundfile="$dir/$soundfile"
+		fi
+		if [ ! -f "$soundfile" ]
+		then
+			echo "$0: no such file: $soundfile"
+			echo $group/$dir
+			exit 1
+		fi
+		year=${createtime%%-*}
+		time yes n |ffmpeg -i "$soundfile" -codec:a libmp3lame -qscale:a 1 \
+			-metadata title="$desc_title" -metadata artist="$grouptitle" \
+			-metadata TIT3="${fun_title#u}" -metadata date="$year" \
+			-metadata encoded_by="coLab" -metadata copyright="℗ $grouptitle $year" \
+			-metadata encoder="ffmpeg / LAME" \
+			"$dir/$name.mp3"
+	done
+	)
+done
+echo $0: All done.

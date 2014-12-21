@@ -116,11 +116,6 @@ def calculate_fps(page):
 	logging.info("start: %f, end: %f, factor: %f",  start, end, factor)
 	logging.info("calculate_fps, pixels/sec: %f", pps)
 
-	"""   At this time - there are no fractional fps,
-	      ffmpeg does not support it - so let's eliminate
-	      the calculation (may have been a bit of error 
-	      anyway...
-	"""     
 	for (frames, seconds) in fps_values:
 		fps = float(frames) / seconds
 		#fps = frames

@@ -864,9 +864,9 @@ window.onload = function() {
 		} else if ( clickStatus == "Waiting" ) { // second click - pause
 			console.log("Second click - pause...");
 			pauseIt();
-			video.currentTime = currentLocation;
 			clickStatus = "Ready";
 		}
+		video.currentTime = currentLocation;
 		console.log("MouseDown Out - click status: " + clickStatus);
 
 	}

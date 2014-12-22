@@ -221,7 +221,7 @@ class Group:
 		('subtitle', "<unset>"),
 		('collaborators', "<unset>"),
 		('description', "\n<unset>\n"),
-		# arbitrary date just after the epoch
+		# a date time object, converted to a string...
 		('createtime', timenow),
 		('updatetime', timenow),
 		]
@@ -366,9 +366,9 @@ class Page:
 		('prevlink', "<unset>"),
 		('nextlink', "<unset>"),
 		('soundinfo', "<unset>"),
-		# initial value - as a datetime object 
-		('createtime', timenow),
-		('updatetime', timenow),
+		# initial value - as a datetime object, converted to a string (will be changed back..)
+		('createtime', cldate.utc2string(timenow)),
+		('updatetime', cldate.utc2string(timenow)),
 		]
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
@@ -625,8 +625,8 @@ class Song:
 		('nextlink', "<unset>"),
 		
 		# initial value - as a datetime object 
-		('createtime', timenow),
-		('updatetime', timenow),
+		('createtime', cldate.utc2string(timenow)),
+		('updatetime', cldate.utc2string(timenow)),
 		]
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]

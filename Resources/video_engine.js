@@ -172,7 +172,7 @@ window.onload = function() {
 				console.log("Time value: " + timeArray[i] + ' - ' + timeval.toString());
 			}
 		}
-		return timeval
+		return timeval;
 	}
 
 	// handle any element corrections
@@ -185,7 +185,7 @@ window.onload = function() {
 		else if (e.srcElement) targ = e.srcElement;
 		if (targ.nodeType == 3) // defeat Safari bug
 			targ = targ.parentNode;
-		return targ
+		return targ;
 	}
 
 	// location strings...
@@ -205,7 +205,7 @@ window.onload = function() {
 		locator = targ.getAttribute("value");
 		console.log("Locator: " + locator);
 		btnnum = locator.replace("#", "");	// build locID value...
-		console.log("locLocate Button: " + btnnum)
+		console.log("locLocate Button: " + btnnum);
 		time = buttonToLocation(btnnum);
 		if ( time != 0. ) {
 			goTimePlay(time);
@@ -227,9 +227,9 @@ window.onload = function() {
 			'<b>Volume:</b> ' + video.volume.toString() + '<br>' ;
 		
 		if ( video.muted ) {
-			infoString += '<b>Muted</b><br>'
+			infoString += '<b>Muted</b><br>';
 		} else {
-			infoString += '<b>Not Muted</b><br>'
+			infoString += '<b>Not Muted</b><br>';
 		}
 
 		infoString += "<b>video Source:</b> " + video.currentSrc.split('/').pop() + '<br>';
@@ -315,7 +315,7 @@ window.onload = function() {
 	function updatePoster(poster_type) {
 		var currentPoster = document.getElementById("video").poster;
 		path = currentPoster.split('/');
-		poster = path.pop()
+		poster = path.pop();
 		console.log("Update Poster: " + currentPoster + ' - ' + poster);
 		poster_name = "Poster_" + poster_type + ".png";
 		video.poster = poster_name;
@@ -361,13 +361,13 @@ window.onload = function() {
 		// passed a button number (string),  
 		// return the time in seconds...
 		console.log("buttonToLoc: " + button);
-		var locID = "Loc_" + button
+		var locID = "Loc_" + button;
 		var locElem = document.getElementById(locID + "_desc");
 		if (locElem) {
 			var locDesc = locElem.value;
-			console.log("LocDesc: " + locDesc)
+			console.log("LocDesc: " + locDesc);
 		}
-		var timeVal = 0.0
+		var timeVal = 0.0;
 		if ( locDesc ) {
 			if ( locDesc !== 'Unset' ) {
 				var locValstring = document.getElementById(locID).value;
@@ -378,7 +378,7 @@ window.onload = function() {
 		} else {
 			console.log("button doesn't exist");
 		}
-		return timeVal
+		return timeVal;
 	}
 
 	// ----------------------------------------
@@ -411,7 +411,7 @@ window.onload = function() {
 	// Set up each button - putting a number (or "-" if not
 	// set) into each button, and build the locations 
 	// text as we go.   Finally - add a handler for each.
-	for (i = 1; i <= numButs; i++) {
+	for (var i = 1; i <= numButs; i++) {
 		if ( locatorTextString == '' ) {
 			locatorTextString = "<b>Locations:</b><br>";
 		}
@@ -420,7 +420,7 @@ window.onload = function() {
 		var locValstring = document.getElementById(locVar).value;
 		var locVal = parseFloat(locValstring);
 		//console.log ("loc val " + locVal.toString());
-		locVar += "_desc"
+		locVar += "_desc";
 		var locDesc = document.getElementById(locVar).value;
 		var buttonTextString = locDesc + " (" + toTimeString(locVal)+  ")";
 
@@ -436,10 +436,10 @@ window.onload = function() {
 
 		if ( locDesc !== 'Unset' ) {
 			// Add a descriptive line - LocMarker will be come LocMarkerAtive later
-			spantag = '<span class="LocMarker" value="#' + i.toString() + '">'
-			locatorTextString += spantag
-			locatorTextString += btnType + ". "
-			locatorTextString += buttonTextString + "</span><br>"
+			spantag = '<span class="LocMarker" value="#' + i.toString() + '">';
+			locatorTextString += spantag;
+			locatorTextString += btnType + ". ";
+			locatorTextString += buttonTextString + "</span><br>";
 			locatorText.innerHTML = locatorTextString;
 			locButton.title = buttonTextString;
 		}
@@ -864,7 +864,7 @@ window.onload = function() {
 		} else if ( clickStatus == "Waiting" ) { // second click - pause
 			console.log("Second click - pause...");
 			pauseIt();
-			//video.currentTime = currentLocation;
+			video.currentTime = currentLocation;
 			clickStatus = "Ready";
 		}
 		console.log("MouseDown Out - click status: " + clickStatus);
@@ -978,7 +978,7 @@ window.onload = function() {
 		var xvalue = xval.toString();
 
 		var time = dur * (xval / xlen);
-		maxtime = dur - 0.25	// no point in setting it exactly at the end...
+		maxtime = dur - 0.25;	// no point in setting it exactly at the end...
 		if ( time < 0.0 ) {
 			time = 0.0;
 		} else if ( time > maxtime ) {
@@ -1057,7 +1057,7 @@ window.onload = function() {
 			}
 		});
 		} else {
-			lm = [ { header: "no jQuery - no submenu" } ]
+			lm = [ { header: "no jQuery - no submenu" } ];
 		}
 		// Set a locator...
 		cm[cm.length] = { text: "Set a locator",
@@ -1067,7 +1067,7 @@ window.onload = function() {
 		cm[cm.length] = 
 		*/
 
-		return cm
+		return cm;
 		
 	}
 
@@ -1137,7 +1137,7 @@ window.onload = function() {
 	]);
 	*/
        	
-}	// end of window.onload
+};	// end of window.onload
 
 // parseURI - handy way to find out what's been passed via the URL
 function displayAttrById (id) {

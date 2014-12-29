@@ -95,7 +95,7 @@ then
 else
 	rm -f $name.mp3 >/dev/null 2>&1
 	$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts $mp3_opts \
-		-id3v2_version 3 -metadata  \
+		-id3v2_version 3  \
 		-metadata title="$title" -metadata artist="$artist" \
 		-metadata TIT3="$TIT3" -metadata date="$date" -metadata TDAT="$TDAT" \
 		-metadata encoded_by="$encoded_by" -metadata copyright="$copyright" \

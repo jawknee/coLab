@@ -28,7 +28,7 @@ def process_data(threadName, q):
 		if not workQueue.empty():
 			data = q.get()
 			queueLock.release()
-			#print "%s processing %s" % (threadName, data)
+			print "%s processing %s" % (threadName, data)
 		else:
 			queueLock.release()
 		a = 3 * 27
@@ -36,7 +36,7 @@ def process_data(threadName, q):
 
 threadList = ["Thread-1", "Thread-2", "Thread-3", "Thread-4", "Thread-5", "Thread-6", "Thread-7", "Thread-8" ]
 #nameList = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven" ]
-nameList = [ str(x) for x in range(90000) ]
+nameList = [ str(x) for x in range(900) ]
 queueLock = threading.Lock()
 workQueue = Queue.Queue(len(nameList))
 threads = []

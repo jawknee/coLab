@@ -425,10 +425,12 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 			#imagemaker.make_images(page, img_gen_progbar, media_size)
 			# 
 			# let us do a bit of profiling of this make_images beast...
+			'''	Comment for profiling...
 			pr = cProfile.Profile()
-			#pr.enable()
+			pr.enable()
+			#'''
 			imagemaker.make_images(page, img_gen_progbar)
-			'''
+			'''	Comment for profiling...
 			pr.disable()
 			s = StringIO.StringIO()
 			sortby = 'cumulative'
@@ -500,7 +502,7 @@ def do_mirror(coLab_home=None):
 	scriptpath = os.path.join(coLab_home, 'Code', 'Interarchy_coLab_mirror.scpt')
 	osascript = "/usr/bin/osascript"
 	logging.info("Mirror: %s", osascript, scriptpath)
-	#"""
+	"""
 	try:
 		pid = subprocess.Popen([osascript, scriptpath]).pid
 		logging.info("do_mirror - mirror pid is: %d", pid)

@@ -43,7 +43,12 @@ then
 	exit 1
 fi
 
-overlay_dir=$pagedir/coLab_local/Overlays
+#overlay_dir=$pagedir/coLab_local/Overlays
+if [ ! -d $imagedir ]
+then
+	echo "$0: No image dir: $imagedir"
+	exit 1
+fi
 
 #
 # Build the runstring...
@@ -52,7 +57,7 @@ overlay_dir=$pagedir/coLab_local/Overlays
 ffmpeg=/usr/local/bin/ffmpeg
 #
 # input of image sequence...
-input_opts="-y -r $fps -i $overlay_dir/Frame-%05d.png -i"
+input_opts="-y -r $fps -i $imagedir/Frame-%05d.png -i"
 
 # threads - kludge this for now
 if [ $generateMP3 = yes ]

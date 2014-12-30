@@ -250,6 +250,7 @@ def make_sub_images(page, size=None):
 
 def make_images(page, prog_bar=None, media_size=None):
 	"""
+
 	Starting with the audio and an image (either a cropped screenshot
 	or an image generated from the sound), create a series of images
 	that will be turned into a movie by adding a moving cursor
@@ -261,95 +262,13 @@ def make_images(page, prog_bar=None, media_size=None):
 	square root of the ratio.
 	"""
 	
-	fontclass = clutils.FontLib()	# this needs to be done at initialization   RBF
-
 	logging.info("make_images: page.home: %s", page.home)
 
-	directory = os.path.join(page.home, 'coLab_local', 'Overlays' )
-	os.system('rm -rf ' + directory + '/')
-	os.system('mkdir -pv ' + directory )
-
-	try:
-		os.chdir(page.home)
-	except OSError, info:
-		logging.warning("Problem changing to: %s", page.home)
-		logging.warning("%s: ", info, exc_info=True)
-    
-		sys.exit(1)
-	if media_size is None:
-		media_size = page.media_size
+	# Create a frame maker.. make some frames...
+	frame_maker = Frame_maker(page, prog_bar, media_size)
 	
+	frame_maker.clear()
 	
-	
-	# the scale factor (below) is the ratio of the target size to
-	# the original.   The adjust factor is for 
-	# the time boxes.
-	#"""
-	
-	size_class = config.Sizes()
-	size = size_class.sizeof(media_size)
-	(width, height) = size
-	
-	adjust_factor = size_class.calc_adjust(height)
-	logging.info("adjust_factor: %s", adjust_factor)
-
-	box_width = int(config.T_BOX_WIDE * adjust_factor) 
-	box_height = int(config.T_BOX_HIGH * adjust_factor)
-	
-	box_size = (box_width, box_height)
-	box_rect = [ (0,0), (box_width-1, box_height-1) ]
-	box_rect2 = [ (2,2), (box_width-3, box_height-3) ]
-
-	h_adj = int(math.ceil(2 * adjust_factor))
-	lbox_offset = (2, height - box_height - h_adj)
-	rbox_offset = (width - box_width - 2, height - box_height - h_adj)
-
-	# create basic box...
-	box = Image.new('RGBA', box_size, color=clColors.PART_BLACK)
-	boxdraw = ImageDraw.Draw(box)
-	boxdraw.rectangle(box_rect, outline=clColors.GREEN)
-
-
-	# Set up the base image that will be copied and overlaid as needed...
-	#
-	if page.use_soundgraphic:
-		image = page.soundgraphic
-	else:
-		image = page.graphic
-	
-	orig_image = Image.open(image)
-	base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
-
-	# use the pixels and duration to determine frames per second...
-	page.fps = calc_fps_val(page)
-	#page.editor.set_member('fps', page.fps)	#rbf ? for now, update the screen?
-	
-
-	fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
-	#fontpath = fontclass.return_fontpath('DigitaldreamFatSkew.ttf')
-	fontsize = int(12 * adjust_factor)
-	font = ImageFont.truetype(fontpath, fontsize)
-
-	lefttime = -1	# force a build of the left box
-	righttime = -1 	# ditto, right
-	lastx = -1	# x-pos - force draw of the cursor
-	
-	# set the initial line x position and end point,  based
-	# either on the known sound graphic dimensions, or a 
-	# scaled version of the enter start and end for screen captures, etc.
-	if page.use_soundgraphic:
-		xPos = int(config.SG_LEFT_BORDER * adjust_factor)
-		xEnd = int(width - config.SG_RIGHT_BORDER * adjust_factor)
-	else:	# compensate for the actual size of the screenshot image...
-		scale_factor = float(width) / page.screenshot_width		
-		xPos = int(page.xStart * scale_factor)
-		xEnd = int(page.xEnd * scale_factor)
-	
-	secs_long = float(page.duration)
-	xLen = xEnd - xPos
-		
-	prev = -1	# force
-
 	# Now - loop through, generating images as we need...
 	#
 	frames = int(float(page.duration) * page.fps) 
@@ -359,106 +278,14 @@ def make_images(page, prog_bar=None, media_size=None):
 		logging.warning("------FRAME MISMATCH---------")
 		logging.warning("Frames: %s, prog_bar.max: %s", frames, prog_bar.max)
 		prog_bar.max = frames
-	
-	# change the colors of the cursor and 
-	# and the contrasting surround (mostly transparent)
-	if page.use_soundgraphic:
-		theme_colors = clColors.Themes(page.graphic_theme)
-		linecolor=theme_colors.cursor
-		offsetcolor=theme_colors.cursor_offset
-	else:
-		linecolor=clColors.BLACK
-		offsetcolor=clColors.HILITE
-	# set the width of the offset based on the scale adjustment
-	offsetwidth = 1 + int(adjust_factor) 
-	logging.info("color: %s, offset: %s, width: %s", linecolor, offsetcolor, offsetwidth)
-	
-	overlay_master = Image.new( 'RGBA', size, color=clColors.XPARENT)
-	master_draw = ImageDraw.Draw(overlay_master)
-	add_res_text(master_draw, size, adjust_factor)
-	
-	frameIncr = float(xLen) / frames
-	cursor_top = int(config.SG_TOP_BORDER * adjust_factor)
-	cursor_bot = height - int(config.SG_BOTTOM_BORDER * adjust_factor)
 
-	prog_bar.update(0)		# Reset the time to now...
-	#while fr <= frames:
-	last_fr_num = frames - 1
+	prog_bar.update(0)		# reset the starting time...
+	
 	for fr_num in range(frames):
-		last_frame = fr_num == last_fr_num # Boolean
-		# create a new overlay
-		overlay = overlay_master.copy()
-		overlay_draw = ImageDraw.Draw(overlay)
-
-		#
-		# at slower frame rates the final frame can be short of the mark,
-		# make sure we're at the end if this is the final frame.
-		if last_frame:
-			xPos = xEnd
-			time = page.duration		# force to the end...
-		else:
-			time = float(fr_num) / page.fps	# normal...
-
-		# Put the cursor into the overlay
-		xLine = int(xPos)
-		# add to "rectangles" that are mostly transparent but help offset the cursor on similar colors
-		overlay_draw.rectangle( [ (xLine-1,cursor_top), (xLine-offsetwidth,cursor_bot) ], outline=offsetcolor, fill=offsetcolor)
-		overlay_draw.rectangle( [ (xLine+1,cursor_top), (xLine+offsetwidth,cursor_bot) ], outline=offsetcolor, fill=offsetcolor)
-		overlay_draw.line( [ (xLine,cursor_top), (xLine,cursor_bot) ], fill=linecolor)
-
-		#
-		# Build the left and right boxes...
-		lbox = box.copy()
-		lbox_draw = ImageDraw.Draw(lbox)	# draw object...
-		if fr_num == 0:	# add a highlight
-			lbox_draw.rectangle(box_rect, outline=clColors.EL_BLUE)
-			lbox_draw.rectangle(box_rect2, outline=clColors.EL_BLUE)
+		frame_maker.make_frame(fr_num=fr_num)
+		print fr_num
 		
-			
-		seconds = int(time)
-		tstring = "%01d:%02d" % divmod(seconds, 60)
-
-		(twidth, theight) = lbox_draw.textsize(tstring, font=font)
-		offset = ( (box_width - twidth) / 2, (box_height - theight) / 2)
-		lbox_draw.text( offset, tstring, font=font, fill=clColors.GREEN)
-		overlay.paste(lbox, lbox_offset)
-
-
-		rbox = box.copy()
-		rbox_draw = ImageDraw.Draw(rbox)
-		if last_frame:		# Outline last frame time.
-			rbox_draw.rectangle(box_rect, outline=clColors.EL_BLUE)
-			rbox_draw.rectangle(box_rect2, outline=clColors.EL_BLUE)
-
-
-		seconds = int(page.duration - time)
-		tstring = "-%01d:%02d" % divmod(seconds, 60)
-
-		(twidth, theight) = rbox_draw.textsize(tstring, font=font)
-		offset = ( (box_width - twidth) / 2, (box_height - theight) / 2)
-		rbox_draw.text( offset, tstring, font=font, fill=clColors.GREEN)
-		overlay.paste(rbox, rbox_offset)
-		#
-		# Now we gotta git a bit tricky since PIL doesn't support alpha compositing...
-		r, g, b, a = overlay.split()
-		overlay_rgb = Image.merge('RGB', (r,g,b))
-		mask = Image.merge('L', (a,))
-
-		frame_image = base_image.copy()		# new copy of the base...
-		frame_image.paste(overlay_rgb, (0,0), mask)
-
-		logging.info("Frame num: %s, to %s", fr_num, last_fr_num)
-		filename = directory + '/' + 'Frame-%05d.png' % fr_num
-		frame_image.save(filename, 'PNG')
-		logging.info("Saved: %s", filename)
-
-		xPos += frameIncr
-		try:
-			prog_bar.update(fr_num+1)
-		except:
-			pass
-		
-	logging.info("Done: ")
+	logging.info("make_images - Done: ")
 	if page.fps < 1:
 		logging.info("Seconds per frame: %s", 1/page.fps)
 	else:
@@ -595,6 +422,263 @@ def signed2int(s):
         #        raise ValueError
         return(value)
 
+class Frame_maker():
+	''' create frames for a page
+	the object is set up with the basic info, 
+	and then builds frames as requested.  
+	The intent is to allow treading to be used, such that the method 
+	has all that it needs except the frame number.
+	
+	formerly in make_images.
+	'''
+	
+	def __init__(self, page, prog_bar=None, media_size=None):
+		self.page = page
+		self.prog_bar = prog_bar
+		if media_size is None:
+			media_size = page.media_size
+		self.media_size = media_size
+	
+		fontclass = clutils.FontLib()	# this needs to be done at initialization   RBF
+
+		logging.info("Frame - new instance")
+
+		self.dest_dir = os.path.join(page.coLab_home, 'coLab_local', 'Frames', page.name )
+		logging.info("Frame Destination")
+		os.system('mkdir -pv ' + self.dest_dir )
+
+		# RBF:  check this: do we even need to do a chdir?
+		try:
+			os.chdir(page.home)
+		except OSError, info:
+			logging.warning("Problem changing to: %s", page.home)
+			logging.warning("%s: ", info, exc_info=True)
+    	
+			sys.exit(1)
+	
+		# 
+		# Set up the bits we're going to need for the image generation
+		# for this page...
+	
+		# the scale factor (below) is the ratio of the target size to
+		# the original.   The adjust factor is for 
+		# the time boxes.
+		#"""
+	
+		size_class = config.Sizes()
+		size = size_class.sizeof(media_size)
+		(width, height) = size
+	
+		adjust_factor = size_class.calc_adjust(height)
+		logging.info("adjust_factor: %s", adjust_factor)
+	
+		box_width = int(config.T_BOX_WIDE * adjust_factor) 
+		box_height = int(config.T_BOX_HIGH * adjust_factor)
+		
+		self.box_size = (box_width, box_height)
+		self.box_rect = [ (0,0), (box_width-1, box_height-1) ]
+		self.box_rect2 = [ (2,2), (box_width-3, box_height-3) ]
+	
+		h_adj = int(math.ceil(2 * adjust_factor))
+		lbox_offset = (2, height - box_height - h_adj)
+		rbox_offset = (width - box_width - 2, height - box_height - h_adj)
+		self.box_offset = (lbox_offset, rbox_offset)
+	
+		# create basic box...
+		self.box = Image.new('RGBA', self.box_size, color=clColors.PART_BLACK)
+		boxdraw = ImageDraw.Draw(self.box)
+		boxdraw.rectangle(self.box_rect, outline=clColors.GREEN)
+	
+		# Set up the base image that will be copied and overlaid as needed...
+		#
+		if page.use_soundgraphic:
+			image = page.soundgraphic
+		else:
+			image = page.graphic
+		
+		orig_image = Image.open(image)
+		self.base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
+	
+		# use the pixels and duration to determine frames per second...
+		page.fps = calc_fps_val(page)
+		
+		fontpath = fontclass.return_fontpath('DigitaldreamFatSkewNarrow.ttf')
+		fontsize = int(12 * adjust_factor)
+		self.font = ImageFont.truetype(fontpath, fontsize)
+	
+		lefttime = -1	# force a build of the left box
+		righttime = -1 	# ditto, right
+		lastx = -1	# x-pos - force draw of the cursor
+		
+		# set the initial line x position and end point,  based
+		# either on the known sound graphic dimensions, or a 
+		# scaled version of the enter start and end for screen captures, etc.
+		if page.use_soundgraphic:
+			self.xStart = int(config.SG_LEFT_BORDER * adjust_factor)
+			self.xEnd = int(width - config.SG_RIGHT_BORDER * adjust_factor)
+		else:	# compensate for the actual size of the screenshot image...
+			scale_factor = float(width) / page.screenshot_width		
+			self.xStart = int(page.xStart * scale_factor)
+			self.xEnd = int(page.xEnd * scale_factor)
+		
+		secs_long = float(page.duration)
+		self.xLen = self.xEnd - self.xStart
+			
+		prev = -1	# force
+	
+		# Now - loop through, generating images as we need...
+		#
+		frames = int(float(page.duration) * page.fps) 
+	
+		logging.info("duration: %f, fps: %f, frames: %d", page.duration, page.fps, frames)
+		if frames != prog_bar.max:
+			logging.warning("------FRAME MISMATCH---------")
+			logging.warning("Frames: %s, prog_bar.max: %s", frames, prog_bar.max)
+			prog_bar.max = frames
+		
+		# change the colors of the cursor and 
+		# and the contrasting surround (mostly transparent)
+		if page.use_soundgraphic:
+			theme_colors = clColors.Themes(page.graphic_theme)
+			self.linecolor=theme_colors.cursor
+			self.offsetcolor=theme_colors.cursor_offset
+		else:
+			self.linecolor=clColors.BLACK
+			self.offsetcolor=clColors.HILITE
+		# set the width of the offset based on the scale adjustment
+		self.offsetwidth = 1 + int(adjust_factor) 
+		logging.info("color: %s, offset: %s, width: %s", self.linecolor, self.offsetcolor, self.offsetwidth)
+		
+		self.overlay_master = Image.new( 'RGBA', size, color=clColors.XPARENT)
+		master_draw = ImageDraw.Draw(self.overlay_master)
+		add_res_text(master_draw, size, adjust_factor)
+		
+		frameIncr = float(self.xLen) / frames
+		self.cursor_top = int(config.SG_TOP_BORDER * adjust_factor)
+		self.cursor_bot = height - int(config.SG_BOTTOM_BORDER * adjust_factor)
+	
+		prog_bar.update(0)		# Reset the time to now...
+
+		self.last_fr_num = frames - 1
+		
+	def clear(self):
+		''' clean out the destination dir
+		'''
+		
+		try:
+			os.system('rm -rf ' + self.dest_dir + '/')
+			os.system('mkdir -pv ' + self.dest_dir )
+		except:
+			logging.error("Frame.clear(): problem", exc_info=True)
+			logging.error("Internal error - cannot continue.")
+			sys.exit(1)
+
+	def make_frame(self, fr_num=None):
+		''' Make a frame - put it in the place...
+		
+			Actually intended to make just one frame, specifically
+			to simplify threading the process.
+			
+			This is the heart of it - this will make each of the frames
+			required to make the movie, at the currently set resolution.
+
+			Starting with the audio and an image (either a cropped screenshot
+			or an image generated from the sound), create a series of images
+			that will be turned into a movie by adding a moving cursor
+			and elapsed and remaining time counters.  Also the size of the
+			boxes and internal fonts should scale to the size being generated.
+					
+			The time boxes are adjusted to some non-linear relationship
+			to the factor - based on the "BASE_SIZE":
+			square root of the ratio.
+			
+		'''
+		
+		if fr_num is None:
+			logging.error("Frame.make_frame: frame number must be specified - at least for now.")
+			sys.exit(1)
+
+		last_frame = fr_num == self.last_fr_num # Boolean
+		# create a new overlay
+		overlay = self.overlay_master.copy()
+		overlay_draw = ImageDraw.Draw(overlay)
+
+		#
+		# at slower frame rates the final frame can be short of the mark,
+		# make sure we're at the end if this is the final frame.
+		if last_frame:
+			time = self.page.duration		# force to the end...
+			xPos = self.xEnd
+		else:
+			time = float(fr_num) / self.page.fps	# normal...
+			xPos = self.xStart + self.xLen * ( float(fr_num) / self.last_fr_num)
+
+		# Put the cursor into the overlay
+		# Setup a few vars / shortcuts
+		xLine = int(xPos)
+		cursor_top = self.cursor_top
+		cursor_bot = self.cursor_bot
+		offsetwidth = self.offsetwidth
+		offsetcolor = self.offsetcolor
+		linecolor = self.linecolor
+		(box_width, box_height)  = self.box_size
+		(lbox_offset, rbox_offset) = self.box_offset
+
+		# add to "rectangles" that are mostly transparent but help offset the cursor on similar colors
+		overlay_draw.rectangle( [ (xLine-1,cursor_top), (xLine-offsetwidth,cursor_bot) ], outline=offsetcolor, fill=offsetcolor)
+		overlay_draw.rectangle( [ (xLine+1,cursor_top), (xLine+offsetwidth,cursor_bot) ], outline=offsetcolor, fill=offsetcolor)
+		overlay_draw.line( [ (xLine,cursor_top), (xLine,cursor_bot) ], fill=linecolor)
+
+		#
+		# Build the left and right boxes...
+		lbox = self.box.copy()
+		lbox_draw = ImageDraw.Draw(lbox)	# draw object...
+		if fr_num == 0:	# add a highlight
+			lbox_draw.rectangle(self.box_rect, outline=clColors.EL_BLUE)
+			lbox_draw.rectangle(self.box_rect2, outline=clColors.EL_BLUE)
+		
+		seconds = int(time)
+		tstring = "%01d:%02d" % divmod(seconds, 60)
+
+		(twidth, theight) = lbox_draw.textsize(tstring, font=self.font)
+		offset = ((box_width - twidth) / 2, (box_height - theight) / 2)
+		lbox_draw.text(offset, tstring, font=self.font, fill=clColors.GREEN)
+		overlay.paste(lbox, lbox_offset)
+
+		rbox = self.box.copy()
+		rbox_draw = ImageDraw.Draw(rbox)
+		if last_frame:		# Outline last frame time.
+			rbox_draw.rectangle(self.box_rect, outline=clColors.EL_BLUE)
+			rbox_draw.rectangle(self.box_rect2, outline=clColors.EL_BLUE)
+
+		seconds = int(self.page.duration - time)
+		tstring = "-%01d:%02d" % divmod(seconds, 60)
+
+		(twidth, theight) = rbox_draw.textsize(tstring, font=self.font)
+		offset = ( (box_width - twidth) / 2, (box_height - theight) / 2)
+		rbox_draw.text( offset, tstring, font=self.font, fill=clColors.GREEN)
+		overlay.paste(rbox, rbox_offset)
+		#
+		# Now we gotta git a bit tricky since PIL doesn't support alpha compositing...
+		r, g, b, a = overlay.split()
+		overlay_rgb = Image.merge('RGB', (r,g,b))
+		mask = Image.merge('L', (a,))
+
+		frame_image = self.base_image.copy()		# new copy of the base...
+		frame_image.paste(overlay_rgb, (0,0), mask)
+
+		logging.info("Frame num: %s, to %s", fr_num, self.last_fr_num)
+		filename = self.dest_dir + '/' + 'Frame-%05d.png' % fr_num
+		frame_image.save(filename, 'PNG')
+		logging.info("Saved: %s", filename)
+
+		#self.xPos += frameIncr
+		try:
+			self.prog_bar.update(fr_num+1)
+		except:
+			pass
+		
+			
 class Sound_image():
 	""" Take a sound file and convert into a base image
 

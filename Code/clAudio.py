@@ -40,6 +40,7 @@ def make_movie(page, prog_bar=None):
 	#
 	# Just some variable assignments used by the script.
 	content = 'pagedir="' + page.home + '"\n' 
+	content += 'imagedir="' + os.path.join(page.coLab_home, 'coLab_local', 'Frames', page.name) + '"\n'
 	content += 'soundfile="' + page.localize_soundfile() + '"\n' 
 	content += 'fps="' + str(page.fps) + '"\n'
 	content += 'media_size="' + page.media_size + '"\n'
@@ -67,7 +68,7 @@ def make_movie(page, prog_bar=None):
 
 		year = cldate.format(page.createtime, '%Y')
 		content += 'date="' + year + '"\n'
-		content += 'TDAT="' + cldate.format(page.createtime, '%d%m')
+		content += 'TDAT="' + cldate.format(page.createtime, '%d%m') + '"\n'
 		content += 'encoded_by="coLab"\n'
 		rec_copyright = u"\u2117"	# recording copyright sign...
 		content += 'copyright="' + rec_copyright + ' ' + grouptitle + ' ' + year + '"\n'

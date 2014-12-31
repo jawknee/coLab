@@ -14,10 +14,12 @@ import sys
 import shutil
 import logging
 import operator		# for a bit of tuple addition
+import multiprocessing
 
 import aifc
 import math
 import threading
+import Queue
 import time
 
 from PIL import Image
@@ -274,16 +276,50 @@ def make_images(page, prog_bar=None, media_size=None):
 	frames = int(float(page.duration) * page.fps) 
 
 	logging.info("duration: %f, fps: %f, frames: %d", page.duration, page.fps, frames)
+	# RBF:  ? Old bug override - probably not needed
 	if frames != prog_bar.max:
 		logging.warning("------FRAME MISMATCH---------")
 		logging.warning("Frames: %s, prog_bar.max: %s", frames, prog_bar.max)
 		prog_bar.max = frames
 
-	prog_bar.update(0)		# reset the starting time...
+	# set up for threads....
+	num_threads = multiprocessing.cpu_count()
+	#num_threads = 1
+	threadList = ['Thread-' + str(x+1) for x in range(num_threads) ]
+	frameList = [x for x in range(frames) ]	# a list of thread numbers to process...
+	queueLock = threading.Lock()
+	workQueue = Queue.Queue(frames)
+	threads = []
+	threadID = 1
 	
+	queueLock.acquire()
+	for tName in threadList:
+		thread = Frame_thread(threadID, tName, queueLock, workQueue, frame_maker)
+		thread.start()
+		threads.append(thread)
+		threadID += 1
+	# we've created the appropriate number of threads...
+	# Now, point them at the tasks at hand...
+	for frame in frameList:
+		logging.info("Adding workQueue - frame: %s", frame)
+		workQueue.put(frame)
+		
+	prog_bar.update(0)		# reset the starting time...
+	queueLock.release()
+	
+	#while not workQueue.empty():
+	#	pass
+	
+	for t in threads:
+		#t.exitFlag = True
+		t.join()
+
+
+	'''
 	for fr_num in range(frames):
 		frame_maker.make_frame(fr_num=fr_num)
 		print fr_num
+	#'''
 		
 	logging.info("make_images - Done: ")
 	if page.fps < 1:
@@ -421,6 +457,36 @@ def signed2int(s):
         #        logging.info("OOops - toobig: %s", value)
         #        raise ValueError
         return(value)
+
+class Frame_thread(threading.Thread):
+	''' derivative class specific to Frame generation...
+	'''
+	def __init__(self, threadID, name, queueLock, workQueue, frame_maker):
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+		self.name = name
+		self.queueLock = queueLock
+		self.workQueue = workQueue
+		self.frame_maker = frame_maker
+		
+		self.exitFlag = False
+		
+	def run(self):
+		''' get the next item off the queue, the frame number - and build it
+		'''
+		logging.info("Starting: %s", self.name)
+		while not self.exitFlag:
+			self.queueLock.acquire()
+			if not self.workQueue.empty():
+				frame = self.workQueue.get()
+				self.queueLock.release()
+				logging.info("Frame_thread: " + self.name + " building frame: %d", frame)
+				self.frame_maker.make_frame(frame)
+				self.workQueue.task_done()
+			else:
+				self.queueLock.release()
+				break
+		logging.info("Exiting: " + self.name)
 
 class Frame_maker():
 	''' create frames for a page
@@ -674,7 +740,9 @@ class Frame_maker():
 
 		#self.xPos += frameIncr
 		try:
+			self.prog_bar.lock.acquire()
 			self.prog_bar.update(fr_num+1)
+			self.prog_bar.lock.release()
 		except:
 			pass
 		

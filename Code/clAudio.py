@@ -102,6 +102,7 @@ def make_movie(page, prog_bar=None):
 	#
 	# Read lines from the newly started ffmpeg... 
 	# parse them and update the progress bar...
+	read_delay=0.1	  # a bit of a delay so we don't slow down the encoding... (not clear if this is helping)
 	for line in iter(ffmpeg.stdout.readline, 'b'):
 		logging.info (" Read a new ffmpeg line: %s", line)
 		
@@ -115,8 +116,8 @@ def make_movie(page, prog_bar=None):
 			if parms[0] == 'frame=':
 				frame_num = parms[1]
 				prog_bar.update(int(frame_num))
-				logging.warning (" Frame: %s", frame_num)
-				#read_delay=0.1	  # a bit slower so we don't slow down the encoding...
+				logging.info(" Frame: %s", frame_num)
+				time.sleep(read_delay)
 		except:
 			logging.info("Something went wrong on the update... %s - possible last frame.", frame_num)
 			pass

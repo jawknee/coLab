@@ -12,6 +12,7 @@ import os
 import sys
 import logging
 import time
+import threading	# for the progbar lock
 
 import Tkinter as tk
 import tkFileDialog
@@ -49,6 +50,8 @@ class Progress_bar():
 		self.start_time = time.time()
 		self.what = 'Item'	# what it is....
 		self.mode = 'determinate'
+		self.highest = 0	# what's the largest so far?
+		self.lock = threading.Lock()	# let's threads lock access
 		
 		
 	def post(self):
@@ -91,12 +94,17 @@ class Progress_bar():
 		Call with 0 to reset the starting time to now.
 		"""
 		# for now...
+		if new_value < self.highest:
+			logging.info("progbar.update() - value %s lower than highest %s.", new_value, self.highest)
+			return
 		self.value.set(new_value)
+		self.highest = new_value
 		self.v_string.set(str(new_value) + self.of_str)
 		
 		# time remaining:
 		if new_value == 0:
 			self.start_time=time.time()
+			self.highest = 0 
 			return
 		
 		elapsed = time.time() - self.start_time

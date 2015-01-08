@@ -709,8 +709,8 @@ window.onload = function() {
 	// for now: only the video object, and we're only 
 	// handling <space>
 	//
-	document.addEventListener('keydown', function(e) {
-		console.log("Greetings from on key down document... " + e.srcElement);
+	document.addEventListener('keypress', function(e) {
+		console.log("Greetings from a keypress document... " + e.srcElement );
 		if ( ! videoOver ) {
 			return;
 		}
@@ -724,22 +724,27 @@ window.onload = function() {
 			return false;
 		}
 		// check for digits...
-		if (e.keyCode >= 48 && e.keyCode <= 57 ) {
-			if (e.keyCode == 48) {
+		// A little tricky here to support both the number row about the QWERTY
+		// and the number pad...
+		charCode = parseInt(e.keyIdentifier.substring(2),16);
+		if (charCode >= 48 && charCode <= 57 ) {
+			if (charCode == 48) {
 				btnnum = '10';
 			}
 			else {
-				btnnum = String.fromCharCode(e.keyCode);
+				btnnum = String.fromCharCode(charCode);
 			}
 			console.log("locLocate Button: " + btnnum);
 			time = buttonToLocation(btnnum);
 			if ( time != 0. ) {
 				goTimePlay(time);
 			}
-			
 			return false;
 		}
-		}, true);
+		code = e.keyCode;
+		console.log("Unused keycode: " + code.toFixed() + " / " + String.fromCharCode(e.keyCode));
+		console.log("keyIdentifier: " + charCode.toFixed());
+	}, true);
 
 	// ----------------------------------------
 	// 	CLICK!

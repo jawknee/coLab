@@ -723,6 +723,22 @@ window.onload = function() {
 			togglePlayPause();
 			return false;
 		}
+		// check for digits...
+		if (e.keyCode >= 48 && e.keyCode <= 57 ) {
+			if (e.keyCode == 48) {
+				btnnum = '10';
+			}
+			else {
+				btnnum = String.fromCharCode(e.keyCode);
+			}
+			console.log("locLocate Button: " + btnnum);
+			time = buttonToLocation(btnnum);
+			if ( time != 0. ) {
+				goTimePlay(time);
+			}
+			
+			return false;
+		}
 		}, true);
 
 	// ----------------------------------------

@@ -219,7 +219,7 @@ def make_sub_images(page, size=None):
 				logging.warning("Cannot open poser image %s", overlaypath, exc_info=True)
 			else:
 				# could resize here - but I'd rather see it something changes...
-			#
+		        #
 				# Now we gotta git a bit tricky since PIL doesn't support alpha compositing...
 				r, g, b, a = over_image.split()
 				overlay_rgb = Image.merge('RGB', (r,g,b))

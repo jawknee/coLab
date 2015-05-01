@@ -726,8 +726,17 @@ window.onload = function() {
 		// check for digits...
 		// A little tricky here to support both the number row about the QWERTY
 		// and the number pad...
-		charCode = parseInt(e.keyIdentifier.substring(2),16);
-		if (charCode >= 48 && charCode <= 57 ) {
+		// this next trick doesn't work on Windows - doesn't seem to be a keyIdentifier defined 
+		//charCode = parseInt(e.keyIdentifier.substring(2),16);
+		charCode = 0;
+		//  check for number pad or top row numbers
+		if ( e.keyCode >= 48 && e.keyCode <= 57) {
+			charCode = e.keyCode;
+		}
+		if ( e.keyCode >= 96 && e.keyCode <= 105) {
+			charCode = e.keyCode - 32;
+		}
+		if (charCode != 0 ) {
 			if (charCode == 48) {
 				btnnum = '10';
 			}

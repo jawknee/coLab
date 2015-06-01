@@ -6,7 +6,7 @@
 	<tr> <td valign=top height=30 align=left>
 	<img src="Header.png" align=left height=25 alt="<?php echo $desc_title; ?>">
 	</td><td valign=bottom align=left>
-	<img src="Title.png" align=left height=20 <?php echo $fun_title?>
+	<img src="Title.png" align=left height=25 alt="<?php echo $fun_title?>">
 	</td></tr>
 	</table>
   <div id="midtitle">

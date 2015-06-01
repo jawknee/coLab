@@ -7,6 +7,9 @@
 //
 // Uses parseUri - included below.
 //
+
+var debug_popup = 'None';
+
 window.onload = function() {
 
 	// ----------------------------------------
@@ -30,7 +33,6 @@ window.onload = function() {
 	//var clickbar = document.getElementById("clickbar");
 	//var clickdiv = document.getElementById("clickdiv");
 
-	var debug_popup = 'None';
 	// Buttons
 	var playButton = document.getElementById("play-pause");
 	var muteButton = document.getElementById("mute");
@@ -228,6 +230,10 @@ window.onload = function() {
 
 	// a little something to keep us informed...
 	function postInfo(msg) {
+		if ( debug_popup == 'None') {	// don't bother if we don't have the window open
+			return;
+		}
+		console.log("Greetings from postInfo");
 		var infoString = '<b>Status:</b> ' + playStatus + '<br>' +
 			'<b>Current:</b> ' + video.currentTime.toFixed(3) + '<br>' +
 			'<b>Message:</b> ' + msg + '<br>' +
@@ -268,10 +274,8 @@ window.onload = function() {
 		
 
 		//infoText.innerHTML = infoString;
-		if ( debug_popup != 'None') {
-			var debugText = debug_popup.document.getElementById("debug-info");
-			debugText.innerHTML = infoString;
-		}
+		var debugText = debug_popup.document.getElementById("debug-info");
+		debugText.innerHTML = infoString;
 	}
 
 	postInfo("Page loaded.");
@@ -650,27 +654,22 @@ window.onload = function() {
 			}
 		);
 	}
+
 	debugInfoButton.addEventListener("click", function () {
 		// open a window to hold the info..
 		console.log("debug button");
-		var document_name = document.getElementsByName('desc_title')[0].value;
-		console.log("name " + document_name);
-		if ( debug_popup != 'None') {		// is the window open?
-			if ( debug_popup.window.closed() ) {
-				debug_popup = 'None';	// as good as not having one...
-			}
+		if ( close_debug_popup() ) {  // returns true if it was open
+			console.log("debug window was open, is closed.");
+			return;
 		}
 		if ( debug_popup == 'None') {
+			var document_name = document.getElementsByName('desc_title')[0].value;
+			console.log("name " + document_name);
 			debug_popup = window.open("/coLab/Resources/Include/Page/page_debug.html", "Debug", "scrollbars=no, resizable=yes, width=600, height=700, menubar=no, status=no, toolbar=no, location=no");
 			debug_popup.window.onload = function() {
 				postInfo();
 				debug_popup.document.getElementById('pagetitle').innerHTML = 'Debug: ' + document_name;
 			}
-		} else {
-			debug_popup.close();
-			debug_popup = 'None';
-		/*
-		*/
 		}
 	})
 
@@ -1209,6 +1208,27 @@ window.onload = function() {
 	*/
        	
 };	// end of window.onload
+
+function close_debug_popup() {
+	// checks to see if there is a debug pop-up,
+	// and if so closes it...
+	var wasOpen = false;
+	if ( debug_popup != 'None') {		// is the window open?
+		console.log("Checking popup: " + debug_popup);
+		if ( ! debug_popup.window.closed ) {
+			console.log("Closing debug popup");
+			debug_popup.close();
+			wasOpen = true;
+		}
+	}
+	debug_popup = 'None';
+	return(wasOpen);
+}
+
+window.onbeforeunload = function() {
+	console.log("onbeforeunload");
+	close_debug_popup(debug_popup);
+}
 
 // parseURI - handy way to find out what's been passed via the URL
 function displayAttrById (id) {

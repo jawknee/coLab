@@ -46,11 +46,12 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	}
 
 #toptitle { 
-	height: 50; 
+	top: 2px;
+	height: 40px; 
 	width: 100%;
 	}
 
-#sidebar_l { position: absolute; top: 24px; left: 4px; width: 200px; 
+#sidebar_l { position: absolute; top: 1px; left: 4px; width: 200px; 
 	font-family: Helvetica; font-size: smaller;
 	color: black; 
 	bottom: 0px;
@@ -98,7 +99,26 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	z-index: 1;
 	}
 
-#
+#News {
+	position: absolute; top: 0px; bottom: 10px; left: 204px;  width: 700px; 
+	text-align:left;
+	font-family:Georgia; 
+	background-color: #151515;
+	background-image: url('/coLab/Resources/P1Black2.png');
+	color: #a0b0c0; 
+	overflow: hidden;
+	z-index: 1;
+	}
+#Debug {
+	position: absolute; top: 20px; bottom: 20px; left: 20px;  width: 560px; 
+	text-align:left;
+	font-family:Courier; 
+	background-color: #151515;
+	background-image: url('/coLab/Resources/P1Black2.png');
+	color: #a0b0c0; 
+	overflow: hidden;
+	z-index: 1;
+	}
 
 /* 
  * Open Loop Alert: the numbers here are repeated in the config.py file - need to come from
@@ -117,15 +137,14 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	position: absolute;
 	width: 640px;
 	height: 400px;
-	top: 50px;
+	top: 30px;
 	text-align-: center;
-	z-index: -1;
 	/* force the left margin rather than center - to account for
 	 * the scroll bar width  ~12 pixels  
 	 */
 	margin-left: 24px;
 	margin-right: auto;
-	z-index: 2;
+	z-index: 4;
 	overflow: hidden;
 }
 
@@ -144,11 +163,11 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	top: 640;
 	z-index: 4;
 	opacity: 0;
-	-webkit-transition: opacity 1.0s;
-	-moz-transition: opacity 1.0s;
-	-o-transition: opacity 1.0s;
-	-ms-transition: opacity 1.0s;
-	transition: opacity 1.0s;
+	-webkit-transition: opacity 0.8s;
+	-moz-transition: opacity 0.8s;
+	-o-transition: opacity 0.8s;
+	-ms-transition: opacity 0.8s;
+	transition: opacity 0.8s;
 	background-image: linear-gradient(bottom, rgb(10, 80, 145) 40%, rgb(0,73,141)  100%);
 	background-image: -o-linear-gradient(bottom, rgb(10, 80, 145) 40%, rgb(0,73,141)  100%);
 	background-image: -moz-linear-gradient(bottom, rgb(10, 80, 145) 40%, rgb(0,73,141)  100%);
@@ -171,20 +190,21 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 /* mid title bar - lays under the video-controls 
  */
 #toplinkbar {
-	position: absolute;
-	top: 450px;
-	width: 100%;
-	}
+	position: relative;
+	top: 15px;
+	width: 640px; 
+}
 
 #mainsection { 
 	position: absolute;
-	top: 480px;
+	top: 395px;
 	bottom: 0px;
 	left: 25px; 
 	right: 0px;
 	overflow: auto;
 	text-align:left;
 	color: #a0b0c0;
+	z-index: 3;
 }
 
 #midtitle {
@@ -192,14 +212,15 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	top: 0px;
 	left: 30px;
 	width: 90%;
-	height: 80px;
+	height: 35px;
 	z-index: 3;
 }
 
 #maintext {
-	postion: relative;
-	top: 30px;
+	position: relative;
+	top: 0px;
 	bottom: 0px;
+	text-align: left;
 }
 
 #fundesc { font-family: cursive, 'Brush Script MT','Lucida Handwriting'; color: #c0b0a0; vertical-align: bottom; }

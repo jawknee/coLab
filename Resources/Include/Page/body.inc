@@ -20,32 +20,33 @@
 	<div id="sidebar_l" class="sidebar_l">
 	<?php virtual ($groupURL . "/Shared/mostrecent.html"); ?>
 	<p><hr><P>
-	<!--#include virtual="<?php echo $groupURL; ?>/Shared/projectlist.html" -->
 	<?php virtual ($groupURL . "/Shared/projectlist.html"); ?>
-	<p><hr><P>
-	<!--#include virtual="<?php echo $groupURL; ?>/Shared/News.html" -->
-	<?php virtual ($groupURL . "/Shared/News.html"); ?>
-	<?php virtual ("/coLab/Resources/News.html"); ?>
-	</div> <! End sidebar>
+	</div> <! End left sidebar>
 
 	<div id="sidebar_r" class="sidebar_r">
 	<div id="coLabLogo" class="logo"><img src="/coLab/Resources/CoLab_Logo3D.png" height=50 width=50></div> 
 	<! end logo>
 	<?php virtual ("/coLab/Resources/Alert.html"); ?>
 	<?php virtual ("/coLab/Resources/WelcomeMsg.html"); ?>
-	<!--#include virtual="<?php echo $groupURL; ?>/Shared/rightbar.html" -->
-	<!--#include virtual="/coLab/Resources/News.html" -->
 	<?php virtual ($groupURL . "/Shared/rightbar.html"); ?>
 	<p id="locators"></p>
-	<p>
-	<!--  RBF THIS IS UGLY - find a better way to get tht path in....  -->
-	<a href="../../../../Resources/php/download.php?dl_dir=<?php echo $page_home; ?>&dl_file=<?php echo $name . '.mp3' ?>"><button
+	<!--  revisit - find a better way to get tht path in....  -->
+	<a href="/coLab/Resources/php/download.php?dl_dir=<?php echo $page_home; ?>&dl_file=<?php echo $name . '.mp3' ?>"><button
 	type="submit" id="mp3-download-btn" title="Download MP3">Download MP3</button></a>
 	<p>
 	<button type="button" id="sound-info-btn" title="Sound Info">Sound Info</button>
 	<input type="hidden" id="sound-info" value="<?php echo $soundinfo; ?>">
+	<p>
+	<button type="button" id="debug-info-btn" title="Debug Info">Debug Info</button>
+
+	<!-- no longer used...  now posted into a separate window but Debug button above...
 	<hr><br>
 	<p id="info"></p>	<! A paragraph for displaying...  info from javascript.>
+	-->
+	<p><hr>
+	<?php virtual ($groupURL . "/Shared/News.html"); ?>
+	<?php virtual ("/coLab/Resources/News.html"); ?>
+
 	<table align="right" border=0><tr><td>
 	<a href="http://colorfilter.wickline.org/colorblind/filter/button"
 	target="_blank"><img
@@ -59,7 +60,7 @@
 
 	<div id="Content" >
 	  <div id=toptitle>
-		<img src="Title.png" id="fundesc" alt="$fun_title" >
+		<img src="Header.png" id="fundesc" alt="$desc_title" height=30>
 	  </div id=toptitle>
 
 

@@ -30,20 +30,27 @@ window.onload = function() {
 	//var clickbar = document.getElementById("clickbar");
 	//var clickdiv = document.getElementById("clickdiv");
 
+	var debug_popup = 'None';
 	// Buttons
 	var playButton = document.getElementById("play-pause");
 	var muteButton = document.getElementById("mute");
 	var fullScreenButton = document.getElementById("full-screen");
 	var soundInfoButton = document.getElementById("sound-info-btn");
 	var soundInfoEl = document.getElementById("sound-info");
+	var soundInfo = "<unset>";
 	if ( soundInfoEl ) {
 		var soundInfo = document.getElementById("sound-info").value;
-	} else {
-		soundInfo = "No Information Available.";
 	}
+	if ( soundInfo == "<unset>") {
+		var soundInfo = "No information available for this sound file.";
+	}
+
+	var debugInfoButton = document.getElementById("debug-info-btn");
 
 	// Locator buttons...
 	var locatorText = document.getElementById("locators");
+	var locatorBtnCount = 0;
+
 	var numButs = document.getElementById("numbut");
 	if (  numButs ) {
 		numButs = numButs.value;
@@ -239,28 +246,32 @@ window.onload = function() {
 		infoString += "<b>time:</b> " + parse.queryKey.time + '<br>';
 		infoString += "<b>starttime:</b> " + startTime.toFixed(3) + '<br>';
 		infoString += "<b>videoWidth:</b> " + video.videoWidth.toString() + '<br>';
-		/*
 		infoString += "<b>videoDurtn:</b> " + video.duration.toFixed(3) + '<br>';
 		infoString += "<b>ActualDurtn:</b> " + dur.toFixed(3) + '<br>';
+		infoString += "<b>Video Over:</b> " + videoOver + '<br>';
 
 		infoString += "<b>Last Click:</b> (" + lastxclick.toString() + ', ' + lastyclick.toString()  + ') <br>';
-		infoString += "xOffset: " + xOffset.toString() + '<br>';
-		infoString += "xStart: " + xStart.toString() + '<br>';
-		infoString += "xEnd: " + xEnd.toString() + '<br>';
-		infoString += "xmin/max: " + xmin.toString() + ', ' + xmax.toString() + '<br>';
-		infoString += "pscale: " + pscale.toFixed(3) + '<br>';
-		infoString += "Screenshot: " + screenshotWidth + '<br>';
-		infoString += "Screen width: " + screen.width.toString() + '<br>';
-		infoString += "Screen height: " + screen.height.toString() + '<br>';
-		*/
-		infoString += "Fullscreen: " + fullscreenStatus + '<br>';
-		infoString += "Fullscreen Mode: " + fullscreenMode + '<br>';
-		/*
+		infoString += "<b>xOffset:</b> " + xOffset.toString() + '<br>';
+		infoString += "<b>xStart:</b> " + xStart.toString() + '<br>';
+		infoString += "<b>xEnd:</b> " + xEnd.toString() + '<br>';
+		infoString += "<b>xmin/max:</b> " + xmin.toString() + ', ' + xmax.toString() + '<br>';
+		infoString += "<b>pscale:</b> " + pscale.toFixed(3) + '<br>';
+		infoString += "<b>Screenshot:</b> " + screenshotWidth + '<br>';
+		infoString += "<b>Screen width:</b> " + screen.width.toString() + '<br>';
+		infoString += "<b>Screen height:</b> " + screen.height.toString() + '<br>';
+		
+		infoString += "<b>Fullscreen:</b> " + fullscreenStatus + '<br>';
+		infoString += "<b>Fullscreen Mode:</b> " + fullscreenMode + '<br>';
+		
 		infoString += "<b>Click Type:</b> " + clickType + '<br>';
 		//infoString += "<b>Event Name:</b> " + eventlist + '<br>'; 
-		*/
+		
 
-		infoText.innerHTML = infoString;
+		//infoText.innerHTML = infoString;
+		if ( debug_popup != 'None') {
+			var debugText = debug_popup.document.getElementById("debug-info");
+			debugText.innerHTML = infoString;
+		}
 	}
 
 	postInfo("Page loaded.");
@@ -440,8 +451,8 @@ window.onload = function() {
 			locatorTextString += spantag;
 			locatorTextString += btnType + ". ";
 			locatorTextString += buttonTextString + "</span><br>";
-			locatorText.innerHTML = locatorTextString;
 			locButton.title = buttonTextString;
+			locatorBtnCount += 1;
 		}
 
 		// Load up the image for this button - also pass the buttonID in - since we're more likely to 
@@ -453,6 +464,10 @@ window.onload = function() {
 		locButton.addEventListener("click", function(e) {
 			handleLocButton(e);
 		});
+	}
+	if ( locatorBtnCount > 0 ) {
+		locatorTextString += "<p><hr><p>";
+		locatorText.innerHTML = locatorTextString;
 	}
 
 	// ----------------------------------------
@@ -561,6 +576,7 @@ window.onload = function() {
 
 	// Event listener for the seek bar
 	if ( seekBar ) {	// temporary - until we update all pages... ?
+
 	seekBar.addEventListener("change", function() {
 		// Calculate the new time
 		currentLocation = video.duration * (seekBar.value / 100);
@@ -568,6 +584,7 @@ window.onload = function() {
 		// Update the video time
 		video.currentTime = currentLocation;
 	});
+	}
 
 	
 	// Update the seek bar as the video plays
@@ -576,10 +593,9 @@ window.onload = function() {
 		var value = (100 / video.duration) * video.currentTime;
 
 		// Update the slider value
-		seekBar.value = value;
+		//seekBar.value = value;
 		postInfo("update");
 	});
-	}
 
 	// when video completes, change the play button to "play"
 	video.addEventListener("ended", function () {
@@ -616,12 +632,14 @@ window.onload = function() {
                 // indicate we are hovering over the video box...
                 videoOver = true;
                 console.log("Over the video...");
+                postInfo("Video over");
         }, false);
                 
         video.addEventListener("mouseout", function() {
                 // indicate we are leaving the video box...
                 videoOver = false;
                 console.log("Out of the video...");
+                postInfo("Video out");
         }, false);
 
 	// handle clicks on the sound info button...
@@ -632,6 +650,29 @@ window.onload = function() {
 			}
 		);
 	}
+	debugInfoButton.addEventListener("click", function () {
+		// open a window to hold the info..
+		console.log("debug button");
+		var document_name = document.getElementsByName('desc_title')[0].value;
+		console.log("name " + document_name);
+		if ( debug_popup != 'None') {		// is the window open?
+			if ( debug_popup.window.closed() ) {
+				debug_popup = 'None';	// as good as not having one...
+			}
+		}
+		if ( debug_popup == 'None') {
+			debug_popup = window.open("/coLab/Resources/Include/Page/page_debug.html", "Debug", "scrollbars=no, resizable=yes, width=600, height=700, menubar=no, status=no, toolbar=no, location=no");
+			debug_popup.window.onload = function() {
+				postInfo();
+				debug_popup.document.getElementById('pagetitle').innerHTML = 'Debug: ' + document_name;
+			}
+		} else {
+			debug_popup.close();
+			debug_popup = 'None';
+		/*
+		*/
+		}
+	})
 
 	/*
 	// Entering fullscreen mode

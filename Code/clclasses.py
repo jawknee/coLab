@@ -121,18 +121,31 @@ def convert_vars(obj):
 		if var in obj.floatvars:
 			logging.info('Floating: %s', var)
 			conversion = "float"
+			convtype = float()
 		if var in obj.timevars:
 			logging.info("Converting %s", var)		
 			conversion = "cldate.string2utc"
 		if var in obj.intvars:
 			conversion = "int"
 
+		#if conversion:
+		#if conversion and not type(var).isinstance(conversion):
 		if conversion:
+			if not isinstance(var, basestring):
+				try:
+					if type(var).isinstance() == conversion:
+						logging.info("%s is already an instance of: %s", var, conversion, type(var).isinstance(conversion))
+						continue
+				except AttributeError:
+					logging.info("Not converting %s")
+					continue
+			else:
+				logging.info("Converting %s to %s...", var, conversion)
 			string = "obj." + var + " = " + conversion + "(obj." + var + ')'
 			try:
 				exec(string)
 			except:
-				logging.warning("Error executing: %s", string)
+				logging.warning("Error executing: %s, object: %s", string, obj.name)
 				logging.warning("import_data, problem with conversion: %s, var: %s", conversion, var, exc_info=True)
 				
 def import_list(parent, type):

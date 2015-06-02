@@ -66,7 +66,7 @@ then
 else
 	threads=4
 fi
-threads=7
+threads=8
 
 # output streams...
 # Webm

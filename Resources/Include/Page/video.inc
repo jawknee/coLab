@@ -16,13 +16,13 @@
 <!-- Video Controls -->
 <div id="video-controls">
   <span title="Play/Pause">
-    <button type="button" style="vidbarbutton" id="play-pause">P</button>
+    <button type="button" class="vidbarbutton" id="play-pause">P</button>
    </span>
    <?php echo $locator_buttons; ?>
 
    <input type="range" id="volume-bar" min="0" max="1" step="0.1" value="1">
    <span title="FullScreen">
-	<button type="button" id="full-screen">FS</button>
+	<button type="button" class="vidbarbutton" width=3px; id="full-screen">FS</button>
     </span>
  </div> <! video-controls>
 

@@ -34,5 +34,5 @@
   <div id="maintext">
   	<br clear=all>
 	<?php echo $description; ?> 
-  </div>
+  <!--  div block is terminated in tail.inc -->
 <!-- End: .../coLab/Resources/include/page/content.inc -->

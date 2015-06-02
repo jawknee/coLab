@@ -25,7 +25,10 @@ def hdecode(s):
 					numstr += s[i+1]
 					i += 1
 				i += 1	# skip over the semi-colon...
-				out += chr(int(numstr))
+				try:
+					out += chr(int(numstr))
+				except:
+					out += numstr	# for what ever reason, not an actual num-string...
 				# print ">>", numstr, "<<<>>>", out,  "<<<"
 			else:
 				out += '&'

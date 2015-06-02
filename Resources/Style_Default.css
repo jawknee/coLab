@@ -42,7 +42,8 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	left: 0px;
 	right: 0px;
 	bottom: 0px;
-	overflow: hidden;
+	/*overflow: hidden;
+	 */
 	}
 
 #toptitle { 
@@ -51,7 +52,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	width: 100%;
 	}
 
-#sidebar_l { position: absolute; top: 1px; left: 4px; width: 200px; 
+#sidebar_l { position: absolute; top: 1px; left: 4px; width: 160px; 
 	font-family: Helvetica; font-size: smaller;
 	color: black; 
 	bottom: 0px;
@@ -59,7 +60,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	background-color: #606060; background-image: url('/coLab/Resources/P1GraySm.png'); 
 	}
 
-
+.sidebar_l ul { list-style-position: outside; margin-left: 0px; padding-left: 20px; }
 .sidebar_l a:link { color: #2030ff; text-decoration: none;}
 .sidebar_l a:visited { color: #0000c0; text-decoration: none; }
 .sidebar_l a:hover { color: #f0e0d0; text-decoration: underline;}
@@ -68,7 +69,8 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 #sidebar_r { 
 	position: absolute;
 	top: 20px; 
-	left: 915px; 
+	left: 825px; 
+	margin-left: 5;
 	font-family: Helvetica; font-size: smaller;
 	color: black; 
 	bottom: 0px;
@@ -89,7 +91,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	}
 
 #Content {
-	position: absolute; top: 0px; bottom: 0px; left: 204px;  width: 700px; 
+	position: absolute; top: 0px; bottom: 0px; left: 170px;  width: 650px; 
 	text-align:center;
 	font-family:Georgia; 
 	background-color: #151515;
@@ -135,6 +137,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 
 #video-container {
 	position: absolute;
+	left: 0px;
 	width: 640px;
 	height: 400px;
 	top: 30px;
@@ -142,7 +145,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	/* force the left margin rather than center - to account for
 	 * the scroll bar width  ~12 pixels  
 	 */
-	margin-left: 24px;
+	margin-left: 5px;
 	margin-right: auto;
 	z-index: 4;
 	overflow: hidden;
@@ -166,7 +169,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	-webkit-transition: opacity 0.8s;
 	-moz-transition: opacity 0.8s;
 	-o-transition: opacity 0.8s;
-	-ms-transition: opacity 0.8s;
+	-ms-transition4: opacity 0.8s;
 	transition: opacity 0.8s;
 	background-image: linear-gradient(bottom, rgb(10, 80, 145) 40%, rgb(0,73,141)  100%);
 	background-image: -o-linear-gradient(bottom, rgb(10, 80, 145) 40%, rgb(0,73,141)  100%);
@@ -199,8 +202,8 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	position: absolute;
 	top: 395px;
 	bottom: 0px;
-	left: 25px; 
-	right: 0px;
+	left: 5px; 
+	right: 5px;
 	overflow: auto;
 	text-align:left;
 	color: #a0b0c0;
@@ -210,7 +213,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 #midtitle {
 	position: relative;
 	top: 0px;
-	left: 30px;
+	left: 15px;
 	width: 90%;
 	height: 35px;
 	z-index: 3;
@@ -220,6 +223,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	position: relative;
 	top: 0px;
 	bottom: 0px;
+	left: 10px;
 	text-align: left;
 }
 
@@ -241,23 +245,38 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 .logo { position: absolute; top: 40px; right: 20px; }
 
 .copyright { text-align:center; font-size:small; }
-.vidbarbutton {
-	background: rbg(255, 0, 0);
-}
 
 button {
 	background: #15A;
 	color: #024;
 	font-size: 18px;
-	padding: 10px, 10px, 10px, 10px;
-	border: 0;
+	/*padding: 10px, 10px, 10px, 10px;
+	 */
+	padding: 8px;
+	border: 4px;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	-o-border-radius: 8px;
+	border-radius: 8px;
+	box-shadow: 2px 2px 0 #870 inset, -3px -3px 0 #870 inset, 5px 5px 0 #444 inset, 6px 6px 6px rgba(0,0,0,0.6) ;
+	-moz-box-shadow: 2px 2px 0 #870 inset, -3px -3px 0 #870 inset, 5px 5px 0 #444 inset, 6px 6px 6px rgba(0,0,0,0.6) ;
+	-webkit-box-shadow: 2px 2px 0 #870 inset, -3px -3px 0 #870 inset, 5px 5px 0 #444 inset, 6px 6px 6px rgba(0,0,0,0.6) ;
+}
+
+button.vidbarbutton {
+	width: 40px;
+	height: 35px;
+	align: left;
+	padding: 4px;
+	border: 2px;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	-o-border-radius: 3px;
 	border-radius: 3px;
 	box-shadow: 2px 2px 0 #870 inset, -3px -3px 0 #870 inset, 5px 5px 0 #444 inset, 6px 6px 6px rgba(0,0,0,0.6) ;
+	-moz-box-shadow: 2px 2px 0 #870 inset, -3px -3px 0 #870 inset, 5px 5px 0 #444 inset, 6px 6px 6px rgba(0,0,0,0.6) ;
+	-webkit-box-shadow: 2px 2px 0 #870 inset, -3px -3px 0 #870 inset, 5px 5px 0 #444 inset, 6px 6px 6px rgba(0,0,0,0.6) ;
 }
-
 
 button:hover {
 	cursor: pointer;

@@ -233,7 +233,6 @@ window.onload = function() {
 		if ( debug_popup == 'None') {	// don't bother if we don't have the window open
 			return;
 		}
-		console.log("Greetings from postInfo");
 		var infoString = '<b>Status:</b> ' + playStatus + '<br>' +
 			'<b>Current:</b> ' + video.currentTime.toFixed(3) + '<br>' +
 			'<b>Message:</b> ' + msg + '<br>' +

@@ -109,7 +109,7 @@
 	}
 	foreach (range(1, $numbuts) as $button) {
 		$btn = (string)$button;
-		$locator_buttons .= '<button type="button" id="LocBtn' . $btn . '">' . $btn . '</button>';
+		$locator_buttons .= '<button type="button" class="vidbarbutton" id="LocBtn' . $btn . '">' . $btn . '</button>';
 	}
 	$locator_buttons .= '</span>';
 	

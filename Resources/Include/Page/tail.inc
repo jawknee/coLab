@@ -6,7 +6,7 @@
 	Your name: <input type="text" name="Commenter" ><br>
 	<input type="hidden" name="page" value="<?php echo $name; ?>">
 	<input type="hidden" name="desc_title" value="<?php echo $desc_title; ?>">
-	<textarea name="Text" rows=7 cols=80 id="CommentBox"></textarea>
+	<textarea name="Text" rows=7 cols=78 id="CommentBox"></textarea>
 	<br>
 
 	<input type="submit" value="Add your comment">

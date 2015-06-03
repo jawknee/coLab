@@ -5,7 +5,7 @@
 	 * then the script builds the web page based on the 
 	 * "data" file local to the original path.
 	 */
-	include 'lib.debugging.phpxxxx';
+	//include 'lib.debugging.php';
 	
 	function inc_name($name) {
 		//

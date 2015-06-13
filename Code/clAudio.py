@@ -105,7 +105,7 @@ def make_movie(page, prog_bar=None):
 	read_delay=0.1	  # a bit of a delay so we don't slow down the encoding... (not clear if this is helping)
 	frame_num = 0
 	for line in iter(ffmpeg.stdout.readline, 'b'):
-		logging.info (" Read a new ffmpeg line: %s", line)
+		logging.info(" Read a new ffmpeg line: %s", line)
 		
 		ffmpeg.poll()   # check the status....
 		if ffmpeg.returncode is not None:
@@ -120,7 +120,7 @@ def make_movie(page, prog_bar=None):
 				logging.info(" Frame: %s", frame_num)
 				time.sleep(read_delay)
 		except:
-			logging.info("Something went wrong on the update... %s - possible last frame.", frame_num)
+			logging.warning("Something went wrong on the update... %s - possible last frame.", frame_num)
 			pass
 			#break
 	logging.info("ffmpeg has completed.")

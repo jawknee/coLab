@@ -143,12 +143,12 @@ EOF;
 	}	
 
 	
-	include(inc_name('head.inc'));
-	include(inc_name('body.inc'));
-	//include(inc_name('banner.inc'));
+	include(inc_name('head.html'));
+	include(inc_name('body.html'));
+	//include(inc_name('banner.html'));
 
-	include(inc_name('video.inc'));
-	include(inc_name('content.inc'));
+	include(inc_name('video.html'));
+	include(inc_name('content.html'));
 	/*
 	 * Generate the locator button info...
 	 */
@@ -230,7 +230,7 @@ EOF;
 		$pgview_scale = (float)$screenshot_width / $pgview_width;
 	}
 	
-	include(inc_name('geometry.inc'));
+	include(inc_name('geometry.html'));
 
 	echo <<<EOF
 	<!--  Internal Debug fun...  specific to the php rendering...
@@ -260,6 +260,6 @@ EOF;
 	end php debug -->
 EOF;
 
-	include(inc_name('tail.inc'));
+	include(inc_name('tail.html'));
 	
 ?>

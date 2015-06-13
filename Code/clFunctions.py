@@ -505,7 +505,8 @@ class Theme_menu_row(Menu_row):
 		page.graphic_theme = self.value		# 
 		popup = cltkutils.Popup('Rebuilding thumbnail...', 'Rebuilding to theme:\n'+self.value, geometry="+500+500")
 		img_dest = os.path.join(page.home, page.soundgraphic)
-		sound_file = os.path.join(page.home, page.localize_soundfile())
+		#sound_file = os.path.join(page.home, page.localize_soundfile())
+		sound_file = page.localize_soundfile()
 		imagemaker.make_sound_image(page, sound_file, img_dest, size='Tiny', max_samp_per_pixel=100)
 		imagemaker.make_sub_images(page)
 		popup.destroy()

@@ -35,7 +35,17 @@ def utc2string(time):
 def epochtime(time):
 	""" Total seconds since the epoch - for sorting """
 	epoch = datetime.utcfromtimestamp(0)
-	delta = time - epoch
+	try:
+		delta = time - epoch
+	except:
+		if isinstance(time, basestring):
+			# we've been sent a string - not correct...
+			logging.warning("String sent for a datetime's job: %s", time, exc_info=True)
+			time = string2utc(time)
+			delta = time - epoch
+		else:
+			logging.error("Passed something for time that was not a string.", exc_info=True)
+
 	return delta.days*86400+delta.seconds
 
 def now():

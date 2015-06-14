@@ -1215,6 +1215,7 @@ class Select_edit():
 		frame.grid(ipadx=10, ipady=40, padx=15, pady=15)
 		# return the list...
 		plist = eval("self.parent.current_group." + self.list)
+		logging.info("post")
 		plist.sort(key=clclasses.createkey, reverse=True)
 		
 		self.my_option_menu = cltkutils.clOption_menu(frame, plist, self.member, command=self.menu_callback )

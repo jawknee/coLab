@@ -313,6 +313,7 @@ class Colab():
 		#edit_page_button.grid(column=1, row=4)
 		# RBF: put a test in here - if no pages yet in this group, replace with a label. (are we refreshing? - I think not)
 		pagelist=self.current_group.pagelist
+		logging.info("pagelist sort")
 		pagelist.sort(key=clclasses.createkey, reverse=True)
 		self.pg_option_menu = cltkutils.clOption_menu(f_frame, pagelist, 'desc_title', default='Edit Page', command=self.edit_page)
 		self.pg_option_menu.om.grid(column=1, row=4)
@@ -321,6 +322,7 @@ class Colab():
 		#edit_song_button = ttk.Button(f_frame, text="Edit Song", command=lambda: clFunctions.edit_song(self))
 		#edit_song_button.grid(column=3, row=4)
 		songlist = self.current_group.songlist
+		logging.info("songlist sort")
 		songlist.sort(key=clclasses.createkey, reverse=True)
 		self.sg_option_menu = cltkutils.clOption_menu(f_frame, songlist, 'desc_title', default='Edit Song', command=self.edit_song)
 		self.sg_option_menu.om.grid(column=3, row=4)

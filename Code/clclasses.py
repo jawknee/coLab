@@ -8,6 +8,7 @@ import shutil
 import logging
 import imp
 import copy
+from datetime import datetime
 
 import config
 import cldate
@@ -125,22 +126,24 @@ def convert_vars(obj):
 		if var in obj.timevars:
 			logging.info("Converting %s", var)		
 			conversion = "cldate.string2utc"
+			convtype = datetime
 		if var in obj.intvars:
 			conversion = "int"
+			convtype = int
 
-		#if conversion:
-		#if conversion and not type(var).isinstance(conversion):
+		exec('val = obj.' + var)	# what is the value? (mostly we want its type)
+		# if it's in one of the lists, let's take a shot at 
+		# converting it - but just in case that's been done, let's check...
+		# Otherwise, build an exec string to do the conversion
 		if conversion:
-			if not isinstance(var, basestring):
-				try:
-					if type(var).isinstance() == conversion:
-						logging.info("%s is already an instance of: %s", var, conversion, type(var).isinstance(conversion))
-						continue
-				except AttributeError:
-					logging.info("Not converting %s")
+			try:
+				if type(val) is convtype:
+					logging.info("%s is already an instance of: %s", var, conversion, type(var).isinstance(conversion))
 					continue
-			else:
-				logging.info("Converting %s to %s...", var, conversion)
+			except AttributeError:
+				logging.info("Not converting %s")
+				continue
+			logging.info("Converting %s to %s...", var, conversion)
 			string = "obj." + var + " = " + conversion + "(obj." + var + ')'
 			try:
 				exec(string)
@@ -316,9 +319,9 @@ class Group:
 # 
 # For sorting - return the appropriate time in seconds
 def updatekey(self):
-	return (self.updatetime)	# return the update time as seconds for sorting
+	return (cldate.epochtime(self.updatetime))	# return the update time as seconds for sorting
 def createkey(self):
-	return (self.createtime)	# ditto the create time
+	return (cldate.epochtime(self.createtime))	# ditto the create time
 
 class Page:
 	"""
@@ -354,7 +357,7 @@ class Page:
 		('duration',  0.0),
 		('media_size', "Small"),
 		('screenshot', os.path.join("coLab_local", "ScreenShot.png")),
-		('screenshot_tn', "ScreenShot_tn.png"),
+		('screenshot_tn', os.path.join("coLab_local", "ScreenShot_tn.png")),
 		('graphic', "PageImage.png"),
 		('thumbnail', "PageImage_tn.png"),
 		('use_soundgraphic', False),
@@ -379,9 +382,9 @@ class Page:
 		('prevlink', "<unset>"),
 		('nextlink', "<unset>"),
 		('soundinfo', "<unset>"),
-		# initial value - as a datetime object, converted to a string (will be changed back..)
-		('createtime', cldate.utc2string(timenow)),
-		('updatetime', cldate.utc2string(timenow)),
+		# initial value - as a datetime object
+		('createtime', timenow),
+		('updatetime', timenow),
 		]
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]
@@ -560,7 +563,7 @@ class Page:
 					src = os.path.join(srcdir, image + type + '.png')
 					dest = os.path.join(self.home, destination + type + '.png')
 					shutil.copy(src, dest)
-					logging.warning("Just copied %s to $s", src, dest)
+					logging.info("Just copied %s to %s", src, dest)
 
 			# similar for the php file..
 			src = os.path.join(srcdir, 'php', 'page_index.php')
@@ -638,8 +641,8 @@ class Song:
 		('nextlink', "<unset>"),
 		
 		# initial value - as a datetime object 
-		('createtime', cldate.utc2string(timenow)),
-		('updatetime', cldate.utc2string(timenow)),
+		('createtime', timenow),
+		('updatetime', timenow),
 		]
 		# A list of vars to be converted from strings to datetime objects
 		self.timevars = [ 'createtime', 'updatetime' ]

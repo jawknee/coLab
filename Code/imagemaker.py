@@ -795,7 +795,7 @@ class Sound_image():
 				
 	# Adjust the amount of content in the top and bottom strings, based
 	# on the size..	
-	def upTickText(self, text, xcenter, y, font, textcolor=clColors.GREEN, tickcolor=clColors.GREEN, txtyoffset=-2):
+	def upTickText(self, text, xcenter, y, font, textcolor=clColors.GREEN, tickcolor=clColors.GREEN, txtyoffset=-0):
 		""" create a string with an "up tick"
 		
 		centers the text and puts a corresponding height
@@ -805,7 +805,8 @@ class Sound_image():
 		tick_height = 5 * self.adjust_factor
 		
 		(twidth, theight) = self.graphic_draw.textsize(text, font=font)
-		self.graphic_draw.text((xcenter-(twidth/2), y-theight+txtyoffset), text, font=font, fill=textcolor)
+		#self.graphic_draw.text((xcenter-(twidth/2), y-theight+txtyoffset), text, font=font, fill=textcolor)
+		self.graphic_draw.text((xcenter-(twidth/2), y-theight+txtyoffset-tick_height), text, font=font, fill=textcolor)
 		self.graphic_draw.line([(xcenter,y), (xcenter,y-tick_height)], fill=tickcolor)
 
 
@@ -1319,7 +1320,8 @@ class Sound_image():
 				time_factor = time / seconds
 				x = int((xEnd - xPos) * time_factor + xPos)
 				self.graphic.paste(mbox, (x - mbox_width/2, 2))
-				self.upTickText(str(i), x,  ymin, font=font, textcolor=clColors.BLACK, tickcolor=clColors.DESERT_GOLD, txtyoffset=-4*self.adjust_factor)
+				txtyoffset=-2*self.adjust_factor-2	# calculate the text position to fit in the box
+				self.upTickText(str(i), x,  ymin, font=font, textcolor=clColors.BLACK, tickcolor=clColors.DESERT_GOLD, txtyoffset=txtyoffset)
 
 		#------------------------
 		# Bottom Text Line

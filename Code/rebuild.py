@@ -258,7 +258,7 @@ class Render_engine():
 			for prefix in remove_list:
 				if file.startswith(prefix):
 					logging.info("Removing media file: %s, matching: %s", file, prefix)
-					os.system('rm -fv ' + file)
+					os.system('rm -f ' + file)
 
 		#
 		# Start at the current size and work our way down through the

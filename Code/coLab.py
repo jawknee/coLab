@@ -460,6 +460,8 @@ def main():
 	"""
 	#logging.basicConfig(level=logging.INFO)
 	logging.info("Colab Main")
+	print "Colab"
+	print "Python:", sys.version
 	root = tk.Tk()
 	
 	w=Colab(root)

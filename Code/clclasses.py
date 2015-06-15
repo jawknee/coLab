@@ -122,7 +122,7 @@ def convert_vars(obj):
 		if var in obj.floatvars:
 			logging.info('Floating: %s', var)
 			conversion = "float"
-			convtype = float()
+			convtype = float
 		if var in obj.timevars:
 			logging.info("Converting %s", var)		
 			conversion = "cldate.string2utc"
@@ -138,7 +138,7 @@ def convert_vars(obj):
 		if conversion:
 			try:
 				if type(val) is convtype:
-					logging.info("%s is already an instance of: %s", var, conversion, type(var).isinstance(conversion))
+					logging.info("%s is already an instance of: %s, %s", var, conversion, type(var))
 					continue
 			except AttributeError:
 				logging.info("Not converting %s")
@@ -360,7 +360,7 @@ class Page:
 		('screenshot_tn', os.path.join("coLab_local", "ScreenShot_tn.png")),
 		('graphic', "PageImage.png"),
 		('thumbnail', "PageImage_tn.png"),
-		('use_soundgraphic', False),
+		('use_soundgraphic', True),
 		('strict_graphic', False),
 		('combined_graphic', False),
 		('graphic_theme', 'Default'),

@@ -1,13 +1,13 @@
-html, body { background-color: #a0a0a0; background-image: url('/coLab/Resources/P1GraySm.png');
-	height: 100%;
-        color: black;}:link { color: #d8c8b8; text-decoration: none;}
+html, body { background-color: #a0a0a0; background-image: url('/coLab/Resources/P1GraySm.png'); height: 100%; color: black;}
+
+a:link { color: #d8c8b8; text-decoration: none;}
 a:visited { color: #b8a898; text-decoration: none; }
 a:hover { color: #f0e0d0; text-decoration: underline; }
 a:active { color: #ffffff; text-decoration: underline; }
 
 pre { font-family: chicago; }
 
-textarea { background-color: #b0b0b8; font-family: Georgia; width: 640px; font-size: 12pt; }
+textarea { background-color: #b0b0b8; font-family: Georgia; width: 620px; font-size: 12pt; }
 
 input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 /* master - fill the browser - scale/scroll to that  */
@@ -42,8 +42,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	left: 0px;
 	right: 0px;
 	bottom: 0px;
-	/*overflow: hidden;
-	 */
+	overflow: hidden;
 	}
 
 #toptitle { 
@@ -70,7 +69,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	position: absolute;
 	top: 20px; 
 	left: 825px; 
-	margin-left: 5;
+	margin-left: 5px;
 	font-family: Helvetica; font-size: smaller;
 	color: black; 
 	bottom: 0px;
@@ -141,7 +140,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	width: 640px;
 	height: 400px;
 	top: 30px;
-	text-align-: center;
+	text-align: center;
 	/* force the left margin rather than center - to account for
 	 * the scroll bar width  ~12 pixels  
 	 */
@@ -163,7 +162,6 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 
 #video-controls {
 	position: relative;;
-	top: 640;
 	z-index: 4;
 	opacity: 0;
 	-webkit-transition: opacity 0.8s;
@@ -176,7 +174,6 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	background-image: -moz-linear-gradient(bottom, rgb(10, 80, 145) 40%, rgb(0,73,141)  100%);
 	background-image: -webkit-linear-gradient(bottom, rgb(10, 80, 145) 40%, rgb(0,73,141)  100%);
 	background-image: -ms-linear-gradient(bottom, rgb(10, 80, 145) 40%, rgb(0,73,141)  100%);
-
 	background-image: -webkit-gradient(
 		linear,
 		left bottom,
@@ -204,7 +201,9 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	bottom: 0px;
 	left: 5px; 
 	right: 5px;
-	overflow: auto;
+	overflow-y: scroll;
+	overflow-x: auto;
+	margin-right: -20px;  /* hide the scroll bar (req. for Mozilla) */
 	text-align:left;
 	color: #a0b0c0;
 	z-index: 3;
@@ -223,6 +222,8 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	position: relative;
 	top: 0px;
 	bottom: 0px;
+	overflow-y: hidden;
+	margin-right: 14px;
 	left: 10px;
 	text-align: left;
 }
@@ -266,7 +267,7 @@ button {
 button.vidbarbutton {
 	width: 40px;
 	height: 35px;
-	align: left;
+	/*align: left;*/
 	padding: 4px;
 	border: 2px;
 	-webkit-border-radius: 3px;
@@ -293,7 +294,7 @@ span.LocMarkerActive { color: #d8c8b8; text-decoration: none;}
 #volume-bar {
 	max-width: 50px;
 	background: rgba(192, 192, 255, 0.2);
-	color: #870
+	color: #870;
 	outline: none;
 	box-shadow: 6px 6px 6px rgba(0,0,0,0.6) ;
 }

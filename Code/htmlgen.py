@@ -243,12 +243,12 @@ def linkgen(group):
 			#
 			# Are these the links we saw last time?
 			logging.info("Links for: %s, correct: prev: %s, name: %s, stored: prv%s, nxt%s ", q.name, prevName, p.name, q.prevlink, q.nextlink)
-			#"""
+			"""
 			if prevName == q.prevlink and p.name == q.nextlink:
 				logging.info("No link change for: %s",  q.name)
 			else:
 			#"""
-			#if True:
+			if True:
 				linkfile = os.path.join(currPath, 'links.html')
 				logging.info("Creating linkfile: %s", linkfile)
 				try:
@@ -481,7 +481,16 @@ def songgen(group, song=None):
 		check_comments(song)
 		
 	return()
-	
+"""
+	Need something to create a group, the home dir, the data file
+	and these dirs:
+	Shared/
+	Shared/Help/
+	Shared/Archive/
+	Shared/Nav/
+	Shared/WhatsNew/
+"""
+
 def homegen(group):
 	""" Generates the top group level home page... """
 	try:

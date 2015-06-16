@@ -315,8 +315,13 @@ class Colab():
 		pagelist=self.current_group.pagelist
 		logging.info("pagelist sort")
 		pagelist.sort(key=clclasses.createkey, reverse=True)
-		self.pg_option_menu = cltkutils.clOption_menu(f_frame, pagelist, 'desc_title', default='Edit Page', command=self.edit_page)
-		self.pg_option_menu.om.grid(column=1, row=4)
+		if len(pagelist) == 0:
+			self.pg_option_menu = tk.Label(f_frame, text="-No Pages Yet-")
+			self.pg_option_menu.grid(column=1, row=4)
+		else:
+			self.pg_option_menu = cltkutils.clOption_menu(f_frame, pagelist, 'desc_title', default='Edit Page', command=self.edit_page)
+			self.pg_option_menu.om.grid(column=1, row=4)
+
 		new_song_button = ttk.Button(f_frame, text="New Song", command=lambda: clFunctions.create_new_song(self))
 		new_song_button.grid(column=2, row=4)
 		#edit_song_button = ttk.Button(f_frame, text="Edit Song", command=lambda: clFunctions.edit_song(self))
@@ -324,8 +329,12 @@ class Colab():
 		songlist = self.current_group.songlist
 		logging.info("songlist sort")
 		songlist.sort(key=clclasses.createkey, reverse=True)
-		self.sg_option_menu = cltkutils.clOption_menu(f_frame, songlist, 'desc_title', default='Edit Song', command=self.edit_song)
-		self.sg_option_menu.om.grid(column=3, row=4)
+		if len(songlist) == 0:
+			self.pg_option_menu = tk.Label(f_frame, text="-No Song Yet-")
+			self.pg_option_menu.grid(column=3, row=4)
+		else:
+			self.sg_option_menu = cltkutils.clOption_menu(f_frame, songlist, 'desc_title', default='Edit Song', command=self.edit_song)
+			self.sg_option_menu.om.grid(column=3, row=4)
 		
 	def edit_page(self, selection):
 		"""

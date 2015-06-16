@@ -149,7 +149,7 @@ class graphic_element:
 			self.graphic.image = labelimage
 			self.graphic.grid(column=self.column, row=self.row, rowspan=self.rowspan, columnspan=self.columnspan, sticky=self.sticky)
 		except:
-			logging.warning( "Title creation exception - file: ", self.filepath, exc_info=True)
+			logging.warning( "Title creation exception - file: %s", self.filepath, exc_info=True)
 			#raise SystemError
 	def destroy(self):		
 		try:

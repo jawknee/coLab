@@ -1154,7 +1154,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 			# put the graphic where it belongs.
 			src = page.localize_screenshot()
 			dest = os.path.join(page.home, page.graphic)
-			shutil.copy(graphic_src, dest)	
+			shutil.copy(src, dest)	
 		# Now - post the display sized object to let us enter the xStart, xEnd
 		graph_edit = clGraphEdit.GraphEdit(page, graphic)
 		graph_edit.post()

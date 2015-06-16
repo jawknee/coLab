@@ -9,7 +9,9 @@ import logging
 HERE = tz.tzlocal()
 UTC = tz.gettz('UTC')
 IFMT="%Y-%m-%dT%H:%M:%S"
-SHORT_FMT="%a, %b %d, %I:%M %p"
+# Note both of  these SHORT formats use %-d which may not work on all formats
+SHORT_FMT="%a, %b %-d, %-I:%M %p"
+SHORT_OLD_FMT="%a, %b %-d, %Y"
 LONG_FMT="%Y-%m-%d %I:%M:%S %p %Z"
 
 
@@ -21,7 +23,19 @@ def format(time, format, frzone=UTC, tozone=HERE):
 
 
 def utc2short(time):
-	return (format (time, SHORT_FMT, UTC, HERE))
+	""" let's get a little tricky - if 
+		older than a certain amount, don't put the
+		time of day, but the year...
+	"""
+	CUTOFF = 86400 * 180	# Approx. six months 
+	now = epochtime(utcnow())
+	then = epochtime(time)
+	howlong = now - then
+	if howlong > CUTOFF:
+		time_fmt = SHORT_OLD_FMT
+	else:
+		time_fmt = SHORT_FMT
+	return (format (time, time_fmt, UTC, HERE))
 
 def utc2long(time):
 	return (format (time, LONG_FMT, UTC, HERE))

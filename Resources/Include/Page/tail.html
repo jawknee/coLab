@@ -1,9 +1,10 @@
 <!-- Start: .../coLab/Resources/include/page/tail.inc -->
 	<hr>
-	Enter your comments here:<br>
-		
+	Enter your comments here:
+	<p>	
 	<form method=POST action="/coLab/bin/postcomments.cgi">
-	Your name: <input type="text" name="Commenter" ><br>
+	Your name: <input type="text" name="Commenter" >
+	<p>
 	<input type="hidden" name="page" value="<?php echo $name; ?>">
 	<input type="hidden" name="desc_title" value="<?php echo $desc_title; ?>">
 	<textarea name="Text" rows=7 cols=78 id="CommentBox"></textarea>

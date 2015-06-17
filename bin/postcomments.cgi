@@ -123,6 +123,9 @@ SBP)
 Johnny)
 	export cLmail_addresses="johnny@jawknee.com, colab-catharsis@lists.sonic.net"
 	;;
+UPBHH)
+	export cLmail_addresses="johnny@jawknee.com, ken@scrapheap.net, pren@pobox.com, e196197198@gmail.com"
+	;;
 *)
 	cLmail_bodytext="$cLmail_bodytext NOTE: group is $group and dirname is $dirname"
 	export cLmail_addresses="johnny@jawknee.com"

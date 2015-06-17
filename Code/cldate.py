@@ -10,6 +10,7 @@ HERE = tz.tzlocal()
 UTC = tz.gettz('UTC')
 IFMT="%Y-%m-%dT%H:%M:%S"
 # Note both of  these SHORT formats use %-d which may not work on all formats
+# (Also there is  "%-I )
 SHORT_FMT="%a, %b %-d, %-I:%M %p"
 SHORT_OLD_FMT="%a, %b %-d, %Y"
 LONG_FMT="%Y-%m-%d %I:%M:%S %p %Z"

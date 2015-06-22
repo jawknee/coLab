@@ -1,9 +1,14 @@
-html, body { background-color: #a0a0a0; background-image: url('/coLab/Resources/P1GraySm.png'); height: 100%; color: black;}
+html, body { background-color: #a0a0a0; 
+	background-image: url('/coLab/Resources/P1GraySm.png'); 
+	height: 100%; 
+	overflow: hidden;
+	color: black;}
 
 a:link { color: #d8c8b8; text-decoration: none;}
 a:visited { color: #b8a898; text-decoration: none; }
 a:hover { color: #f0e0d0; text-decoration: underline; }
 a:active { color: #ffffff; text-decoration: underline; }
+
 
 pre { font-family: chicago; }
 
@@ -12,12 +17,13 @@ textarea { background-color: #b0b0b8; font-family: Georgia; width: 620px; font-s
 input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 /* master - fill the browser - scale/scroll to that  */
 #Master { 
-	position: absolute;
+	position: fixed;
 	top: 0px; 
 	left: 0px; 
 	right: 0px;
 	bottom: 0px;
 	overflow: hidden;
+	margin-right: -22px;
 	}
 
 #banner { position: fixed; top: 4px; left: 4px;  height: 20px;  right: 4px;
@@ -43,6 +49,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	right: 0px;
 	bottom: 0px;
 	overflow: hidden;
+	margin-right: -22px;
 	}
 
 #toptitle { 
@@ -73,7 +80,10 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	font-family: Helvetica; font-size: smaller;
 	color: black; 
 	bottom: 0px;
-	overflow: auto;
+	overflow-x: auto;
+	overflow-y: scroll;
+	margin-right: 26px;
+
 	background-color: #606060; background-image: url('/coLab/Resources/P1GraySm.png'); 
 	}
 
@@ -203,7 +213,8 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	right: 5px;
 	overflow-y: scroll;
 	overflow-x: auto;
-	margin-right: -20px;  /* hide the scroll bar (req. for Mozilla) */
+	margin-right: -22px;  /* hide the scroll bar (req. for Mozilla) */
+	-
 	text-align:left;
 	color: #a0b0c0;
 	z-index: 3;
@@ -223,7 +234,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	top: 0px;
 	bottom: 0px;
 	overflow-y: hidden;
-	margin-right: 14px;
+	margin-right: 20px;
 	left: 10px;
 	text-align: left;
 }

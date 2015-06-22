@@ -32,6 +32,7 @@ TAN = (196, 176, 160, 255)
 EL_BLUE = (20, 20, 255, 255)    # electric blue
 DEEP_BLUE = (10, 20, 128, 255)    # dark blue
 DK_BLUE = (5, 10, 64, 255)    # dark blue
+TRANS_BLUE = (0, 0, 64, 32)
 BLUE_BIAS = (15, 30, 0, 0)
 DK_BROWN_BIAS = (40, 20, 0, 0)
 ORANGE_BIAS = (50, 20, 0, 0)
@@ -46,6 +47,11 @@ BRIGHT_YELLOW = (255,255,40,255)
 # Cold..
 ICE_BLUE1 = (0, 70, 150, 255)
 ICE_BLUE2 = (70, 130, 200, 255)
+# Gold
+DARK_GOLD = (184, 103, 21, 255)
+MED_GOLD =  (225, 135, 35, 255)
+LT_GOLD = (251, 176, 39, 255)
+GLINT_GOLD = (254, 233, 118, 255)
 # Desert  (courtesy, www.colorcombos.com)
 #  http://www.colorcombos.com/color-schemes/386/combolibrary.html
 DESERT_DARK = (42, 44, 5, 255)
@@ -110,6 +116,7 @@ class Themes:
 					[ 'Nola', EGGPLANT, CLAY, LIME, AQUA, AQUA, XPARENT, DK_GRAY_BIAS],
 					[ 'Tree', DK_BROWN, DK_GREEN, MED_GREEN, GREEN_WHITE, EL_BLUE, XPARENT, ORANGE_BIAS],
 					[ 'Leaf', DK_GREEN, LT_GREEN, MED_GREEN, GREEN_WHITE, EL_BLUE, XPARENT, ORANGE_BIAS],
+					[ 'Gold', TRANS_BLUE, MED_GOLD, LT_GOLD, GLINT_GOLD, BLACK, XPARENT, ORANGE_BIAS],
 					[ 'Vivid', PART_BLACK, DK_BLUE, ORANGE, SKY_BLUE, GREEN, XPARENT, MED_GRAY_BIAS]
 					]
 		

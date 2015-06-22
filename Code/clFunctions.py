@@ -1688,6 +1688,7 @@ class Page_edit_screen(Edit_screen):
 		# (new version, menu based)
 		row = Graphic_menu_row_screenshot(self, "Screenshot", 'screenshot')
 		self.editlist[row.member] =  row
+		row.ok = None
 		row.post()
 		self.obj.graphic_row = row      # we'll want this later....
 		

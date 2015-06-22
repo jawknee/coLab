@@ -1251,9 +1251,12 @@ class Sound_image():
 			xPos = int(config.SG_LEFT_BORDER * adjust_factor)
 			xEnd = int(width - config.SG_RIGHT_BORDER * adjust_factor)
 		else:	# compensate for the actual size of the screenshot image...
+		  try:
 			scale_factor = float(width) / self.page.screenshot_width		
 			xPos = int(self.page.xStart * scale_factor)
 			xEnd = int(self.page.xEnd * scale_factor)
+		  except:
+		  	print "Problem"
 
 		self.upTickText('Start', xPos, ymin, font=font)
 		#start_string = 'Start'

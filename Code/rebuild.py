@@ -504,6 +504,8 @@ def do_mirror(coLab_home=None):
 	logging.info("Mirror: %s", osascript, scriptpath)
 	#"""
 	try:
+		# May want to attach to the output of this to keep the 
+		# return code from being printed out..
 		pid = subprocess.Popen([osascript, scriptpath]).pid
 		logging.info("do_mirror - mirror pid is: %d", pid)
 	except:

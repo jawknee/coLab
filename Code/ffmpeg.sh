@@ -72,6 +72,15 @@ threads=8
 # Webm
 webm_opts="-codec:v libvpx  -crf 20 -b:v 500k  -auto-alt-ref 1 -lag-in-frames 1 -codec:a libvorbis -threads 8 -qscale:a 5 -r $fps -threads $threads $pagedir/$name-media-$media_size.webm"
 #webm_opts="-codec:v libvpx  -crf 20 -b:v 500k   -codec:a libvorbis -threads 8 -qscale:a 5 -r $fps -threads $threads $pagedir/$name-media-$media_size.webm"
+# temp workaround until I resolve the libvpx issue (again) and can support frame rates < 1/sec
+result=$(echo $fps'>='1.0 | bc -l)
+if [ $result = 0 ]
+then
+	unset webm_opts
+	echo "$0: libvpx kludge:  disabling webm for fps: $fps"
+	sleep 1
+fi
+
 mp4_opts="-codec:v libx264 -preset faster -crf 30 -movflags faststart -pix_fmt yuv420p  -threads 8 -codec:a aac -strict -2 -b:a 192k -r $fps -threads $threads $pagedir/$name-media-$media_size.mp4"
 
 ogg_opts="-r $fps -flags:v qscale -qscale:v 1 -codec:v libtheora -codec:a libvorbis -qscale:a 6 -threads $threads $pagedir/$name-media-$media_size.ogg"

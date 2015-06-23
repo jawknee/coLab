@@ -33,7 +33,12 @@ SG_BOTTOM_BORDER = 25
 # that is in the current .css files (currently:
 # /coLab/Resources/Style_VidAutoTest.css - soon to 
 # change).
-MAIN_LEFT_EDGE = 228	# 204 + 208
+# RBF:  This should probably change  - the 175 is the 
+# left margin of the Content block, plus the
+# 5px margin of the mainsection - these should be
+# discernable directly from the html ?
+#MAIN_LEFT_EDGE = 228	# 204 + 208 ?
+MAIN_LEFT_EDGE = 175	
 MAIN_WIDTH = 700
 
 #

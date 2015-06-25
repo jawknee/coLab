@@ -23,9 +23,21 @@ window.onload = function() {
 	var lastxclick = -1;
 	var lastyclick = -1;
 	var currentLocation = 0.;
-	var baseURL = document.URL
+	var baseURL = document.URL;
 	var parse = parseUri(baseURL);
 	var videoOver = false;
+	
+	var postInfoMessage = 'None yet.';
+	var postInfoUpdate = ' ';
+	var updateSpinner = new Object();	// use like a dictionary...
+	updateSpinner['[***---]'] = '[-***--]';
+	updateSpinner['[-***--]'] = '[--***-]';
+	updateSpinner['[--***-]'] = '[---***]';
+	updateSpinner['[---***]'] = '[*---**]';
+	updateSpinner['[*---**]'] = '[**---*]';
+	updateSpinner['[**---*]'] = '[***---]';
+	updateSpinner[' '] = '[***---]'; 	// to get us started...
+	
 
 	// Video
 	var video = document.getElementById("video");
@@ -99,27 +111,27 @@ window.onload = function() {
 	//  now - let's find our full screen requester...
 	if (video.requestFullscreen) {
 		fullscreenMode = "Generic";
-		var fullscreenRequester = function () { video.requestFullscreen(); }	// Generic
+		var fullscreenRequester = function () { video.requestFullscreen(); };	// Generic
 		var fullscreenElement = document.fullscreenElement;
 		var fullscreenEnabled = document.fullscreenEnabled;
 	} else if (video.mozRequestFullScreen) {
 		fullscreenMode = "Mozilla";
-		var fullscreenRequester = function () { video.mozRequestFullScreen(); } // Firefox
+		var fullscreenRequester = function () { video.mozRequestFullScreen(); }; // Firefox
 		var fullscreenElement = document.mozFullScreenElement;
 		var fullscreenEnabled = document.mozFullScreenEnabled;
 	} else if (video.webkitRequestFullscreen) {
 		fullscreenMode = "Webkit";
-		var fullscreenRequester = function () { video.webkitRequestFullscreen(); } // Chrome and Safari
+		var fullscreenRequester = function () { video.webkitRequestFullscreen(); }; // Chrome and Safari
 		var fullscreenElement = document.webkitFullscreenElement;
 		var fullscreenEnabled = document.webkitFullscreenEnabled;
 	} else if (video.webkitEnterFullScreen) {
 		fullscreenMode = "iOS";
-		var fullscreenRequester = function () { video.webkitEnterFullScreen(); } // Chrome and Safari
+		var fullscreenRequester = function () { video.webkitEnterFullScreen(); }; // Chrome and Safari
 		var fullscreenElement = document.fullscreenElement;  //  NO!  only a place holder
 		var fullscreenEnabled = document.fullscreennabled;  //  NO!  only a place holder
 	} else if (video.msRequestFullscreen) {
 		fullscreenMode = "Microsoft";
-		var fullscreenRequester = function () { video.msRequestFullscreen(); } // MS / IE
+		var fullscreenRequester = function () { video.msRequestFullscreen(); }; // MS / IE
 		var fullscreenElement = document.msFullscreenElement;
 		var fullscreenEnabled = document.msFullscreenEnabled;
 	} else {
@@ -233,9 +245,17 @@ window.onload = function() {
 		if ( debug_popup == 'None') {	// don't bother if we don't have the window open
 			return;
 		}
+		// A little message fun...
+		if ( msg == 'update' ) {	//  git a bit tricky for spinning...
+			postInfoUpdate = updateSpinner[postInfoUpdate];
+			//console.log("updated spinner to: " + postInfoUpdate);
+		} else {
+			postInfoMessage = msg;
+		}
+		
 		var infoString = '<b>Status:</b> ' + playStatus + '<br>' +
 			'<b>Current:</b> ' + video.currentTime.toFixed(3) + '<br>' +
-			'<b>Message:</b> ' + msg + '<br>' +
+			'<b>Event:</b> ' + postInfoMessage + ' ' + postInfoUpdate + '<br>' +
 			'<b>Volume:</b> ' + video.volume.toString() + '<br>' ;
 		
 		if ( video.muted ) {
@@ -270,6 +290,12 @@ window.onload = function() {
 		
 		infoString += "<b>Click Type:</b> " + clickType + '<br>';
 		//infoString += "<b>Event Name:</b> " + eventlist + '<br>'; 
+		// Some navigator info...
+		infoString += "<p><b>Navigator codename:</b> " + navigator.appCodeName + '<br>';
+		infoString += "<b>Navigator App name:</b>" + navigator.appName + '<br>'  
+		infoString += "<b>Browser Version:</b> " + navigator.appVersion + '<br>';
+		infoString += "<b>Browser Header info:</b> " + navigator.userAgent + '<br>'  
+		infoString += "<b>OS:</b> " + navigator.platform;
 		
 
 		//infoText.innerHTML = infoString;
@@ -368,7 +394,7 @@ window.onload = function() {
 		} else {
 			playIt();
 		}
-		return
+		return;
 	}
 
 	function buttonToLocation(button) {
@@ -664,13 +690,13 @@ window.onload = function() {
 		if ( debug_popup == 'None') {
 			var document_name = document.getElementsByName('desc_title')[0].value;
 			console.log("name " + document_name);
-			debug_popup = window.open("/coLab/Resources/Include/Page/page_debug.html", "Debug", "scrollbars=no, resizable=yes, width=600, height=700, menubar=no, status=no, toolbar=no, location=no");
+			debug_popup = window.open("/coLab/Resources/Include/Page/page_debug.html", "Debug", "scrollbars=no, resizable=yes, width=600, height=800, menubar=no, status=no, toolbar=no, location=no");
 			debug_popup.window.onload = function() {
-				postInfo();
+				postInfo('Debug Opened.');
 				debug_popup.document.getElementById('pagetitle').innerHTML = 'Debug: ' + document_name;
-			}
+			};
 		}
-	})
+	});
 
 	/*
 	// Entering fullscreen mode
@@ -859,7 +885,7 @@ window.onload = function() {
 			handleMouseUp(e);
 			eventlist += '+';
 		}
-		postInfo("Doc MouseUp");
+		postInfo("Document MouseUp");
 		}, false);
 
 	
@@ -1227,7 +1253,7 @@ function close_debug_popup() {
 window.onbeforeunload = function() {
 	console.log("onbeforeunload");
 	close_debug_popup(debug_popup);
-}
+};
 
 // parseURI - handy way to find out what's been passed via the URL
 function displayAttrById (id) {

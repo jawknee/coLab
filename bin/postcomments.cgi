@@ -46,12 +46,12 @@ fi
 dest=${HTTP_REFERER%\?*}	# remove any parameters
 #echo HTTP_REFERER $HTTP_REFERER $dest
 shopt -s extglob		# our old friend, extglob (pattern matching extension, next line)
-dest=${dest%index.?(s)html}	# removes index.html or index.shtml
+dest=${dest%/index.?(s)html}	# removes index.html or index.shtml
 REF_URL="${dest}"		# not used anymore: index.shtml"
 shopt -u extglob
 
-dirname=$coLab_home/${dest#$coLab_url_head}
-logfile="$dirname/Comments.log"
+dirname=$coLab_home/${dest#$coLab_url_head}   # retains the final '/'
+logfile="${dirname}Comments.log"
 
 if [ -z "$Commenter" ]
 then
@@ -71,9 +71,10 @@ cat <<EOF
 <link rel="stylesheet" type="text/css" href="../Resources/Style_Default.css">
 </head>
 <body>
-<div class="main">
+<div class="CommentWrapper">
 <center>
-<table width=640 border=0>
+<div class="Comments">
+<table  border=0>
 <tr height=20><td> &nbsp; </td></tr>
 <tr><td>
 EOF
@@ -156,6 +157,7 @@ Generated/processed by $0 on $(date)</p>
 </td></tr>
 <tr height=20><td> &nbsp; </td></tr>
 </table>
+</div>
 </center>
 </div>
 </body>

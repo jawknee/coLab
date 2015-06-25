@@ -130,6 +130,28 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	overflow: hidden;
 	z-index: 1;
 	}
+.CommentWrapper {
+	position: absolute;
+	top: 20px;
+	left: 100px;
+	right: 100px;
+	height: 100%;
+	background-color: #101010;
+	overflow: hidden;
+	background-image: url('/coLab/Resources/P1Black2.png');
+	}	
+.Comments {
+	position: relative;
+	margin: 0px;
+	height: 100%;
+	overflow: auto;
+}
+.Comments h2 { color: #c0b0a0; }
+.Comments h3 { color: #c0b0a0; }
+.Comments h4 { color: #c0b0a0; }
+.Comments table { color: #a0b0c0; 
+    padding: 20px;
+	}
 
 /* 
  * Open Loop Alert: the numbers here are repeated in the config.py file - need to come from
@@ -171,7 +193,7 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 
 
 #video-controls {
-	position: relative;;
+	position: relative;
 	z-index: 4;
 	opacity: 0;
 	-webkit-transition: opacity 0.8s;
@@ -214,7 +236,6 @@ input { background-color: #b0b0b0; font-family: Georgia; font-size: 12pt; }
 	overflow-y: scroll;
 	overflow-x: auto;
 	margin-right: -22px;  /* hide the scroll bar (req. for Mozilla) */
-	-
 	text-align:left;
 	color: #a0b0c0;
 	z-index: 3;

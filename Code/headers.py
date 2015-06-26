@@ -297,7 +297,7 @@ class Html:
 		<hr>
 		Enter your comments here:<br>
 		
-		<form method=POST action="/coLab/bin/postcomments.cgi">
+		<form method=POST action="/coLab/bin/postcomments.sh">
 		Your name: <input type="text" name="Commenter" ><br>
 		<input type="hidden" name="page" value="!name!">
 		<input type="hidden" name="desc_title" value="!desc_title!">

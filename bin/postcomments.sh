@@ -3,6 +3,7 @@
 #	Copyright Johnny Klonaris 2012
 #	
 source ../.coLab.conf
+
 #eval "$(../Code/html_encode.py | tee -a ../logs/var.log | ./evalfix)"
 
 ulog="$coLab_home/logs/uri.log"		# what is passed in...

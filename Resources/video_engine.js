@@ -299,13 +299,12 @@ window.onload = function() {
 		*/
 		infoString += "<p><b>Browser:</b> " + navigator.sayswho + "<br>";
 		infoString += "<b>OS:</b> " + navigator.platform;
-			
-		
 
 		//infoText.innerHTML = infoString;
 		var debugText = debug_popup.document.getElementById("debug-info");
 		debugText.innerHTML = infoString;
 	}
+	// from: http://stackoverflow.com/questions/2400935/browser-detection-in-javascript
 	navigator.sayswho= (function(){
 	    var ua= navigator.userAgent, tem,
 	    M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];

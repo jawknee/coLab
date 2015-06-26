@@ -27,6 +27,8 @@ window.onload = function() {
 	var parse = parseUri(baseURL);
 	var videoOver = false;
 	
+	// some info for the debug / postInfo space...
+	var browserID = navigator.sayswho;
 	var postInfoMessage = 'None yet.';
 	var postInfoUpdate = ' ';
 	var updateSpinner = new Object();	// use like a dictionary...
@@ -297,29 +299,13 @@ window.onload = function() {
 		infoString += "<b>Browser Version:</b> " + navigator.appVersion + '<br>';
 		infoString += "<b>Browser Header info:</b> " + navigator.userAgent + '<br>'  
 		*/
-		infoString += "<p><b>Browser:</b> " + navigator.sayswho + "<br>";
+		infoString += "<p><b>Browser:</b> " + browserID + "<br>";
 		infoString += "<b>OS:</b> " + navigator.platform;
 
 		//infoText.innerHTML = infoString;
 		var debugText = debug_popup.document.getElementById("debug-info");
 		debugText.innerHTML = infoString;
 	}
-	// from: http://stackoverflow.com/questions/2400935/browser-detection-in-javascript
-	navigator.sayswho= (function(){
-	    var ua= navigator.userAgent, tem,
-	    M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-	    if(/trident/i.test(M[1])){
-	        tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
-	        return 'IE '+(tem[1] || '');
-	    }
-	    if(M[1]=== 'Chrome'){
-	        tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
-	        if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
-	    }
-	    M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
-	    if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
-	    return M.join(' ');
-	})();
 
 	postInfo("Page loaded.");
 
@@ -1316,3 +1302,20 @@ parseUri.options = {
 		loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
 	}
 };
+
+// from: http://stackoverflow.com/questions/2400935/browser-detection-in-javascript
+navigator.sayswho= (function(){
+    var ua= navigator.userAgent, tem,
+    M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+    if(/trident/i.test(M[1])){
+        tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
+        return 'IE '+(tem[1] || '');
+    }
+    if(M[1]=== 'Chrome'){
+        tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
+        if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+    }
+    M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+    if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
+    return M.join(' ');
+})();

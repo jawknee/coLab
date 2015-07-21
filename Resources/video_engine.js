@@ -32,13 +32,13 @@ window.onload = function() {
 	var postInfoMessage = 'None yet.';
 	var postInfoUpdate = ' ';
 	var updateSpinner = new Object();	// use like a dictionary...
-	updateSpinner['[***---]'] = '[-***--]';
-	updateSpinner['[-***--]'] = '[--***-]';
-	updateSpinner['[--***-]'] = '[---***]';
-	updateSpinner['[---***]'] = '[*---**]';
-	updateSpinner['[*---**]'] = '[**---*]';
-	updateSpinner['[**---*]'] = '[***---]';
-	updateSpinner[' '] = '[***---]'; 	// to get us started...
+	updateSpinner['[<+>---]'] = '[-<+>--]';
+	updateSpinner['[-<+>--]'] = '[--<+>-]';
+	updateSpinner['[--<+>-]'] = '[---<+>]';
+	updateSpinner['[---<+>]'] = '[>---<+]';
+	updateSpinner['[>---<+]'] = '[+>---<]';
+	updateSpinner['[+>---<]'] = '[<+>---]';
+	updateSpinner[' '] = '[<+>---]'; 	// to get us started...
 	
 
 	// Video

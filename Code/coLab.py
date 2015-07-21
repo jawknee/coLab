@@ -471,6 +471,7 @@ def main():
 	logging.info("Colab Main")
 	print "Colab"
 	print "Python:", sys.version
+	print "Tcl revision:", tk.Tcl().eval('info patchlevel')
 	root = tk.Tk()
 	
 	w=Colab(root)

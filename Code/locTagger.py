@@ -37,6 +37,7 @@ def loctagger(string, url='span'):
 	If a url is passed in, and anchor tag based on that is 
 	emitted instead (for emails, etc.)
 	"""
+	#logging.basicConfig(level=logging.INFO)
 	string = html_decode.hdecode(string)	# collapse the number codes
 
 	# build a regexp
@@ -51,9 +52,10 @@ def loctagger(string, url='span'):
 	# one of either of the hours (+mins) or minutes string,
 	# required seconds, and optional fraction
 	time_regexp =  '(' +  hrs + '|' + mins + ')?' + secs + frac 
-	loc_regexp = r'(\#[0-9][0-9]?)'		# locator just '#' and 1-2 digits
-	regexp = r'(' + time_regexp + '|' + loc_regexp + ')'	# combined..
+	loc_regexp = '(\#[0-9][0-9]?)'		# locator just '#' and 1-2 digits
+	regexp = '(' + time_regexp + ')|' + loc_regexp 	# combined..
 	logging.info("Regexp: %s", regexp)
+	#print "<!-- Python:", sys.version, "-->"
 
 	index = 0
 	while index < len(string):
@@ -61,8 +63,8 @@ def loctagger(string, url='span'):
 		searchObj = re.search(regexp, string[index:])	# find the next match...
 		if searchObj:
 			s = searchObj.group()	
-			logging.info("Found: %s <--------", s)
 			index += string[index:].find(s) 	# move index to start of the match
+			logging.info("Found: %s at: %d<--------", s, index)
 
 			# some sanity checks...
 			# are the prev or trailing characters something we don't want?
@@ -71,10 +73,27 @@ def loctagger(string, url='span'):
 			# reject some cases where there may already be a tag, or a partial match against a 
 			# bad string (e.g., 11:22:33 - would match 11:22 - not right - 11 hours is too long)
 			prevChar = string[index-1]
-			if prevChar.isdigit() or '>:"'.find(prevChar) != -1:
+			# Too many ":"'s?  Quoted?
+			# other wise, allow it.
+			if prevChar.isdigit() or ':"'.find(prevChar) != -1:
 				logging.info("skipping: %s", prevChar)
 				index += l
 				continue
+			# already tagged?  If a ">", it could standard html (e.g., <li>) 
+			# check if it's a tag - if so - leave it as is.
+			#"""
+			if prevChar == '>':
+				# find the matching start tag..
+				try:
+					starttag = string[:index-2].rfind('<')
+					if starttag != -1 and string[starttag+1] == 'a':
+						logging.info("It's already been tagged, output as is...")
+						index += l
+						continue
+				except:
+					logging.warning("Something wrong here, starttag: %d, index: %d, len: %d", starttag, index, len(string))
+			#"""
+
 			trailChar = string[index+l]
 			if trailChar.isdigit() or ':"'.find(trailChar) != -1:
 				logging.info("skipping: %s", trailChar)
@@ -110,6 +129,7 @@ def loctagger(string, url='span'):
 
 
 if  __name__ == '__main__':
+	#logging.basicConfig(level=logging.INFO)
 	# open a passed file - if not, use stdin.	
 	string = ''
 	filename = ''

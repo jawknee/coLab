@@ -81,18 +81,13 @@ def loctagger(string, url='span'):
 				continue
 			# already tagged?  If a ">", it could standard html (e.g., <li>) 
 			# check if it's a tag - if so - leave it as is.
-			#"""
 			if prevChar == '>':
 				# find the matching start tag..
-				try:
-					starttag = string[:index-2].rfind('<')
-					if starttag != -1 and string[starttag+1] == 'a':
-						logging.info("It's already been tagged, output as is...")
-						index += l
-						continue
-				except:
-					logging.warning("Something wrong here, starttag: %d, index: %d, len: %d", starttag, index, len(string))
-			#"""
+				starttag = string[:index-2].rfind('<')
+				if starttag != -1 and string[starttag+1] == 'a':
+					logging.info("It's already been tagged, output as is...")
+					index += l
+					continue
 
 			trailChar = string[index+l]
 			if trailChar.isdigit() or ':"'.find(trailChar) != -1:

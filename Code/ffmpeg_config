@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#
+# Configure step for ffmpeg
+#./configure  --prefix=/usr/local --enable-gpl --enable-nonfree --enable-libass --enable-libfdk-aac --enable-libfreetype --enable-libmp3lame --enable-libopus --enable-libtheora --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libxvid

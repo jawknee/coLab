@@ -59,39 +59,46 @@ ffmpeg=/usr/local/bin/ffmpeg
 # input of image sequence...
 input_opts="-y -r $fps -i $imagedir/Frame-%05d.png -i"
 
+typeset -i threads=8	# hopw many processors?
 # threads - kludge this for now
 if [ $generateMP3 = yes ]
 then
-	threads=3
-else
-	threads=4
+	mp3_threads=2
+	threads=$(expr $threads - $mp3_threads)
 fi
-threads=8
+
+#threads=auto
 
 # output streams...
 # Webm
-webm_opts="-codec:v libvpx  -crf 20 -b:v 500k  -auto-alt-ref 1 -lag-in-frames 1 -codec:a libvorbis -threads 8 -qscale:a 5 -r $fps -threads $threads $pagedir/$name-media-$media_size.webm"
-#webm_opts="-codec:v libvpx  -crf 20 -b:v 500k   -codec:a libvorbis -threads 8 -qscale:a 5 -r $fps -threads $threads $pagedir/$name-media-$media_size.webm"
-# temp workaround until I resolve the libvpx issue (again) and can support frame rates < 1/sec
-result=$(echo $fps'>='1.0 | bc -l)
-if [ $result = 0 ]
-then
-	unset webm_opts
-	echo "$0: libvpx kludge:  disabling webm for fps: $fps"
-	sleep 1
-fi
+webm_opts="-codec:v libvpx  -crf 20 -b:v 500k  -auto-alt-ref 1 -lag-in-frames 1 -codec:a libvorbis -qscale:a 5 -r $fps -threads $threads $pagedir/$name-media-$media_size.webm"
 
-mp4_opts="-codec:v libx264 -preset faster -crf 30 -movflags faststart -pix_fmt yuv420p  -threads 8 -codec:a aac -strict -2 -b:a 192k -r $fps -threads $threads $pagedir/$name-media-$media_size.mp4"
+#webm_opts="-codec:v libvpx  -crf 20 -b:v 500k   -codec:a libvorbis -qscale:a 5 -r $fps -threads $threads $pagedir/$name-media-$media_size.webm"
+
+mp4_opts="-codec:v libx264 -preset faster -crf 30 -movflags faststart -pix_fmt yuv420p  -codec:a aac -strict -2 -b:a 192k -r $fps -threads $threads $pagedir/$name-media-$media_size.mp4"
 
 ogg_opts="-r $fps -flags:v qscale -qscale:v 1 -codec:v libtheora -codec:a libvorbis -qscale:a 6 -threads $threads $pagedir/$name-media-$media_size.ogg"
 
 # for audio...
 #mp3_opts="-codec:a libmp3lame -qscale:a 1 -metadata title=\"$desc_title\" -metadata artist=\"$group\" $name.mp3"
-mp3_opts="-codec:a libmp3lame -qscale:a 1 -threads 1"
+mp3_opts="-codec:a libmp3lame -qscale:a 1 -threads $mp3_threads"
+
+
+# temp workaround until I resolve the libvpx issue (again) and can support frame rates < 1/sec
+result=$(echo $fps'>='1.0 | bc -l)
+if [ $result = 0 ]
+then
+	echo unset webm_opts
+	echo "$0: libvpx kludge:  disabling webm for fps: $fps"
+	echo "NOT REALLY!"
+	sleep 1
+else
+	unset ogg_opts
+fi
 
 # use these to turn off one or more gnerators
 #unset ogg_opts webm_opts
-#unset ogg_opts 
+unset ogg_opts 
 #unset webm_opts
 #unset mp4_opts
 # redirect the stderr to stdout - changing carriage returns to new lines so we can read it...
@@ -106,10 +113,10 @@ EOF
 
 if [ $generateMP3 = no ]
 then
-	$ffmpeg $input_opts "$soundfile"   $mp4_opts $webm_opts $mp3_opts 2>&1 | tr -u '\r' '\n'
+	$ffmpeg $input_opts "$soundfile"   $mp4_opts $webm_opts $ogg_opts 2>&1 | tr -u '\r' '\n'
 else
 	rm -f $name.mp3 >/dev/null 2>&1
-	$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts $mp3_opts \
+	$ffmpeg $input_opts "$soundfile" $mp4_opts $webm_opts $ogg_opts $mp3_opts \
 		-id3v2_version 3  \
 		-metadata title="$title" -metadata artist="$artist" \
 		-metadata TIT3="$TIT3" -metadata date="$date" -metadata TDAT="$TDAT" \

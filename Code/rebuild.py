@@ -401,7 +401,8 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	# create a label area with some helpful info...
 	infotext =  '\nPage:\t' + page.desc_title +  '\n' 	
 	infotext +=	'Size:\t' + media_size + ' (' + str(width) + ',' + str(height) + ')\n'
-	infotext += 'Duration:\t' + '%.3f' % page.duration + ' seconds\n'
+	dur_string = htmlgen.mk_dur_string(page.duration)
+	infotext += 'Duration:\t' + dur_string + ' (mm:ss.s)\n'
 	infotext += 'fps:\t' + imagemaker.calc_fps_string(page) + '\n' 
 	infotext += 'frames:\t' + str(frames) + '\n'
 	infotext += 'Graphic:\t'

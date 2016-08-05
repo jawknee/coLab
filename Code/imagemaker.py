@@ -173,7 +173,7 @@ def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixe
 	
 	#soundimageTop.destroy()
 
-def make_sub_images(page, size=None):
+def make_sub_images(page, size=poster_size):
 	"""
 	Create the main graphic and thumbnail for a page.
 	Could/should be generalized for other objects.
@@ -189,11 +189,11 @@ def make_sub_images(page, size=None):
 		else:
 			srcimage = page.localize_screenshot()
 		# and while we're at it...   copy this to the graphic...
+		logging.warn("Copying poster source image: %s to %s", srcimage, graphic)
 		shutil.copy(srcimage, graphic)
 
-	if size is None:
-		#size = config.Sizes().sizeof(page.media_size)
-		size = poster_size
+	logging.warn("Poster size: %d x %d" % size)
+	logging.warn("Source image: %s", graphic)
 	#
 	# "Screenshot" / Poster image
 	# Either a screen shot or a generated image, make a pair
@@ -205,8 +205,16 @@ def make_sub_images(page, size=None):
 		logging.warning("Error opening: %s", graphic, exc_info=True)
 		sys.exit(1)
 	else:
+		logging.warn("Source image size: %d x %d" % orig_image.size)
+		#
+		# is this the right test????
+		if size != orig_image.size:
+			
+			logging.warn("Not a match - skipping... size: " + str(size) + " / orig:" + str(orig_image.size))
+			return
+
 		base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
-		logging.info("make_sub_image: %s", graphic)
+		logging.info("make_sub_image: %s" % graphic)
 		
 		resourcedir = os.path.join(page.coLab_home, 'Resources')
 		for postertype in [ 'Start', 'Pressed', 'Waiting']:
@@ -228,7 +236,7 @@ def make_sub_images(page, size=None):
 				poster_image = base_image.copy()		# new copy of the base...
 				poster_image.paste(overlay_rgb, (0,0), mask)
 				poster_image.save(poster_path, 'PNG')
-
+				logging.warn("Just saved poster image: %s.PNG - size (%d,%d)" % (poster_path, poster_width, poster_height))
 		
 		del orig_image
 		
@@ -247,7 +255,7 @@ def make_sub_images(page, size=None):
 			thumb_path = os.path.join(page.home, thumb)
 			tn_image = image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
 			tn_image.save(thumb_path, 'PNG')
-			logging.info("make_sub_images: %s, tn: %s", graphic, thumb)
+			logging.warn("make_sub_images: %s, tn: %s", graphic, thumb)
 			del image
 
 def make_images(page, prog_bar=None, media_size=None):
@@ -492,7 +500,7 @@ class Frame_maker():
 	''' create frames for a page
 	the object is set up with the basic info, 
 	and then builds frames as requested.  
-	The intent is to allow treading to be used, such that the method 
+	The intent is to allow threading to be used, such that the method 
 	has all that it needs except the frame number.
 	
 	formerly in make_images.
@@ -1009,6 +1017,9 @@ class Sound_image():
 			last_samp = next_samp_num 	# and so it goes, round and round...
 		logging.info("----Max, min: %s,%s", max, min)
 		logging.info(" ----------Samp Max: %s", self.samp_max)
+		if max == 0:
+			logging.error("Empty sound file...")
+			
 		try:
 			self.prog_bar.update(num_xpix)
 		except:
@@ -1036,9 +1047,13 @@ class Sound_image():
 		if hr_ratio < 0.9:
 			eff_ratio = hr_ratio * 1.1	# make the end points just short of the limits
 		else:
-			eff_ratio = 1	# close enough - show the wave form as is
+			eff_ratio = 1.	# close enough - show the wave form as is
 				
+		print "hr_ratio", hr_ratio, "eff_ratio",eff_ratio
+		if hr_ratio < 0.1:		#  ************************RBF  temp kludge  ************
+			hr_ratio = 1.
 		headroom = 20 * math.log10(hr_ratio)
+
 	
 		if not self.page.use_soundgraphic:
 			# drop the current graphic into space available...
@@ -1215,7 +1230,8 @@ class Sound_image():
 		#fontpath = '/Users/Johnny/dev/coLab/Resources/Fonts/DigitaldreamNarrow.ttf'
 		#fontpath = fontclass.return_fontpath('DomCasDReg.ttf')
 		fontpath = fontclass.return_fontpath('CarvalCondIt.otf')
-		font_size = int( 18 * adjust_factor)
+		#fontpath = fontclass.return_fontpath('CarvalCondBold.otf')
+		font_size = int( 14 * adjust_factor)
 		font = ImageFont.truetype(fontpath, font_size)	
 #
 		# Build the text strings for the graphic
@@ -1322,9 +1338,16 @@ class Sound_image():
 			
 				time_factor = time / seconds
 				x = int((xEnd - xPos) * time_factor + xPos)
+
+				# drop the box prototype onto the graphic
 				self.graphic.paste(mbox, (x - mbox_width/2, 2))
-				txtyoffset=-2*self.adjust_factor-2	# calculate the text position to fit in the box
-				self.upTickText(str(i), x,  ymin, font=font, textcolor=clColors.BLACK, tickcolor=clColors.DESERT_GOLD, txtyoffset=txtyoffset)
+				# figure out where to place the text...
+				(txt_width, txt_height) = graphic_draw.textsize(str(i), font=font)
+				#txtyoffset = int( (txt_height - mbox_height) / 2. ) - 1		# negative number, offset
+				txtyoffset = int( (txt_height - mbox_height) / 2. - .5 ) 	# negative number, offset
+				self.upTickText(str(i), x+1,  ymin+1, font=font, textcolor=clColors.DESERT_DARK, tickcolor=clColors.XPARENT, txtyoffset=txtyoffset)
+				self.upTickText(str(i), x-1,  ymin-1, font=font, textcolor=clColors.DESERT_TAN, tickcolor=clColors.XPARENT, txtyoffset=txtyoffset)
+				self.upTickText(str(i), x,  ymin, font=font, textcolor=clColors.DESERT_GOLD, tickcolor=clColors.DESERT_GOLD, txtyoffset=txtyoffset)
 
 		#------------------------
 		# Bottom Text Line

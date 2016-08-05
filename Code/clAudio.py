@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """ Audio utilities...
 
 	Simple utilities:
@@ -13,6 +14,7 @@ import fcntl
 import select
 import time
 import aifc
+import io
 
 import config
 import clclasses
@@ -36,7 +38,7 @@ def make_movie(page, prog_bar=None):
 	updating of the progress bar.
 	"""
 	infofile = os.path.join(page.home, 'coLab_local', 'movie.info')
-	outfile = open(infofile, 'w+')
+	outfile = io.open(infofile, 'w+', encoding='utf-8')
 	#
 	# Just some variable assignments used by the script.
 	content = 'pagedir="' + page.home + '"\n' 
@@ -53,28 +55,29 @@ def make_movie(page, prog_bar=None):
 		# variable names match the ffmpeg metadata tags, e.g., -metadata title="$title"
 		# or the raw tag when not supported directly by ffmpeg, e.g., -metadata TIT3="$TIT3" 
 		content += 'title="' + page.desc_title + '"\n'
-		#
-		# Get the group "title" ...
-		try:
-			page.group_obj
-		except:
-			page.group_obj = clclasses.Group(page.group)	# load the group whose name we have
-			page.group_obj.load()
-			
-		grouptitle = page.group_obj.title 
+	#
+	# Get the group "title" ...
+	try:
+		page.group_obj
+	except:
+		page.group_obj = clclasses.Group(page.group)	# load the group whose name we have
+		page.group_obj.load()
+		
+	grouptitle = page.group_obj.title 
 
-		content += 'artist="' + grouptitle + '"\n'
-		content += 'TIT3="' + page.fun_title + '"\n'
+	content += 'artist="' + grouptitle + '"\n'
+	content += 'TIT3="' + page.fun_title + '"\n'
 
-		year = cldate.format(page.createtime, '%Y')
-		content += 'date="' + year + '"\n'
-		content += 'TDAT="' + cldate.format(page.createtime, '%d%m') + '"\n'
-		content += 'encoded_by="coLab"\n'
-		rec_copyright = u"\u2117"	# recording copyright sign...
-		content += 'copyright="' + rec_copyright + ' ' + grouptitle + ' ' + year + '"\n'
-		content += 'encoder="ffmpeg / LAME"\n'
+	year = cldate.format(page.createtime, '%Y')
+	content += 'date="' + year + '"\n'
+	content += 'TDAT="' + cldate.format(page.createtime, '%d%m') + '"\n'
+	content += 'encoded_by="coLab"\n'
+	rec_copyright = u'\u2117'	# recording copyright sign...
+	#rec_copyright = "(P)"	# can't get the unicode to work yet...
+	content += 'copyright="' + rec_copyright + ' ' + grouptitle + ' ' + year + '"\n'
+	content += 'encoder="ffmpeg / LAME"\n'
 	
-	logging.info("movie.info content: %s", content)
+	logging.warning("movie.info content: %s", content)
 	outfile.write(content)
 	outfile.close()
 	

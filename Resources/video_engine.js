@@ -287,6 +287,8 @@ window.onload = function() {
 		infoString += "<b>Screen width:</b> " + screen.width.toString() + '<br>';
 		infoString += "<b>Screen height:</b> " + screen.height.toString() + '<br>';
 		
+		infoString += "<b>Orientation:</b> " + window.orientation + '<br>';
+		
 		infoString += "<b>Fullscreen:</b> " + fullscreenStatus + '<br>';
 		infoString += "<b>Fullscreen Mode:</b> " + fullscreenMode + '<br>';
 		

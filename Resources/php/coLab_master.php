@@ -125,7 +125,7 @@
 		'webm' => 'vp8.0, vorbis');
 	// list of type we're using...
 	#$media_list = array( 'mp4', 'ogg', 'webm' );
-	$media_list = array( 'mp4', 'webm' );
+	$media_list = array( 'webm', 'mp4' );
 
 	$html5_source = '';
 

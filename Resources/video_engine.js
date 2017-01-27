@@ -23,6 +23,7 @@ window.onload = function() {
 	var lastxclick = -1;
 	var lastyclick = -1;
 	var currentLocation = 0.;
+	var currentTime = 0.;
 	var baseURL = document.URL;
 	var parse = parseUri(baseURL);
 	var videoOver = false;
@@ -529,7 +530,7 @@ window.onload = function() {
 	// ----------------------------------------
 	// 	marker tags - class LocMarker
 	// ----------------------------------------
-	// Check each elemnt of class "LocMarker" 
+	// Check each element of class "LocMarker" 
 	// If there is a matching locator, set up an 
 	// event listener and change the class to "LocMarkerActive"
 	console.log("Check LocMarkers");
@@ -781,7 +782,8 @@ window.onload = function() {
 	// handling <space>
 	//
 	document.addEventListener('keypress', function(e) {
-		console.log("Greetings from a keypress document... " + e.srcElement );
+		keyCode = e.which || e.keyCode;
+		console.log("Greetings from a keypress document... " + keyCode.toString() );
 		if ( ! videoOver ) {
 			return;
 		}
@@ -789,23 +791,23 @@ window.onload = function() {
 			console.log("Alternate event");
 			e = window.event;
 		}
-		if (e.keyCode == 32) {
+		if (keyCode == 32) {
 			console.log("got a space");
 			togglePlayPause();
 			return false;
 		}
 		// check for digits...
-		// A little tricky here to support both the number row about the QWERTY
+		// A little tricky here to support both the number row above the QWERTY
 		// and the number pad...
 		// this next trick doesn't work on Windows - doesn't seem to be a keyIdentifier defined 
 		//charCode = parseInt(e.keyIdentifier.substring(2),16);
 		charCode = 0;
 		//  check for number pad or top row numbers
-		if ( e.keyCode >= 48 && e.keyCode <= 57) {
-			charCode = e.keyCode;
+		if ( keyCode >= 48 && keyCode <= 57) {
+			charCode = keyCode;
 		}
-		if ( e.keyCode >= 96 && e.keyCode <= 105) {
-			charCode = e.keyCode - 32;
+		if ( keyCode >= 96 && keyCode <= 105) {
+			charCode = keyCode - 32;
 		}
 		if (charCode != 0 ) {
 			if (charCode == 48) {
@@ -821,8 +823,8 @@ window.onload = function() {
 			}
 			return false;
 		}
-		code = e.keyCode;
-		console.log("Unused keycode: " + code.toFixed() + " / " + String.fromCharCode(e.keyCode));
+		code = keyCode;
+		console.log("Unused keycode: " + code.toFixed() + " / " + String.fromCharCode(keyCode));
 		console.log("keyIdentifier: " + charCode.toFixed());
 	}, true);
 
@@ -928,14 +930,12 @@ window.onload = function() {
 			updatePoster('Pressed');
 			return;
 		} 
-		/*
-		// if we're paused... then just start playing from here...
+		// if we're paused... then just start playing from where we last were...
 		if ( playStatus == "Paused" ) {
 			clickStatus = "Ready";	 // ignore the mouse up...
 			playIt();
 			return;	
 		}
-		*/
 			
 		//
 		// check the full screen mode....
@@ -950,7 +950,6 @@ window.onload = function() {
 
 		currentLocation = whereAreWe();
 
-
 		//   if we're not waiting for a second click...  set a time out..
 		if ( clickStatus == "Ready") {
 			var timeout=500;	// half a second..
@@ -961,13 +960,15 @@ window.onload = function() {
 			//  move to the click..
 			//video.currentTime = currentLocation;
 			//video.play();
+			clickTime = video.currentTime;
+			console.log("clickTime = ", clickTime.toString())
 			clickStatus = "Down";
 		} else if ( clickStatus == "Waiting" ) { // second click - pause
 			console.log("Second click - pause...");
 			pauseIt();
 			clickStatus = "Ready";
 		}
-		video.currentTime = currentLocation;
+		//video.currentTime = currentLocation;
 		console.log("MouseDown Out - click status: " + clickStatus);
 
 	}
@@ -1014,7 +1015,8 @@ window.onload = function() {
 		console.log("Click timeout In - clickStatus = " + clickStatus);
 		if (clickStatus == "Down") {
 			pauseIt();
-			video.currentTime = currentLocation;
+			console.log("Pause - back 1/2 second to: ", clickTime.toString());
+			video.currentTime = clickTime;
 			postInfo("Timeout - paused");
 			// this is where we do a pull-down....
 		}

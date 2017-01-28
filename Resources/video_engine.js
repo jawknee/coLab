@@ -22,8 +22,10 @@ window.onload = function() {
 	var fullscreenMode = "unset";
 	var lastxclick = -1;
 	var lastyclick = -1;
-	var currentLocation = 0.;
+	var currentLocation = 0.;	// where was the last click, wrt secs from start?
 	var currentTime = 0.;
+	var clickTime = 0.;		// what was the time, last we clicked?
+	var pauseTime = 0.;		// where did we last pause to?	
 	var baseURL = document.URL;
 	var parse = parseUri(baseURL);
 	var videoOver = false;
@@ -149,9 +151,9 @@ window.onload = function() {
 	if ( parse.queryKey.time ) {
 		timeString = parse.queryKey.time;
 		console.log("TimeString: " + timeString);
-		var startTime = timeToVal(timeString);
-		console.log("Time val passed: " + timeString + ' - ' +  startTime.toString());
-		goTimePause(startTime);
+		pauseTime = timeToVal(timeString);
+		console.log("Time val passed: " + timeString + ' - ' +  pauseTime.toString());
+		goTimePause(pauseTime);
 	} else {
 		var startTime = 0.0;
 	}
@@ -796,6 +798,13 @@ window.onload = function() {
 			togglePlayPause();
 			return false;
 		}
+		if (keyCode == 13 || keyCode == 9) {	// return or tab? -> play from last pause...
+			video.pause()
+			console.log("Restarting from: ", pauseTime.toString());
+			video.currentTime = pauseTime;
+			playIt();
+			return;
+		}
 		// check for digits...
 		// A little tricky here to support both the number row above the QWERTY
 		// and the number pad...
@@ -823,8 +832,7 @@ window.onload = function() {
 			}
 			return false;
 		}
-		code = keyCode;
-		console.log("Unused keycode: " + code.toFixed() + " / " + String.fromCharCode(keyCode));
+		console.log("Unused keycode: " + keyCode.toFixed() + " / " + String.fromCharCode(keyCode));
 		console.log("keyIdentifier: " + charCode.toFixed());
 	}, true);
 
@@ -964,13 +972,13 @@ window.onload = function() {
 			console.log("clickTime = ", clickTime.toString())
 			clickStatus = "Down";
 		} else if ( clickStatus == "Waiting" ) { // second click - pause
-			console.log("Second click - pause...");
+			pauseTime = clickTime;
+			console.log("Second click - pause..." + pauseTime.toString());
 			pauseIt();
 			clickStatus = "Ready";
 		}
 		//video.currentTime = currentLocation;
 		console.log("MouseDown Out - click status: " + clickStatus);
-
 	}
 	// Mouse up...
 	function handleMouseUp (event) {
@@ -1016,7 +1024,8 @@ window.onload = function() {
 		if (clickStatus == "Down") {
 			pauseIt();
 			console.log("Pause - back 1/2 second to: ", clickTime.toString());
-			video.currentTime = clickTime;
+			pauseTime = clickTime;
+			video.currentTime = pauseTime;
 			postInfo("Timeout - paused");
 			// this is where we do a pull-down....
 		}

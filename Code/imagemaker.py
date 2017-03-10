@@ -164,7 +164,8 @@ def make_sound_image(page,  sound, image, size, prog_bar=None, max_samp_per_pixe
 	snd_image.build()	# separate - we may want to change a few things before the build...
 	#page.soundthumbnail = "SoundGraphic_tn.png"
 	
-	make_sub_images(page)
+	if size == config.BASE_SIZE:	
+		make_sub_images(page)
 	try:
 		page.editor.get_member('soundfile').post()
 	except:

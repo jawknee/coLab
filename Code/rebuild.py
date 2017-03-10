@@ -261,22 +261,28 @@ class Render_engine():
 					os.system('rm -f ' + file)
 
 		#
-		# Start at the current size and work our way down through the
-		# sizes to generate all the media sizes we want.
-		while True:
+		# Build a list of sizes and process them in reverse order, 
+		# smallest to largest...
+		size = page.base_size
+		size_list = [ size ]
+		while size != config.SMALLEST:
+			size = size_c.next_size(size)
+			size_list.append(size)
+			
+		# reverse the list...
+		size_list.reverse()
+					
+		for page.media_size in size_list:
 			# Build a new bit of text based on the size change, marking the one
 			# we're doing now with an arrow...
 			active_text = page.desc_title + '\n'
-			size = page.base_size
-			while True:
+
+			for size in size_list:
 				active_text += "  " + size
 				if size == page.media_size:
-					active_text += u"\u2190"
+					active_text += u"\u2190"	# add a left arrow to highlight the one we're working on...
 				active_text += '\n'
 				
-				size = size_c.next_size(size)
-				if size == config.SMALLEST:
-					break
 			self.active_name.set(active_text)	# post the name....
 
 			# re-render this resolution...
@@ -285,10 +291,6 @@ class Render_engine():
 			logging.info("Back from the render_page")
 			top_bar.destroy()		# seems to work better if we destroy the top bar here...
 
-			page.media_size = size_c.next_size(page.media_size)		# next?
-			if page.media_size == config.SMALLEST:
-				break
-		
 		logging.info("Done - scheduling check in 100 ms")
 		page.media_size = page.base_size
 		#self.master.after(100, self.check)
@@ -459,6 +461,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	#page.top.update_idletasks()
 	#progressTop.destroy()
 	progressTop.update_idletasks()
+	do_mirror(page.coLab_home)
 	return(progressTop)
 
 def rebuild_and_upload(group, mirror=True, opt="nope"):

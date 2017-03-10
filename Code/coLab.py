@@ -119,8 +119,8 @@ class Colab():
 		we just hard code it until we have the data laid out.
 		"""
 		self.current_grouptitle = "Catharsis"
-		self.current_grouptitle = "Johnny's Music"
-		self.current_grouptitle = "Test Group"
+		#self.current_grouptitle = "Johnny's Music"
+		#self.current_grouptitle = "Test Group"
 		#self.current_grouptitle = "South Bay Philharmonic"
 
 		logging.info("Default group:  %s", self.current_grouptitle)

@@ -64,7 +64,7 @@ SIZE_LIST = [
 			]
 
 BASE_SIZE = 'Small'		# what the main "page" is generated with...
-SMALLEST = 'Tiny'		# the smallest size used 
+SMALLEST = 'Small'		# the smallest size used 
 
 class Sizes:
 	""" A class to let us manage the various media sizes """
@@ -76,7 +76,9 @@ class Sizes:
 			self.size_d[name] = size
 			self.next_d[name] = next
 			self.names.append(name)
-			if name == SMALLEST:
+			#if name == SMALLEST:
+			#	break
+			if next == None:
 				break
 			
 	def list(self):

@@ -108,7 +108,7 @@ class Html:
 		sources = '\n'
 		t3 = '\t' * 3	# 3 tabs - makes the html easier to read....
 		size_c = config.Sizes()
-		while size != config.SMALLEST:	# Stop when we get to the smallest size...
+		while True:
 			for media_info in sourceinfo:
 				(type, codecs) = media_info
 				sources += t3 + '<source src="' + name + '-media-' + size + '.' + type + '"'	# first part
@@ -118,7 +118,8 @@ class Html:
 			size = size_c.next_size(size)
 			if size is None:
 				break
-			logging.info( "Next size: %s", size)
+			if size == config.SMALLEST:	# Stop when we get to the smallest size...
+				break
 		return(sources)
 
 	def gen_locbutton_tags(self, page):

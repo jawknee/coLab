@@ -183,15 +183,15 @@ def make_sub_images(page, size=poster_size):
 	# find the image we're basing the posters on...
 	graphic = os.path.join(page.home, page.graphic)
 	thumbnail = os.path.join(page.home, page.thumbnail)
-	if not os.path.isfile(graphic):
-	#  older page - find the actual base image...
-		if page.use_soundgraphic:
-			srcimage = os.path.join(page.home, page.soundgraphic)
-		else:
-			srcimage = page.localize_screenshot()
-		# and while we're at it...   copy this to the graphic...
-		logging.warn("Copying poster source image: %s to %s", srcimage, graphic)
-		shutil.copy(srcimage, graphic)
+	# could check to see if the soundgraphic is newer - but this is very fast
+	if page.use_soundgraphic:
+		srcimage = os.path.join(page.home, page.soundgraphic)
+	else:
+		srcimage = page.localize_screenshot()
+	# and while we're at it...   copy this to the graphic...
+	logging.warn("Copying poster source image: %s to %s", srcimage, graphic)
+	shutil.copy(srcimage, graphic)
+	shutil.copy(srcimage, thumbnail)	# may want to do this differently
 
 	logging.warn("Poster size: %d x %d" % size)
 	logging.warn("Source image: %s", graphic)
@@ -1015,7 +1015,11 @@ class Sound_image():
 							if value > max:
 								max = value
 								
+					if self.page.stop:
+						return
 			last_samp = next_samp_num 	# and so it goes, round and round...
+			if self.page.stop:
+				return
 		logging.info("----Max, min: %s,%s", max, min)
 		logging.info(" ----------Samp Max: %s", self.samp_max)
 		if max == 0:
@@ -1179,6 +1183,8 @@ class Sound_image():
 				else:
 					clipcolor = clColors.BRIGHT_RED
 					
+				if self.page.stop:
+					return
 				for c in range(nchan):
 					"""
 					Draw the end points - mark any likely clip points
@@ -1219,7 +1225,11 @@ class Sound_image():
 					
 					#graphic_draw.point([(x,bot)], fill = fill)
 					graphic_draw.line([(x-tip_stretch,bot), (x+tip_stretch,bot)], fill = fill)
+					if self.page.stop:
+						return
 				x += 1 		# Next vertical line
+				if self.page.stop:
+					return
 				
 			
 		#fontpath = os.path.join(page.coLab_home, 'Resources/Fonts/DigitaldreamFatSkewNarrow.ttf')
@@ -1349,6 +1359,8 @@ class Sound_image():
 				self.upTickText(str(i), x+1,  ymin+1, font=font, textcolor=clColors.DESERT_DARK, tickcolor=clColors.XPARENT, txtyoffset=txtyoffset)
 				self.upTickText(str(i), x-1,  ymin-1, font=font, textcolor=clColors.DESERT_TAN, tickcolor=clColors.XPARENT, txtyoffset=txtyoffset)
 				self.upTickText(str(i), x,  ymin, font=font, textcolor=clColors.DESERT_GOLD, tickcolor=clColors.DESERT_GOLD, txtyoffset=txtyoffset)
+				if self.page.stop:
+					return
 
 		#------------------------
 		# Bottom Text Line
@@ -1413,6 +1425,8 @@ class Sound_image():
 			offset_val = (( float(run_count[c]) / self.samp_max ) / self.nframes ) * 100.
 			offset += comma + clist[c] +': %.2f' %  offset_val 
 			comma = ', '
+			if self.page.stop:
+				return
 
 		sound_string += rms + '\n'
 		sound_string += offset + '\n'

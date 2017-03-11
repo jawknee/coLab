@@ -892,9 +892,6 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		
 		self.graphic_row.post_status(True)
 		self.editor.set_member('soundfile', file_path)
-		# for now, at least, assume that loading a sound changes the graphic to the sound graphic...
-		# this simplifies a number of things...
-		page.use_soundgraphic = True
 
 		filename = os.path.split(file_path)[1]
 		destpath = os.path.join('coLab_local', filename)
@@ -912,6 +909,10 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 			finally:
 				popup.destroy()
 			
+		# for now, at least, assume that loading a sound changes the graphic to the sound graphic...
+		# this simplifies a number of things...
+		page.use_soundgraphic = True
+
 		#  handle the duration...
 		page.duration = clAudio.get_audio_len(sound_dest)
 		self.editor.set_member('duration', str(page.duration))
@@ -919,18 +920,16 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		
 		#page_thread=threading.Thread(target=rebuild.render_page, args=(page, media_size='Tiny', max_samples_per_pixel=100))
 		self.size_save = page.media_size
-		page.media_size = 'Tiny'	# for now - probably will define a "Preview" size
-		
+		page.media_size = config.BASE_SIZE
 		
 		img_dest = os.path.join(page.home, page.soundgraphic)
-		imagemaker.make_sound_image(page, sound_dest, img_dest, size='Tiny', max_samp_per_pixel=100)
+		imagemaker.make_sound_image(page, sound_dest, img_dest, size=config.BASE_SIZE, max_samp_per_pixel=100)
 		# Now copy the sound image to the main graphic - if that's what we're up to...
 		if page.use_soundgraphic:
 			shutil.copy(img_dest, os.path.join(page.home, page.graphic))
 		page.needs_rebuild = True
 		page.changed = True
 		
-		#if page.use_soundgraphic:		# note -this is probably duplicated -check that out    RBF
 		if True:
 			imagemaker.make_sub_images(page)
 			self.graphic_path =  os.path.join(page.home, page.soundthumbnail)
@@ -1828,6 +1827,7 @@ def create_new_page(coLab_top):
 	new_page = clclasses.Page(None)
 	new_page.group_obj = this_group
 	new_page.group = this_group.name
+	new_page.dump()
 	new_page.coLab_home = this_group.coLab_home		# just enough path to get us started..
 	
 	new_page.master = coLab_top.master

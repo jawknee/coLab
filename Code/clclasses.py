@@ -390,6 +390,7 @@ class Page:
 		self.timevars = [ 'createtime', 'updatetime' ]
 		self.floatvars = [ 'duration' ]
 		self.intvars = [ 'xStart', 'xEnd', 'screenshot_width' ]
+		self.stop = False
 		
 		# set up a number of buttons
 		# add to the init data, and the floatvars
@@ -500,6 +501,7 @@ class Page:
 			#self.group_obj.load()
 			
 		import_data(self)
+		self.stop=False
 
 		# Make a copy for reference purposes (mostly to see what values have changed)
 		self.prev = None	# (remove any previous "prev")
@@ -598,7 +600,8 @@ class Page:
 		# split it...
 		filename = os.path.split(fullpath)[1]
 		return os.path.join(self.home, 'coLab_local', filename)
-		
+	def stop_render(self):
+		self.stop = True	
 class Song:
 	"""
 	A Song object contains the data associated with a generate song page

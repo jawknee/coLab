@@ -108,6 +108,8 @@ def make_movie(page, prog_bar=None):
 	read_delay=0.1	  # a bit of a delay so we don't slow down the encoding... (not clear if this is helping)
 	frame_num = 0
 	for line in iter(ffmpeg.stdout.readline, 'b'):
+		if page.stop:
+			print "Stop already!!!"
 		logging.info(" Read a new ffmpeg line: %s", line)
 		
 		ffmpeg.poll()   # check the status....

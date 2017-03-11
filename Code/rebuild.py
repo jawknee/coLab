@@ -396,7 +396,9 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 
 	f4 = tk.Frame(render_frame)
 	f4.grid(row=3, column=0, sticky=tk.E)
-	quitButton = ttk.Button(f4, text="Quit", command=progressTop.quit)
+	#quitButton = ttk.Button(f4, text="Quit", command=progressTop.destroy)
+	quitButton = ttk.Button(f4, text="Quit", command=page.stop_render)
+	#quitButton = ttk.Button(f4, text="Quit", command=self.top.destroy())
 	quitButton.grid()
 	page.desc_title + ' (' + media_size + ')'
 

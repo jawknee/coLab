@@ -484,7 +484,7 @@ class Frame_thread(threading.Thread):
 		''' get the next item off the queue, the frame number - and build it
 		'''
 		logging.info("Starting: %s", self.name)
-		while not self.exitFlag:
+		while not self.frame_maker.page.stop:
 			self.queueLock.acquire()
 			if not self.workQueue.empty():
 				frame = self.workQueue.get()

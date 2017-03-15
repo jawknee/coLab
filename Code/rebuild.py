@@ -273,6 +273,8 @@ class Render_engine():
 		size_list.reverse()
 					
 		for page.media_size in size_list:
+			if page.stop:
+				break
 			# Build a new bit of text based on the size change, marking the one
 			# we're doing now with an arrow...
 			active_text = page.desc_title + '\n'

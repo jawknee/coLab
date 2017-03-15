@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+pid=""
+while sleep 1
+do
+	#ps -ef | grep /usr/local/bin/ffmpeg | grep -v grep 
+	result=$(ps -ef | grep /usr/local/bin/ffmpeg | grep -v grep)
+	if [ -n "$result" ]
+	then
+		set $result
+		pid=$2
+	fi
+	if [ -z "$pid" ]
+	then
+		echo $0: no pid
+	else
+		echo $0: got a pid: $pid
+		pp1=$(expr $pid + 1)
+		break
+	fi
+done
+set +x
+while sleep 1  
+do    	
+	echo "------"   
+	ps -ef | grep $pid | grep -v grep  
+	ps -ef | grep $pp1 | grep -v grep  
+done

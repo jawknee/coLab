@@ -10,6 +10,7 @@
 import os
 import logging
 import subprocess
+import signal
 import fcntl
 import select
 import time
@@ -109,7 +110,9 @@ def make_movie(page, prog_bar=None):
 	frame_num = 0
 	for line in iter(ffmpeg.stdout.readline, 'b'):
 		if page.stop:
-			print "Stop already!!!"
+			logging.warning('Shooting ffmpeg!!!')
+			ffmpeg.send_signal(signal.SIGUSR1)
+			return
 		logging.info(" Read a new ffmpeg line: %s", line)
 		
 		ffmpeg.poll()   # check the status....

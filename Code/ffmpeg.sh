@@ -7,8 +7,40 @@
 # in once step.
 # 
 
-set -x
 infofile="$1"
+
+logfile="/tmp/fs.log"
+function shoot_ffmpeg {
+	#
+	####### Warning - ugly stuff happening...
+	# 
+	# Hard to shoot the ffmpeg directly from python - 
+	# tends to shoot this shell - so it sends a SIGUSR1
+	# to this shell and this function hunts down and
+	# kills what we hope to be the proper copy of ffmpeg
+	echo $0: entered shoot_ffmpeg >>$logfile
+	ps -ef | grep $UID | grep "$ffmpeg" | grep -v grep >>$logfile
+	result=$(ps -ef | grep $UID | grep "$ffmpeg" | grep -v grep)
+	if [ -n "$result" ]
+	then
+		set $result	# ugly
+		ffmpeg_pid=$2
+		echo "$0: from result: $result" >>$logfile
+		echo "$0: Pid is $ffmpeg_pid"
+	fi
+	if [ -n "$ffmpeg_pid" ]
+	then
+		echo Sending SIGUSR1 to PID $ffmpeg_pid >>$logfile
+		/bin/kill -SIGUSR1 $ffmpeg_pid
+	else
+		echo No ffmpeg found: $result >>$logfile
+	fi
+}
+
+trap "shoot_ffmpeg ; exit"  SIGUSR1
+
+echo "$0: Starting with $infofile" >>$logfile
+date >>$logfile
 
 if [ ! -r "$infofile" ]
 then
@@ -121,9 +153,10 @@ else
 		-metadata title="$title" -metadata artist="$artist" \
 		-metadata TIT3="$TIT3" -metadata date="$date" -metadata TDAT="$TDAT" \
 		-metadata encoded_by="$encoded_by" -metadata copyright="$copyright" \
-		"$name.mp3" 2>&1 | tr -u '\r' '\n'
+		"$name.mp3" 2>&1 | tr -u '\r' '\n' 
 fi
 
 rc=$?
 echo "$ffmpeg has completed with return code: $rc"
 exit $rc
+

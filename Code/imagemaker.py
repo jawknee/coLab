@@ -208,11 +208,11 @@ def make_sub_images(page, size=poster_size):
 	else:
 		logging.warn("Source image size: %d x %d" % orig_image.size)
 		#
-		# is this the right test????
-		if size != orig_image.size:
+		# is this the right test???? (I don't think so)
+		#if size != orig_image.size:
 			
-			logging.warn("Not a match - skipping... size: " + str(size) + " / orig:" + str(orig_image.size))
-			return
+		#	logging.warn("Not a match - skipping... size: " + str(size) + " / orig:" + str(orig_image.size))
+		#	return
 
 		base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
 		logging.info("make_sub_image: %s" % graphic)

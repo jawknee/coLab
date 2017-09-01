@@ -1474,7 +1474,6 @@ class Edit_screen:
 		# info we need.  By indexing by the "member" name - we can find the mas 
 		# needed - or step through the whole list.
 		self.editlist = dict()		
-			
 		#
 		# Basically start over - this time with the name preset...
 		self.editTop = tk.Toplevel()
@@ -1485,6 +1484,12 @@ class Edit_screen:
 
 		rowtext = self.obj.name + " (Group: " + self.parent.current_grouptitle + ')'
 		self.edit_frame = tk.LabelFrame(master=self.editTop, relief=tk.GROOVE, text=rowtext, bd=100, padx=10, pady=10, borderwidth=5)
+		# This is just not working out yet - scroll bars would be handy here - need to figure this out.
+		#self.edit_frame.yScroll = tk.Scrollbar(self.parent.master, orient=tk.VERTICAL)
+		#self.edit_frame.yScroll.pack(side=tk.RIGHT, fill=tk.Y)
+		#self.edit_frame.yScroll.config(self.edit_frame.yview)
+
+
 		self.edit_frame.lift(aboveThis=None)
 		self.edit_frame.grid(ipadx=10, ipady=10, padx=15, pady=15)
 		

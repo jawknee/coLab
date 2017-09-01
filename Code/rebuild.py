@@ -465,6 +465,7 @@ def render_page(page, media_size=None, max_samples_per_pixel=0):
 	#page.top.update_idletasks()
 	#progressTop.destroy()
 	progressTop.update_idletasks()
+	#logging.warning("NOT doing the mirror")
 	do_mirror(page.coLab_home)
 	return(progressTop)
 
@@ -494,6 +495,7 @@ def rebuild_and_upload(group, mirror=True, opt="nope"):
 	#return
 	
 	if mirror:
+		#logging.warning("Not doing mirror!")
 		do_mirror(group.coLab_home)
 
 def do_mirror(coLab_home=None):

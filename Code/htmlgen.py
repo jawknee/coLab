@@ -796,9 +796,9 @@ def helpgen(group):
 		return()
 
 	index='index.shtml'
-	if not clutils.needs_update('.', file=index):
-		logging.info("Skipping helpgen...")
-		return
+	#if not clutils.needs_update('.', file=index):
+	#	logging.info("Skipping helpgen...")
+	#	return
 
 	page = clclasses.Page('null')	# create a page structure - to pass in a title
 	page.desc_title = "Help"
@@ -837,18 +837,72 @@ def helpgen(group):
 	<div class="maintext">
 	<img src="Title.png"><br>
 	<font color=a0b0c0>
-	Hopefully the interface is reasonbly intuitive.  If something
+	<h4>Welcome to coLab</h4>
+	This is a tool I've written to help share music.  This is mostly for
+	my own needs as well as a way to increase my knowledge of python,
+	php, CSS, html5, and such.
+	<p>
+	Hopefully the interface is reasonably intuitive.  If something
 	doesn't make sense, you have a question or a comment, feel
 	free to enter something below.
 	<p>
-	<h4>Issues with Internet Explorer?</h4>
-	As far as I know - I've resolved the problem with newer
-	versions of IE - it was a configuration issue with my ISP.
-	<p>
-	If you have a problem playing the media files on <i>any platform</i>,
-	<a href="mailto:coLab_dude@jawknee.com?subject=coLab Playback Issues">I'm interested in hearing about it.</a>
+	<h4>Overview</h4>
+	The center of the interface is the video. It has a 2-D representation
+	of the sound and as it plays a cursor tracks across the graphic.
+	You can click on the graphic and play from that location.
+	<h4>Specifics</h4>
+	You can:
+	<ul>
+	  <li><b>Click anywhere</b> - an initial click (or space bar) will start the audio playing.
+	  Clicking while playing will move the playback to that location. A click while paused
+	  will resume play from the current location.
+	  <p>
+	  <li><b>Space bar</b> - the space bar is play / pause.   So is the icon in the lower
+	  left when not in full-screen mode.
+	  <p>
+	  <li><b>Double Click</b> - a double click on the video will toggle play/pause, and move
+	  to the pointer location.
+	  <p>
+	  <li><b>Click and Hold</b> - when playing, clicking and holding for at least 1/2 second, 
+	  will move the cursor to the location it was in at the start of the click, and set that location
+	  as the <i>Return Point</i>.  (When not playing, click and hold is the same as click,
+	  it starts playback.)
+	  <p>
+	  <li><b>Return</b> - the return key will return to the last <i>Return Point</i> or the 
+	  beginning if none has been set.
+	</ul>
+	
+	<h4>Fullscreen Limitations</h4>
+	The fullscreen key in the lower right of the graphic when you roll over it will turn
+	on fullscreen mode.  In this mode you can continue to navigate around audio/graphic,
+	unless you are using one of these platforms:
+	<ul>
+	  <li>Safari on Mac
+	  <li>Any browser on iPhone
+	</ul>
+	Apple does not support full screen events in html5 - which is how this works.   
+	Every other platform on the earth supports this standard.
+	 
+	<h4>Right Click</h4>	  
+	In non-fullscreen mode, you can right click.  Some of these work, some don't. 
+	(Currently, only "Set a locator" doesn't work yet.)
+	
+	<h4>Platform / Browser Issues</h4>
+	Works with every browser I've tried (except for fullscreen on Apple).
+	However, there is no single
+	video format that all browsers support.  For this reason, coLab provides
+	at least two video formats for the browser: mp4 and webm.  Those 
+	browsers that choose the webm format
+	often have issues when relocating the playback.  The graphic gets scrambled,
+	but does recover a few seconds later. I haven't worked out all
+	the details with that format yet.
 	
 	<p>
+	
+	If you have a problem playing the media files on <i>any platform</i>,
+	<a href="mailto:coLab_dude@jawknee.com?subject=coLab Playback Issues">I'm interested in hearing about it.</a>
+
+	<p><hr><p>
 	<h4>Some highlights:</h4>
 	<ul>
 		<li><b>Recent Updates</b><br>

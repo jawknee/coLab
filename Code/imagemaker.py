@@ -416,6 +416,7 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	font = ImageFont.truetype(fontpath, font_size)
 	res_string = str(width) + " x " + str(height)
 	(t_width, t_height) = draw.textsize(res_string, font=font)
+	
 	logging.info("Text size is w: %d, h: %d", t_width, t_height)
 	
 	

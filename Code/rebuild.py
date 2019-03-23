@@ -679,7 +679,7 @@ def rebuild(g, mirror=False, opt="nope"):
 
 		localURL = os.path.join(songURLbase, sg.name)
 		f_project.write('<li><a href="' + localURL + '/" title="' + sg.fun_title +
-			'">' + sg.desc_title + '</a>' )
+			'">' + sg.desc_title + '</a>' + '\n')
 		if len(sg.partname_dict) > 1:	# also list the parts
 			f_project.write('<br><span style="font-size: smaller;">')
 			dot = ''	# nothing for now...

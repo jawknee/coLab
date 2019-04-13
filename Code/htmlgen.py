@@ -80,7 +80,21 @@ def tagstrip(string,subs='\n',tag=''):
 		return(string[:i])
 	next = closetag + i + 1	# set up for the recursive calll
 	return ( string[:i] + subs + tagstrip(string[next:], subs) ) 
-	
+
+def html2txt(string):
+	""" Substitute html equiv for <, >, & etc.
+	"""
+	fixedstring = ""
+	for c in string:
+		if c == "<":
+			c = "&lt;"
+		elif c == ">":
+			c = "&gt;"
+		elif c == "&":
+			c = "&amp;"
+		fixedstring += c
+	return (fixedstring)
+
 def smartsub(string,length):
 	""" Return a substring that is based on the passed length,
 
@@ -262,10 +276,10 @@ def linkgen(group):
 
 				l.write( '<div class="links" style="float: left;">' + 
 					'<a href="' + prevLink + '" title="' + prevFun +
-						'">&larr; ' + prevTitle + '</a></div>' +
+						'">&larr; ' + html2txt(prevTitle) + '</a></div>' +
 					'<div class="links" style="float: right;">' +
-					'<a href="' + p.root + '" title="' + p.fun_title +
-						'">' + p.desc_title + ' &rarr;</a></div>' +
+					'<a href="' + p.root + '" title="' + html2txt(p.fun_title) +
+						'">' + html2txt(p.desc_title) + ' &rarr;</a></div>' +
 					'<br>' )
 				l.close()
 				# 

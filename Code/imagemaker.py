@@ -357,7 +357,7 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	box = Image.new('RGBA', size, color=clColors.XPARENT)
 	box_draw = ImageDraw.Draw(box)
 
-	(w,h) = box_draw.textsize(string, font=font)
+	(w,h) = box_draw.textsize(str(string), font=font)
 	logging.info("Size is: w: %d, h: %d", w, h)
 	# Let's see if we overflowed the size...
 	# (There may be a more python way of doing this, 
@@ -381,7 +381,7 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 		w = int(w/factor)
 		h = int(h/factor)
 		logging.info("New w,h: %d, %d font/new: %d, %d,  factor %f", w,h, fontsize, newfontsize, factor)
-		(w,h) = box_draw.textsize(string, font=font)
+		(w,h) = box_draw.textsize(str(string), font=font)
 		logging.info("New width/height: %d, %d", w, h)
 
 	size = (w+pad, h+pad)

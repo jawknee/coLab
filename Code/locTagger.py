@@ -152,6 +152,6 @@ if  __name__ == '__main__':
 		string = sys.stdin.read()
 
 	if url != '':
-		print loctagger(string, url)
+		print (loctagger(string, url))
 	else:
-		print loctagger(string)
+		print (loctagger(string))

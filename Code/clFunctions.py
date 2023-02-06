@@ -20,10 +20,10 @@ import subprocess
 import threading
 import time		# rbf: unless needed....
 
-import Tkinter as tk
-import ttk
-import tkFileDialog
-import tkMessageBox
+import tkinter as tk
+import tkinter.ttk
+import tkinter.filedialog
+import tkinter.messagebox
 from PIL import Image
 
 import config
@@ -169,7 +169,7 @@ class Entry_row(Data_row):
 		if self.label is None:
 			self.value_strVar = tk.StringVar()
 			# write the base label...
-			self.label = ttk.Label(self.editor.edit_frame, text=self.text+":", justify=tk.RIGHT)
+			self.label = tk.Label(self.editor.edit_frame, text=self.text+":", justify=tk.RIGHT)
 			self.label.grid(row=self.row,column=self.column, sticky=tk.E)
 			# Now we build a string that is the name of the associated variable.   Then we use eval and exec to
 			# deal with it.
@@ -182,7 +182,7 @@ class Entry_row(Data_row):
 			# set up a small label between the title and the value to 
 			# display the status of the value...
 			self.statusVar = tk.StringVar()
-			self.status = ttk.Label(self.editor.edit_frame, textvariable=self.statusVar)
+			self.status = tk.Label(self.editor.edit_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
 			if self.new:
 				self.post_status(None)
@@ -194,7 +194,7 @@ class Entry_row(Data_row):
 		# if not editable - just display as a label...
 		logging.info("vobj - editable: %s", self.editable)
 		if not self.editable:
-			self.widget = ttk.Label(self.editor.edit_frame, textvariable=self.value_strVar, justify=tk.LEFT)
+			self.widget = tk.Label(self.editor.edit_frame, textvariable=self.value_strVar, justify=tk.LEFT)
 			self.widget.grid(row=self.row,column=self.column + 2, columnspan=3, sticky=tk.W)
 			self.value_strVar.set(self.value)
 			#self.ok = True		# since we can't change it - it's good
@@ -216,7 +216,7 @@ class Entry_row(Data_row):
 			if self.new:
 				fg = '#AAA'	# light gray
 			
-			self.widget = ttk.Entry(self.editor.edit_frame, textvariable=self.value_strVar, width=self.width, foreground=fg,background='#e9e9e9', validate=self.validate, validatecommand=self.validatecommand )
+			self.widget = tk.Entry(self.editor.edit_frame, textvariable=self.value_strVar, width=self.width, foreground=fg,background='#e9e9e9', validate=self.validate, validatecommand=self.validatecommand )
 			logging.info("v-obj widget created: %s", self.widget)
 			self.widget.grid(row=self.row, column=self.column + 2, sticky=tk.W)
 			self.value_strVar.set(self.value)
@@ -360,7 +360,7 @@ class Text_row(Data_row):
 		# set up a small label between the title and the value to 
 		# display the status of the value...
 		self.statusVar = tk.StringVar()
-		self.status = ttk.Label(self.editor.edit_frame, textvariable=self.statusVar)
+		self.status = tk.Label(self.editor.edit_frame, textvariable=self.statusVar)
 		self.status.grid(row=self.row, column=self.column + 1)
 		# need a "sub-frame" to hold the desc. and scroll bar.
 		self.subframe = tk.LabelFrame(self.editor.edit_frame, relief=tk.GROOVE)
@@ -405,7 +405,7 @@ class Menu_row(Data_row):
 			# set up a small label between the title and the value to 
 			# display the status of the value...
 			self.statusVar = tk.StringVar()
-			self.status = ttk.Label(self.editor.edit_frame, textvariable=self.statusVar)
+			self.status = tk.Label(self.editor.edit_frame, textvariable=self.statusVar)
 			self.status.grid(row=self.row, column=self.column + 1)
 		else:
 			self.widget.destroy()
@@ -816,17 +816,17 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		self.default = "Change Sound File"
 	
 		#---- "bonus frame: a little space next to the sound graphic..
-		bonus_frame = ttk.Frame(self.editor.edit_frame)
+		bonus_frame = tk.Frame(self.editor.edit_frame)
 		bonus_frame.grid(row=self.row-1, column=3, sticky=tk.NW)
 		#---- Strict Mode
-		bonus1 = ttk.Frame(bonus_frame)
+		bonus1 = tk.Frame(bonus_frame)
 		bonus1.grid(row=0, column=0, sticky=tk.NW)
 		button = Check_button(bonus1, text='Strict Graphics (slower)', member='strict_graphic', value=self.editor.obj.strict_graphic)
 		button.post()
 		self.editor.editlist[button.member] = button
 
 		#---- Combined Mode
-		bonus2 = ttk.Frame(bonus_frame)
+		bonus2 = tk.Frame(bonus_frame)
 		bonus2.grid(row=1, column=0, sticky=tk.NW)
 		button = Check_button(bonus2, text='Combined Graphics (one waveform)', member='combined_graphic', value=self.editor.obj.combined_graphic)
 		button.post()
@@ -838,9 +838,9 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 
 		action = self.dict[menustring]
 		logging.info("Soundfile menu handler: %s", action)
-		if action is 'Load':
+		if action == 'Load':
 			self.load()
-		elif action is 'Reuse':
+		elif action == 'Reuse':
 			self.reuse()
 		else:
 			self.post()
@@ -886,7 +886,8 @@ class Graphic_menu_row_soundfile(Graphic_menu_row):
 		"""
 		page = self.editor.obj
 		logging.info("----File load - initial file: %s", self.initialfile)
-		file_path = tkFileDialog.askopenfilename(initialdir=self.initialPath, defaultextension='.aif', title="Open AIFF sound file...", filetypes=self.filetypes, initialfile=self.initialfile)
+		#file_path = tkFileDialog.askopenfilename(initialdir=self.initialPath, defaultextension='.aif', title="Open AIFF sound file...", filetypes=self.filetypes, initialfile=self.initialfile)
+		file_path = tkinter.filedialog.askopenfilename(initialdir=self.initialPath, defaultextension='.aif', title="Open AIFF sound file...", filetypes=self.filetypes, initialfile=self.initialfile)
 		if not file_path:
 			return
 		
@@ -995,15 +996,15 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 	def handle_menu(self, menustring):
 		action = self.dict[menustring]
 		logging.info("Graphic file menu handler %s", action)
-		if action is 'Load':
+		if action == 'Load':
 			self.load()
-		elif action is 'UseScreenshot':
+		elif action == 'UseScreenshot':
 			self.usescreenshot()
-		elif action is 'Reuse':
+		elif action == 'Reuse':
 			self.reuse()
-		elif action is 'Adjust':
+		elif action == 'Adjust':
 			self.adjust()
-		elif action is 'UseSound':
+		elif action == 'UseSound':
 			self.usesound()
 		else:
 			self.post()
@@ -1125,7 +1126,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 		page.xEnd = xEnd
 		self.editor.set_member('xEnd', xEnd)
 	
-		#if tkMessageBox.askyesno('Select Limits',"Do you need to set the left and right limits?", icon=tkMessageBox.QUESTION):
+		#if tkinter.messagebox.askyesno('Select Limits',"Do you need to set the left and right limits?", icon=tkinter.messagebox.QUESTION):
 
 		self.adjust(graphic_dest)	# Adjust the end points...
 
@@ -1224,7 +1225,7 @@ class Select_edit():
 		self.my_option_menu.om.grid(column=1, row=1)
 		#self.my_option_menu.om.configure(command=self.menu_callback)
 		
-		self.button = ttk.Button(frame, text="Edit", command=self.edit_select).grid(column=2, row=2)	
+		self.button = tk.Button(frame, text="Edit", command=self.edit_select).grid(column=2, row=2)	
 		self.tmpBox.wait_window(frame)
 	
 	def edit_select(self):
@@ -1272,7 +1273,7 @@ class Check_button():
 		self.editable = True
 		
 		self.controlvar = tk.IntVar()
-		self.widget = ttk.Checkbutton(parent, text=self.text, variable=self.controlvar)
+		self.widget = tk.Checkbutton(parent, text=self.text, variable=self.controlvar)
 
 	def post(self):
 		"""
@@ -1394,8 +1395,8 @@ class Edit_screen:
 	    # later...  columnspan 2
 	
 	    self.row = 8            # push these buttons down out of the way...
-	    self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save_new).grid(column=3, row=self.row)  # add  command=
-	    self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
+	    self.saveButton = tk.Button(self.edit_frame, text="Save", command=self.save_new).grid(column=3, row=self.row)  # add  command=
+	    self.quitButton = tk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
 	
 	    # stop and wait for the above window to return...
 	    self.editTop.wait_window(self.edit_frame)
@@ -1589,7 +1590,7 @@ class Edit_screen:
 		
 		if self.obj.changed or self.new:
 			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
-			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
+			if not tkinter.messagebox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkinter.messagebox.QUESTION):
 				return
 
 		self.editTop.destroy()
@@ -1736,8 +1737,8 @@ class Page_edit_screen(Edit_screen):
 		menu.post()
 		
 		#"""
-		self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save).grid(column=3, row=self.row)	# add  command=
-		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
+		self.saveButton = tk.Button(self.edit_frame, text="Save", command=self.save).grid(column=3, row=self.row)	# add  command=
+		self.quitButton = tk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
 
 		imagemaker.make_sub_images(page)
 			
@@ -1772,12 +1773,15 @@ class Page_edit_screen(Edit_screen):
 				message += spacer + i
 				spacer = ', '
 			message += '.\n\nPlease correct.'
-			tkMessageBox.showerror("There were problems...", message, parent=self.edit_frame, icon=tkMessageBox.ERROR)
+			#tkMessageBox.showerror("There were problems...", message, parent=self.edit_frame, icon=tkMessageBox.ERROR)
+			tkinter.messagebox.showerror("There were problems...", message, parent=self.edit_frame, icon=tkinter.messagebox.ERROR)
+			
 			return
 		
 		message = "This will " + self.action + " the page: " + self.obj.name
 		message += "\n\nOK?"
-		if u'no' == tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
+		#if u'no' == tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
+		if u'no' == tkinter.messagebox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkinter.messagebox.QUESTION):
 			logging.info("return")
 			return
 
@@ -1809,7 +1813,7 @@ class Page_edit_screen(Edit_screen):
 	def quit(self):
 		if self.obj.changed:
 			message = "You've made changes, quitting now will lose them.\n\nDo you still want to quit?"
-			if not tkMessageBox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
+			if not tkinter.messagebox.askokcancel('OK to quit?', message, parent=self.edit_frame, icon=tkinter.messagebox.QUESTION):
 				return(None)
 		self.editTop.destroy()
 		'''
@@ -1960,8 +1964,8 @@ class Song_edit_screen(Edit_screen):
 		row.post()
 		
 		#"""
-		self.saveButton = ttk.Button(self.edit_frame, text="Save", command=self.save).grid(column=3, row=self.row)	# add  command=
-		self.quitButton = ttk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
+		self.saveButton = tk.Button(self.edit_frame, text="Save", command=self.save).grid(column=3, row=self.row)	# add  command=
+		self.quitButton = tk.Button(self.edit_frame, text="Quit", command=self.quit).grid(column=4, row=self.row)
 		
 		
 	def save(self):
@@ -1990,13 +1994,13 @@ class Song_edit_screen(Edit_screen):
 				message += spacer + i
 				spacer = ', '
 			message += '.\n\nPlease correct.'
-			tkMessageBox.showerror("There were problems...", message, parent=self.edit_frame, icon=tkMessageBox.ERROR)
+			tkinter.messagebox.showerror("There were problems...", message, parent=self.edit_frame, icon=tkinter.messagebox.ERROR)
 			return
 		
 		else:
 			message = "This will " + self.action + " the song: " + self.obj.name
 			message += "\n\nOK?"
-			if not tkMessageBox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkMessageBox.QUESTION):
+			if not tkinter.messagebox.askquestion('OK to save?', message, parent=self.edit_frame, icon=tkinter.messagebox.QUESTION):
 				logging.info("return")
 				return
 	

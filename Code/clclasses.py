@@ -107,6 +107,7 @@ def import_data(obj, path=None):
 		string = 'obj.' + var + ' = val'
 		exec(string)	# this assigns the file var
 		logging.info("updating var: %s, value:%s", var, val)
+		print("updating var: %s, value:%s", (var, val))
 	convert_vars(obj)		# convert any floats, ints, etc...
 	
 def convert_vars(obj):
@@ -116,6 +117,8 @@ def convert_vars(obj):
 	"""
 	for var in obj.varlist:
 		conversion = ""	# set if we need to do a conversion....
+		
+		print ("Var is", var)
 
 		# let's leave this out for now.   We'll just save
 		# floats w/o quotes
@@ -131,7 +134,13 @@ def convert_vars(obj):
 			conversion = "int"
 			convtype = int
 
-		exec('val = obj.' + var)	# what is the value? (mostly we want its type)
+		print ("convert_vars: var", var, "conversion", conversion) # "convtype", convtype )
+		val = "unset"
+		line = 'val = obj.' + var
+		print ("Line is", line)
+		#exec('val = obj.' + var)	# what is the value? (mostly we want its type)
+		exec(line)	# what is the value? (mostly we want its type)
+		print ("val = ", val)
 		# if it's in one of the lists, let's take a shot at 
 		# converting it - but just in case that's been done, let's check...
 		# Otherwise, build an exec string to do the conversion
@@ -521,7 +530,7 @@ class Page:
 
 		try: 
 			dfile = open(data, 'w+')	
-		except IOError, info:
+		except (IOError, info):
 			logging.info("post: Problem opening: %s", data, exc_info=True)
 			raise
 
@@ -542,7 +551,7 @@ class Page:
 				localdir = os.path.join(self.home, local)
 				os.makedirs(localdir)
 	
-			except OSError, info:
+			except (OSError, info):
 				logging.warning("Path: %s", localdir, exc_info=True)
 				logging.warning("Try again.")
 				sys.exit(1)
@@ -718,7 +727,7 @@ class Song:
 		if path == 'None':
 			try:
 				path = self.home
-			except NameError, info:
+			except (NameError, info):
 				logging.warning("load: NE", exc_info=True)
 				sys.exit(1)
 		
@@ -746,7 +755,7 @@ class Song:
 				localdir = os.path.join(self.home, local)
 				os.makedirs(localdir)
 	
-			except OSError, info:
+			except (OSError, info):
 				logging.warning("Path: %s", localdir, exc_info=True)
 				logging.error("Try again.")
 				sys.exit(1)
@@ -771,7 +780,7 @@ class Song:
 
 		try: 
 			dfile = open(data, 'w+')	
-		except IOError, info:
+		except (IOError, info):
 			logging.warning("post: Problem opening: %s", data, exc_info=True)
 			raise
 

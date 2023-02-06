@@ -46,5 +46,5 @@ def evalfix(s):
 
 if  __name__ == '__main__':
 	s = sys.stdin.read()
-	print evalfix(s)
+	print (evalfix(s))
 

@@ -14,9 +14,14 @@ import logging
 import time
 import threading	# for the progbar lock
 
-import Tkinter as tk
-import tkFileDialog
-import ttk
+#import Tkinter as tk
+#import tkFileDialog
+#import ttk
+
+import tkinter as tk
+import tkinter.ttk
+import tkinter.filedialog
+import tkinter.messagebox
 
 from PIL import Image, ImageTk
 
@@ -207,7 +212,8 @@ class clOption_menu:
 		
 	def opt_string(self, member, eval_string):
 		value = eval('member' + '.' + eval_string)
-		return(unicode(value))
+		#return(unicode(value))
+		return(str(value))
  
 class Popup:
 	"""
@@ -229,9 +235,9 @@ class Popup:
 		lf.grid(ipadx=10, ipady=40, padx=5, pady=5)
 		f = tk.Frame(lf)
 		f.grid(row=0, column=0, sticky=tk.W)
-		ttk.Label(f, text=text).grid()
+		tk.Label(f, text=text).grid()
 		if not nobutton:	# kinda dig the language here...
-			ok_button = ttk.Button(f, text='OK', command=self.destroy)
+			ok_button = tk.Button(f, text='OK', command=self.destroy)
 			ok_button.grid(row=1, column=0, sticky=tk.SE)
 		self.t.update()	 # Get the pop-up on the screen...
 		self.t.update_idletasks()

@@ -75,13 +75,13 @@ def main():
 	""" some tests for the above... """
 	
 	now=datetime.utcnow()	 # naive utc time
-	print "utc2short:", utc2short(now)
-	print "utc2long: ", utc2long(now)
-	print "epoch:    ", epochtime(now)
+	print ("utc2short:", utc2short(now))
+	print ("utc2long: ", utc2long(now))
+	print ("epoch:    ", epochtime(now))
 	s = utc2string(now)
-	print "utc string", s + ' ' +  s
+	print ("utc string", s + ' ' +  s)
 	then = string2utc(s)
-	print "then utc  ", then
+	print ("then utc  ", then)
 	
 
 

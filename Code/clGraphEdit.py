@@ -7,9 +7,11 @@ start and end points.
 import logging
 import time
 
-import Tkinter as tk
-import ttk
-from PIL import Image, ImageTk
+from PIL import Image	#, ImageTk
+
+import tkinter as tk
+import tkinter.ttk
+
 
 import clclasses
 import cltkutils

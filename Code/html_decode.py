@@ -42,5 +42,4 @@ def hdecode(s):
 
 if  __name__ == '__main__':
 	s = sys.stdin.read()
-	print hdecode(s)
-
+	print (hdecode(s))

@@ -145,7 +145,7 @@ def pagegen(group, page):
 
 	try:
 		os.chdir(page.home)
-	except OSError,info:
+	except (OSError,info):
 		logging.error("Fatal Error: Cannot cd to ", page.home, exc_info=True)
 		sys.exit(1)
 
@@ -175,7 +175,7 @@ def pagegen(group, page):
 	if os.path.exists(index):
 		try:
 			os.remove(index)
-		except OSError, info:
+		except (OSError, info):
 			logging.error("Fatal Error removing", index, exc_info=True)
 			sys.exit(1)
 
@@ -183,7 +183,7 @@ def pagegen(group, page):
 	# open the index file, dump the header, body, etc. into it...
 	try:
 		outfile = open(index, 'w+')
-	except IOError, info:
+	except (IOError, info):
 		logging.error("Fatal Error: Failure opening ", index, exc_info=True)
 		exit(1)
 
@@ -267,7 +267,7 @@ def linkgen(group):
 				logging.info("Creating linkfile: %s", linkfile)
 				try:
 					l = open(linkfile, 'w+')
-				except IOError, info:
+				except (IOError, info):
 					logging.warning("problem opening", linkfile, exc_info=True)
 					raise IOError
 
@@ -376,7 +376,7 @@ def songgen(group, song=None):
 
 		try:
 			os.chdir(song_dir)
-		except OSError,info:
+		except (OSError,info):
 			logging.warning("Cannot cd to: %s ", song_dir, exc_info=True)
 			continue
 	

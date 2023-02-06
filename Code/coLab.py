@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
 # -*- coding: utf-8 -*-
 """ coLab - a music collaboration tool.
 	
@@ -18,11 +19,14 @@ import sys
 import logging
 import time
 
-import Tkinter as tk
-import tkFileDialog
-import ttk
-import tkMessageBox
-import imp
+import tkinter as tk
+#import tkFileDialog
+import tkinter.filedialog
+import tkinter.ttk
+import tkinter.messagebox
+#import imp
+import importlib
+from importlib import util
 
 from PIL import Image, ImageTk
 
@@ -63,6 +67,7 @@ class Colab():
 		# set the basic paths to content, code, etc.
 
 		self.master = master
+		logging.basicConfig(level=logging.INFO)
 		
 		try:
 			self.conf=clutils.get_config()
@@ -161,11 +166,15 @@ class Colab():
 		except:
 			logging.info("New group list")
 			self.group_list = dict()	# new dictionary...		#RBF   this is a dict, not a list
-		 
+		
+		#self.group_list()
 		logging.info("group_dir pre list test %s", group_dir)
+		print("group_dir pre list test %s", group_dir)
 		try:
 			self.current_group = self.group_list[thisname]
+			#self.current_group = self.grouplistdict[thisname]
 		except KeyError:
+			print ("thisname", thisname)
 			logging.info("Nope - don't know group %s loading now...", thisname)
 			#try:
 			logging.info("group_dir pre pre group inst: %s", group_dir)
@@ -193,7 +202,8 @@ class Colab():
 		try:
 			self.display_group_list()
 			self.place_logo()
-		except TypeError, info:
+		#except (TypeError, info):
+		except TypeError:
 			logging.warning("TypeError", exc_info=True)
 		except Exception as e:
 			logging.warning( "Initialization Failed", exc_info=True)
@@ -218,9 +228,9 @@ class Colab():
 
 		#self.function_buttons()
 		# refresh button...
-		self.refreshButton = ttk.Button(self.main_frame, text="Refresh", command=self.refresh_group).grid(column=4, row=3)
+		self.refreshButton = tk.Button(self.main_frame, text="Refresh", command=self.refresh_group).grid(column=4, row=3)
 		# quit button...
-		self.quitButton = ttk.Button(self.main_frame, text="Quit", command=self.my_quit).grid(column=9, row=9)
+		self.quitButton = tk.Button(self.main_frame, text="Quit", command=self.my_quit).grid(column=9, row=9)
 		
 	def __aboutHandler(self):
 		""" Let's do a nice little pop-up saying who we are and what we do....
@@ -230,7 +240,7 @@ class Colab():
 		msg = "Welcome to coLab\nThis is a music collaboration tool created by Johnny Klonaris.\n\n"
 		msg += "Note: 'coLab' is a trademark or other property of various entities.\n\n"
 		msg += "I'm just using it for now.   Stay tuned for MusiCoLab."
-		tkMessageBox.showinfo("About coLab...", msg)
+		tkinter.messagebox.showinfo("About coLab...", msg)
 		logging.info("how's this?")
 	
 	def load_group_list(self):
@@ -247,17 +257,29 @@ class Colab():
 			logging.error("Fatal")
 			raise IOError()
 		# build a dictionary of names to directory names.
+		print ("Setting up grouplistdict")
 		self.grouplistdict = dict()		# clean dictionary..
-		for dir in (os.listdir('.')):
+		print ("cwd:",(os.getcwd()))
+		print ("oslist:", os.listdir('.'))
+		for dirname in (os.listdir('.')):
+			print ("Looking at dir:", dirname)
 			# Step through each, try to import from a data file -if it works, 
 			# and there's a tile - we're in - otherwise skip
-			if dir == '.DS_Store':	# yeah, mac specific, but just skipp it...
+			if dirname == '.DS_Store':	# yeah, mac specific, but just skipp it...
 				continue
-			datapath = os.path.join(dir, 'data')
+			datapath = os.path.join(dirname, "data")
 			logging.info("Checking: %s", datapath)
-			
 			try:
-				data = imp.load_source('', datapath)
+				print ("For imp.load_source:", datapath)
+				#data = imp.load_source('', datapath)
+				module_name = dirname
+				print ("module_name", module_name)
+				loader = importlib.machinery.SourceFileLoader(module_name, datapath)
+				spec = importlib.machinery.ModuleSpec(module_name, loader, origin=datapath)
+				data = importlib.util.module_from_spec(spec)
+				loader.exec_module(data)
+				print ("data.title", data.title)
+				
 				#os.remove(datafile + 'c')
 			except:			# if any thing goes wrong - just skip ahead...
 				logging.warning("no good - skipping %s", datapath,exc_info=True)
@@ -266,8 +288,10 @@ class Colab():
 			if not data.title:		# no title - no play...
 				continue
 			# ok - we've got a dir and a title - setup the next entry.
-			self.grouplistdict[data.title] = dir	# for converting a title to a dir name
+			print ("Adding", dirname, "to grouplist value", data.title)
+			self.grouplistdict[data.title] = dirname	# for converting a title to a dir name
 			logging.info("self.grouplistdict of %s is %s", data.title, self.grouplistdict[data.title])
+			print("self.grouplistdict of %s is %s", data.title, self.grouplistdict[data.title])
 		
 	def display_group_list(self):
 		""" Update the menu to display lists...
@@ -277,15 +301,22 @@ class Colab():
 		to the dir name.
 		"""
 		
+		print ("grouplistdict", self.grouplistdict)
+
 		try:
 			groupTitles = tuple(self.grouplistdict.keys())
 		except:
 			logging.warning("got no titles", exc_info=True)
 			
+		print ("groupTitles: ", groupTitles)
 		self.gOpt = tk.StringVar()
 		self.gOpt.set(self.current_grouptitle)
 
-		self.groupOption = tk.OptionMenu(self.main_frame, self.gOpt, *groupTitles,command=self.set_group_from_menu)
+		logging.info("About to call OptionMenu")
+		try:
+			self.groupOption = tk.OptionMenu(self.main_frame, self.gOpt, *groupTitles,command=self.set_group_from_menu)
+		except:
+			logging.warning("Problem with tk.OptionMenu")
 
 		self.groupOption.grid(column=1, row=2, columnspan=2, sticky=tk.W)
 		
@@ -307,7 +338,7 @@ class Colab():
 		f_frame = tk.Frame(self.main_frame, bg="#e9e9e9", borderwidth=2, padx=10, pady=5) 
 		f_frame.grid(column=0, row=4, columnspan=4)
 		self.function_frame = f_frame
-		new_page_button = ttk.Button(f_frame, text="New Page", command=lambda: clFunctions.create_new_page(self))
+		new_page_button = tk.Button(f_frame, text="New Page", command=lambda: clFunctions.create_new_page(self))
 		new_page_button.grid(column=0, row=4)
 		#edit_page_button = ttk.Button(f_frame, text="Edit Page", command=lambda: clFunctions.edit_page(self))
 		#edit_page_button.grid(column=1, row=4)
@@ -322,7 +353,7 @@ class Colab():
 			self.pg_option_menu = cltkutils.clOption_menu(f_frame, pagelist, 'desc_title', default='Edit Page', command=self.edit_page)
 			self.pg_option_menu.om.grid(column=1, row=4)
 
-		new_song_button = ttk.Button(f_frame, text="New Song", command=lambda: clFunctions.create_new_song(self))
+		new_song_button = tk.Button(f_frame, text="New Song", command=lambda: clFunctions.create_new_song(self))
 		new_song_button.grid(column=2, row=4)
 		#edit_song_button = ttk.Button(f_frame, text="Edit Song", command=lambda: clFunctions.edit_song(self))
 		#edit_song_button.grid(column=3, row=4)
@@ -386,7 +417,7 @@ class Colab():
 		
 		snapshot_name = 'SnapShot_tn.png'
 		
-		logging.info("Current group.name: %s", self.current_group.name)
+		#logging.info("Current group.name: %s", self.current_group.name)
 		imgpath = os.path.join(self.current_group.home, "Shared", snapshot_name)
 		if not os.path.exists(imgpath):
 			imgpath = os.path.join(self.conf.coLab_home, 'Resources', "coLab-NoGroupSnap.png")
@@ -469,9 +500,9 @@ def main():
 	"""
 	#logging.basicConfig(level=logging.INFO)
 	logging.info("Colab Main")
-	print "Colab"
-	print "Python:", sys.version
-	print "Tcl revision:", tk.Tcl().eval('info patchlevel')
+	print ("Colab")
+	print ("Python:", sys.version)
+	print ("Tcl revision:", tk.Tcl().eval('info patchlevel'))
 	root = tk.Tk()
 	
 	w=Colab(root)

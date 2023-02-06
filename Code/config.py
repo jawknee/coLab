@@ -126,45 +126,45 @@ class Sizes:
 		screen_height = root.winfo_screenheight() 	
 		
 def main():
-	print "Colab config"
-	print "Base size:", BASE_SIZE
+	print ("Colab config")
+	print ("Base size:", BASE_SIZE)
 	for size in SIZE_LIST:
-		print "Size", size[0], 'is:', size[1]
+		print ("Size", size[0], 'is:', size[1])
 	s = Sizes()
-	print "List:"
+	print ("List:")
 	s.list()
 	
-	print "Sizes:"
+	print ("Sizes:")
 	for name in s.names:
-		print "Size of", name, "is", s.sizeof(name)
-		print "next size would be:", s.next_size(name)
+		print ("Size of", name, "is", s.sizeof(name))
+		print ("next size would be:", s.next_size(name))
 		
-	print "Scale of 960:", s.calc_scale(960)
-	print "Adjst of 960:", s.calc_adjust(960)
+	print ("Scale of 960:", s.calc_scale(960))
+	print ("Adjst of 960:", s.calc_adjust(960))
 	
 	if s.is_smaller_than('Large', 'Small'):
-		print "oops.   Large is not smaller than Small"
+		print ("oops.   Large is not smaller than Small")
 	else:
-		print "Larger than Small"
+		print ("Larger than Small")
 		
 	if s.is_smaller_than('Medium','Medium'):
-		print "oops  medium is not smaller"
+		print ("oops  medium is not smaller")
 	else:
-		print "Medium is"
+		print ("Medium is")
 		
 	if s.is_smaller_than('Tiny', 'HiDef'):
-		print "Tiny is smaller than HiDef"
+		print ("Tiny is smaller than HiDef")
 	else:
-		print "ooooops Tiny is not not smaller than HiDef"
+		print ("ooooops Tiny is not not smaller than HiDef")
 	try:
 		if s.is_smaller_than('Tiny', 'Bogus'):
-			print "No good - not smaller than Bogus"
+			print ("No good - not smaller than Bogus")
 	except ValueError:
-		print "Good: detected Bogus"
+		print ("Good: detected Bogus")
 		
 	if s.is_larger_than('Tiny', 'HiDef'):
-		print "oooops,  Tiny is not larger than HiDef"
+		print ("oooops,  Tiny is not larger than HiDef")
 	else:
-		print "is larger than looks good"
+		print ("is larger than looks good")
 if __name__ == '__main__':
 	main()

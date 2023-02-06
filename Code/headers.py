@@ -348,7 +348,7 @@ def main():
 	""" test gen_html5_sources"""
 	h = Html()
 	source = h.gen_html5_source("ZZZZZZ", "Super-HD-Letterbox")
-	print "Got source:"
-	print source
+	print ("Got source:")
+	print (source)
 if __name__ == '__main__':
 	main()

@@ -71,5 +71,5 @@ if  __name__ == '__main__':
 	""" Interface when called passing stdin... 
 	"""
 	s = sys.stdin.read()
-	print hencode(s)
+	print (hencode(s))
 

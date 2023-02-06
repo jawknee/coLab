@@ -19,7 +19,7 @@ import multiprocessing
 import aifc
 import math
 import threading
-import Queue
+import queue
 import time
 
 from PIL import Image
@@ -29,10 +29,10 @@ from PIL import ImageFont
 #import ImageDraw
 #import ImageFont
 
-import Tkinter as tk
-import ttk
-import tkFileDialog
-import tkMessageBox
+import tkinter as tk
+import tkinter.ttk
+import tkinter.filedialog
+import tkinter.messagebox
 
 #from coLab import main
 import config
@@ -224,7 +224,7 @@ def make_sub_images(page, size=poster_size):
 			overlaypath = os.path.join(resourcedir, overlayname)
 			try:
 				over_image = Image.open(overlaypath).convert('RGBA')
-			except IOError, info:
+			except (IOError, info):
 				logging.warning("Cannot open poser image %s", overlaypath, exc_info=True)
 			else:
 				# could resize here - but I'd rather see it something changes...
@@ -350,6 +350,7 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	logging.info("Font file is: %s", fontfile)
 	font = ImageFont.truetype(fontfile, fontsize, encoding='unic')	# utf-8 is not working yet...
 	#font = ImageFont.truetype(fontfile, fontsize, encoding='utf-8')	# utf-8 is not working yet...
+	string = str(string)
 	string = string.encode('ascii', 'ignore')	# decode any utf-8 chars - not handled well in mo
 	# create a temp image - just long enough to get the size of the text
 	size = (10,10)
@@ -453,8 +454,10 @@ def signed2int(s):
         """
         value = 0
         l = len(s)
+        #print("imagemaker, 460, value=", value, "s=", s)
         for i in range(l): # keep it byte width flexible...
-                value = (value << 8) + ord(s[i])
+                #value = (value << 8) + ord(s[i])
+                value = (value << 8) + ord(str(s[i]))
 
         max = 1 << (l * 8)
         offset = max >> 1
@@ -526,7 +529,7 @@ class Frame_maker():
 		# RBF:  check this: do we even need to do a chdir?
 		try:
 			os.chdir(page.home)
-		except OSError, info:
+		except (OSError, info):
 			logging.warning("Problem changing to: %s", page.home)
 			logging.warning("%s: ", info, exc_info=True)
     	
@@ -946,7 +949,7 @@ class Sound_image():
 			sum_sqrs.append(0.0)
 		
 		# v is vertical line
- 		logging.info("reading frames... %s", self.nframes)
+		logging.info("reading frames... %s", self.nframes)
 
 		aud_frame_data = self.aud.readframes(self.nframes)
 	
@@ -981,7 +984,7 @@ class Sound_image():
 			"""
 			num_samps = next_samp_num - last_samp
 			chunk_offset = last_samp * w * nchan		# where does the next chunk (vertical line) start
-			#aud_frame_data = self.aud.readframes(num_samps)
+			aud_frame_data = self.aud.readframes(num_samps)
 				
 			for i in range(0, num_samps, aud_frame_skip):		# for the samples we just read..
 				aud_frame_count += 1
@@ -994,7 +997,7 @@ class Sound_image():
 						clip_count[c] += 1
 						logging.info("-------Found Clip: val: %s, frame: %s, c: %s, v: %s", value, aud_frame_count, c, v)
 					#p = ep
-					#aud_frame_data = aud_frame_data[w:]		# strip what we just read off the front
+					aud_frame_data = aud_frame_data[w:]		# strip what we just read off the front
 					run_count[c] += value
 					val_squared = value * value
 					sum_sqrs[c] += val_squared	# squares
@@ -1055,7 +1058,7 @@ class Sound_image():
 		else:
 			eff_ratio = 1.	# close enough - show the wave form as is
 				
-		print "hr_ratio", hr_ratio, "eff_ratio",eff_ratio
+		print ("hr_ratio", hr_ratio, "eff_ratio",eff_ratio)
 		if hr_ratio < 0.1:		#  ************************RBF  temp kludge  ************
 			hr_ratio = 1.
 		headroom = 20 * math.log10(hr_ratio)
@@ -1279,12 +1282,12 @@ class Sound_image():
 			xPos = int(config.SG_LEFT_BORDER * adjust_factor)
 			xEnd = int(width - config.SG_RIGHT_BORDER * adjust_factor)
 		else:	# compensate for the actual size of the screenshot image...
-		  try:
-			scale_factor = float(width) / self.page.screenshot_width		
-			xPos = int(self.page.xStart * scale_factor)
-			xEnd = int(self.page.xEnd * scale_factor)
-		  except:
-		  	print "Problem"
+			try:
+				scale_factor = float(width) / self.page.screenshot_width		
+				xPos = int(self.page.xStart * scale_factor)
+				xEnd = int(self.page.xEnd * scale_factor)
+			except:
+				print ("Problem")
 
 		self.upTickText('Start', xPos, ymin, font=font)
 		#start_string = 'Start'
@@ -1541,10 +1544,10 @@ def main():
 
 	p.duration = .01	# start small (seconds) but get big fast...
 
-	print "xStart, xEnd:", p.xStart, p.xEnd
+	print ("xStart, xEnd:", p.xStart, p.xEnd)
 	while p.duration < 100000:
 		fps = calculate_fps(p)
-		print "For duration:", p.duration, "- fps:", fps
+		print ("For duration:", p.duration, "- fps:", fps)
 		p.duration += p.duration * 0.3	# funny boy
 
 

@@ -44,7 +44,7 @@ def get_config(debug=False):
 		conf = imp.load_source('',file)
 		conf.file = file
 		return(conf)
-	except ImportError, info:
+	except (ImportError, info):
 		logging.warning ("get_config: ImportError", exc_info=True)
 		sys.exit(1)	
 	
@@ -278,15 +278,15 @@ class FontLib:
 if __name__ == "__main__":
 	logging.basicConfig(level=logging.INFO)
 	for name in ['This', 'is a space', '?,()#&*?what??']:
-		print "string_to_filename:", string_to_filename(name)
-	print "testing get_config"
+		print ("string_to_filename:", string_to_filename(name))
+	print ("testing get_config")
 	conf=get_config()
-	print "result:",  conf.coLab_url_head
-	print "result:", conf.file, conf.coLab_root, conf.coLab_home
+	print ("result:",  conf.coLab_url_head)
+	print ("result:", conf.file, conf.coLab_root, conf.coLab_home)
 	
 	#fontclass = FontLib()
 	fontclass = FontLib(conf)
 	fontclass.list_fonts()
-	print "Font pass", fontclass.return_fontpath('DigitalDream.ttf')
-	print "Font none", fontclass.return_fontpath()
-	print "Font bogo", fontclass.return_fontpath('bogofont')
+	print ("Font pass", fontclass.return_fontpath('DigitalDream.ttf'))
+	print ("Font none", fontclass.return_fontpath())
+	print ("Font bogo", fontclass.return_fontpath('bogofont'))

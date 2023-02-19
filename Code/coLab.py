@@ -26,7 +26,7 @@ import tkinter.ttk
 import tkinter.messagebox
 #import imp
 import importlib
-from importlib import util
+#from importlib import util
 
 from PIL import Image, ImageTk
 
@@ -272,6 +272,7 @@ class Colab():
 			try:
 				print ("For imp.load_source:", datapath)
 				#data = imp.load_source('', datapath)
+				#  ****  Need to check this  - why did we abandon imp.load_source ?? *****
 				module_name = dirname
 				print ("module_name", module_name)
 				loader = importlib.machinery.SourceFileLoader(module_name, datapath)

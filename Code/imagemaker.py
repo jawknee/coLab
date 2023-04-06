@@ -224,7 +224,7 @@ def make_sub_images(page, size=poster_size):
 			overlaypath = os.path.join(resourcedir, overlayname)
 			try:
 				over_image = Image.open(overlaypath).convert('RGBA')
-			except (IOError, info):
+			except IOError:
 				logging.warning("Cannot open poser image %s", overlaypath, exc_info=True)
 			else:
 				# could resize here - but I'd rather see it something changes...
@@ -351,7 +351,7 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	font = ImageFont.truetype(fontfile, fontsize, encoding='unic')	# utf-8 is not working yet...
 	#font = ImageFont.truetype(fontfile, fontsize, encoding='utf-8')	# utf-8 is not working yet...
 	string = str(string)
-	string = string.encode('ascii', 'ignore')	# decode any utf-8 chars - not handled well in mo
+	#string = string.encode('ascii', 'ignore')	# decode any utf-8 chars - not handled well in mo
 	# create a temp image - just long enough to get the size of the text
 	size = (10,10)
 	box = Image.new('RGBA', size, color=clColors.XPARENT)
@@ -529,7 +529,7 @@ class Frame_maker():
 		# RBF:  check this: do we even need to do a chdir?
 		try:
 			os.chdir(page.home)
-		except (OSError, info):
+		except OSError:
 			logging.warning("Problem changing to: %s", page.home)
 			logging.warning("%s: ", info, exc_info=True)
     	

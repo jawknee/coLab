@@ -16,7 +16,8 @@ import time
 import threading
 
 import tkinter as tk
-import tkinter.ttk
+#import tkinter.ttk
+from tkinter import ttk
 
 import config
 import clutils
@@ -658,7 +659,7 @@ def rebuild(g, mirror=False, opt="nope"):
 	project = os.path.join(g.home, 'Shared', 'projectlist.html')
 	try:
 		f_project = open(project, 'w+')
-	except (IOError, info):
+	except IOError:
 		logging.warning("Error opening file:", project, exc_info=True)
 
 	# a quick header...

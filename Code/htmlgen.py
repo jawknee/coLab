@@ -145,7 +145,7 @@ def pagegen(group, page):
 
 	try:
 		os.chdir(page.home)
-	except (OSError,info):
+	except OSError:
 		logging.error("Fatal Error: Cannot cd to ", page.home, exc_info=True)
 		sys.exit(1)
 
@@ -175,7 +175,7 @@ def pagegen(group, page):
 	if os.path.exists(index):
 		try:
 			os.remove(index)
-		except (OSError, info):
+		except OSError:
 			logging.error("Fatal Error removing", index, exc_info=True)
 			sys.exit(1)
 
@@ -183,7 +183,7 @@ def pagegen(group, page):
 	# open the index file, dump the header, body, etc. into it...
 	try:
 		outfile = open(index, 'w+')
-	except (IOError, info):
+	except IOError:
 		logging.error("Fatal Error: Failure opening ", index, exc_info=True)
 		exit(1)
 
@@ -256,7 +256,8 @@ def linkgen(group):
 		if currName != 'Home':  # for "Home" the key is to execute the code at the bottom to load the pipeline
 			#
 			# Are these the links we saw last time?
-			logging.info("Links for: %s, correct: prev: %s, name: %s, stored: prv%s, nxt%s ", q.name, prevName, p.name, q.prevlink, q.nextlink)
+			#$logging.info("Links for: %s, correct: prev: %s, name: %s, stored: prv%s, nxt%s ", q.name, prevName, p.name, q.prevlink, q.nextlink)
+			logging.info("Links for: %s, correct: prev: %s, name: %s, stored: prv%s, nxt%s ", p.name, prevName, p.name, p.prevlink, p.nextlink)
 			"""
 			if prevName == q.prevlink and p.name == q.nextlink:
 				logging.info("No link change for: %s",  q.name)
@@ -267,7 +268,7 @@ def linkgen(group):
 				logging.info("Creating linkfile: %s", linkfile)
 				try:
 					l = open(linkfile, 'w+')
-				except (IOError, info):
+				except IOError:
 					logging.warning("problem opening", linkfile, exc_info=True)
 					raise IOError
 
@@ -376,7 +377,7 @@ def songgen(group, song=None):
 
 		try:
 			os.chdir(song_dir)
-		except (OSError,info):
+		except OSError:
 			logging.warning("Cannot cd to: %s ", song_dir, exc_info=True)
 			continue
 	

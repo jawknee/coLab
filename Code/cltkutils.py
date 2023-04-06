@@ -17,9 +17,13 @@ import threading	# for the progbar lock
 #import Tkinter as tk
 #import tkFileDialog
 #import ttk
-
+#from tkinter import *
 import tkinter as tk
-import tkinter.ttk
+from tkinter import ttk
+
+#import tkinter as tk
+#import tkinter.ttk
+
 import tkinter.filedialog
 import tkinter.messagebox
 

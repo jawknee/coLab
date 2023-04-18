@@ -44,7 +44,7 @@ def get_config(debug=False):
 		conf = imp.load_source('',file)
 		conf.file = file
 		return(conf)
-	except (ImportError, info):
+	except ImportError:
 		logging.warning ("get_config: ImportError", exc_info=True)
 		sys.exit(1)	
 	

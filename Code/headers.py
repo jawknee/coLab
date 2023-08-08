@@ -191,7 +191,6 @@ class Html:
 
 		return geo_html
 
-		 
 	def __init__(self):
 		#
 		# the html content for the head and body sections
@@ -292,8 +291,8 @@ class Html:
 				<button type="button" id="full-screen">FS</button>
 			</span>
 		 </div> <! video-controls>
-		 """
-		 
+		"""
+	
 		self.tail = """
 		<hr>
 		Enter your comments here:<br>

@@ -28,7 +28,9 @@ import tkinter.messagebox
 import importlib
 #from importlib import util
 
-from PIL import Image, ImageTk
+import PIL as pillow
+from PIL import Image
+#from PIL import Image, ImageTk
 
 import clutils
 import clFunctions

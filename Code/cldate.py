@@ -1,13 +1,18 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """ various routines for converting, importing and displaying dates """
 
 from datetime import datetime, timedelta
-from dateutil import tz
+#from dateutil import tz
+# tz repacement: https://pypi.org/project/tzlocal/
+from tzlocal import get_localzone
+from zoneinfo import ZoneInfo
 
 import logging
 
-HERE = tz.tzlocal()
-UTC = tz.gettz('UTC')
+#HERE = tz.tzlocal()
+HERE = get_localzone()
+#UTC = tz.gettz('UTC')
+UTC = ZoneInfo('UTC')
 IFMT="%Y-%m-%dT%H:%M:%S"
 # Note both of  these SHORT formats use %-d which may not work on all formats
 # (Also there is  "%-I )

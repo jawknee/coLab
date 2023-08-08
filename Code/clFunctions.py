@@ -1061,7 +1061,7 @@ class Graphic_menu_row_screenshot(Graphic_menu_row):
 	def file_load(self):
 		page = self.editor.obj
 		logging.info("----File load - initial file: %s", self.initialfile)
-		file_path = tkFileDialog.askopenfilename(initialdir=self.initialPath, defaultextension='.png', title="Select screen shot...", filetypes=self.filetypes, initialfile=self.initialfile)
+		file_path = tkinter.filedialog.askopenfilename(initialdir=self.initialPath, defaultextension='.png', title="Select screen shot...", filetypes=self.filetypes, initialfile=self.initialfile)
 		if not file_path:
 			return
 

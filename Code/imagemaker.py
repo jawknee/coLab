@@ -297,7 +297,7 @@ def make_images(page, prog_bar=None, media_size=None):
 	threadList = ['Thread-' + str(x+1) for x in range(num_threads) ]
 	frameList = [x for x in range(frames) ]	# a list of thread numbers to process...
 	queueLock = threading.Lock()
-	workQueue = Queue.Queue(frames)
+	workQueue = queue.Queue(frames)
 	threads = []
 	threadID = 1
 	

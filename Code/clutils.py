@@ -90,7 +90,7 @@ def needs_update(path, file="index.shtml", opt='nope'):
 
 def touch(filename):
 	""" touch the file..."""
-	f = file(filename, 'a')
+	f = open(filename, 'a')
 	try:
 		os.utime(filename, None)
 	finally:

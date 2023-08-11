@@ -28,9 +28,11 @@ import tkinter.messagebox
 import importlib
 #from importlib import util
 
-import PIL as pillow
-from PIL import Image
-#from PIL import Image, ImageTk
+# new?:
+#import PIL as pillow
+#from PIL import Image
+# previous...
+from PIL import Image, ImageTk
 
 import clutils
 import clFunctions
@@ -38,7 +40,7 @@ import clclasses
 import cltkutils
 import clSchedule
 import rebuild
-import imagemaker
+import imagemaker 
 
 class Colab():
 	""" Basic class for the colab front end - holder of the main window and basic methods. 

@@ -214,7 +214,7 @@ def make_sub_images(page, size=poster_size):
 		#	logging.warn("Not a match - skipping... size: " + str(size) + " / orig:" + str(orig_image.size))
 		#	return
 
-		base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
+		base_image = orig_image.resize( size, Image.LANCZOS ).convert('RGBA')
 		logging.info("make_sub_image: %s" % graphic)
 		
 		resourcedir = os.path.join(page.coLab_home, 'Resources')
@@ -254,7 +254,7 @@ def make_sub_images(page, size=poster_size):
 			logging.warning("Error opening: %s", graphic_path, exc_info=True)
 		else:
 			thumb_path = os.path.join(page.home, thumb)
-			tn_image = image.resize(tn_size, Image.ANTIALIAS ).convert('RGB')
+			tn_image = image.resize(tn_size, Image.LANCZOS ).convert('RGB')
 			tn_image.save(thumb_path, 'PNG')
 			logging.warn("make_sub_images: %s, tn: %s", graphic, thumb)
 			del image
@@ -336,6 +336,15 @@ def make_images(page, prog_bar=None, media_size=None):
 	else:
 		logging.info("Frames per second: %s", page.fps)
 
+def textsize(draw, text, font):
+	# The draw textsize method is gone...
+	#Try:  https://pillow.readthedocs.io/en/stable/deprecations.html#font-size-and-offset-methods 
+	#(twidth, theight) = self.graphic_draw.textsize(text, font=font)
+	width = draw.textlength(text, font=font)
+	twidth = int(width)
+	left, top, right, bottom = draw.textbbox((0,0), text, font=font)
+	theight = bottom - top
+	return(twidth, theight)
 def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill=(196, 176, 160, 55), maxsize=(670,100) ):
 	"""
 	Since we're here with these imports - a simple enough 
@@ -357,7 +366,8 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 	box = Image.new('RGBA', size, color=clColors.XPARENT)
 	box_draw = ImageDraw.Draw(box)
 
-	(w,h) = box_draw.textsize(str(string), font=font)
+	#(w,h) = box_draw.textsize(str(string), font=font)
+	(w,h) = textsize(box_draw, str(string), font=font)
 	logging.info("Size is: w: %d, h: %d", w, h)
 	# Let's see if we overflowed the size...
 	# (There may be a more python way of doing this, 
@@ -381,17 +391,20 @@ def make_text_graphic(string, output_file, fontfile, fontsize=45, border=2, fill
 		w = int(w/factor)
 		h = int(h/factor)
 		logging.info("New w,h: %d, %d font/new: %d, %d,  factor %f", w,h, fontsize, newfontsize, factor)
-		(w,h) = box_draw.textsize(str(string), font=font)
+		#(w,h) = box_draw.textsize(str(string), font=font)
+		(w,h) = textsize(box_draw,str(string), font=font)
 		logging.info("New width/height: %d, %d", w, h)
 
 	size = (w+pad, h+pad)
 	offset = (border, border)
 	
 	# start over with a new graphic, this time with the text at the corrected (if necessary) font size
+	print("size", size)
 	box = Image.new('RGBA', size, color=clColors.XPARENT)
 	box_draw = ImageDraw.Draw(box)
 
-	(fw,fh) = box_draw.textsize(string, font=font)	# how big is it really?
+	#(fw,fh) = box_draw.textsize(string, font=font)	# how big is it really?
+	(fw,fh) = textsize(box_draw, string, font=font)	# how big is it really?
 	offset = ( (size[0] - fw) / 2, ( size[1] - fh) / 2 )
 	box_draw.text(offset, string, font=font, fill=fill)
 	box.save(output_file, 'PNG')
@@ -416,7 +429,8 @@ def add_res_text(draw, size, adjust_factor=1.0):
 	font_size = int(10 * adjust_factor)
 	font = ImageFont.truetype(fontpath, font_size)
 	res_string = str(width) + " x " + str(height)
-	(t_width, t_height) = draw.textsize(res_string, font=font)
+	#(t_width, t_height) = draw.textsize(res_string, font=font)
+	(t_width, t_height) = textsize(draw, res_string, font=font)
 	
 	logging.info("Text size is w: %d, h: %d", t_width, t_height)
 	
@@ -576,7 +590,7 @@ class Frame_maker():
 			image = page.graphic
 		
 		orig_image = Image.open(image)
-		self.base_image = orig_image.resize( size, Image.ANTIALIAS ).convert('RGBA')
+		self.base_image = orig_image.resize( size, Image.LANCZOS ).convert('RGBA')
 	
 		# use the pixels and duration to determine frames per second...
 		page.fps = calc_fps_val(page)
@@ -719,7 +733,8 @@ class Frame_maker():
 		seconds = int(time)
 		tstring = "%01d:%02d" % divmod(seconds, 60)
 
-		(twidth, theight) = lbox_draw.textsize(tstring, font=self.font)
+		#(twidth, theight) = lbox_draw.textsize(tstring, font=self.font)
+		(twidth, theight) = textsize(lbox_draw, tstring, font=self.font)
 		offset = ((box_width - twidth) / 2, (box_height - theight) / 2)
 		lbox_draw.text(offset, tstring, font=self.font, fill=clColors.GREEN)
 		overlay.paste(lbox, lbox_offset)
@@ -733,7 +748,8 @@ class Frame_maker():
 		seconds = int(self.page.duration - time)
 		tstring = "-%01d:%02d" % divmod(seconds, 60)
 
-		(twidth, theight) = rbox_draw.textsize(tstring, font=self.font)
+		#(twidth, theight) = rbox_draw.textsize(tstring, font=self.font)
+		(twidth, theight) = textsize(rbox_draw,tstring, font=self.font)
 		offset = ( (box_width - twidth) / 2, (box_height - theight) / 2)
 		rbox_draw.text( offset, tstring, font=self.font, fill=clColors.GREEN)
 		overlay.paste(rbox, rbox_offset)
@@ -817,7 +833,11 @@ class Sound_image():
 		
 		tick_height = 5 * self.adjust_factor
 		
-		(twidth, theight) = self.graphic_draw.textsize(text, font=font)
+        # no more textsize...
+        # Try:  https://pillow.readthedocs.io/en/stable/deprecations.html#font-size-and-offset-methods 
+		#(twidth, theight) = self.graphic_draw.textsize(text, font=font)
+		(twidth, theight) = textsize(self.graphic_draw, text, font=font)
+
 		#self.graphic_draw.text((xcenter-(twidth/2), y-theight+txtyoffset), text, font=font, fill=textcolor)
 		self.graphic_draw.text((xcenter-(twidth/2), y-theight+txtyoffset-tick_height), text, font=font, fill=textcolor)
 		self.graphic_draw.line([(xcenter,y), (xcenter,y-tick_height)], fill=tickcolor)
@@ -1073,7 +1093,7 @@ class Sound_image():
 			orig_image = Image.open(image)
 			newsize = (width, height-tborder-bborder-1)
 			logging.info("resizing graphic to: %s", newsize)
-			base_image = orig_image.resize(newsize, Image.ANTIALIAS ).convert('RGBA')
+			base_image = orig_image.resize(newsize, Image.LANCZOS ).convert('RGBA')
 			self.graphic.paste(base_image,(0, tborder+1))
 			max_clip_per_chan = 0	# RBF: this shouldn't be here - track down why it's needed.
 		else:	
@@ -1357,7 +1377,8 @@ class Sound_image():
 				# drop the box prototype onto the graphic
 				self.graphic.paste(mbox, (x - mbox_width/2, 2))
 				# figure out where to place the text...
-				(txt_width, txt_height) = graphic_draw.textsize(str(i), font=font)
+				#(txt_width, txt_height) = graphic_draw.textsize(str(i), font=font)
+				(txt_width, txt_height) = textsize(graphic_draw, str(i), font=font)
 				#txtyoffset = int( (txt_height - mbox_height) / 2. ) - 1		# negative number, offset
 				txtyoffset = int( (txt_height - mbox_height) / 2. - .5 ) 	# negative number, offset
 				self.upTickText(str(i), x+1,  ymin+1, font=font, textcolor=clColors.DESERT_DARK, tickcolor=clColors.XPARENT, txtyoffset=txtyoffset)
@@ -1412,7 +1433,8 @@ class Sound_image():
 
 			if self.size_class.is_larger_than(self.media_size, 'Large'):
 				# different color - so offset from the width of the current string
-				(bwidth, bheight) = graphic_draw.textsize(bot_string, font=font)
+				#(bwidth, bheight) = graphic_draw.textsize(bot_string, font=font)
+				(bwidth, bheight) = textsize(graphic_draw, bot_string, font=font)
 				right = left + bwidth + 15
 				graphic_draw.text((right, ymax+3), clipstring, font=font, fill=color)
 		

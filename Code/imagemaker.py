@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/env python3
 """ Create images for video
 
     Some scripting to create a series of 

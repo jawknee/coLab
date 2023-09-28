@@ -17,7 +17,7 @@
 import os
 import sys
 import logging
-import time
+#import time
 
 import tkinter as tk
 #import tkFileDialog

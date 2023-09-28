@@ -22,7 +22,8 @@ import time
 import tkinter as tk
 #import tkFileDialog
 import tkinter.filedialog
-import tkinter.ttk
+#import tkinter.ttk
+from tkinter import ttk
 import tkinter.messagebox
 #import imp
 import importlib
@@ -319,7 +320,8 @@ class Colab():
 
 		logging.info("About to call OptionMenu")
 		try:
-			self.groupOption = tk.OptionMenu(self.main_frame, self.gOpt, *groupTitles,command=self.set_group_from_menu)
+			#self.groupOption = tk.OptionMenu(self.main_frame, self.gOpt, *groupTitles,command=self.set_group_from_menu)
+			self.groupOption = ttk.OptionMenu(self.main_frame, self.gOpt, *groupTitles,command=self.set_group_from_menu)
 		except:
 			logging.warning("Problem with tk.OptionMenu")
 

@@ -107,8 +107,8 @@ def import_data(obj, path=None):
 		string = 'obj.' + var + ' = val'
 		exec(string)	# this assigns the file var
 		logging.info("updating var: %s, value:%s", var, val)
-		print("updating var: %s, value:%s", (var, val))
-	convert_vars(obj)		# convert any floats, ints, etc...
+		#print("updating var: %s, value:%s", (var, val))
+	#convert_vars(obj)		# convert any floats, ints, etc...
 	
 def convert_vars(obj):
 	"""
@@ -134,13 +134,13 @@ def convert_vars(obj):
 			conversion = "int"
 			convtype = int
 
-		print ("convert_vars: var", var, "conversion", conversion) # "convtype", convtype )
+		#print ("convert_vars: var", var, "conversion", conversion) # "convtype", convtype )
 		val = "unset"
 		line = 'val = obj.' + var
-		print ("Line is", line)
+		#print ("Line is", line)
 		#exec('val = obj.' + var)	# what is the value? (mostly we want its type)
 		exec(line)	# what is the value? (mostly we want its type)
-		print ("val = ", val)
+		#print ("val = ", val)
 		# if it's in one of the lists, let's take a shot at 
 		# converting it - but just in case that's been done, let's check...
 		# Otherwise, build an exec string to do the conversion

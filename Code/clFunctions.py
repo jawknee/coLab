@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """
 	Various user interface functions for the coLab main app
 	

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """
 An interface to the Tkinter canvas widget,
 Allow, at least at first - selection of the

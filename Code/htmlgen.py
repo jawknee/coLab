@@ -197,6 +197,7 @@ def pagegen(group, page):
 
 	# The part specific to this page...
 
+	print ("page.creattime: ", page.createtime)
 	
 	content = """
 	<p>

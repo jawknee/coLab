@@ -19,8 +19,9 @@ while sleep $delay
 do
 	start=$(date +%s)
 	echo Starting at: $(date)
-	/usr/bin/osascript Interarchy_coLab_mirror.scpt
-	echo Ending at $(date)
+	#/usr/bin/osascript Interarchy_coLab_mirror.scpt
+    echo "No Interarchy run"
+    echo Ending at $(date)
 	end=$(date +%s)
 	etime=$(expr $end - $start)
 	#echo etime is $etime

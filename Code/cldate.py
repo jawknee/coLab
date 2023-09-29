@@ -35,8 +35,8 @@ def utc2short(time):
 	"""
 	CUTOFF = 86400 * 180	# Approx. six months 
 	now = epochtime(utcnow())
-	then = epochtime(time)
-	howlong = now - then
+	before = epochtime(time)
+	howlong = now - before
 	if howlong > CUTOFF:
 		time_fmt = SHORT_OLD_FMT
 	else:
@@ -44,21 +44,28 @@ def utc2short(time):
 	return (format (time, time_fmt, UTC, HERE))
 
 def utc2long(time):
+	time = datetime.fromisoformat(time)
 	return (format (time, LONG_FMT, UTC, HERE))
 
 def string2utc(datestring):
 	return(datetime.strptime(datestring,IFMT))
 
 def utc2string(time):
+
+	print ("utc2string - time:", time)
+	time = datetime.fromisoformat(time)
+	
 	return(time.strftime(IFMT))
 
 def epochtime(time):
 	""" Total seconds since the epoch - for sorting """
-	epoch = datetime.utcfromtimestamp(0)
+	epoch = datetime.fromtimestamp(0)
 	try:
+		print ("time is:", time)
+		time = datetime.fromisoformat(time)
 		delta = time - epoch
 	except:
-		if isinstance(time, basestring):
+		if isinstance(time, str):
 			# we've been sent a string - not correct...
 			logging.warning("String sent for a datetime's job: %s", time, exc_info=True)
 			time = string2utc(time)
@@ -79,14 +86,16 @@ def utcnow():
 def main():
 	""" some tests for the above... """
 	
+	print ("cldate.py main:")
 	now=datetime.utcnow()	 # naive utc time
+	print ("now:", now)
 	print ("utc2short:", utc2short(now))
 	print ("utc2long: ", utc2long(now))
 	print ("epoch:    ", epochtime(now))
 	s = utc2string(now)
 	print ("utc string", s + ' ' +  s)
-	then = string2utc(s)
-	print ("then utc  ", then)
+	before = string2utc(s)
+	print ("then utc  ", before)
 	
 
 

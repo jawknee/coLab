@@ -7,7 +7,7 @@ start and end points.
 import logging
 import time
 
-from PIL import Image	#, ImageTk
+from PIL import Image, ImageTk
 
 import tkinter as tk
 import tkinter.ttk
@@ -36,7 +36,7 @@ class Button:
 		else:
 			logging.warning("Warning - bad button")
 			
-		self.obj = ttk.Button(g_edit.c_frame, text=text, command=self.handler)
+		self.obj = tk.Button(g_edit.c_frame, text=text, command=self.handler)
 		self.obj.grid(column=column, row=row)
 		self.pressed = False
 		self.held = False
@@ -48,10 +48,10 @@ class Button:
 		by a series.   
 		
 		If handled is False, this is the single entry 
-		from the ttk.Button callback and means the button
+		from the tk.Button callback and means the button
 		has been pressed and released.  If pressed quickly
 		we may not have seen the button pressed.  If we have,
-		we want to ignore that ttk.Button call back, we've already
+		we want to ignore that tk.Button call back, we've already
 		dealt with it.  We use the "held" flag to work this out.
 		
 		We also want to handle the delay between the initial
@@ -59,7 +59,10 @@ class Button:
 		*is* the repeat rate.
 		"""
 		doit = False
-		pressed = self.obj.instate(["pressed"])
+		#pressed = self.obj.instate(["pressed"])
+		#pressed = self.obj.instate(["pressed"])
+		pressed = self.obj['state']  == 'active'
+		print ("handler - pressed:", pressed)
 		if not handled:
 			# set a flag here if we intend to rebuild both...
 			if pressed:
@@ -159,7 +162,7 @@ class GraphEdit:
 		self.subcodes =  ('%d', '%S', '%P', '%V')
 		
 		info = "Use the arrows or grab the lines to set the start (green) and end (red) points."
-		#ttk.Label(i_frame, text=info, foreground="black", anchor=tk.SW, justify=tk.RIGHT).grid(column=0, row=0)
+		#tk.Label(i_frame, text=info, foreground="black", anchor=tk.SW, justify=tk.RIGHT).grid(column=0, row=0)
 		self.popup = cltkutils.Popup('Set Sound Start and End', info, nobutton=False)
 		
 	
@@ -432,13 +435,13 @@ class GraphEdit:
 		# At this point, one row has:  start / end in the corresponding colors,
 		# and arrows and text windows to let us set the value
 		dash = u"\u2015" * 5
-		ttk.Label(self.c_frame, text=dash, foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=0, row=0)
-		ttk.Label(self.c_frame, text="Start", foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=1, row=0)
-		ttk.Label(self.c_frame, text=dash, foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=2, row=0)
+		tk.Label(self.c_frame, text=dash, foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=0, row=0)
+		tk.Label(self.c_frame, text="Start", foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=1, row=0)
+		tk.Label(self.c_frame, text=dash, foreground="green", anchor=tk.NW, justify=tk.CENTER).grid(column=2, row=0)
 		
-		ttk.Label(self.c_frame, text=dash, foreground="red", anchor=tk.NW, justify=tk.CENTER).grid(column=4, row=0)
-		ttk.Label(self.c_frame, text="End", foreground="red", anchor=tk.NE, justify=tk.CENTER).grid(column=5,row=0)
-		ttk.Label(self.c_frame, text=dash, foreground="red", anchor=tk.NW, justify=tk.CENTER).grid(column=6, row=0)
+		tk.Label(self.c_frame, text=dash, foreground="red", anchor=tk.NW, justify=tk.CENTER).grid(column=4, row=0)
+		tk.Label(self.c_frame, text="End", foreground="red", anchor=tk.NE, justify=tk.CENTER).grid(column=5,row=0)
+		tk.Label(self.c_frame, text=dash, foreground="red", anchor=tk.NW, justify=tk.CENTER).grid(column=6, row=0)
 		
 		# buttons...
 		self.button_list = [] 	# we do our own button handling - keep a list
@@ -458,7 +461,7 @@ class GraphEdit:
 		
 		# and a separate one for finishing up....
 		# for now, we're sticking this in the middle in case we get stuck with a very tiny window.
-		ttk.Button(self.c_frame, text='Done', command=self.quit_handler).grid(column=3, row=0)
+		tk.Button(self.c_frame, text='Done', command=self.quit_handler).grid(column=3, row=0)
 		
 		
 		self.root.after(100, self.button_handler)
@@ -466,11 +469,11 @@ class GraphEdit:
 		self.startText = tk.StringVar()
 		self.startText.set(str(self.start_x))
 		#ttk.Entry(self.c_frame, width=6, textvariable=self.startText).grid(column=1, row=1)
-		ttk.Label(self.c_frame, width=6, textvariable=self.startText, anchor=tk.CENTER).grid(column=1, row=1)
+		tk.Label(self.c_frame, width=6, textvariable=self.startText, anchor=tk.CENTER).grid(column=1, row=1)
 		self.endText = tk.StringVar()
 		self.endText.set(str(self.end_x))
 		#ttk.Entry(self.c_frame, width=6, textvariable=self.endText).grid(column=4, row=1)
-		ttk.Label(self.c_frame, width=6, textvariable=self.endText, anchor=tk.CENTER).grid(column=5, row=1)
+		tk.Label(self.c_frame, width=6, textvariable=self.endText, anchor=tk.CENTER).grid(column=5, row=1)
 		self.c_frame.grid()
 	
 	def button_handler(self):

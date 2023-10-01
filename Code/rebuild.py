@@ -518,8 +518,9 @@ def do_mirror(coLab_home=None):
 	try:
 		# May want to attach to the output of this to keep the 
 		# return code from being printed out..
-		pid = subprocess.Popen([osascript, scriptpath]).pid
-		logging.info("do_mirror - mirror pid is: %d", pid)
+		print ("Skipping run of ", scriptpath)
+		#pid = subprocess.Popen([osascript, scriptpath]).pid
+		#logging.info("do_mirror - mirror pid is: %d", pid)
 	except:
 		logging.warning("Mirror error: cannot continue.", exc_info=True)
 		sys.exit(1)

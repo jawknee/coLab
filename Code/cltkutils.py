@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/loical/bin/python3
 # -*- coding: utf-8 -*-
 """ Some useful tools for dealing with graphic objects 
 

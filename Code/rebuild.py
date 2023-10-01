@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """ Rebuild the links, side bar, and anything else needing routine maintenance.
 
 	We're (currently) passed the name of a group and 
@@ -628,7 +628,11 @@ def rebuild(g, mirror=False, opt="nope"):
 
 		# If the page is new or has been updated recently,
 		# then make a "mark"
-		age = cldate.epochtime(cldate.utcnow()) - cldate.epochtime(pg.updatetime)
+		now = cldate.epochtime(cldate.utcnow()) 
+		file =  cldate.epochtime(pg.updatetime)
+
+		#age = cldate.epochtime(cldate.utcnow()) - cldate.epochtime(pg.updatetime)
+		age = now - file
 		logging.info("Age is: %f", age)
 
 		flag = ''		# any tag on the end of name...

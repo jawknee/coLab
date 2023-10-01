@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/ython3
 # -*- coding: utf-8 -*-
 """ reads a passed file or stdin (if called from the command line)
 	and converts python-style assignment statements into 

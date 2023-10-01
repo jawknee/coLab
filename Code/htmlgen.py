@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """ Create a Web dir based on the name passed.
 
 Passed a simple name, creates a file <name>.html

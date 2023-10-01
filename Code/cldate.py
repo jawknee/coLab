@@ -1,17 +1,22 @@
 #!/usr/local/bin/python3
 """ various routines for converting, importing and displaying dates """
 
-from datetime import datetime, timedelta
+from datetime import datetime	#, timedelta
 #from dateutil import tz
 # tz repacement: https://pypi.org/project/tzlocal/
-from tzlocal import get_localzone
+#from tzlocal import get_localzone
 from zoneinfo import ZoneInfo
 
 import logging
 
 #HERE = tz.tzlocal()
-HERE = get_localzone()
+#HERE = get_localzone()
+# FIX THIS *******************************
+#LOCALZONE = datetime.now(datetime.timezone(datetime.timedelta(0))).astimezone().tzinfo
+LOCALZONE = "MST7MDT"
+HERE = ZoneInfo(LOCALZONE)
 #UTC = tz.gettz('UTC')
+#UTC = ZoneInfo('UTC')
 UTC = ZoneInfo('UTC')
 IFMT="%Y-%m-%dT%H:%M:%S"
 # Note both of  these SHORT formats use %-d which may not work on all formats
@@ -41,10 +46,12 @@ def utc2short(time):
 		time_fmt = SHORT_OLD_FMT
 	else:
 		time_fmt = SHORT_FMT
-	return (format (time, time_fmt, UTC, HERE))
+	dtime = datetime.fromisoformat(time)
+	print ("utc2short time:", time)
+	return (format (dtime, time_fmt, UTC, HERE))
 
 def utc2long(time):
-	time = datetime.fromisoformat(time)
+	time = datetime.fromisoformat(str(time))
 	return (format (time, LONG_FMT, UTC, HERE))
 
 def string2utc(datestring):
@@ -53,16 +60,18 @@ def string2utc(datestring):
 def utc2string(time):
 
 	print ("utc2string - time:", time)
-	time = datetime.fromisoformat(time)
+	time = datetime.fromisoformat(str(time))
 	
 	return(time.strftime(IFMT))
 
 def epochtime(time):
 	""" Total seconds since the epoch - for sorting """
+	print ("epochtime time:", time)
 	epoch = datetime.fromtimestamp(0)
+	time = datetime.fromisoformat(str(time))
 	try:
 		print ("time is:", time)
-		time = datetime.fromisoformat(time)
+		#time = datetime.fromisoformat(time)
 		delta = time - epoch
 	except:
 		if isinstance(time, str):

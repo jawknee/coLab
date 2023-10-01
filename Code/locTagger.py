@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """ locTagger - at coLab <span> tags to text
 
 	reads through the passed file name or stdin

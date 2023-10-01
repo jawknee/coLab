@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """ Raw html clumps that are used in various places... """
 
 import logging

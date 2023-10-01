@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """
 	Any html numeric codes to the ascii equiv.
 """

@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """ A tool to generate a graphic to show the available fonts """
 import os
 import sys
 import logging
 
-from PIL import Image
-from PIL import ImageDraw
+#from PIL import Image
+#from PIL import ImageDraw
 from PIL import ImageFont
 
 import imagemaker

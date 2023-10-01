@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """ Color definitions for coLab. 
 
 Various color definitions both specific and symbolic (e.g., WHITE, HILITE).

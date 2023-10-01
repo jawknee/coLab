@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """ convert cgi-bin info into assignments
 
 	Convert the cgi-bin info on stdin to assignment statements 

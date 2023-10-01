@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 """ a command line interface into media info
 	

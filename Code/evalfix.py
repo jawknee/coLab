@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 """ Convert "special" characters to meta
 
 	Read from stdin, write to stdout, fixing various

@@ -14,7 +14,6 @@
 	It is currently designed to be a single program - starting with this module.
 """
 
-#test
 import os
 import sys
 import logging

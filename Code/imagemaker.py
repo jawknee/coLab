@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 """ Create images for video
 
     Some scripting to create a series of 

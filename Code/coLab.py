@@ -1,5 +1,5 @@
 #!/usr/local/bin/python3
-
+#
 # -*- coding: utf-8 -*-
 """ coLab - a music collaboration tool.
 	

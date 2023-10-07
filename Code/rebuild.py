@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 """ Rebuild the links, side bar, and anything else needing routine maintenance.
 
 	We're (currently) passed the name of a group and 
